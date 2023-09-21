@@ -14,15 +14,23 @@ public:
 	HRESULT Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& GraphicDesc, _Inout_ _dev** ppDevice, _Inout_ _context** ppContext);
 
 public:
+	HRESULT Present();
+
+public: // Timer Manager
 	HRESULT Add_Timer(const wstring& strTimerTag);
 	_float Compute_TimeDelta(const wstring& strTimerTag);
+
+private:
+	class CGraphic_Device* m_pGraphic_Device{ nullptr };
 
 private:
 	class CTimer_Manager* m_pTimer_Manager{ nullptr };
 
 public:
-	void Release_Managers();
 	static void Release_Engine();
+
+private:
+	void Clear_Managers();
 
 public:
 	virtual void Free() override;

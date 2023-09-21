@@ -51,6 +51,8 @@ HRESULT CMainApp::Render()
 		m_iFrameCount = 0;
 	}
 
+	m_pGameInstance->Present();
+
 	return S_OK;
 }
 
@@ -69,6 +71,6 @@ CMainApp* CMainApp::Create()
 
 void CMainApp::Free()
 {
-	CGameInstance::Release_Engine();
 	Safe_Release(m_pGameInstance);
+	CGameInstance::Release_Engine();
 }

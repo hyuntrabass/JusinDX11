@@ -61,6 +61,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -79,11 +80,13 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\private\GameInstance.cpp" />
+    <ClCompile Include="..\Private\Graphic_Device.cpp" />
     <ClCompile Include="..\private\Timer.cpp" />
     <ClCompile Include="..\private\Timer_Manager.cpp" />
   </ItemGroup>
@@ -95,6 +98,7 @@
     <ClInclude Include="..\Public\Engine_Struct.h" />
     <ClInclude Include="..\Public\Engine_Typedef.h" />
     <ClInclude Include="..\public\GameInstance.h" />
+    <ClInclude Include="..\Public\Graphic_Device.h" />
     <ClInclude Include="..\public\Timer.h" />
     <ClInclude Include="..\public\Timer_Manager.h" />
   </ItemGroup>

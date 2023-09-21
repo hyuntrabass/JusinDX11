@@ -36,6 +36,9 @@
     <ClCompile Include="..\private\Timer_Manager.cpp">
       <Filter>00.System\Timer\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Graphic_Device.cpp">
+      <Filter>00.System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -64,6 +67,9 @@
     </ClInclude>
     <ClInclude Include="..\public\Timer_Manager.h">
       <Filter>00.System\Timer\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Graphic_Device.h">
+      <Filter>00.System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
