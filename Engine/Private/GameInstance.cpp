@@ -25,6 +25,31 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 	return S_OK;
 }
 
+void CGameInstance::Clear(_uint iLevelIndex)
+{
+	// TODO:
+}
+
+HRESULT CGameInstance::Clear_BackBuffer_View(_float4 vClearColor)
+{
+	if (!m_pGraphic_Device)
+	{
+		return E_FAIL;
+	}
+
+	return m_pGraphic_Device->Clear_BackBuffer_View(vClearColor);
+}
+
+HRESULT CGameInstance::Clear_DepthStencil_View()
+{
+	if (!m_pGraphic_Device)
+	{
+		return E_FAIL;
+	}
+
+	return m_pGraphic_Device->Clear_DepthStencil_View();
+}
+
 HRESULT CGameInstance::Present()
 {
 	if (!m_pGraphic_Device)

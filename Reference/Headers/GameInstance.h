@@ -14,6 +14,8 @@ public:
 	HRESULT Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& GraphicDesc, _Inout_ _dev** ppDevice, _Inout_ _context** ppContext);
 
 public:
+	HRESULT Clear_BackBuffer_View(_float4 vClearColor);
+	HRESULT Clear_DepthStencil_View();
 	HRESULT Present();
 
 public: // Timer Manager

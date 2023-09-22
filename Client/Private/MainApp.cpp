@@ -51,6 +51,8 @@ HRESULT CMainApp::Render()
 		m_iFrameCount = 0;
 	}
 
+	m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 0.f, 1.f, 1.f));
+	m_pGameInstance->Clear_DepthStencil_View();
 	m_pGameInstance->Present();
 
 	return S_OK;
