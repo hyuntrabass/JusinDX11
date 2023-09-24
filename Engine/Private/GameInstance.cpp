@@ -1,6 +1,7 @@
 #include "GameInstance.h"
-#include "Timer_Manager.h"
 #include "Graphic_Device.h"
+#include "Timer_Manager.h"
+#include "Level_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -22,7 +23,18 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
+	m_pLevel_Manager = CLevel_Manager::Create();
+	if (!m_pLevel_Manager)
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
+}
+
+void CGameInstance::Tick_Engine(_float fTimeDelta)
+{
+	m_pLevel_Manager->Tick(fTimeDelta);
 }
 
 void CGameInstance::Clear(_uint iLevelIndex)
@@ -32,57 +44,43 @@ void CGameInstance::Clear(_uint iLevelIndex)
 
 HRESULT CGameInstance::Clear_BackBuffer_View(_float4 vClearColor)
 {
-	if (!m_pGraphic_Device)
-	{
-		return E_FAIL;
-	}
-
 	return m_pGraphic_Device->Clear_BackBuffer_View(vClearColor);
 }
 
 HRESULT CGameInstance::Clear_DepthStencil_View()
 {
-	if (!m_pGraphic_Device)
-	{
-		return E_FAIL;
-	}
-
 	return m_pGraphic_Device->Clear_DepthStencil_View();
 }
 
 HRESULT CGameInstance::Present()
 {
-	if (!m_pGraphic_Device)
-	{
-		return E_FAIL;
-	}
-
 	return m_pGraphic_Device->Present();
 }
 
 HRESULT CGameInstance::Add_Timer(const wstring& strTimerTag)
 {
-	if (!m_pTimer_Manager)
-	{
-		return E_FAIL;
-	}
-
 	return m_pTimer_Manager->Add_Timer(strTimerTag);
 }
 
 _float CGameInstance::Compute_TimeDelta(const wstring& strTimerTag)
 {
-	if (!m_pTimer_Manager)
-	{
-		return 0.f;
-	}
-
 	return m_pTimer_Manager->Compute_TimeDelta(strTimerTag);
+}
+
+HRESULT CGameInstance::Open_Level(_uint iLevelIndex, CLevel* pNextLevel)
+{
+	return m_pLevel_Manager->Open_Level(iLevelIndex, pNextLevel);
+}
+
+HRESULT CGameInstance::Render()
+{
+	return m_pLevel_Manager->Render();
 }
 
 void CGameInstance::Clear_Managers()
 {
 	Safe_Release(m_pTimer_Manager);
+	Safe_Release(m_pLevel_Manager);
 }
 
 void CGameInstance::Release_Engine()

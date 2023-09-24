@@ -10,6 +10,27 @@
     <Filter Include="00.MainApp">
       <UniqueIdentifier>{36570b21-4609-4862-bd8b-35f44aaadcf3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels">
+      <UniqueIdentifier>{02fa58a0-71a2-43a6-8ea7-b9afaefabdbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\00.Logo">
+      <UniqueIdentifier>{4b76cbdf-e17c-479e-b336-dbc0273d53fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\99.Loading">
+      <UniqueIdentifier>{92ecc1ab-adb7-4226-81d1-c4d15c1af2c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\01.Tutorial">
+      <UniqueIdentifier>{553bce3a-df01-4330-b7e5-65997bc99111}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\99.Loading\Loader">
+      <UniqueIdentifier>{dedd8a06-2ff3-4649-a30a-8ec4d4621bd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\02.Stage1">
+      <UniqueIdentifier>{8c722d00-05fe-4678-a016-4684cde3315e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\03.Stage2">
+      <UniqueIdentifier>{2620c76a-1b73-4853-8cc3-3552d756aaec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -29,6 +50,24 @@
     </ClInclude>
     <ClInclude Include="..\public\MainApp.h">
       <Filter>00.MainApp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Level_Logo.h">
+      <Filter>01.Levels\00.Logo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Level_Loading.h">
+      <Filter>01.Levels\99.Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Loader.h">
+      <Filter>01.Levels\99.Loading\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Level_Tutorial.h">
+      <Filter>01.Levels\01.Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Level_Stage1.h">
+      <Filter>01.Levels\02.Stage1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Level_Stage2.h">
+      <Filter>01.Levels\03.Stage2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +89,24 @@
     </ClCompile>
     <ClCompile Include="..\private\MainApp.cpp">
       <Filter>00.MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Level_Logo.cpp">
+      <Filter>01.Levels\00.Logo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Level_Loading.cpp">
+      <Filter>01.Levels\99.Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Loader.cpp">
+      <Filter>01.Levels\99.Loading\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Level_Tutorial.cpp">
+      <Filter>01.Levels\01.Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Level_Stage1.cpp">
+      <Filter>01.Levels\02.Stage1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Level_Stage2.cpp">
+      <Filter>01.Levels\03.Stage2</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

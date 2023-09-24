@@ -1,5 +1,6 @@
 #include "MainApp.h"
 #include "GameInstance.h"
+#include "Level_Loading.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -23,6 +24,11 @@ HRESULT CMainApp::Init()
 
 	m_pGameInstance->Init_Engine(ToIndex(Level_ID::End), GraphicDesc, &m_pDevice, &m_pContext);
 	
+	if (FAILED(Open_Level(Level_ID::Logo)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -35,6 +41,7 @@ void CMainApp::Tick(_float fTimeDelta)
 
 	m_fTimeAcc += fTimeDelta;
 
+	m_pGameInstance->Tick_Engine(fTimeDelta);
 }
 
 HRESULT CMainApp::Render()
@@ -58,6 +65,22 @@ HRESULT CMainApp::Render()
 	return S_OK;
 }
 
+HRESULT CMainApp::Open_Level(Level_ID eLevelID)
+{
+	if (eLevelID == Level_ID::Loading)
+	{
+		return E_FAIL;
+	}
+
+	CLevel* pLevel = CLevel_Loading::Create(m_pDevice, m_pContext, eLevelID);
+	if (!pLevel)
+	{
+		return E_FAIL;
+	}
+
+	return m_pGameInstance->Open_Level(ToIndex(Level_ID::Loading), pLevel);
+}
+
 CMainApp* CMainApp::Create()
 {
 	CMainApp* pInstance = new CMainApp();
@@ -74,5 +97,7 @@ CMainApp* CMainApp::Create()
 void CMainApp::Free()
 {
 	Safe_Release(m_pGameInstance);
+	Safe_Release(m_pDevice);
+	Safe_Release(m_pContext);
 	CGameInstance::Release_Engine();
 }

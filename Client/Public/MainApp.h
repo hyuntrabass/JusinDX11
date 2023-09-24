@@ -28,6 +28,9 @@ private:
 	_float m_fTimeAcc{};
 	_uint m_iFrameCount{};
 
+private:
+	HRESULT Open_Level(Level_ID eLevelID);
+
 public:
 	static CMainApp* Create();
 	virtual void Free() override;

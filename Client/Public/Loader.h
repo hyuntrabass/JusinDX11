@@ -1,0 +1,45 @@
+#pragma once
+#include "Client_Define.h"
+#include "Base.h"
+
+BEGIN(Client)
+
+class CLoader final : public CBase
+{
+private:
+	CLoader(_dev* pDevice, _context* pContext);
+	virtual ~CLoader() = default;
+
+public:
+	HRESULT Init(Level_ID eNextLevel);
+	HRESULT Begin_Thread();
+	HRESULT End_Thread();
+	HRESULT Show_LoadingText();
+	_bool isFinished();
+
+public:
+	HRESULT Loading_LevelResources();
+
+private:
+	_dev* m_pDevice{ nullptr };
+	_context* m_pContext{ nullptr };
+	Level_ID m_eNextLevel{ Level_ID::End };
+	wstring m_strLoadingText{};
+	_bool m_isFinished{ false };
+
+private:
+	HANDLE m_hThread{};
+	CRITICAL_SECTION m_Critical_Section{};
+
+private:
+	HRESULT Load_Logo();
+	HRESULT Load_Tutorial();
+	HRESULT Load_Stage1();
+	HRESULT Load_Stage2();
+
+public:
+	static CLoader* Create(_dev* pDevice, _context* pContext, Level_ID eNextLevel);
+	virtual void Free() override;
+};
+
+END

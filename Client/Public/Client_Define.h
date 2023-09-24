@@ -1,5 +1,6 @@
 #pragma once
 #include "../Default/framework.h"
+#include <process.h>
 
 namespace Client
 {
@@ -11,7 +12,9 @@ namespace Client
 		Static,
 		Loading,
 		Logo,
-		GamePlay,
+		Tutorial,
+		Stage1,
+		Stage2,
 		End
 	};
 }

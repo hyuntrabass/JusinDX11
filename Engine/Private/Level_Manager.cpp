@@ -18,15 +18,13 @@ HRESULT CLevel_Manager::Open_Level(_uint iLevelIndex, CLevel* pNextLevel)
 
 	if (nullptr != m_pCurrentLevel)
 	{
-		//pGameInstance->Clear(m_iCurrentLevelIndex);
+		pGameInstance->Clear(m_iCurrentLevelIndex);
 	}
 
 	Safe_Release(m_pCurrentLevel);
 
 	m_pCurrentLevel = pNextLevel;
-
 	m_iCurrentLevelIndex = iLevelIndex;
-
 
 	Safe_Release(pGameInstance);
 
