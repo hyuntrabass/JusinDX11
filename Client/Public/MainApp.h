@@ -4,6 +4,7 @@
 
 BEGIN(Engine)
 class CGameInstance;
+class CRenderer;
 END
 
 BEGIN(Client)
@@ -20,16 +21,18 @@ public:
 	HRESULT Render();
 
 private:
-	_dev* m_pDevice{ nullptr };
-	_context* m_pContext{ nullptr };
+	_dev m_pDevice{ nullptr };
+	_context m_pContext{ nullptr };
 
 private:
 	CGameInstance* m_pGameInstance{ nullptr };
+	CRenderer* m_pRenderer{ nullptr };
 	_float m_fTimeAcc{};
 	_uint m_iFrameCount{};
 
 private:
 	HRESULT Open_Level(Level_ID eLevelID);
+	HRESULT Ready_Prototype_Component_For_Static();
 
 public:
 	static CMainApp* Create();

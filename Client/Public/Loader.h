@@ -2,12 +2,16 @@
 #include "Client_Define.h"
 #include "Base.h"
 
+BEGIN(Engine)
+class CGameInstance;
+END
+
 BEGIN(Client)
 
 class CLoader final : public CBase
 {
 private:
-	CLoader(_dev* pDevice, _context* pContext);
+	CLoader(_dev pDevice, _context pContext);
 	virtual ~CLoader() = default;
 
 public:
@@ -21,8 +25,9 @@ public:
 	HRESULT Loading_LevelResources();
 
 private:
-	_dev* m_pDevice{ nullptr };
-	_context* m_pContext{ nullptr };
+	_dev m_pDevice{ nullptr };
+	_context m_pContext{ nullptr };
+	CGameInstance* m_pGameInstance{ nullptr };
 	Level_ID m_eNextLevel{ Level_ID::End };
 	wstring m_strLoadingText{};
 	_bool m_isFinished{ false };
@@ -38,7 +43,7 @@ private:
 	HRESULT Load_Stage2();
 
 public:
-	static CLoader* Create(_dev* pDevice, _context* pContext, Level_ID eNextLevel);
+	static CLoader* Create(_dev pDevice, _context pContext, Level_ID eNextLevel);
 	virtual void Free() override;
 };
 

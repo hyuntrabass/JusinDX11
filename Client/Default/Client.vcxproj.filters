@@ -31,6 +31,12 @@
     <Filter Include="01.Levels\03.Stage2">
       <UniqueIdentifier>{2620c76a-1b73-4853-8cc3-3552d756aaec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects">
+      <UniqueIdentifier>{054b6c62-d21f-42e6-b90c-f8c196fe1caa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.BackGround">
+      <UniqueIdentifier>{c7315088-832e-4003-8602-bef30c7ed15b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -68,6 +74,12 @@
     </ClInclude>
     <ClInclude Include="..\public\Level_Stage2.h">
       <Filter>01.Levels\03.Stage2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BackGround.h">
+      <Filter>02.GameObjects\00.BackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Loading_Objects.h">
+      <Filter>99.Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +119,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Level_Stage2.cpp">
       <Filter>01.Levels\03.Stage2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BackGround.cpp">
+      <Filter>02.GameObjects\00.BackGround</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

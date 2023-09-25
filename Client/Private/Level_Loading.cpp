@@ -5,7 +5,7 @@
 #include "Level_Stage1.h"
 #include "Level_Stage2.h"
 
-CLevel_Loading::CLevel_Loading(_dev* pDevice, _context* pContext)
+CLevel_Loading::CLevel_Loading(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
 {
 }
@@ -54,6 +54,10 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 
 		if (FAILED(m_pGameInstance->Open_Level(ToIndex(m_eNextLevel), pLevel)))
 		{
+			MSG_BOX("Failed to Open Level");
+		}
+		else
+		{
 			return;
 		}
 	}
@@ -64,7 +68,7 @@ HRESULT CLevel_Loading::Render()
 	return S_OK;
 }
 
-CLevel_Loading* CLevel_Loading::Create(_dev* pDevice, _context* pContext, Level_ID eNextLevel)
+CLevel_Loading* CLevel_Loading::Create(_dev pDevice, _context pContext, Level_ID eNextLevel)
 {
 	CLevel_Loading* pInstance = new CLevel_Loading(pDevice, pContext);
 

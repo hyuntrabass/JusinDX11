@@ -23,6 +23,11 @@ HRESULT CMainApp::Init()
 	GraphicDesc.isWindowed = TRUE;
 
 	m_pGameInstance->Init_Engine(ToIndex(Level_ID::End), GraphicDesc, &m_pDevice, &m_pContext);
+
+	if (FAILED(Ready_Prototype_Component_For_Static()))
+	{
+		return E_FAIL;
+	}
 	
 	if (FAILED(Open_Level(Level_ID::Logo)))
 	{
@@ -60,6 +65,9 @@ HRESULT CMainApp::Render()
 
 	m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 0.f, 1.f, 1.f));
 	m_pGameInstance->Clear_DepthStencil_View();
+
+	m_pRenderer->Draw_RenderGroup();
+
 	m_pGameInstance->Present();
 
 	return S_OK;
@@ -81,6 +89,21 @@ HRESULT CMainApp::Open_Level(Level_ID eLevelID)
 	return m_pGameInstance->Open_Level(ToIndex(Level_ID::Loading), pLevel);
 }
 
+HRESULT CMainApp::Ready_Prototype_Component_For_Static()
+{
+	if (!m_pGameInstance)
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), m_pRenderer = CRenderer::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 CMainApp* CMainApp::Create()
 {
 	CMainApp* pInstance = new CMainApp();
@@ -96,6 +119,7 @@ CMainApp* CMainApp::Create()
 
 void CMainApp::Free()
 {
+	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

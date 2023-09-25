@@ -7,7 +7,7 @@ BEGIN(Client)
 class CLevel_Tutorial final : public CLevel
 {
 private:
-	CLevel_Tutorial(_dev* pDevice, _context* pContext);
+	CLevel_Tutorial(_dev pDevice, _context pContext);
 	virtual ~CLevel_Tutorial() = default;
 
 public:
@@ -16,7 +16,7 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	static CLevel_Tutorial* Create(_dev* pDevice, _context* pContext);
+	static CLevel_Tutorial* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;
 };
 

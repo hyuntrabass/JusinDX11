@@ -51,9 +51,9 @@ CTimer_Manager* CTimer_Manager::Create()
 
 void CTimer_Manager::Free()
 {
-	for (auto& it : m_Timers)
+	for (auto& Pair : m_Timers)
 	{
-		Safe_Release(it.second);
+		Safe_Release(Pair.second);
 	}
 	m_Timers.clear();
 }

@@ -7,7 +7,7 @@ BEGIN(Client)
 class CLevel_Logo final : public CLevel
 {
 private:
-	CLevel_Logo(_dev* pDevice, _context* pContext);
+	CLevel_Logo(_dev pDevice, _context pContext);
 	virtual ~CLevel_Logo() = default;
 
 public:
@@ -15,8 +15,11 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+private:
+	HRESULT Ready_Layer_BackGround(const wstring& strLayerTag);
+
 public:
-	static CLevel_Logo* Create(_dev* pDevice, _context* pContext);
+	static CLevel_Logo* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;
 };
 

@@ -1,11 +1,16 @@
 #include "Loader.h"
+#include "GameInstance.h"
 
-CLoader::CLoader(_dev* pDevice, _context* pContext)
+#include "Loading_Objects.h"
+
+CLoader::CLoader(_dev pDevice, _context pContext)
 	: m_pDevice(pDevice)
 	, m_pContext(pContext)
+	, m_pGameInstance(CGameInstance::Get_Instance())
 {
-	Safe_AddRef(pContext);
-	Safe_AddRef(pDevice);
+	Safe_AddRef(m_pGameInstance);
+	Safe_AddRef(m_pContext);
+	Safe_AddRef(m_pDevice);
 }
 
 _uint APIENTRY ThreadEntry(void* pArg)
@@ -128,9 +133,9 @@ HRESULT CLoader::Load_Logo()
 
 	m_strLoadingText = L"Logo : Loading Prototype";
 #pragma region Prototype
-	for (size_t i = 0; i < 999999999; i++)
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BackGround"), CBackGround::Create(m_pDevice, m_pContext))))
 	{
-		int a = 10;
+		return E_FAIL;
 	}
 #pragma endregion
 
@@ -236,7 +241,7 @@ HRESULT CLoader::Load_Stage2()
 	return S_OK;
 }
 
-CLoader* CLoader::Create(_dev* pDevice, _context* pContext, Level_ID eNextLevel)
+CLoader* CLoader::Create(_dev pDevice, _context pContext, Level_ID eNextLevel)
 {
 	CLoader* pInstance = new CLoader(pDevice, pContext);
 
@@ -259,4 +264,5 @@ void CLoader::Free()
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
+	Safe_Release(m_pGameInstance);
 }

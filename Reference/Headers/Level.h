@@ -7,7 +7,7 @@ BEGIN(Engine)
 class ENGINE_DLL CLevel abstract : public CBase
 {
 protected:
-	CLevel(_dev* pDevice, _context* pContext);
+	CLevel(_dev pDevice, _context pContext);
 	virtual ~CLevel() = default;
 
 public :
@@ -16,8 +16,8 @@ public :
 	virtual HRESULT Render();
 
 protected:
-	_dev* m_pDevice{ nullptr };
-	_context* m_pContext{ nullptr };
+	_dev m_pDevice{ nullptr };
+	_context m_pContext{ nullptr };
 	class CGameInstance* m_pGameInstance{ nullptr };
 
 public:

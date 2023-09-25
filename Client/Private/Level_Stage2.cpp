@@ -1,6 +1,6 @@
 #include "Level_Stage2.h"
 
-CLevel_Stage2::CLevel_Stage2(_dev* pDevice, _context* pContext)
+CLevel_Stage2::CLevel_Stage2(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
 {
 }
@@ -19,7 +19,7 @@ HRESULT CLevel_Stage2::Render()
 	return S_OK;
 }
 
-CLevel_Stage2* CLevel_Stage2::Create(_dev* pDevice, _context* pContext)
+CLevel_Stage2* CLevel_Stage2::Create(_dev pDevice, _context pContext)
 {
 	CLevel_Stage2* pInstance = new CLevel_Stage2(pDevice, pContext);
 

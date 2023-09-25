@@ -1,6 +1,6 @@
 #include "Level.h"
 
-CLevel::CLevel(_dev* pDevice, _context* pContext)
+CLevel::CLevel(_dev pDevice, _context pContext)
 	: m_pDevice(pDevice)
 	, m_pContext(pContext)
 	, m_pGameInstance(CGameInstance::Get_Instance())

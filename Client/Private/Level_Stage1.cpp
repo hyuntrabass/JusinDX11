@@ -1,7 +1,7 @@
 #include "Level_Stage1.h"
 #include "Level_Loading.h"
 
-CLevel_Stage1::CLevel_Stage1(_dev* pDevice, _context* pContext)
+CLevel_Stage1::CLevel_Stage1(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
 {
 }
@@ -27,7 +27,7 @@ HRESULT CLevel_Stage1::Render()
 	return S_OK;
 }
 
-CLevel_Stage1* CLevel_Stage1::Create(_dev* pDevice, _context* pContext)
+CLevel_Stage1* CLevel_Stage1::Create(_dev pDevice, _context pContext)
 {
 	CLevel_Stage1* pInstance = new CLevel_Stage1(pDevice, pContext);
 

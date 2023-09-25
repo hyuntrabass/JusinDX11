@@ -7,7 +7,7 @@ BEGIN(Client)
 class CLevel_Stage1 final : public CLevel
 {
 private:
-	CLevel_Stage1(_dev* pDevice, _context* pContext);
+	CLevel_Stage1(_dev pDevice, _context pContext);
 	virtual ~CLevel_Stage1() = default;
 
 public:
@@ -16,7 +16,7 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	static CLevel_Stage1* Create(_dev* pDevice, _context* pContext);
+	static CLevel_Stage1* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;
 };
 

@@ -1,7 +1,7 @@
 #include "Level_Tutorial.h"
 #include "Level_Loading.h"
 
-CLevel_Tutorial::CLevel_Tutorial(_dev* pDevice, _context* pContext)
+CLevel_Tutorial::CLevel_Tutorial(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
 {
 }
@@ -27,7 +27,7 @@ HRESULT CLevel_Tutorial::Render()
 	return S_OK;
 }
 
-CLevel_Tutorial* CLevel_Tutorial::Create(_dev* pDevice, _context* pContext)
+CLevel_Tutorial* CLevel_Tutorial::Create(_dev pDevice, _context pContext)
 {
 	CLevel_Tutorial* pInstance = new CLevel_Tutorial(pDevice, pContext);
 
