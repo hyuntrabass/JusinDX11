@@ -52,6 +52,12 @@
     <Filter Include="01.Utility\02.GameObjects\BlendObjects">
       <UniqueIdentifier>{45ffad70-c4c3-4fb9-8fdb-c016df61866f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\VIBuffer">
+      <UniqueIdentifier>{fa92c3a7-bf85-4acd-87c2-825bb3ca420d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Components\VIBuffer\Rect">
+      <UniqueIdentifier>{555ef07a-2069-4352-a2ee-7c853e27ad39}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -95,6 +101,12 @@
     </ClCompile>
     <ClCompile Include="..\private\BlendObject.cpp">
       <Filter>01.Utility\02.GameObjects\BlendObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\VIBuffer.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\VIBuffer_Rect.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer\Rect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +166,12 @@
     </ClInclude>
     <ClInclude Include="..\public\BlendObject.h">
       <Filter>01.Utility\02.GameObjects\BlendObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\VIBuffer.h">
+      <Filter>01.Utility\03.Components\VIBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\VIBuffer_Rect.h">
+      <Filter>01.Utility\03.Components\VIBuffer\Rect</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

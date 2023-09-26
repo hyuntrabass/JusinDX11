@@ -10,4 +10,10 @@ namespace Engine
 		unsigned int iWinSizeX{}, iWinSizeY{};
 		bool isWindowed{};
 	};
+
+	using VTXPOSTEX = struct tagVertex_Position_Texcoord
+	{
+		XMFLOAT3 vPosition{};
+		XMFLOAT2 vTexcoord{};
+	};
 }
