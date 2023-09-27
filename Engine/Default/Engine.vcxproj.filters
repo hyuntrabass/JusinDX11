@@ -58,6 +58,9 @@
     <Filter Include="01.Utility\03.Components\VIBuffer\Rect">
       <UniqueIdentifier>{555ef07a-2069-4352-a2ee-7c853e27ad39}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\Shader">
+      <UniqueIdentifier>{89aa5993-f7d9-4156-b2b1-13ca8fc73fa1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -107,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="..\private\VIBuffer_Rect.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\Rect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Shader.cpp">
+      <Filter>01.Utility\03.Components\Shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="..\public\VIBuffer_Rect.h">
       <Filter>01.Utility\03.Components\VIBuffer\Rect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Shader.h">
+      <Filter>01.Utility\03.Components\Shader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

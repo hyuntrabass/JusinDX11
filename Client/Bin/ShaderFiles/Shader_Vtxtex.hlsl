@@ -27,7 +27,7 @@ struct PS_In
 	float2 vTex;
 };
 
-PS_Main(PS_In In)
+vector PS_Main(PS_In In)
 {
 	vector vColor = g_Texture.Sample(, In.vTex);
 
