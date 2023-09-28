@@ -1,37 +1,36 @@
-
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture g_Texture;
 
-struct VS_In
+struct VS_IN
 {
 	float3 vPos;
 	float2 vTex;
 };
 
-struct VS_Out
+struct VS_OUT
 {
 	vector vPos; // == float4
 	float2 vTex;
 };
 
-VS_Out VS_Main(Vs_In In)
+VS_OUT VS_Main(VS_IN Input)
 {
-	VS_Out Out;
-
-	return Out;
+	VS_OUT Output;
+	
+	return Output;
 }
 
-struct PS_In
+struct PS_IN
 {
 	vector vPos;
 	float2 vTex;
 };
 
-vector PS_Main(PS_In In)
+vector PS_Main(PS_IN Input)
 {
-	vector vColor = g_Texture.Sample(, In.vTex);
+	vector vColor = g_Texture.Sample(, Input.vTex);
 
-	return Color
+    return vColor;
 }
 
 technique11 DefaultTechnique
@@ -40,5 +39,5 @@ technique11 DefaultTechnique
 	{
 		VertexShader = compile vs_5_0 VS_Main();
 		PixelShader = compile ps_5_0 PS_Main();
-	};
+	}
 };
