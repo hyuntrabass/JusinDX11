@@ -100,6 +100,12 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	{
 		return E_FAIL;
 	}
+	Safe_AddRef(m_pRenderer);
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxTex"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Vtxtex.hlsl")))))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }

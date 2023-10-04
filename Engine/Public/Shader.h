@@ -14,8 +14,13 @@ public:
 	virtual HRESULT Init_Prototype(const wstring& strShaderFilePath);
 	virtual HRESULT Init(void* pArg);
 
+public:
+	HRESULT Begin(_uint iPassIndex);
+
 private:
 	ID3DX11Effect* m_pEffect{ nullptr };
+	_uint m_iNumPasses{};
+	vector<ID3D11InputLayout*> m_InputLayouts{};
 
 public:
 	static CShader* Create(_dev pDevice, _context pContext, const wstring& strShaderFilePath);
