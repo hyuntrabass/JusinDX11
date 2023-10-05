@@ -3,7 +3,7 @@
 
 BEGIN(Engine)
 
-class CVIBuffer abstract : public CComponent
+class ENGINE_DLL CVIBuffer abstract : public CComponent
 {
 protected:
 	CVIBuffer(_dev pDevice, _context pContext);

@@ -31,7 +31,8 @@ VS_OUT VS_Main(VS_IN Input)
     vPosition = mul(vPosition, g_ViewMatrix);
     vPosition = mul(vPosition, g_ProjMatrix);
 	
-    Output.vPos = vPosition;
+    //Output.vPos = vPosition;
+    Output.vPos = vector(Input.vPos, 1.f);
     Output.vTex = Input.vTex;
 	
     return Output;
@@ -52,7 +53,8 @@ PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
 	
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    //Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    Output.vColor = vector(Input.vTex.y, 0.2f, 1.f - Input.vTex.y, 1.f);
 
     return Output;
 }

@@ -2,6 +2,8 @@
 #include "../Default/framework.h"
 #include <process.h>
 
+#pragma comment(lib, "Engine.lib")
+
 namespace Client
 {
 	static const unsigned int g_iWinSizeX = 1280;

@@ -53,6 +53,8 @@ HRESULT CLoader::Init(Level_ID eNextLevel)
 
 HRESULT CLoader::Begin_Thread()
 {
+	if(FAILED(CoInitializeEx(nullptr, 0)))
+	   return E_FAIL;
 	EnterCriticalSection(&m_Critical_Section);
 
 	return S_OK;
@@ -60,6 +62,7 @@ HRESULT CLoader::Begin_Thread()
 
 HRESULT CLoader::End_Thread()
 {
+	CoUninitialize();
 	LeaveCriticalSection(&m_Critical_Section);
 
 	return S_OK;
@@ -112,6 +115,10 @@ HRESULT CLoader::Load_Logo()
 	for (size_t i = 0; i < 999999999; i++)
 	{
 		int a = 10;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_BackGround"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Logo/test.dds")))))
+	{
+		return E_FAIL;
 	}
 #pragma endregion
 

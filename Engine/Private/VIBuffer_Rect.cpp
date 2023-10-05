@@ -34,7 +34,7 @@ HRESULT CVIBuffer_Rect::Init_Prototype()
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
 
 	VTXPOSTEX* pVertices = new VTXPOSTEX[m_iNumVertices];
-	ZeroMemory(&pVertices, sizeof(VTXPOSTEX) * m_iNumVertices);
+	ZeroMemory(pVertices, sizeof(VTXPOSTEX) * m_iNumVertices);
 
 	pVertices[0].vPosition = _float3(-0.5f, 0.5f, 0.f);
 	pVertices[0].vTexcoord = _float2(0.f, 0.f);
@@ -70,7 +70,7 @@ HRESULT CVIBuffer_Rect::Init_Prototype()
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
 
 	_ushort* pIndices = new _ushort[m_iNumIndices];
-	ZeroMemory(&pIndices, sizeof(_ushort) * m_iNumIndices);
+	ZeroMemory(pIndices, sizeof(_ushort) * m_iNumIndices);
 
 	pIndices[0] = 0;
 	pIndices[1] = 1;

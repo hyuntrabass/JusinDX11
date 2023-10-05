@@ -3,11 +3,24 @@
 #pragma warning (disable : 4005)
 #pragma warning (disable : 4251)
 
+// 외부 라이브러리 헤더
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
 #include <fx11/d3dx11effect.h>
+#include <DirectXTK/DDSTextureLoader.h>
+#include <DirectXTK/WICTextureLoader.h>
 using namespace DirectX;
+
+// 외부 라이브러리 lib
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "DirectXTK.lib")
+
+#ifdef _DEBUG
+#pragma comment(lib, "Effects11d.lib")
+#else //Release
+#pragma comment(lib, "Effects11.lib")
+#endif
 
 #include <vector>
 #include <list>

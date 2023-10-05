@@ -61,6 +61,9 @@
     <Filter Include="01.Utility\03.Components\Shader">
       <UniqueIdentifier>{89aa5993-f7d9-4156-b2b1-13ca8fc73fa1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\Texture">
+      <UniqueIdentifier>{a17cf402-d55e-4084-903d-31b9b49a8c1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -113,6 +116,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Shader.cpp">
       <Filter>01.Utility\03.Components\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine_Struct.cpp">
+      <Filter>99,Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Texture.cpp">
+      <Filter>01.Utility\03.Components\Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="..\public\Shader.h">
       <Filter>01.Utility\03.Components\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Texture.h">
+      <Filter>01.Utility\03.Components\Texture</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

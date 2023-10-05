@@ -11,7 +11,7 @@ private:
 	virtual ~CShader() = default;
 
 public:
-	virtual HRESULT Init_Prototype(const wstring& strShaderFilePath);
+	virtual HRESULT Init_Prototype(const wstring& strShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElements, _uint iNumElements);
 	virtual HRESULT Init(void* pArg);
 
 public:
@@ -23,7 +23,7 @@ private:
 	vector<ID3D11InputLayout*> m_InputLayouts{};
 
 public:
-	static CShader* Create(_dev pDevice, _context pContext, const wstring& strShaderFilePath);
+	static CShader* Create(_dev pDevice, _context pContext, const wstring& strShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElements, _uint iNumElements);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };
