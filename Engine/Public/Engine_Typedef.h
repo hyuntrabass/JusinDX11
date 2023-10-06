@@ -30,9 +30,13 @@ namespace Engine
 	using _float3 = XMFLOAT3;
 	using _float4 = XMFLOAT4;
 	using _vector = XMVECTOR;
+	using _fvector = FXMVECTOR;
+	using _gvector = GXMVECTOR;
 
 	using _float4x4 = XMFLOAT4X4;
 	using _matrix = XMMATRIX;
+	using _fmatrix = FXMMATRIX;
+	using _cmatrix = CXMMATRIX;
 
 	using _dev = ID3D11Device*;
 	using _context = ID3D11DeviceContext*;

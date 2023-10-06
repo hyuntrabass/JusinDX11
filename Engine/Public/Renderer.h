@@ -30,7 +30,7 @@ public:
 	HRESULT Draw_RenderGroup();
 
 private:
-	list<class CGameObject*> m_RenderObject[ToIndex(RenderGroup::End)];
+	list<class CGameObject*> m_RenderObject[ToIndex(RenderGroup::End)]{};
 
 public:
 	static CRenderer* Create(_dev pDevice, _context pContext);

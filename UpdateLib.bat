@@ -4,3 +4,5 @@ xcopy /y/s	.\Engine\Public\*.h			.\Reference\Headers\
 xcopy /y	.\Engine\Bin\Engine.lib		.\Reference\Lib\
 xcopy /y	.\Engine\Bin\Engine.dll		.\Client\Bin\Debug\
 xcopy /y	.\Engine\Bin\Engine.dll		.\Client\Bin\Release\
+xcopy /y	.\Engine\Bin\Engine.dll		.\MapEditor\Bin\Debug\
+xcopy /y	.\Engine\Bin\Engine.dll		.\MapEditor\Bin\Release\

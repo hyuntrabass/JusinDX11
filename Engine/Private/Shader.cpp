@@ -91,6 +91,110 @@ HRESULT CShader::Begin(_uint iPassIndex)
     return S_OK;
 }
 
+HRESULT CShader::Bind_ShaderResourceView(const _char* pVariableName, ID3D11ShaderResourceView* pSRV)
+{
+    if (!m_pEffect)
+    {
+        return E_FAIL;
+    }
+
+    LPD3D11EFFECTVARIABLE pVariable = m_pEffect->GetVariableByName(pVariableName);
+    if (!pVariable)
+    {
+        return E_FAIL;
+    }
+
+    LPD3D11EFFECTSHADERRESOURCEVARIABLE pShaderResourceVariable = pVariable->AsShaderResource();
+    if (!pShaderResourceVariable)
+    {
+        return E_FAIL;
+    }
+
+    return pShaderResourceVariable->SetResource(pSRV);
+}
+
+HRESULT CShader::Bind_ShaderResourceViews(const _char* pVariableName, ID3D11ShaderResourceView** pSRVs, _uint iNumTextures)
+{
+    if (!m_pEffect)
+    {
+        return E_FAIL;
+    }
+
+    LPD3D11EFFECTVARIABLE pVariable = m_pEffect->GetVariableByName(pVariableName);
+    if (!pVariable)
+    {
+        return E_FAIL;
+    }
+
+    LPD3D11EFFECTSHADERRESOURCEVARIABLE pShaderResourceVariable = pVariable->AsShaderResource();
+    if (!pShaderResourceVariable)
+    {
+        return E_FAIL;
+    }
+
+    return pShaderResourceVariable->SetResourceArray(pSRVs, 0, iNumTextures);
+}
+
+HRESULT CShader::Bind_Matrix(const _char* pVariableName, const _float4x4& Matrix)
+{
+    if (!m_pEffect)
+    {
+        return E_FAIL;
+    }
+    
+    LPD3D11EFFECTVARIABLE pVariable = m_pEffect->GetVariableByName(pVariableName);
+    if (!pVariable)
+    {
+        return E_FAIL;
+    }
+
+    LPD3D11EFFECTMATRIXVARIABLE pMatrixVariable = pVariable->AsMatrix();
+    if (!pMatrixVariable)
+    {
+        return E_FAIL;
+    }
+
+    return pMatrixVariable->SetMatrix((_float*)&Matrix);
+}
+
+HRESULT CShader::Bind_Matrices(const _char* pVariableName, const _float4x4* pMatrices, _uint iNumMatrices)
+{
+    if (!m_pEffect)
+    {
+        return E_FAIL;
+    }
+
+    LPD3D11EFFECTVARIABLE pVariable = m_pEffect->GetVariableByName(pVariableName);
+    if (!pVariable)
+    {
+        return E_FAIL;
+    }
+
+    LPD3D11EFFECTMATRIXVARIABLE pMatrixVariable = pVariable->AsMatrix();
+    if (!pMatrixVariable)
+    {
+        return E_FAIL;
+    }
+
+    return pMatrixVariable->SetMatrixArray((_float*)&pMatrices, 0, iNumMatrices);
+}
+
+HRESULT CShader::Bind_RawValue(const _char* pVariableName, const void* pData, _uint iDataSize)
+{
+    if (!m_pEffect)
+    {
+        return E_FAIL;
+    }
+
+    LPD3D11EFFECTVARIABLE pVariable = m_pEffect->GetVariableByName(pVariableName);
+    if (!pVariable)
+    {
+        return E_FAIL;
+    }
+
+    return pVariable->SetRawValue(pData, 0, iDataSize);
+}
+
 CShader* CShader::Create(_dev pDevice, _context pContext, const wstring& strShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElements, _uint iNumElements)
 {
     CShader* pInstance = new CShader(pDevice, pContext);

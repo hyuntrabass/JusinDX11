@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "Shader.h"
 
 CTexture::CTexture(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
@@ -61,6 +62,21 @@ HRESULT CTexture::Init_Prototype(const wstring& strTextureFilePath, _uint iNumTe
 HRESULT CTexture::Init(void* pArg)
 {
 	return S_OK;
+}
+
+HRESULT CTexture::Bind_ShaderResource(CShader* pShader, const _char* pVariableName, _uint iTextureIndex)
+{
+	if (iTextureIndex >= m_iNumTextures)
+	{
+		return E_FAIL;
+	}
+
+	return pShader->Bind_ShaderResourceView(pVariableName, m_SRVs[iTextureIndex]);
+}
+
+HRESULT CTexture::Bind_ShaderResources(CShader* pShader, const _char* pVariableName)
+{
+	return pShader->Bind_ShaderResourceViews(pVariableName, &m_SRVs.front(), m_iNumTextures);
 }
 
 CTexture* CTexture::Create(_dev pDevice, _context pContext, const wstring& strTextureFilePath, _uint iNumTextures)

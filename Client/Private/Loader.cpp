@@ -15,6 +15,9 @@ CLoader::CLoader(_dev pDevice, _context pContext)
 
 _uint APIENTRY ThreadEntry(void* pArg)
 {
+	if (FAILED(CoInitializeEx(nullptr, 0)))
+		return E_FAIL;
+
 	CLoader* pLoader = static_cast<CLoader*>(pArg);
 
 	if (FAILED(pLoader->Begin_Thread()))
@@ -32,6 +35,7 @@ _uint APIENTRY ThreadEntry(void* pArg)
 		return FALSE;
 	}
 
+	CoUninitialize();
 	return TRUE;
 }
 
@@ -53,8 +57,6 @@ HRESULT CLoader::Init(Level_ID eNextLevel)
 
 HRESULT CLoader::Begin_Thread()
 {
-	if(FAILED(CoInitializeEx(nullptr, 0)))
-	   return E_FAIL;
 	EnterCriticalSection(&m_Critical_Section);
 
 	return S_OK;
@@ -62,7 +64,6 @@ HRESULT CLoader::Begin_Thread()
 
 HRESULT CLoader::End_Thread()
 {
-	CoUninitialize();
 	LeaveCriticalSection(&m_Critical_Section);
 
 	return S_OK;
@@ -116,7 +117,7 @@ HRESULT CLoader::Load_Logo()
 	{
 		int a = 10;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_BackGround"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Logo/test.dds")))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_BackGround"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Logo/test%d.dds"), 2))))
 	{
 		return E_FAIL;
 	}

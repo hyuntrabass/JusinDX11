@@ -102,6 +102,7 @@
     <ClCompile Include="..\private\Texture.cpp" />
     <ClCompile Include="..\private\Timer.cpp" />
     <ClCompile Include="..\private\Timer_Manager.cpp" />
+    <ClCompile Include="..\private\Transform.cpp" />
     <ClCompile Include="..\private\VIBuffer.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="Engine_Struct.cpp" />
@@ -128,6 +129,7 @@
     <ClInclude Include="..\public\Texture.h" />
     <ClInclude Include="..\public\Timer.h" />
     <ClInclude Include="..\public\Timer_Manager.h" />
+    <ClInclude Include="..\public\Transform.h" />
     <ClInclude Include="..\public\VIBuffer.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
   </ItemGroup>
