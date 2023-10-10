@@ -13,6 +13,16 @@ HRESULT CLevel_Logo::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Layer_Logo(TEXT("Layer_Logo"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Layer_Buttons(TEXT("Layer_MainTitle_Buttons"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -44,6 +54,36 @@ HRESULT CLevel_Logo::Ready_Layer_BackGround(const wstring& strLayerTag)
 	}
 
 	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Logo), strLayerTag, TEXT("Prototype_GameObject_BackGround"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Logo::Ready_Layer_Logo(const wstring& strLayerTag)
+{
+	if (!m_pGameInstance)
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Logo), strLayerTag, TEXT("Prototype_GameObject_Logo"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Logo::Ready_Layer_Buttons(const wstring& strLayerTag)
+{
+	if (!m_pGameInstance)
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Logo), strLayerTag, TEXT("Prototype_GameObject_StartBtn"))))
 	{
 		return E_FAIL;
 	}

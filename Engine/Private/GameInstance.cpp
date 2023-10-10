@@ -36,7 +36,7 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
-	m_pComponent_Manager = CComponent_Manager::Create(iNumLevels);
+	m_pComponent_Manager = CComponent_Manager::Create(iNumLevels, *ppDevice, *ppContext);
 	if (!m_pComponent_Manager)
 	{
 		return E_FAIL;

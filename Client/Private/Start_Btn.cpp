@@ -1,49 +1,58 @@
-#include "BackGround.h"
-#include "GameInstance.h"
+#include "Start_Btn.h"
 
-CBackGround::CBackGround(_dev pDevice, _context pContext)
+CStart_Btn::CStart_Btn(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CBackGround::CBackGround(const CBackGround& rhs)
+CStart_Btn::CStart_Btn(const CStart_Btn& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CBackGround::Init_Prototype()
+HRESULT CStart_Btn::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CBackGround::Init(void* pArg)
+HRESULT CStart_Btn::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-	m_fSizeX = g_iWinSizeX;
-	m_fSizeY = g_iWinSizeY;
+	m_fSizeX = 740 * 0.75f;
+	m_fSizeY = 90 * 0.75f;
 
 	m_fX = g_iWinSizeX >> 1;
 	m_fY = g_iWinSizeY >> 1;
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 0.1f);
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	return S_OK;
 }
 
-void CBackGround::Tick(_float fTimeDelta)
+void CStart_Btn::Tick(_float fTimeDelta)
 {
+	GET_CURSOR_POINT(pt);
+	RECT rc = { m_fX - m_fSizeX * 0.5f, 317, m_fX + m_fSizeX * 0.5f, m_fY };
+	if (PtInRect(&rc, pt))
+	{
+		m_iIndex = 1;
+	}
+	else
+	{
+		m_iIndex = 0;
+	}
 }
 
-void CBackGround::Late_Tick(_float fTimeDelta)
+void CStart_Btn::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::Priority, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
 }
 
-HRESULT CBackGround::Render()
+HRESULT CStart_Btn::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -60,10 +69,25 @@ HRESULT CBackGround::Render()
 		return E_FAIL;
 	}
 
+	//if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", 1)))
+	//{
+	//	return E_FAIL;
+	//}
+
+	//if (FAILED(m_pShaderCom->Begin(0)))
+	//{
+	//	return E_FAIL;
+	//}
+
+	//if (FAILED(m_pVIBufferCom->Render()))
+	//{
+	//	return E_FAIL;
+	//}
+
 	return S_OK;
 }
 
-HRESULT CBackGround::Add_Components()
+HRESULT CStart_Btn::Add_Components()
 {
 	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 	{
@@ -80,7 +104,7 @@ HRESULT CBackGround::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_BackGround"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_StartBtn"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 	{
 		return E_FAIL;
 	}
@@ -88,7 +112,7 @@ HRESULT CBackGround::Add_Components()
 	return S_OK;
 }
 
-HRESULT CBackGround::Bind_ShaderResources()
+HRESULT CStart_Btn::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -101,7 +125,7 @@ HRESULT CBackGround::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iIndex)))
 	{
 		return E_FAIL;
 	}
@@ -109,33 +133,33 @@ HRESULT CBackGround::Bind_ShaderResources()
 	return S_OK;
 }
 
-CBackGround* CBackGround::Create(_dev pDevice, _context pContext)
+CStart_Btn* CStart_Btn::Create(_dev pDevice, _context pContext)
 {
-	CBackGround* pInstance = new CBackGround(pDevice, pContext);
+	CStart_Btn* pInstance = new CStart_Btn(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CBackGround");
+		MSG_BOX("Failed to Create : CStart_Btn");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CBackGround::Clone(void* pArg)
+CGameObject* CStart_Btn::Clone(void* pArg)
 {
-	CBackGround* pInstance = new CBackGround(*this);
+	CStart_Btn* pInstance = new CStart_Btn(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CBackGround");
+		MSG_BOX("Failed to Clone : CStart_Btn");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CBackGround::Free()
+void CStart_Btn::Free()
 {
 	__super::Free();
 

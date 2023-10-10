@@ -29,9 +29,12 @@ private:
 public:
 	const _float4x4& Get_World_float4x4() const;
 	_vector Get_State(State eState) const;
+	_float3 Get_Scale() const;
 
 	void Set_State(State eState, _fvector vState);
-	void Set_Scale(_float fScale);
+	void Set_Scale(_float3 fScale);
+	void Set_Speed(_float fSpeed);
+	void Set_RotationPerSec(_float fAngle);
 
 public:
 	HRESULT Init_Prototype() override;
@@ -44,15 +47,19 @@ public:
 	void Go_Right(_float fTimeDelta);
 	void Go_Up(_float fTimeDelta);
 	void Go_Down(_float fTimeDelta);
-	void LookAt(const _float3& vTargetPos);
+	void Look_At(_fvector vTargetPos);
+	void Move_to(_fvector vTargetPos, _float fTimeDelta, _float fMargin = 0.1f);
 	void Turn(_fvector vAxis, _float fTimeDelta);
 	void Rotation(_fvector vAxis, _float fAngle);
+
+public:
+	HRESULT Bind_WorldMatrix(class CShader* pShader, const _char* pVariableName);
 
 private:
 	_float4x4 m_WorldMatrix{};
 
-	_float m_fSpeedPerSec{};
-	_float m_fRotationPerSec{};
+	_float m_fSpeedPerSec{10.f};
+	_float m_fRotationPerSec{XMConvertToRadians(90.f)};
 
 public:
 	static CTransform* Create(_dev pDevice, _context pContext);

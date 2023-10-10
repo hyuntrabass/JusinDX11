@@ -33,6 +33,7 @@ protected:
 	_context m_pContext{ nullptr };
 	CGameInstance* m_pGameInstance{ nullptr };
 	map<const wstring, class CComponent*> m_Components{};
+	class CTransform* m_pTransformCom{ nullptr };
 	_bool m_isDead{ false };
 	_int m_iHP{};
 

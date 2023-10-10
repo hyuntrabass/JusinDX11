@@ -167,7 +167,9 @@
     <ClInclude Include="..\public\Level_Tutorial.h" />
     <ClInclude Include="..\public\Loader.h" />
     <ClInclude Include="..\Public\Loading_Objects.h" />
+    <ClInclude Include="..\public\Logo.h" />
     <ClInclude Include="..\public\MainApp.h" />
+    <ClInclude Include="..\public\Start_Btn.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -181,7 +183,9 @@
     <ClCompile Include="..\private\Level_Stage2.cpp" />
     <ClCompile Include="..\private\Level_Tutorial.cpp" />
     <ClCompile Include="..\private\Loader.cpp" />
+    <ClCompile Include="..\private\Logo.cpp" />
     <ClCompile Include="..\private\MainApp.cpp" />
+    <ClCompile Include="..\private\Start_Btn.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>

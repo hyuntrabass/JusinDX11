@@ -113,11 +113,17 @@ HRESULT CLoader::Load_Logo()
 {
 	m_strLoadingText = L"Logo : Loading Texture";
 #pragma region Texture
-	for (size_t i = 0; i < 999999999; i++)
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_BackGround"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MainMenu/BackGround.jpg")))))
 	{
-		int a = 10;
+		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_BackGround"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Logo/test%d.dds"), 2))))
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_Logo"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MainMenu/Title.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_StartBtn"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MainMenu/TitleMenu_Btn%d.png"), 2))))
 	{
 		return E_FAIL;
 	}
@@ -142,6 +148,16 @@ HRESULT CLoader::Load_Logo()
 	m_strLoadingText = L"Logo : Loading Prototype";
 #pragma region Prototype
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BackGround"), CBackGround::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Logo"), CLogo::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_StartBtn"), CStart_Btn::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

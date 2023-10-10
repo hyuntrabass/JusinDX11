@@ -1,49 +1,60 @@
-#include "BackGround.h"
-#include "GameInstance.h"
+#include "Logo.h"
 
-CBackGround::CBackGround(_dev pDevice, _context pContext)
+CLogo::CLogo(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CBackGround::CBackGround(const CBackGround& rhs)
+CLogo::CLogo(const CLogo& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CBackGround::Init_Prototype()
+HRESULT CLogo::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CBackGround::Init(void* pArg)
+HRESULT CLogo::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-	m_fSizeX = g_iWinSizeX;
-	m_fSizeY = g_iWinSizeY;
+	m_fSizeX = 1024;
+	m_fSizeY = 256;
 
 	m_fX = g_iWinSizeX >> 1;
-	m_fY = g_iWinSizeY >> 1;
+	m_fY = g_iWinSizeY >> 2;
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 0.1f);
+	m_pTransformCom->Set_RotationPerSec(540.f);
+
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	return S_OK;
 }
 
-void CBackGround::Tick(_float fTimeDelta)
+void CLogo::Tick(_float fTimeDelta)
 {
+	if (m_fAngle < 360.f)
+	{
+		m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), m_fAngle);
+		m_fAngle += 540.f * fTimeDelta;
+	}
+	else
+	{
+		m_fAngle = 360.f;
+		m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), m_fAngle);
+	}
 }
 
-void CBackGround::Late_Tick(_float fTimeDelta)
+void CLogo::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::Priority, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
 }
 
-HRESULT CBackGround::Render()
+HRESULT CLogo::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -63,7 +74,7 @@ HRESULT CBackGround::Render()
 	return S_OK;
 }
 
-HRESULT CBackGround::Add_Components()
+HRESULT CLogo::Add_Components()
 {
 	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 	{
@@ -80,7 +91,7 @@ HRESULT CBackGround::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_BackGround"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_Logo"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 	{
 		return E_FAIL;
 	}
@@ -88,7 +99,7 @@ HRESULT CBackGround::Add_Components()
 	return S_OK;
 }
 
-HRESULT CBackGround::Bind_ShaderResources()
+HRESULT CLogo::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -109,33 +120,33 @@ HRESULT CBackGround::Bind_ShaderResources()
 	return S_OK;
 }
 
-CBackGround* CBackGround::Create(_dev pDevice, _context pContext)
+CLogo* CLogo::Create(_dev pDevice, _context pContext)
 {
-	CBackGround* pInstance = new CBackGround(pDevice, pContext);
+	CLogo* pInstance = new CLogo(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CBackGround");
+		MSG_BOX("Failed to Create : CLogo");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CBackGround::Clone(void* pArg)
+CGameObject* CLogo::Clone(void* pArg)
 {
-	CBackGround* pInstance = new CBackGround(*this);
+	CLogo* pInstance = new CLogo(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CBackGround");
+		MSG_BOX("Failed to Clone : CLogo");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CBackGround::Free()
+void CLogo::Free()
 {
 	__super::Free();
 

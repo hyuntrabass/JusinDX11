@@ -1,5 +1,5 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D g_Texture[2];
+texture2D g_Texture;
 int g_TexIndex;
 
 sampler PointSampler = sampler_state
@@ -57,24 +57,13 @@ struct PS_OUT
 PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
-    if (g_TexIndex == 0)
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    
+    if (Output.vColor.a < 0.7f)
     {
-        Output.vColor = g_Texture[0].Sample(LinearSampler, Input.vTex);
+        discard;
     }
-    else if (g_TexIndex == 2)
-    {
-        Output.vColor = g_Texture[1].Sample(LinearSampler, Input.vTex);
-        
-        if (Output.vColor.a < 0.7)
-        {
-            Output.vColor = g_Texture[0].Sample(LinearSampler, Input.vTex);
-        }
-    }
-    else
-    {
-        Output.vColor = g_Texture[1].Sample(LinearSampler, Input.vTex);
-    }
-    //Output.vColor = vector(Input.vTex.y, 0.2f, 1.f - Input.vTex.y, 1.f);
 
     return Output;
 }

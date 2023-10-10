@@ -19,6 +19,12 @@ CGameObject::CGameObject(const CGameObject& rhs)
 	Safe_AddRef(m_pGameInstance);
 	Safe_AddRef(m_pContext);
 	Safe_AddRef(m_pDevice);
+
+	if (FAILED(Add_Component(0, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+	{
+		MSG_BOX("Failed to Import TransformCom");
+	}
+
 }
 
 HRESULT CGameObject::Init_Prototype()
@@ -91,6 +97,7 @@ void CGameObject::Free()
 	}
 	m_Components.clear();
 
+	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pContext);
 	Safe_Release(m_pDevice);

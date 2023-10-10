@@ -34,11 +34,11 @@
     <Filter Include="02.GameObjects">
       <UniqueIdentifier>{054b6c62-d21f-42e6-b90c-f8c196fe1caa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.BackGround">
-      <UniqueIdentifier>{c7315088-832e-4003-8602-bef30c7ed15b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="97.ShaderFiles">
       <UniqueIdentifier>{dcc73bad-e78e-408c-8fd9-dc8df0e6581e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.MainTitle">
+      <UniqueIdentifier>{e7f1f613-21be-426f-b956-0be623277283}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -78,11 +78,17 @@
     <ClInclude Include="..\public\Level_Stage2.h">
       <Filter>01.Levels\03.Stage2</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\BackGround.h">
-      <Filter>02.GameObjects\00.BackGround</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Loading_Objects.h">
       <Filter>99.Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BackGround.h">
+      <Filter>02.GameObjects\00.MainTitle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Logo.h">
+      <Filter>02.GameObjects\00.MainTitle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Start_Btn.h">
+      <Filter>02.GameObjects\00.MainTitle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -124,7 +130,13 @@
       <Filter>01.Levels\03.Stage2</Filter>
     </ClCompile>
     <ClCompile Include="..\private\BackGround.cpp">
-      <Filter>02.GameObjects\00.BackGround</Filter>
+      <Filter>02.GameObjects\00.MainTitle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Logo.cpp">
+      <Filter>02.GameObjects\00.MainTitle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Start_Btn.cpp">
+      <Filter>02.GameObjects\00.MainTitle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

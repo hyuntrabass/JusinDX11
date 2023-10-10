@@ -2,21 +2,13 @@
 #include "Client_Define.h"
 #include "OrthographicObject.h"
 
-BEGIN(Engine)
-class CRenderer;
-class CShader;
-class CVIBuffer_Rect;
-class CTexture;
-END
-
 BEGIN(Client)
 
-class CBackGround final : public COrthographicObject
+class CStart_Btn final : public COrthographicObject
 {
-private:
-	CBackGround(_dev pDevice, _context pContext);
-	CBackGround(const CBackGround& rhs);
-	virtual ~CBackGround() = default;
+	CStart_Btn(_dev pDevice, _context pContext);
+	CStart_Btn(const CStart_Btn& rhs);
+	virtual ~CStart_Btn() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -32,11 +24,14 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	_uint m_iIndex{};
+
+private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CBackGround* Create(_dev pDevice, _context pContext);
+	static CStart_Btn* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

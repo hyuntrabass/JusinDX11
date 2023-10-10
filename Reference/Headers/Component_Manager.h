@@ -14,7 +14,7 @@ private:
 	virtual ~CComponent_Manager() = default;
 
 public:
-	HRESULT Init(_uint iNumLevels);
+	HRESULT Init(_uint iNumLevels, _dev pDevice, _context pContext);
 	HRESULT Add_Prototype(_uint iLevelIndex, const wstring& strPrototype, class CComponent* pPrototype);
 	class CComponent* Clone_Component(_uint iLevelIndex, const wstring& strPrototypeTag, void* pArg);
 	void Clear(_uint iLevelIndex);
@@ -29,7 +29,7 @@ private:
 	class CComponent* Find_Prototype(_uint iLevelIndex, const wstring& strPrototypeTag);
 
 public:
-	static CComponent_Manager* Create(_uint iNumLevels);
+	static CComponent_Manager* Create(_uint iNumLevels, _dev pDevice, _context pContext);
 	virtual void Free() override;
 };
 

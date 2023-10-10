@@ -67,6 +67,9 @@
     <Filter Include="01.Utility\03.Components\Transform">
       <UniqueIdentifier>{567e5a04-929a-4c2d-a567-bad6a1605e7a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\02.GameObjects\OrthographicObject">
+      <UniqueIdentifier>{e4283bcc-8b14-492e-8a25-7f933379bfc7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -128,6 +131,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Transform.cpp">
       <Filter>01.Utility\03.Components\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\OrthographicObject.cpp">
+      <Filter>01.Utility\02.GameObjects\OrthographicObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="..\public\Transform.h">
       <Filter>01.Utility\03.Components\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\OrthographicObject.h">
+      <Filter>01.Utility\02.GameObjects\OrthographicObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

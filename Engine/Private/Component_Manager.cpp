@@ -5,7 +5,7 @@ CComponent_Manager::CComponent_Manager()
 {
 }
 
-HRESULT CComponent_Manager::Init(_uint iNumLevels)
+HRESULT CComponent_Manager::Init(_uint iNumLevels, _dev pDevice, _context pContext)
 {
     if (m_pPrototypes)
     {
@@ -15,6 +15,8 @@ HRESULT CComponent_Manager::Init(_uint iNumLevels)
     m_pPrototypes = new PROTOTYPES[iNumLevels];
 
     m_iNumLevels = iNumLevels;
+
+    Add_Prototype(0, TEXT("Prototype_Component_Transform"), CTransform::Create(pDevice, pContext));
 
     return S_OK;
 }
@@ -37,7 +39,7 @@ CComponent* CComponent_Manager::Clone_Component(_uint iLevelIndex, const wstring
     CComponent* pPrototype = Find_Prototype(iLevelIndex, strPrototypeTag);
     if (!pPrototype)
     {
-        MSG_BOX("Can't Find Prototype : Component Manager");
+        MSG_BOX("Failed to Find Prototype");
         return nullptr;
     }
 
@@ -70,11 +72,11 @@ CComponent* CComponent_Manager::Find_Prototype(_uint iLevelIndex, const wstring&
     return it->second;
 }
 
-CComponent_Manager* CComponent_Manager::Create(_uint iNumLevels)
+CComponent_Manager* CComponent_Manager::Create(_uint iNumLevels, _dev pDevice, _context pContext)
 {
     CComponent_Manager* pInstance = new CComponent_Manager();
 
-    if (FAILED(pInstance->Init(iNumLevels)))
+    if (FAILED(pInstance->Init(iNumLevels, pDevice, pContext)))
     {
         MSG_BOX("Failed to Create : CComponent_Manager");
         Safe_Release(pInstance);
