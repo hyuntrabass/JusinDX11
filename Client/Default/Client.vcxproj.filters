@@ -19,17 +19,8 @@
     <Filter Include="01.Levels\99.Loading">
       <UniqueIdentifier>{92ecc1ab-adb7-4226-81d1-c4d15c1af2c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Levels\01.Tutorial">
-      <UniqueIdentifier>{553bce3a-df01-4330-b7e5-65997bc99111}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Levels\99.Loading\Loader">
       <UniqueIdentifier>{dedd8a06-2ff3-4649-a30a-8ec4d4621bd5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\02.Stage1">
-      <UniqueIdentifier>{8c722d00-05fe-4678-a016-4684cde3315e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\03.Stage2">
-      <UniqueIdentifier>{2620c76a-1b73-4853-8cc3-3552d756aaec}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects">
       <UniqueIdentifier>{054b6c62-d21f-42e6-b90c-f8c196fe1caa}</UniqueIdentifier>
@@ -37,8 +28,32 @@
     <Filter Include="97.ShaderFiles">
       <UniqueIdentifier>{dcc73bad-e78e-408c-8fd9-dc8df0e6581e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.MainTitle">
+    <Filter Include="02.GameObjects\01.Cameras">
+      <UniqueIdentifier>{b7d137b1-ab23-4ca5-bb53-a886447fdb96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\01.CreateCharacter">
+      <UniqueIdentifier>{70251f57-bd87-4fde-a405-6ad6cb1ec715}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\02.Tutorial">
+      <UniqueIdentifier>{553bce3a-df01-4330-b7e5-65997bc99111}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\03.Stage1">
+      <UniqueIdentifier>{8c722d00-05fe-4678-a016-4684cde3315e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\04.Stage2">
+      <UniqueIdentifier>{2620c76a-1b73-4853-8cc3-3552d756aaec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\99.LoadingObjects">
+      <UniqueIdentifier>{12aa9e06-4b1a-4fed-9f44-3aa5672b4879}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI">
+      <UniqueIdentifier>{e0d5ad9b-e7fd-4eac-ba75-3986bdb730bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\00.MainTitle">
       <UniqueIdentifier>{e7f1f613-21be-426f-b956-0be623277283}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\01.CreateCharacter">
+      <UniqueIdentifier>{ea7699e0-c5ba-4dc1-8c50-780e6566e819}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,25 +85,40 @@
       <Filter>01.Levels\99.Loading\Loader</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Level_Tutorial.h">
-      <Filter>01.Levels\01.Tutorial</Filter>
+      <Filter>01.Levels\02.Tutorial</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Level_Stage1.h">
-      <Filter>01.Levels\02.Stage1</Filter>
+      <Filter>01.Levels\03.Stage1</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Level_Stage2.h">
-      <Filter>01.Levels\03.Stage2</Filter>
+      <Filter>01.Levels\04.Stage2</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Loading_Objects.h">
       <Filter>99.Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\public\BackGround.h">
-      <Filter>02.GameObjects\00.MainTitle</Filter>
+      <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Logo.h">
-      <Filter>02.GameObjects\00.MainTitle</Filter>
+      <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Start_Btn.h">
-      <Filter>02.GameObjects\00.MainTitle</Filter>
+      <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Camera_Debug.h">
+      <Filter>02.GameObjects\01.Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Loading_Screen.h">
+      <Filter>02.GameObjects\99.LoadingObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Loading_Icon.h">
+      <Filter>02.GameObjects\99.LoadingObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Level_CreateCharacter.h">
+      <Filter>01.Levels\01.CreateCharacter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\SubTitle.h">
+      <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -121,26 +151,44 @@
       <Filter>01.Levels\99.Loading\Loader</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Level_Tutorial.cpp">
-      <Filter>01.Levels\01.Tutorial</Filter>
+      <Filter>01.Levels\02.Tutorial</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Level_Stage1.cpp">
-      <Filter>01.Levels\02.Stage1</Filter>
+      <Filter>01.Levels\03.Stage1</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Level_Stage2.cpp">
-      <Filter>01.Levels\03.Stage2</Filter>
+      <Filter>01.Levels\04.Stage2</Filter>
     </ClCompile>
     <ClCompile Include="..\private\BackGround.cpp">
-      <Filter>02.GameObjects\00.MainTitle</Filter>
+      <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Logo.cpp">
-      <Filter>02.GameObjects\00.MainTitle</Filter>
+      <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Start_Btn.cpp">
-      <Filter>02.GameObjects\00.MainTitle</Filter>
+      <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Camera_Debug.cpp">
+      <Filter>02.GameObjects\01.Cameras</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Loading_Screen.cpp">
+      <Filter>02.GameObjects\99.LoadingObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Loading_Icon.cpp">
+      <Filter>02.GameObjects\99.LoadingObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Level_CreateCharacter.cpp">
+      <Filter>01.Levels\01.CreateCharacter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SubTitle.cpp">
+      <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

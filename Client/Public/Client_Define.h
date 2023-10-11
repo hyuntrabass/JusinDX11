@@ -14,9 +14,16 @@ namespace Client
 		Static,
 		Loading,
 		Logo,
+		CreateCharacter,
 		Tutorial,
 		Stage1,
 		Stage2,
+		End
+	};
+
+	enum class CameraMode
+	{
+		Debug,
 		End
 	};
 }

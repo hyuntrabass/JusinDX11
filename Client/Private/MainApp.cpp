@@ -1,6 +1,8 @@
 #include "MainApp.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
+#include "Loading_Screen.h"
+#include "Loading_Icon.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -15,6 +17,8 @@ HRESULT CMainApp::Init()
 		return E_FAIL;
 	}
 
+	srand(static_cast<_uint>(time(nullptr)));
+
 	GRAPHIC_DESC GraphicDesc;
 	GraphicDesc.hWnd = g_hWnd;
 	GraphicDesc.hInst = g_hInst;
@@ -25,6 +29,11 @@ HRESULT CMainApp::Init()
 	m_pGameInstance->Init_Engine(ToIndex(Level_ID::End), GraphicDesc, &m_pDevice, &m_pContext);
 
 	if (FAILED(Ready_Prototype_Component_For_Static()))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(Ready_Prototype_For_Loading()))
 	{
 		return E_FAIL;
 	}
@@ -111,6 +120,43 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxNorTex"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CMainApp::Ready_Prototype_For_Loading()
+{
+#pragma region Textures
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Loading_Screen"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Loading/LoadingScreen_%d.dds"), 7))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Loading_Indicator"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Loading/Loading_Indicator.dds")))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Loading_Icon"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Loading/Loading_Icon.dds")))))
+	{
+		return E_FAIL;
+	}
+#pragma endregion
+
+#pragma region Prototype
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Loading_Screen"), CLoading_Screen::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Loading_Icon"), CLoading_Icon::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+#pragma endregion
+
 
 	return S_OK;
 }

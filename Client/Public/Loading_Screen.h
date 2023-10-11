@@ -4,11 +4,12 @@
 
 BEGIN(Client)
 
-class CLogo final : public COrthographicObject
+class CLoading_Screen final : public COrthographicObject
 {
-	CLogo(_dev pDevice, _context pContext);
-	CLogo(const CLogo& rhs);
-	virtual ~CLogo() = default;
+private:
+	CLoading_Screen(_dev pDevice, _context pContext);
+	CLoading_Screen(const CLoading_Screen& rhs);
+	virtual ~CLoading_Screen() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -24,14 +25,14 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
-	_float m_fAngle{};
+	_uint m_iTextureIndex{};
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CLogo* Create(_dev pDevice, _context pContext);
+	static CLoading_Screen* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

@@ -38,6 +38,7 @@ private:
 
 private:
 	HRESULT Load_Logo();
+	HRESULT Load_CreateCharacter();
 	HRESULT Load_Tutorial();
 	HRESULT Load_Stage1();
 	HRESULT Load_Stage2();

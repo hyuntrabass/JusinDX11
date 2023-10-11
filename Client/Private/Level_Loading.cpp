@@ -12,6 +12,21 @@ CLevel_Loading::CLevel_Loading(_dev pDevice, _context pContext)
 
 HRESULT CLevel_Loading::Init(Level_ID eNextLevel)
 {
+	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround_Loading"))))
+	{
+		return E_FAIL;
+	}
+
+	//if (FAILED(Ready_Layer_LoadingBar(TEXT("Layer_Bar_Loading"))))
+	//{
+	//	return E_FAIL;
+	//}
+
+	if (FAILED(Ready_Layer_Icon(TEXT("Layer_Icon_Loading"))))
+	{
+		return E_FAIL;
+	}
+
 	m_eNextLevel = eNextLevel;
 
 	m_pLoader = CLoader::Create(m_pDevice, m_pContext, eNextLevel);
@@ -27,7 +42,7 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 {
 	m_pLoader->Show_LoadingText();
 
-	if (m_pLoader->isFinished())
+	if (m_pLoader->isFinished() && GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
 		CLevel* pLevel = nullptr;
 
@@ -65,6 +80,51 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 
 HRESULT CLevel_Loading::Render()
 {
+	return S_OK;
+}
+
+HRESULT CLevel_Loading::Ready_Layer_BackGround(const wstring& strLayerTag)
+{
+	if (!m_pGameInstance)
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Loading), strLayerTag, TEXT("Prototype_GameObject_Loading_Screen"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Loading::Ready_Layer_LoadingBar(const wstring& strLayerTag)
+{
+	if (!m_pGameInstance)
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Loading), strLayerTag, TEXT("Prototype_GameObject_BackGround"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Loading::Ready_Layer_Icon(const wstring& strLayerTag)
+{
+	if (!m_pGameInstance)
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Loading), strLayerTag, TEXT("Prototype_GameObject_Loading_Icon"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 

@@ -169,6 +169,46 @@ HRESULT CLoader::Load_Logo()
 	return S_OK;
 }
 
+HRESULT CLoader::Load_CreateCharacter()
+{
+	m_strLoadingText = L"CreateCharacter : Loading Texture";
+#pragma region Texture
+	for (size_t i = 0; i < 999999999; i++)
+	{
+		int a = 10;
+	}
+#pragma endregion
+
+	m_strLoadingText = L"CreateCharacter : Loading Model";
+#pragma region Model
+	for (size_t i = 0; i < 999999999; i++)
+	{
+		int a = 10;
+	}
+#pragma endregion
+
+	m_strLoadingText = L"CreateCharacter : Loading Shader";
+#pragma region Shader
+	for (size_t i = 0; i < 999999999; i++)
+	{
+		int a = 10;
+	}
+#pragma endregion
+
+	m_strLoadingText = L"CreateCharacter : Loading Prototype";
+#pragma region Prototype
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Debug"), CCamera_Debug::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+#pragma endregion
+
+	m_strLoadingText = L"CreateCharacter : Loading Complete!";
+	m_isFinished = true;
+
+	return S_OK;
+}
+
 HRESULT CLoader::Load_Tutorial()
 {
 	m_strLoadingText = L"Tutorial : Loading Texture";

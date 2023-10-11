@@ -19,6 +19,11 @@ private:
 	Level_ID m_eNextLevel{ Level_ID::End };
 	class CLoader* m_pLoader{ nullptr };
 
+private:
+	HRESULT Ready_Layer_BackGround(const wstring& strLayerTag);
+	HRESULT Ready_Layer_LoadingBar(const wstring& strLayerTag);
+	HRESULT Ready_Layer_Icon(const wstring& strLayerTag);
+
 public:
 	static CLevel_Loading* Create(_dev pDevice, _context pContext, Level_ID eNextLevel);
 	virtual void Free() override;

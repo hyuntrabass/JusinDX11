@@ -33,6 +33,7 @@ private:
 private:
 	HRESULT Open_Level(Level_ID eLevelID);
 	HRESULT Ready_Prototype_Component_For_Static();
+	HRESULT Ready_Prototype_For_Loading();
 
 public:
 	static CMainApp* Create();

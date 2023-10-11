@@ -1,74 +1,50 @@
-#include "Logo.h"
+#include "Loading_Screen.h"
 
-CLogo::CLogo(_dev pDevice, _context pContext)
+CLoading_Screen::CLoading_Screen(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CLogo::CLogo(const CLogo& rhs)
+CLoading_Screen::CLoading_Screen(const CLoading_Screen& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CLogo::Init_Prototype()
+HRESULT CLoading_Screen::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CLogo::Init(void* pArg)
+HRESULT CLoading_Screen::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-	m_fSizeX = 1024.f * 5.f;
-	m_fSizeY = 256.f * 5.f;
+	m_fSizeX = g_iWinSizeX;
+	m_fSizeY = g_iWinSizeY;
 
 	m_fX = g_iWinSizeX >> 1;
-	m_fY = g_iWinSizeY >> 2;
+	m_fY = g_iWinSizeY >> 1;
 
-	m_pTransformCom->Set_RotationPerSec(540.f);
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 1.f);
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	m_iTextureIndex = rand() % 7;
 
 	return S_OK;
 }
 
-void CLogo::Tick(_float fTimeDelta)
+void CLoading_Screen::Tick(_float fTimeDelta)
 {
-	//if (m_fAngle < 360.f)
-	//{
-	//	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), m_fAngle);
-	//	m_fAngle += 540.f * fTimeDelta;
-	//}
-	//else
-	//{
-	//	m_fAngle = 360.f;
-	//	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), m_fAngle);
-	//}
-
-	if (m_fSizeX > 1030.f)
-	{
-		_float fDecreaseAmount{ 150 };
-		m_fSizeX -= fDecreaseAmount;
-		m_fSizeY -= fDecreaseAmount * 0.25f;
-	}
-	else
-	{
-		m_fSizeX = 1024.f;
-		m_fSizeY = 256.f;
-	}
-
-	m_pTransformCom->Set_Scale(_float3(m_fSizeX, m_fSizeY, 1.f));
 }
 
-void CLogo::Late_Tick(_float fTimeDelta)
+void CLoading_Screen::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::Priority, this);
 }
 
-HRESULT CLogo::Render()
+HRESULT CLoading_Screen::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -88,7 +64,7 @@ HRESULT CLogo::Render()
 	return S_OK;
 }
 
-HRESULT CLogo::Add_Components()
+HRESULT CLoading_Screen::Add_Components()
 {
 	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 	{
@@ -105,7 +81,7 @@ HRESULT CLogo::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_Logo"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Loading_Screen"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 	{
 		return E_FAIL;
 	}
@@ -113,7 +89,7 @@ HRESULT CLogo::Add_Components()
 	return S_OK;
 }
 
-HRESULT CLogo::Bind_ShaderResources()
+HRESULT CLoading_Screen::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -126,7 +102,7 @@ HRESULT CLogo::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iTextureIndex)))
 	{
 		return E_FAIL;
 	}
@@ -134,33 +110,33 @@ HRESULT CLogo::Bind_ShaderResources()
 	return S_OK;
 }
 
-CLogo* CLogo::Create(_dev pDevice, _context pContext)
+CLoading_Screen* CLoading_Screen::Create(_dev pDevice, _context pContext)
 {
-	CLogo* pInstance = new CLogo(pDevice, pContext);
+	CLoading_Screen* pInstance = new CLoading_Screen(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CLogo");
+		MSG_BOX("Failed to Create : CLoading_Screen");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CLogo::Clone(void* pArg)
+CGameObject* CLoading_Screen::Clone(void* pArg)
 {
-	CLogo* pInstance = new CLogo(*this);
+	CLoading_Screen* pInstance = new CLoading_Screen(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CLogo");
+		MSG_BOX("Failed to Clone : CLoading_Screen");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CLogo::Free()
+void CLoading_Screen::Free()
 {
 	__super::Free();
 

@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CLogo final : public COrthographicObject
+class CSubTitle final : public COrthographicObject
 {
-	CLogo(_dev pDevice, _context pContext);
-	CLogo(const CLogo& rhs);
-	virtual ~CLogo() = default;
+	CSubTitle(_dev pDevice, _context pContext);
+	CSubTitle(const CSubTitle& rhs);
+	virtual ~CSubTitle() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -24,14 +24,11 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
-	_float m_fAngle{};
-
-private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CLogo* Create(_dev pDevice, _context pContext);
+	static CSubTitle* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

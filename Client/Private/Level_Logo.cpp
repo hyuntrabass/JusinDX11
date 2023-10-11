@@ -30,7 +30,7 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 {
 	if (GetKeyState(VK_PRIOR) & 0x8000)
 	{
-		if (FAILED(m_pGameInstance->Open_Level(ToIndex(Level_ID::Loading), CLevel_Loading::Create(m_pDevice, m_pContext, Level_ID::Tutorial))))
+		if (FAILED(m_pGameInstance->Open_Level(ToIndex(Level_ID::Loading), CLevel_Loading::Create(m_pDevice, m_pContext, Level_ID::CreateCharacter))))
 		{
 			MSG_BOX("Failed to Open Level");
 		}

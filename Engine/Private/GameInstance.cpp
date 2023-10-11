@@ -42,6 +42,12 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
+	m_pPipeLine = CPipeLine::Create();
+	if (!m_pPipeLine)
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -129,6 +135,16 @@ _float CGameInstance::Compute_TimeDelta(const wstring& strTimerTag)
 	return m_pTimer_Manager->Compute_TimeDelta(strTimerTag);
 }
 
+const _uint& CGameInstance::Get_CurrentLevelIndex() const
+{
+	if (!m_pLevel_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pLevel_Manager is NULL");
+	}
+
+	return m_pLevel_Manager->Get_CurrentLevelIndex();
+}
+
 HRESULT CGameInstance::Open_Level(_uint iLevelIndex, CLevel* pNextLevel)
 {
 	if (!m_pLevel_Manager)
@@ -189,6 +205,86 @@ CComponent* CGameInstance::Clone_Component(_uint iLevelIndex, const wstring& str
 	return m_pComponent_Manager->Clone_Component(iLevelIndex, strPrototypeTag, pArg);
 }
 
+_float4 CGameInstance::Get_CameraPos() const
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->Get_CameraPos();
+}
+
+_float4x4 CGameInstance::Get_Transform_Float4x4(D3DTS eState) const
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->Get_Transform_Float4x4(eState);
+}
+
+_float4x4 CGameInstance::Get_Transform_Inversed_Float4x4(D3DTS eState) const
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->Get_Transform_Inversed_Float4x4(eState);
+}
+
+_matrix CGameInstance::Get_Transform(D3DTS eState) const
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->Get_Transform(eState);
+}
+
+_matrix CGameInstance::Get_Transform_Inversed(D3DTS eState) const
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->Get_Transform_Inversed(eState);
+}
+
+void CGameInstance::Set_Transform(D3DTS eState, const _float4x4& TransformMatrix)
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	m_pPipeLine->Set_Transform(eState, TransformMatrix);
+}
+
+void CGameInstance::Set_Transform(D3DTS eState, _fmatrix TransformMatrix)
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	m_pPipeLine->Set_Transform(eState, TransformMatrix);
+}
+
+const _uint& CGameInstance::Get_CameraModeIndex() const
+{
+	return m_iCameraModeIndex;
+}
+
+void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
+{
+	m_iCameraModeIndex = iIndex;
+}
+
 void CGameInstance::Clear_Managers()
 {
 	Safe_Release(m_pObject_Manager);
@@ -206,5 +302,6 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
+	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pGraphic_Device);
 }

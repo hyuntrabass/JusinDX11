@@ -17,11 +17,11 @@ public:
 	}
 
 public:
-	virtual HRESULT Init_Prototype();
-	virtual HRESULT Init(void* pArg);
-	virtual void Tick(_float fTimeDelta);
-	virtual void Late_Tick(_float fTimeDelta);
-	virtual HRESULT Render();
+	virtual HRESULT Init_Prototype() override;
+	virtual HRESULT Init(void* pArg) override;
+	virtual void Tick(_float fTimeDelta) override;
+	virtual void Late_Tick(_float fTimeDelta) override;
+	virtual HRESULT Render() override;
 
 protected:
 	HRESULT Compute_CamDistance(class CTransform* pTransform);

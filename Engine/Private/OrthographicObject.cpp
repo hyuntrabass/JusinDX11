@@ -39,7 +39,7 @@ void COrthographicObject::Apply_Orthographic(_uint iWinSizeX, _uint iWinSizeY, _
 	m_pTransformCom->Set_State(State::Pos, XMVectorSet(m_fX - iWinSizeX * 0.5f, -m_fY + iWinSizeY * 0.5f, fPosZ, 1.f));
 
 	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
-	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(iWinSizeX, iWinSizeY, 0.f, 1.f));
+	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(iWinSizeX, iWinSizeY, 0.f, 1.1f));
 }
 
 void COrthographicObject::Free()

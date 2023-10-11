@@ -11,8 +11,8 @@ private:
 	virtual ~CVIBuffer_Rect() = default;
 
 public:
-	HRESULT Init_Prototype() override;
-	HRESULT Init(void* pArg) override;
+	virtual HRESULT Init_Prototype() override;
+	virtual HRESULT Init(void* pArg) override;
 
 public:
 	static CVIBuffer_Rect* Create(_dev pDevice, _context pContext);

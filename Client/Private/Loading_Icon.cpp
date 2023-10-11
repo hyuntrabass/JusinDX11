@@ -1,74 +1,51 @@
-#include "Logo.h"
+#include "Loading_Icon.h"
 
-CLogo::CLogo(_dev pDevice, _context pContext)
+CLoading_Icon::CLoading_Icon(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CLogo::CLogo(const CLogo& rhs)
+CLoading_Icon::CLoading_Icon(const CLoading_Icon& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CLogo::Init_Prototype()
+HRESULT CLoading_Icon::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CLogo::Init(void* pArg)
+HRESULT CLoading_Icon::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-	m_fSizeX = 1024.f * 5.f;
-	m_fSizeY = 256.f * 5.f;
+	m_fSizeX = 88;
+	m_fSizeY = 88;
 
-	m_fX = g_iWinSizeX >> 1;
-	m_fY = g_iWinSizeY >> 2;
+	m_fX = 1180;
+	m_fY = 650;
 
-	m_pTransformCom->Set_RotationPerSec(540.f);
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 0.1f);
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	m_pTransformCom->Set_RotationPerSec(200.f);
 
 	return S_OK;
 }
 
-void CLogo::Tick(_float fTimeDelta)
+void CLoading_Icon::Tick(_float fTimeDelta)
 {
-	//if (m_fAngle < 360.f)
-	//{
-	//	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), m_fAngle);
-	//	m_fAngle += 540.f * fTimeDelta;
-	//}
-	//else
-	//{
-	//	m_fAngle = 360.f;
-	//	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), m_fAngle);
-	//}
-
-	if (m_fSizeX > 1030.f)
-	{
-		_float fDecreaseAmount{ 150 };
-		m_fSizeX -= fDecreaseAmount;
-		m_fSizeY -= fDecreaseAmount * 0.25f;
-	}
-	else
-	{
-		m_fSizeX = 1024.f;
-		m_fSizeY = 256.f;
-	}
-
-	m_pTransformCom->Set_Scale(_float3(m_fSizeX, m_fSizeY, 1.f));
+	m_pTransformCom->Turn(XMVectorSet(0.f, 0.f, 1.f, 0.f), fTimeDelta);
 }
 
-void CLogo::Late_Tick(_float fTimeDelta)
+void CLoading_Icon::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
 }
 
-HRESULT CLogo::Render()
+HRESULT CLoading_Icon::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -88,7 +65,7 @@ HRESULT CLogo::Render()
 	return S_OK;
 }
 
-HRESULT CLogo::Add_Components()
+HRESULT CLoading_Icon::Add_Components()
 {
 	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 	{
@@ -105,7 +82,7 @@ HRESULT CLogo::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_Logo"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Loading_Icon"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 	{
 		return E_FAIL;
 	}
@@ -113,7 +90,7 @@ HRESULT CLogo::Add_Components()
 	return S_OK;
 }
 
-HRESULT CLogo::Bind_ShaderResources()
+HRESULT CLoading_Icon::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -134,33 +111,33 @@ HRESULT CLogo::Bind_ShaderResources()
 	return S_OK;
 }
 
-CLogo* CLogo::Create(_dev pDevice, _context pContext)
+CLoading_Icon* CLoading_Icon::Create(_dev pDevice, _context pContext)
 {
-	CLogo* pInstance = new CLogo(pDevice, pContext);
+	CLoading_Icon* pInstance = new CLoading_Icon(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CLogo");
+		MSG_BOX("Failed to Create : CLoading_Icon");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CLogo::Clone(void* pArg)
+CGameObject* CLoading_Icon::Clone(void* pArg)
 {
-	CLogo* pInstance = new CLogo(*this);
+	CLoading_Icon* pInstance = new CLoading_Icon(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CLogo");
+		MSG_BOX("Failed to Clone : CLoading_Icon");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CLogo::Free()
+void CLoading_Icon::Free()
 {
 	__super::Free();
 

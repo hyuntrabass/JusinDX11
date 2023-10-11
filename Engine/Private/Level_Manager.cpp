@@ -6,6 +6,11 @@ CLevel_Manager::CLevel_Manager()
 {
 }
 
+const _uint& CLevel_Manager::Get_CurrentLevelIndex() const
+{
+	return m_iCurrentLevelIndex;
+}
+
 HRESULT CLevel_Manager::Init()
 {
 	return S_OK;

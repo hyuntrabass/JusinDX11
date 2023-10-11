@@ -2,13 +2,6 @@
 #include "Client_Define.h"
 #include "OrthographicObject.h"
 
-BEGIN(Engine)
-class CRenderer;
-class CShader;
-class CVIBuffer_Rect;
-class CTexture;
-END
-
 BEGIN(Client)
 
 class CBackGround final : public COrthographicObject
