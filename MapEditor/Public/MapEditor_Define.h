@@ -16,8 +16,9 @@ namespace MapEditor
 	enum class Level_ID
 	{
 		Static,
-		Loading,
+		Editor,
 		Logo,
+		CreateCharacter,
 		Tutorial,
 		Stage1,
 		Stage2,

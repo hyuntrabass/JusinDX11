@@ -1,10 +1,12 @@
 #include "SubTitle.h"
 
 CSubTitle::CSubTitle(_dev pDevice, _context pContext)
+    : COrthographicObject(pDevice, pContext)
 {
 }
 
 CSubTitle::CSubTitle(const CSubTitle& rhs)
+    : COrthographicObject(rhs)
 {
 }
 

@@ -79,6 +79,9 @@
     <Filter Include="01.Utility\04.PipeLine">
       <UniqueIdentifier>{bf717a35-64f7-4bf9-b248-23b2377cadfe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\05.Input">
+      <UniqueIdentifier>{e60f4c70-966c-4aa4-8490-ce2dcc6b3be1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -152,6 +155,9 @@
     </ClCompile>
     <ClCompile Include="..\private\PipeLine.cpp">
       <Filter>01.Utility\04.PipeLine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Input_Manager.cpp">
+      <Filter>01.Utility\05.Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +244,9 @@
     </ClInclude>
     <ClInclude Include="..\public\PipeLine.h">
       <Filter>01.Utility\04.PipeLine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Input_Manager.h">
+      <Filter>01.Utility\05.Input</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

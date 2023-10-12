@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\Bin\Debug\</OutDir>
+    <OutDir>..\Bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\Bin\Release\</OutDir>
+    <OutDir>..\Bin\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -175,6 +175,7 @@
     <ClInclude Include="..\public\MainApp.h" />
     <ClInclude Include="..\public\Start_Btn.h" />
     <ClInclude Include="..\public\SubTitle.h" />
+    <ClInclude Include="..\public\Terrain.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -196,6 +197,7 @@
     <ClCompile Include="..\private\MainApp.cpp" />
     <ClCompile Include="..\private\Start_Btn.cpp" />
     <ClCompile Include="..\private\SubTitle.cpp" />
+    <ClCompile Include="..\private\Terrain.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>

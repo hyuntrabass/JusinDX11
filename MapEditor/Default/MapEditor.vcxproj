@@ -71,10 +71,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\Bin\Debug\</OutDir>
+    <OutDir>..\Bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\Bin\Release\</OutDir>
+    <OutDir>..\Bin\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -146,8 +146,10 @@
     <ClInclude Include="..\Public\Imgui\imstb_rectpack.h" />
     <ClInclude Include="..\Public\Imgui\imstb_textedit.h" />
     <ClInclude Include="..\Public\Imgui\imstb_truetype.h" />
+    <ClInclude Include="..\public\Level_Editor.h" />
     <ClInclude Include="..\public\MapEditorApp.h" />
     <ClInclude Include="..\Public\MapEditor_Define.h" />
+    <ClInclude Include="..\public\Terrain.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MapEditor.h" />
     <ClInclude Include="Resource.h" />
@@ -155,7 +157,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\ImguiMgr.cpp" />
+    <ClCompile Include="..\private\Level_Editor.cpp" />
     <ClCompile Include="..\private\MapEditorApp.cpp" />
+    <ClCompile Include="..\private\Terrain.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui_demo.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui_draw.cpp" />

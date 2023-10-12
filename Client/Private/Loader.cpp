@@ -90,6 +90,9 @@ HRESULT CLoader::Loading_LevelResources()
 	case Client::Level_ID::Logo:
 		hr = Load_Logo();
 		break;
+	case Client::Level_ID::CreateCharacter:
+		hr = Load_CreateCharacter();
+		break;
 	case Client::Level_ID::Tutorial:
 		hr = Load_Tutorial();
 		break;
@@ -127,6 +130,7 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Model";
@@ -173,34 +177,38 @@ HRESULT CLoader::Load_CreateCharacter()
 {
 	m_strLoadingText = L"CreateCharacter : Loading Texture";
 #pragma region Texture
-	for (size_t i = 0; i < 999999999; i++)
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::CreateCharacter), TEXT("Prototype_Component_Texture_Terrain"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Test/Tile.dds")))))
 	{
-		int a = 10;
+		return E_FAIL;
 	}
+
 #pragma endregion
 
 	m_strLoadingText = L"CreateCharacter : Loading Model";
 #pragma region Model
-	for (size_t i = 0; i < 999999999; i++)
-	{
-		int a = 10;
-	}
 #pragma endregion
 
 	m_strLoadingText = L"CreateCharacter : Loading Shader";
 #pragma region Shader
-	for (size_t i = 0; i < 999999999; i++)
-	{
-		int a = 10;
-	}
 #pragma endregion
 
 	m_strLoadingText = L"CreateCharacter : Loading Prototype";
 #pragma region Prototype
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 30, 30))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Debug"), CCamera_Debug::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"CreateCharacter : Loading Complete!";

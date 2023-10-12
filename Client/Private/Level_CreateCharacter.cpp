@@ -1,5 +1,6 @@
 #include "Level_CreateCharacter.h"
 #include "Level_Loading.h"
+#include "Camera.h"
 
 CLevel_CreateCharacter::CLevel_CreateCharacter(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -43,7 +44,20 @@ HRESULT CLevel_CreateCharacter::Ready_Layer_Camera(const wstring& strLayerTag)
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::CreateCharacter), strLayerTag, TEXT("Prototype_GameObject_Camera_Debug"))))
+	CCamera::Camera_Desc CamDesc;
+	CamDesc.vCameraPos = _float4(0.f, 5.f, -5.f, 1.f);
+	CamDesc.vFocusPos = _float4(0.f, 0.f, 0.f, 0.f);
+	CamDesc.fFovY = XMConvertToRadians(60.f);
+	CamDesc.fAspect = static_cast<_float>(g_iWinSizeX) / g_iWinSizeY;
+	CamDesc.fNear = 0.1f;
+	CamDesc.fFar = 300.f;
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::CreateCharacter), strLayerTag, TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::CreateCharacter), strLayerTag, TEXT("Prototype_GameObject_Terrain"))))
 	{
 		return E_FAIL;
 	}

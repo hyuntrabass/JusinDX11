@@ -31,6 +31,9 @@ private:
 	_float m_fTimeAcc{};
 	_uint m_iFrameCount{};
 
+private:
+	HRESULT Ready_Prototype_Component_For_Static();
+
 public:
 	static CMapEditorApp* Create();
 	virtual void Free() override;

@@ -9,6 +9,8 @@ sampler PointSampler = sampler_state
 sampler LinearSampler = sampler_state
 {
     Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = wrap;
+    AddressV = wrap;
 };
 
 struct VS_IN
@@ -35,6 +37,7 @@ VS_OUT VS_Main(VS_IN Input)
     matWVP = mul(matWV, g_ProjMatrix);
 	
     Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
+    Output.vNor = mul(vector(Input.vNor, 0.f), g_WorldMatrix);
     Output.vTex = Input.vTex;
 	
     return Output;

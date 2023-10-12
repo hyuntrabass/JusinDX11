@@ -86,7 +86,10 @@ HRESULT CShader::Begin(_uint iPassIndex)
 
     m_pContext->IASetInputLayout(m_InputLayouts[iPassIndex]);
 
-    pPass->Apply(0, m_pContext);
+    if (FAILED(pPass->Apply(0, m_pContext)))
+    {
+        return E_FAIL;
+    }
 
     return S_OK;
 }

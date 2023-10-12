@@ -42,6 +42,12 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
+	m_pInput_Manager = CInput_Manager::Create();
+	if (!m_pInput_Manager)
+	{
+		return E_FAIL;
+	}
+
 	m_pPipeLine = CPipeLine::Create();
 	if (!m_pPipeLine)
 	{
@@ -275,6 +281,36 @@ void CGameInstance::Set_Transform(D3DTS eState, _fmatrix TransformMatrix)
 	m_pPipeLine->Set_Transform(eState, TransformMatrix);
 }
 
+_bool CGameInstance::Key_Pressing(_uint iKey)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Key_Pressing(iKey);
+}
+
+_bool CGameInstance::Key_Down(_uint iKey, InputChannel eInputChannel)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Key_Down(iKey, eInputChannel);
+}
+
+_bool CGameInstance::Key_Up(_uint iKey, InputChannel eInputChannel)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Key_Up(iKey, eInputChannel);
+}
+
 const _uint& CGameInstance::Get_CameraModeIndex() const
 {
 	return m_iCameraModeIndex;
@@ -287,6 +323,7 @@ void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
 
 void CGameInstance::Clear_Managers()
 {
+	Safe_Release(m_pInput_Manager);
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pComponent_Manager);
 	Safe_Release(m_pTimer_Manager);

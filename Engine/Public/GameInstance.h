@@ -2,6 +2,7 @@
 #include "Base.h"
 #include "Component_Manager.h"
 #include "PipeLine.h"
+#include "Input_Manager.h"
 
 BEGIN(Engine)
 
@@ -50,6 +51,11 @@ public: // PipeLine
 	void Set_Transform(D3DTS eState, const _float4x4& TransformMatrix);
 	void Set_Transform(D3DTS eState, _fmatrix TransformMatrix);
 
+public: // Input Manager
+	_bool Key_Pressing(_uint iKey);
+	_bool Key_Down(_uint iKey, InputChannel eInputChannel = InputChannel::Default);
+	_bool Key_Up(_uint iKey, InputChannel eInputChannel = InputChannel::Default);
+
 public: // Camera Mode
 	const _uint& Get_CameraModeIndex() const;
 
@@ -63,6 +69,7 @@ private:
 	class CLevel_Manager* m_pLevel_Manager{ nullptr };
 	class CObject_Manager* m_pObject_Manager{ nullptr };
 	class CComponent_Manager* m_pComponent_Manager{ nullptr };
+	class CInput_Manager* m_pInput_Manager{ nullptr };
 
 	class CPipeLine* m_pPipeLine{ nullptr };
 

@@ -33,50 +33,50 @@ HRESULT CCamera_Debug::Init(void* pArg)
 
 void CCamera_Debug::Tick(_float fTimeDelta)
 {
-	CameraMode CamMode = static_cast<CameraMode>(m_pGameInstance->Get_CameraModeIndex());
+	//CameraMode CamMode = static_cast<CameraMode>(m_pGameInstance->Get_CameraModeIndex());
 
-	if (CamMode != CameraMode::Debug)
-	{
-		return;
-	}
+	//if (CamMode != CameraMode::Debug)
+	//{
+	//	return;
+	//}
 
-	if (GetAsyncKeyState('M') * 0x8000)
-	{
-		if (m_isMoveMode)
-		{
-			m_isMoveMode = false;
-		}
-		else
-		{
-			POINT ptCenter = { static_cast<_long>(g_iWinSizeX * 0.5f), static_cast<_long>(g_iWinSizeY * 0.5f) };
-			ClientToScreen(g_hWnd, &ptCenter);
-			SetCursorPos(ptCenter.x, ptCenter.y);
-			m_isMoveMode = true;
-		}
-	}
-	if (m_isMoveMode)
-	{
-		GET_CURSOR_POINT(ptMouse);
+	//if (GetAsyncKeyState('M') * 0x8000)
+	//{
+	//	if (m_isMoveMode)
+	//	{
+	//		m_isMoveMode = false;
+	//	}
+	//	else
+	//	{
+	//		POINT ptCenter = { static_cast<_long>(g_iWinSizeX * 0.5f), static_cast<_long>(g_iWinSizeY * 0.5f) };
+	//		ClientToScreen(g_hWnd, &ptCenter);
+	//		SetCursorPos(ptCenter.x, ptCenter.y);
+	//		m_isMoveMode = true;
+	//	}
+	//}
+	//if (m_isMoveMode)
+	//{
+	//	GET_CURSOR_POINT(ptMouse);
 
-		POINT ptCenter = { static_cast<_long>(g_iWinSizeX * 0.5f), static_cast<_long>(g_iWinSizeY * 0.5f) };
+	//	POINT ptCenter = { static_cast<_long>(g_iWinSizeX * 0.5f), static_cast<_long>(g_iWinSizeY * 0.5f) };
 
-		_float fMouseMoveX = static_cast<_float>(ptMouse.x - ptCenter.x);
-		_float fMouseMoveY = static_cast<_float>(ptMouse.y - ptCenter.y);
+	//	_float fMouseMoveX = static_cast<_float>(ptMouse.x - ptCenter.x);
+	//	_float fMouseMoveY = static_cast<_float>(ptMouse.y - ptCenter.y);
 
-		ClientToScreen(g_hWnd, &ptCenter);
+	//	ClientToScreen(g_hWnd, &ptCenter);
 
-		if (fMouseMoveX)
-		{
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * fMouseMoveX * m_fMouseSensor);
-			SetCursorPos(ptCenter.x, ptCenter.y);
-		}
+	//	//if (fMouseMoveX)
+	//	//{
+	//	//	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * fMouseMoveX * m_fMouseSensor);
+	//	//	SetCursorPos(ptCenter.x, ptCenter.y);
+	//	//}
 
-		if (fMouseMoveY)
-		{
-			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta * fMouseMoveY * m_fMouseSensor);
-			SetCursorPos(ptCenter.x, ptCenter.y);
-		}
-	}
+	//	//if (fMouseMoveY)
+	//	//{
+	//	//	m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta * fMouseMoveY * m_fMouseSensor);
+	//	//	SetCursorPos(ptCenter.x, ptCenter.y);
+	//	//}
+	//}
 
 	if (GetKeyState('W') & 0x8000)
 	{

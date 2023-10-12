@@ -94,6 +94,7 @@
     <ClCompile Include="..\private\GameInstance.cpp" />
     <ClCompile Include="..\private\GameObject.cpp" />
     <ClCompile Include="..\Private\Graphic_Device.cpp" />
+    <ClCompile Include="..\Private\Input_Manager.cpp" />
     <ClCompile Include="..\private\Layer.cpp" />
     <ClCompile Include="..\private\Level.cpp" />
     <ClCompile Include="..\private\Level_Manager.cpp" />
@@ -125,6 +126,7 @@
     <ClInclude Include="..\public\GameInstance.h" />
     <ClInclude Include="..\public\GameObject.h" />
     <ClInclude Include="..\Public\Graphic_Device.h" />
+    <ClInclude Include="..\Public\Input_Manager.h" />
     <ClInclude Include="..\public\Layer.h" />
     <ClInclude Include="..\public\Level.h" />
     <ClInclude Include="..\public\Level_Manager.h" />

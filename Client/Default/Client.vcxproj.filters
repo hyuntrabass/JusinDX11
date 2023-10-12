@@ -120,6 +120,9 @@
     <ClInclude Include="..\public\SubTitle.h">
       <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Terrain.h">
+      <Filter>02.GameObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -182,6 +185,9 @@
     </ClCompile>
     <ClCompile Include="..\private\SubTitle.cpp">
       <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Terrain.cpp">
+      <Filter>02.GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../Default/framework.h"
 #include <process.h>
 
@@ -13,6 +14,7 @@ namespace Client
 	{
 		Static,
 		Loading,
+		Editor,
 		Logo,
 		CreateCharacter,
 		Tutorial,

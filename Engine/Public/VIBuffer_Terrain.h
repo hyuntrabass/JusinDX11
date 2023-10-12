@@ -10,15 +10,11 @@ class ENGINE_DLL CVIBuffer_Terrain final : public CVIBuffer
 	virtual ~CVIBuffer_Terrain() = default;
 
 public:
-	virtual HRESULT Init_Prototype() override;
+	virtual HRESULT Init_Prototype(_uint iNumVerticesX, _uint iNumVerticesZ);
 	virtual HRESULT Init(void* pArg) override;
 
-private:
-	_uint m_iNumVerticesX{};
-	_uint m_iNumVerticesY{};
-
 public:
-	static CVIBuffer_Terrain* Create(_dev pDevice, _context pContext);
+	static CVIBuffer_Terrain* Create(_dev pDevice, _context pContext, _uint iNumVerticesX, _uint iNumVerticesZ);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

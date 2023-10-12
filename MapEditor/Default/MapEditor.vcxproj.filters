@@ -16,6 +16,15 @@
     <Filter Include="97.Imgui\Imgui">
       <UniqueIdentifier>{a03850fa-b05c-4499-9505-890d00d406c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.Objects">
+      <UniqueIdentifier>{d31a2155-c477-48a7-a45e-a4a616714487}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.Objects\Terrain">
+      <UniqueIdentifier>{4c8370eb-2315-4782-b485-7108d3da377d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Level">
+      <UniqueIdentifier>{c2e7d201-0a39-4605-9997-2b671f916ba6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -63,6 +72,10 @@
     <ClInclude Include="..\public\ImguiMgr.h">
       <Filter>97.Imgui</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Terrain.h">
+      <Filter>02.Objects\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Level_Editor.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">
@@ -103,6 +116,10 @@
     <ClCompile Include="..\private\ImguiMgr.cpp">
       <Filter>97.Imgui</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Terrain.cpp">
+      <Filter>02.Objects\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Level_Editor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MapEditor.rc">

@@ -1,9 +1,11 @@
 #include "Level_Loading.h"
 #include "Loader.h"
 #include "Level_Logo.h"
+#include "Level_CreateCharacter.h"
 #include "Level_Tutorial.h"
 #include "Level_Stage1.h"
 #include "Level_Stage2.h"
+
 
 CLevel_Loading::CLevel_Loading(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -42,7 +44,7 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 {
 	m_pLoader->Show_LoadingText();
 
-	if (m_pLoader->isFinished() && GetAsyncKeyState(VK_SPACE) & 0x8000)
+	if (m_pLoader->isFinished() && m_pGameInstance->Key_Down(VK_SPACE))
 	{
 		CLevel* pLevel = nullptr;
 
@@ -50,6 +52,9 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 		{
 		case Client::Level_ID::Logo:
 			pLevel = CLevel_Logo::Create(m_pDevice, m_pContext);
+			break;
+		case Client::Level_ID::CreateCharacter:
+			pLevel = CLevel_CreateCharacter::Create(m_pDevice, m_pContext);
 			break;
 		case Client::Level_ID::Tutorial:
 			pLevel = CLevel_Tutorial::Create(m_pDevice, m_pContext);
