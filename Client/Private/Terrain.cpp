@@ -29,7 +29,6 @@ HRESULT CTerrain::Init(void* pArg)
 
 void CTerrain::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), 160.f);
 }
 
 void CTerrain::Late_Tick(_float fTimeDelta)
@@ -95,6 +94,11 @@ HRESULT CTerrain::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::Proj))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
 	{
 		return E_FAIL;
 	}

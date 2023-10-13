@@ -56,7 +56,7 @@ void CPipeLine::Tick()
 	{
 		XMStoreFloat4x4(&m_TransformMatrix_Inversed[i], XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_TransformMatrix[i])));
 	}
-	m_vCameraPos = _float4(&m_TransformMatrix_Inversed[ToIndex(D3DTS::View)]._31);
+	m_vCameraPos = _float4(&m_TransformMatrix_Inversed[ToIndex(D3DTS::View)]._41);
 }
 
 CPipeLine* CPipeLine::Create()

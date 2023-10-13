@@ -74,7 +74,7 @@ technique11 DefaultTechnique
 {
     pass UI
     {
-        SetRasterizerState(RS_Test);
+        //SetRasterizerState(RS_Test);
 
         VertexShader = compile vs_5_0 VS_Main();
         PixelShader = compile ps_5_0 PS_Main();

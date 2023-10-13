@@ -19,6 +19,7 @@ public:
 private:
 	_bool m_isMoveMode{ true };
 	_float m_fMouseSensor{ 0.05f };
+	_float m_fSpeed{ 10.f };
 
 public:
 	static CCamera_Debug* Create(_dev pDevice, _context pContext);

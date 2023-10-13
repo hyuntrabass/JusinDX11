@@ -36,7 +36,7 @@ HRESULT CStart_Btn::Init(void* pArg)
 void CStart_Btn::Tick(_float fTimeDelta)
 {
 	GET_CURSOR_POINT(pt);
-	RECT rc = { m_fX - m_fSizeX * 0.5f, 317, m_fX + m_fSizeX * 0.5f, m_fY };
+	RECT rc = { static_cast<_long>(m_fX - m_fSizeX * 0.5f), 317, static_cast<_long>(m_fX + m_fSizeX * 0.5f), static_cast<_long>(m_fY) };
 	if (PtInRect(&rc, pt))
 	{
 		m_iIndex = 1;

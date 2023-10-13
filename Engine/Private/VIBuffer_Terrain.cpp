@@ -25,9 +25,9 @@ HRESULT CVIBuffer_Terrain::Init_Prototype(_uint iNumVerticesX, _uint iNumVertice
 #pragma region Vertex Buffer
 	VTXNORTEX* pVertices = new VTXNORTEX[m_iNumVertices];
 
-	for (_uint z = 0; z < iNumVerticesZ - 1; z++)
+	for (_uint z = 0; z < iNumVerticesZ; z++)
 	{
-		for (_uint x = 0; x < iNumVerticesX - 1; x++)
+		for (_uint x = 0; x < iNumVerticesX; x++)
 		{
 			_uint iIndex = z * iNumVerticesX + x;
 

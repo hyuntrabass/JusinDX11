@@ -33,64 +33,102 @@ HRESULT CCamera_Debug::Init(void* pArg)
 
 void CCamera_Debug::Tick(_float fTimeDelta)
 {
-	//CameraMode CamMode = static_cast<CameraMode>(m_pGameInstance->Get_CameraModeIndex());
+	CameraMode CamMode = static_cast<CameraMode>(m_pGameInstance->Get_CameraModeIndex());
 
-	//if (CamMode != CameraMode::Debug)
-	//{
-	//	return;
-	//}
+	if (CamMode != CameraMode::Debug)
+	{
+		return;
+	}
 
-	//if (GetAsyncKeyState('M') * 0x8000)
-	//{
-	//	if (m_isMoveMode)
-	//	{
-	//		m_isMoveMode = false;
-	//	}
-	//	else
-	//	{
-	//		POINT ptCenter = { static_cast<_long>(g_iWinSizeX * 0.5f), static_cast<_long>(g_iWinSizeY * 0.5f) };
-	//		ClientToScreen(g_hWnd, &ptCenter);
-	//		SetCursorPos(ptCenter.x, ptCenter.y);
-	//		m_isMoveMode = true;
-	//	}
-	//}
-	//if (m_isMoveMode)
-	//{
-	//	GET_CURSOR_POINT(ptMouse);
+	if (m_pGameInstance->Key_Down('M'))
+	{
+		if (m_isMoveMode)
+		{
+			m_isMoveMode = false;
+		}
+		else
+		{
+			//POINT ptCenter = g_ptCenter;
+			//ClientToScreen(g_hWnd, &ptCenter);
+			SetCursorPos(g_ptCenter.x, g_ptCenter.y);
+			m_isMoveMode = true;
+		}
+	}
+	if (m_isMoveMode)
+	{
+		_long dwMouseMove;
 
-	//	POINT ptCenter = { static_cast<_long>(g_iWinSizeX * 0.5f), static_cast<_long>(g_iWinSizeY * 0.5f) };
+		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
+		{
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * m_fMouseSensor);
+			SetCursorPos(g_ptCenter.x, g_ptCenter.y);
+		}
 
-	//	_float fMouseMoveX = static_cast<_float>(ptMouse.x - ptCenter.x);
-	//	_float fMouseMoveY = static_cast<_float>(ptMouse.y - ptCenter.y);
+		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
+		{
+			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta * dwMouseMove * m_fMouseSensor);
+			SetCursorPos(g_ptCenter.x, g_ptCenter.y);
+		}
 
-	//	ClientToScreen(g_hWnd, &ptCenter);
+		_float fSpeedRatio{};
+		if (m_fSpeed < 1.5f)
+		{
+			fSpeedRatio = 0.2f;
+		}
+		else if (m_fSpeed < 10.f)
+		{
+			fSpeedRatio = 1.f;
+		}
+		else if (m_fSpeed < 50.f)
+		{
+			fSpeedRatio = 10.f;
+		}
+		else
+		{
+			fSpeedRatio = 30.f;
+		}
 
-	//	//if (fMouseMoveX)
-	//	//{
-	//	//	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * fMouseMoveX * m_fMouseSensor);
-	//	//	SetCursorPos(ptCenter.x, ptCenter.y);
-	//	//}
+		if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
+		{
+			m_fSpeed += fSpeedRatio;
+		}
+		else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
+		{
+			m_fSpeed -= fSpeedRatio;
+			if (m_fSpeed < 0.7f)
+			{
+				m_fSpeed = 0.7f;
+			}
+		}
 
-	//	//if (fMouseMoveY)
-	//	//{
-	//	//	m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta * fMouseMoveY * m_fMouseSensor);
-	//	//	SetCursorPos(ptCenter.x, ptCenter.y);
-	//	//}
-	//}
+	}
 
-	if (GetKeyState('W') & 0x8000)
+	if (m_pGameInstance->Key_Pressing(VK_LSHIFT))
+	{
+		m_pTransformCom->Set_Speed(m_fSpeed * 2.f);
+	}
+	else if (m_pGameInstance->Key_Pressing(VK_LCONTROL))
+	{
+		m_pTransformCom->Set_Speed(m_fSpeed * 0.2f);
+	}
+	else
+	{
+		m_pTransformCom->Set_Speed(m_fSpeed);
+	}
+
+	if (m_pGameInstance->Key_Pressing('W'))
 	{
 		m_pTransformCom->Go_Straight(fTimeDelta);
 	}
-	if (GetKeyState('S') & 0x8000)
+	if (m_pGameInstance->Key_Pressing('S'))
 	{
 		m_pTransformCom->Go_Backward(fTimeDelta);
 	}
-	if (GetKeyState('A') & 0x8000)
+	if (m_pGameInstance->Key_Pressing('A'))
 	{
 		m_pTransformCom->Go_Left(fTimeDelta);
 	}
-	if (GetKeyState('D') & 0x8000)
+	if (m_pGameInstance->Key_Pressing('D'))
 	{
 		m_pTransformCom->Go_Right(fTimeDelta);
 	}

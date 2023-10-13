@@ -29,4 +29,14 @@ namespace Engine
 		static const unsigned int iNumElements{ 3 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
+
+	using VTXCUBETEX = struct ENGINE_DLL tagVertex_Position_Normal_Texcoord_Cube
+	{
+		XMFLOAT3 vPosition{};
+		XMFLOAT3 vNormal{};
+		XMFLOAT3 vTexcoord{};
+
+		static const unsigned int iNumElements{ 3 };
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	};
 }

@@ -46,11 +46,11 @@ HRESULT CLevel_CreateCharacter::Ready_Layer_Camera(const wstring& strLayerTag)
 
 	CCamera::Camera_Desc CamDesc;
 	CamDesc.vCameraPos = _float4(0.f, 5.f, -5.f, 1.f);
-	CamDesc.vFocusPos = _float4(0.f, 0.f, 0.f, 0.f);
+	CamDesc.vFocusPos = _float4(0.f, 0.f, 0.f, 1.f);
 	CamDesc.fFovY = XMConvertToRadians(60.f);
 	CamDesc.fAspect = static_cast<_float>(g_iWinSizeX) / g_iWinSizeY;
 	CamDesc.fNear = 0.1f;
-	CamDesc.fFar = 300.f;
+	CamDesc.fFar = 500.f;
 
 	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::CreateCharacter), strLayerTag, TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
 	{

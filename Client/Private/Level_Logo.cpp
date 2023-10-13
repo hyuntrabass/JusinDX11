@@ -73,6 +73,11 @@ HRESULT CLevel_Logo::Ready_Layer_Logo(const wstring& strLayerTag)
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Logo), strLayerTag, TEXT("Prototype_GameObject_SubTitle"))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 

@@ -5,7 +5,10 @@
 
 // 외부 라이브러리 헤더
 #include <d3d11.h>
+#define DIRECTINPUT_VERSION 0x0800
+#include <dinput.h>
 #include <DirectXMath.h>
+#include <DirectXCollision.h>
 #include <d3dcompiler.h>
 #include <fx11/d3dx11effect.h>
 #include <DirectXTK/DDSTextureLoader.h>
@@ -15,6 +18,7 @@ using namespace DirectX;
 // 외부 라이브러리 lib
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "DirectXTK.lib")
+#pragma comment(lib, "dinput8.lib")
 
 #ifdef _DEBUG
 #pragma comment(lib, "Effects11d.lib")

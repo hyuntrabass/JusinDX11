@@ -42,7 +42,7 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
-	m_pInput_Manager = CInput_Manager::Create();
+	m_pInput_Manager = CInput_Device::Create(GraphicDesc.hInst, GraphicDesc.hWnd);
 	if (!m_pInput_Manager)
 	{
 		return E_FAIL;
@@ -68,8 +68,11 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
 	}
 
+	m_pInput_Manager->Update_InputDev();
+
 	m_pLevel_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Tick(fTimeDelta);
+	m_pPipeLine->Tick();
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
@@ -309,6 +312,16 @@ _bool CGameInstance::Key_Up(_uint iKey, InputChannel eInputChannel)
 	}
 
 	return m_pInput_Manager->Key_Up(iKey, eInputChannel);
+}
+
+_long CGameInstance::Get_MouseMove(MouseState eMouseState)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Get_MouseMove(eMouseState);
 }
 
 const _uint& CGameInstance::Get_CameraModeIndex() const
