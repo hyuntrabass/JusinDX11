@@ -19,7 +19,7 @@ HRESULT CLevel_CreateCharacter::Init()
 
 void CLevel_CreateCharacter::Tick(_float fTimeDelta)
 {
-	if (GetKeyState(VK_PRIOR) & 0x8000)
+	if (m_pGameInstance->Key_Down(VK_PRIOR))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(ToIndex(Level_ID::Loading), CLevel_Loading::Create(m_pDevice, m_pContext, Level_ID::Tutorial))))
 		{

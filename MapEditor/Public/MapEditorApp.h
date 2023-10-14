@@ -33,6 +33,7 @@ private:
 
 private:
 	HRESULT Ready_Prototype_Component_For_Static();
+	HRESULT Ready_Prototype_GameObject();
 
 public:
 	static CMapEditorApp* Create();

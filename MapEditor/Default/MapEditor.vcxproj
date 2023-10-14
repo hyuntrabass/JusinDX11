@@ -109,7 +109,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>../Public/;../../Reference/Headers/;../Public/Imgui/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -137,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\Camera_Debug.h" />
     <ClInclude Include="..\public\ImguiMgr.h" />
     <ClInclude Include="..\Public\Imgui\imconfig.h" />
     <ClInclude Include="..\Public\Imgui\imgui.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\private\ImguiMgr.cpp" />
     <ClCompile Include="..\private\Level_Editor.cpp" />
     <ClCompile Include="..\private\MapEditorApp.cpp" />

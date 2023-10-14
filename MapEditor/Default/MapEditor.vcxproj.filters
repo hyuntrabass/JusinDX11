@@ -25,6 +25,9 @@
     <Filter Include="01.Level">
       <UniqueIdentifier>{c2e7d201-0a39-4605-9997-2b671f916ba6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.Objects\Camera">
+      <UniqueIdentifier>{73cfa838-aa0a-4a62-ac58-e2eb8f9e16a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -76,6 +79,9 @@
       <Filter>02.Objects\Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Level_Editor.h" />
+    <ClInclude Include="..\Public\Camera_Debug.h">
+      <Filter>02.Objects\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">
@@ -120,6 +126,9 @@
       <Filter>02.Objects\Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Level_Editor.cpp" />
+    <ClCompile Include="..\Private\Camera_Debug.cpp">
+      <Filter>02.Objects\Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MapEditor.rc">

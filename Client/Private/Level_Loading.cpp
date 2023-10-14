@@ -44,7 +44,7 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 {
 	m_pLoader->Show_LoadingText();
 
-	if (m_pLoader->isFinished() && m_pGameInstance->Key_Down(VK_SPACE))
+	if (m_pLoader->isFinished()/* && m_pGameInstance->Key_Down(VK_SPACE)*/)
 	{
 		CLevel* pLevel = nullptr;
 

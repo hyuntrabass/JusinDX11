@@ -18,6 +18,14 @@ HRESULT CMainApp::Init()
 	}
 
 	srand(static_cast<_uint>(time(nullptr)));
+#ifdef _DEBUG
+#ifdef UNICODE
+#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+#else
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+#endif
+#endif // _DEBUG
+
 
 	GRAPHIC_DESC GraphicDesc;
 	GraphicDesc.hWnd = g_hWnd;
@@ -54,6 +62,14 @@ void CMainApp::Tick(_float fTimeDelta)
 	}
 
 	m_fTimeAcc += fTimeDelta;
+
+#ifdef _DEBUG
+	GET_CURSOR_POINT(pt);
+	system("cls");
+	std::cout << "Cursor X : " << pt.x << std::endl;
+	std::cout << "Cursor Y : " << pt.y << std::endl;
+#endif // _DEBUG
+
 
 	m_pGameInstance->Tick_Engine(fTimeDelta);
 }

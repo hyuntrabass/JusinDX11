@@ -22,11 +22,11 @@ HRESULT CSubTitle::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_fSizeX = 796.f;
-	m_fSizeY = 208.f;
+	m_fSizeX = 796.f * 0.6f;
+	m_fSizeY = 208.f * 0.6f;
 
-	m_fX = g_iWinSizeX >> 1;
-	m_fY = g_iWinSizeY >> 1;
+	m_fX = 350.f;
+	m_fY = 245.f;
 
 	m_pTransformCom->Set_RotationPerSec(540.f);
 
