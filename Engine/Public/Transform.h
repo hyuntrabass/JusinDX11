@@ -49,6 +49,7 @@ public:
 	void Go_Up(_float fTimeDelta);
 	void Go_Down(_float fTimeDelta);
 	void Look_At(_fvector vTargetPos);
+	void Look_At_Dir(_fvector vDir);
 	void Move_to(_fvector vTargetPos, _float fTimeDelta, _float fMargin = 0.1f);
 	void Turn(_fvector vAxis, _float fTimeDelta);
 	void Rotation(_fvector vAxis, _float fAngle);

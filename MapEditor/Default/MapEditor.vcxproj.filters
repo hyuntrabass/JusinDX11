@@ -28,6 +28,9 @@
     <Filter Include="02.Objects\Camera">
       <UniqueIdentifier>{73cfa838-aa0a-4a62-ac58-e2eb8f9e16a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.Objects\Dummy">
+      <UniqueIdentifier>{1d533789-08df-447c-9524-05ea05bf8880}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -78,9 +81,11 @@
     <ClInclude Include="..\public\Terrain.h">
       <Filter>02.Objects\Terrain</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Level_Editor.h" />
     <ClInclude Include="..\Public\Camera_Debug.h">
       <Filter>02.Objects\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Dummy.h">
+      <Filter>02.Objects\Dummy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -125,9 +130,11 @@
     <ClCompile Include="..\private\Terrain.cpp">
       <Filter>02.Objects\Terrain</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Level_Editor.cpp" />
     <ClCompile Include="..\Private\Camera_Debug.cpp">
       <Filter>02.Objects\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Dummy.cpp">
+      <Filter>02.Objects\Dummy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

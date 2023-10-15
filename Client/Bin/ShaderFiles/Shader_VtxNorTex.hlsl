@@ -20,6 +20,8 @@ vector g_vCamPos;
 sampler PointSampler = sampler_state
 {
     Filter = MIN_MAG_MIP_POINT;
+    AddressU = wrap;
+    AddressV = wrap;
 };
 
 sampler LinearSampler = sampler_state
@@ -27,6 +29,10 @@ sampler LinearSampler = sampler_state
     Filter = MIN_MAG_MIP_LINEAR;
     AddressU = wrap;
     AddressV = wrap;
+};
+
+samplerCUBE CubeSampler = sampler_state
+{
 };
 
 struct VS_IN
@@ -44,9 +50,41 @@ struct VS_OUT
     vector vWorldPos : Texcoord1;
 };
 
+struct VS_CUBE_IN
+{
+    float3 vPos : Position;
+    float3 vNor : Normal;
+    float3 vTex : Texcoord0;
+};
+
+struct VS_CUBE_OUT
+{
+    vector vPos : SV_Position; // == float4
+    vector vNor : Normal;
+    float3 vTex : Texcoord0;
+    vector vWorldPos : Texcoord1;
+};
+
 VS_OUT VS_Main(VS_IN Input)
 {
     VS_OUT Output = (VS_OUT) 0;
+	
+    matrix matWV, matWVP;
+    
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+	
+    Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
+    Output.vNor = mul(vector(Input.vNor, 0.f), g_WorldMatrix);
+    Output.vTex = Input.vTex;
+    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
+	
+    return Output;
+}
+
+VS_CUBE_OUT VS_Main_Cube(VS_CUBE_IN Input)
+{
+    VS_CUBE_OUT Output = (VS_CUBE_OUT) 0;
 	
     matrix matWV, matWVP;
     
@@ -69,6 +107,14 @@ struct PS_IN
     vector vWorldPos : Texcoord1;
 };
 
+struct PS_CUBE_IN
+{
+    vector vPos : SV_Position;
+    vector vNor : Normal;
+    float3 vTex : Texcoord0;
+    vector vWorldPos : Texcoord1;
+};
+
 struct PS_OUT
 {
     vector vColor : SV_Target0;
@@ -78,7 +124,7 @@ PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex * 100.f);
+    vector vMtrlDiffuse = g_Texture.Sample(PointSampler, Input.vTex * 100.f);
     
     float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
     
@@ -111,6 +157,23 @@ PS_OUT PS_Main_Point(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_Cube(PS_CUBE_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    //vector vMtrlDiffuse = texCUBE(CubeSampler, Input.vTex);
+    
+    //float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
+    
+    //vector vReflect = reflect(normalize(g_vLightDir), Input.vNor);
+    //vector vLook = Input.vWorldPos - g_vCamPos;
+    //float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
+
+    //Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
+    
+    return Output;
+}
+
 technique11 DefaultTechniqueShader_VtxNorTex
 {
     pass Terrain
@@ -122,5 +185,10 @@ technique11 DefaultTechniqueShader_VtxNorTex
     {
         VertexShader = compile vs_5_0 VS_Main();
         PixelShader = compile ps_5_0 PS_Main_Point();
+    }
+    pass Cube
+    {
+        VertexShader = compile vs_5_0 VS_Main_Cube();
+        PixelShader = compile ps_5_0 PS_Main_Cube();
     }
 };

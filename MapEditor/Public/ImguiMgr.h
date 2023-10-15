@@ -26,8 +26,8 @@ private:
 private: // for Input
 	_int m_Curr_Stage{};
 	_bool m_bDemo{};
-	_float m_pPos[3]{};
-	_float m_pLook[3]{};
+	_float m_pPos[4]{ 0.f, 0.f, 0.f, 1.f };
+	_float m_pLook[4]{ 0.f, 0.f, 1.f, 0.f };
 	_int m_Curr_Misc{};
 	const _char* const m_pItemList_Misc[3]
 	{

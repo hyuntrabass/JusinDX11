@@ -1,5 +1,6 @@
 #include "ImguiMgr.h"
 #include "GameInstance.h"
+#include "Dummy.h"
 
 CImguiMgr::CImguiMgr(_dev pDevice, _context pContext, CGameInstance* pGameInstance)
 	: m_pDevice(pDevice)
@@ -88,7 +89,7 @@ void CImguiMgr::Tick()
 	}
 	EndTabBar();
 
-	InputFloat3("Pos", m_pPos, "%.2f"); SameLine(); 
+	InputFloat3("Pos", m_pPos, "%.2f"); SameLine();
 	if (Button("reset Pos"))
 	{
 		for (size_t i = 0; i < IM_ARRAYSIZE(m_pPos); i++)
@@ -96,13 +97,36 @@ void CImguiMgr::Tick()
 			m_pPos[i] = 0.f;
 		}
 	}
+	if (m_pGameInstance->Key_Down(VK_LBUTTON))
+	{
+		_float3 vPickPos{};
+		if (m_pGameInstance->Picking_InWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), &vPickPos))
+		{
+			m_pPos[0] = vPickPos.x;
+			m_pPos[1] = vPickPos.y;
+			m_pPos[2] = vPickPos.z;
+		}
+	}
 
-	InputFloat3("Look", m_pLook, "%.2f"); SameLine(); 
+	InputFloat3("Look", m_pLook, "%.2f"); SameLine();
 	if (Button("reset Look"))
 	{
 		for (size_t i = 0; i < IM_ARRAYSIZE(m_pLook); i++)
 		{
 			m_pLook[i] = 0.f;
+		}
+	}
+
+	if (Button("Create"))
+	{
+		DummyInfo Info{};
+		
+		Info.vPos = _float4(m_pPos);
+		XMStoreFloat4(&Info.vLook,XMVector4Normalize(XMVectorSet(m_pLook[0], m_pLook[1], m_pLook[2], m_pLook[3])));
+
+		if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+		{
+			MSG_BOX("Failed to Add Layer : Dummy");
 		}
 	}
 

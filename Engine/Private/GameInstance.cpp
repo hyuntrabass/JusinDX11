@@ -3,6 +3,7 @@
 #include "Timer_Manager.h"
 #include "Level_Manager.h"
 #include "Object_Manager.h"
+#include "Picking.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -54,6 +55,12 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
+	m_pPicking = CPicking::Create(GraphicDesc.hWnd, GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY, this);
+	if (!m_pPicking)
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -73,6 +80,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	m_pLevel_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Tick(fTimeDelta);
 	m_pPipeLine->Tick();
+	m_pPicking->Tick();
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
@@ -324,6 +332,16 @@ _long CGameInstance::Get_MouseMove(MouseState eMouseState)
 	return m_pInput_Manager->Get_MouseMove(eMouseState);
 }
 
+const _bool& CGameInstance::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float3* vPickPos)
+{
+	if (!m_pPicking)
+	{
+		MSG_BOX("FATAL ERROR : m_pPicking is NULL");
+	}
+
+	return m_pPicking->Picking_InWorld(vPoint1, vPoint2, vPoint3, vPickPos);
+}
+
 const _uint& CGameInstance::Get_CameraModeIndex() const
 {
 	return m_iCameraModeIndex;
@@ -341,6 +359,7 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pComponent_Manager);
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pLevel_Manager);
+	Safe_Release(m_pPicking);
 }
 
 void CGameInstance::Release_Engine()

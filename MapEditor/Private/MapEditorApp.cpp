@@ -3,6 +3,7 @@
 #include "ImguiMgr.h"
 #include "Terrain.h"
 #include "Camera_Debug.h"
+#include "Dummy.h"
 
 CMapEditorApp::CMapEditorApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -130,6 +131,11 @@ HRESULT CMapEditorApp::Ready_Prototype_GameObject()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Dummy"), CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Test/Dummy.dds")))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 #pragma region Prototype
@@ -139,6 +145,11 @@ HRESULT CMapEditorApp::Ready_Prototype_GameObject()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Debug"), CCamera_Debug::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dummy"), CDummy::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

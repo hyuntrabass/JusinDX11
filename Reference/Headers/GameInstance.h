@@ -57,6 +57,9 @@ public: // Input Manager
 	_bool Key_Up(_uint iKey, InputChannel eInputChannel = InputChannel::Default);
 	_long Get_MouseMove(MouseState eMouseState);
 
+public: // Picking
+	const _bool& Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* vPickPos);
+
 public: // Camera Mode
 	const _uint& Get_CameraModeIndex() const;
 
@@ -73,6 +76,7 @@ private:
 	class CInput_Device* m_pInput_Manager{ nullptr };
 
 	class CPipeLine* m_pPipeLine{ nullptr };
+	class CPicking* m_pPicking{ nullptr };
 
 private:
 	_uint m_iCameraModeIndex{};
