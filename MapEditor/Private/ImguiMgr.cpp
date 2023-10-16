@@ -22,6 +22,11 @@ HRESULT CImguiMgr::Init()
 	ImGui_ImplWin32_Init(g_hWnd);
 	ImGui_ImplDX11_Init(m_pDevice, m_pContext);
 
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Cursor"), TEXT("Prototype_GameObject_Cursor"), &m_pPos)))
+	{
+		MSG_BOX("Failed to Add Layer : Dummy");
+	}
+
 	return S_OK;
 }
 
@@ -97,7 +102,7 @@ void CImguiMgr::Tick()
 			m_pPos[i] = 0.f;
 		}
 	}
-	if (m_pGameInstance->Key_Down(VK_LBUTTON))
+	if (m_pGameInstance->Key_Down(VK_RBUTTON))
 	{
 		_float3 vPickPos{};
 		if (m_pGameInstance->Picking_InWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), &vPickPos))
@@ -117,7 +122,7 @@ void CImguiMgr::Tick()
 		}
 	}
 
-	if (Button("Create"))
+	if (Button("Create") || m_pGameInstance->Key_Down('C'))
 	{
 		DummyInfo Info{};
 		

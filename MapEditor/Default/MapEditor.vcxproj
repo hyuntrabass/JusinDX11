@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Camera_Debug.h" />
+    <ClInclude Include="..\public\Cursor.h" />
     <ClInclude Include="..\public\Dummy.h" />
     <ClInclude Include="..\public\ImguiMgr.h" />
     <ClInclude Include="..\Public\Imgui\imconfig.h" />
@@ -148,7 +149,7 @@
     <ClInclude Include="..\Public\Imgui\imstb_rectpack.h" />
     <ClInclude Include="..\Public\Imgui\imstb_textedit.h" />
     <ClInclude Include="..\Public\Imgui\imstb_truetype.h" />
-    <ClInclude Include="..\public\MapEditorApp.h" />
+    <ClInclude Include="..\public\EditorApp.h" />
     <ClInclude Include="..\Public\MapEditor_Define.h" />
     <ClInclude Include="..\public\Terrain.h" />
     <ClInclude Include="framework.h" />
@@ -158,9 +159,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
+    <ClCompile Include="..\private\Cursor.cpp" />
     <ClCompile Include="..\private\Dummy.cpp" />
     <ClCompile Include="..\private\ImguiMgr.cpp" />
-    <ClCompile Include="..\private\MapEditorApp.cpp" />
+    <ClCompile Include="..\private\EditorApp.cpp" />
     <ClCompile Include="..\private\Terrain.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui_demo.cpp" />

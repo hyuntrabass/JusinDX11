@@ -65,6 +65,19 @@ HRESULT CLevel_CreateCharacter::Ready_Layer_Camera(const wstring& strLayerTag)
 	return S_OK;
 }
 
+HRESULT CLevel_CreateCharacter::Ready_Light()
+{
+	LIGHT_DESC LightDesc{};
+
+	LightDesc.eType = LIGHT_DESC::Directional;
+	LightDesc.vDirection = _float4(0.f, -1.f, 1.f, 0.f);
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+
+	return m_pGameInstance->Add_Light(ToIndex(Level_ID::Static), LightDesc);
+}
+
 CLevel_CreateCharacter* CLevel_CreateCharacter::Create(_dev pDevice, _context pContext)
 {
 	CLevel_CreateCharacter* pInstance = new CLevel_CreateCharacter(pDevice, pContext);

@@ -11,6 +11,20 @@ namespace Engine
 		bool isWindowed{};
 	};
 
+	using LIGHT_DESC = struct tagLightDesc
+	{
+		enum TYPE { Directional, Point, End };
+
+		TYPE eType{End};
+		XMFLOAT4 vDirection{};
+		XMFLOAT4 vPosition{};
+		float fRange{};
+
+		XMFLOAT4 vDiffuse{};
+		XMFLOAT4 vAmbient{};
+		XMFLOAT4 vSpecular{};
+	};
+
 	using VTXPOSTEX = struct ENGINE_DLL tagVertex_Position_Texcoord
 	{
 		XMFLOAT3 vPosition{};

@@ -13,6 +13,7 @@
 #include <fx11/d3dx11effect.h>
 #include <DirectXTK/DDSTextureLoader.h>
 #include <DirectXTK/WICTextureLoader.h>
+#include <DirectXTK/ScreenGrab.h>
 using namespace DirectX;
 
 // 외부 라이브러리 lib

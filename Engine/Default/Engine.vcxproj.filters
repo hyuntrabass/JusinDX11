@@ -88,6 +88,12 @@
     <Filter Include="01.Utility\05.Picking">
       <UniqueIdentifier>{e91aec13-867f-4878-ad29-6663e6933659}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\06.Light">
+      <UniqueIdentifier>{d9e293aa-74d0-43a0-baca-8bb7f4c09b93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\06.Light\Manager">
+      <UniqueIdentifier>{a373189d-7396-476c-bf34-dd0e4a532f94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -170,6 +176,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Picking.cpp">
       <Filter>01.Utility\05.Picking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Light.cpp">
+      <Filter>01.Utility\06.Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Light_Manager.cpp">
+      <Filter>01.Utility\06.Light\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -265,6 +277,12 @@
     </ClInclude>
     <ClInclude Include="..\public\Picking.h">
       <Filter>01.Utility\05.Picking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Light.h">
+      <Filter>01.Utility\06.Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Light_Manager.h">
+      <Filter>01.Utility\06.Light\Manager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

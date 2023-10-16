@@ -1,17 +1,18 @@
-#include "MapEditorApp.h"
+#include "EditorApp.h"
 #include "GameInstance.h"
 #include "ImguiMgr.h"
 #include "Terrain.h"
 #include "Camera_Debug.h"
 #include "Dummy.h"
+#include "Cursor.h"
 
-CMapEditorApp::CMapEditorApp()
+CEditorApp::CEditorApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
 {
 	Safe_AddRef(m_pGameInstance);
 }
 
-HRESULT CMapEditorApp::Init()
+HRESULT CEditorApp::Init()
 {
 	if (!m_pGameInstance)
 	{
@@ -45,7 +46,7 @@ HRESULT CMapEditorApp::Init()
 	return S_OK;
 }
 
-void CMapEditorApp::Tick(_float fTimeDelta)
+void CEditorApp::Tick(_float fTimeDelta)
 {
 	if (!m_pGameInstance)
 	{
@@ -57,7 +58,7 @@ void CMapEditorApp::Tick(_float fTimeDelta)
 	m_pGameInstance->Tick_Engine(fTimeDelta);
 }
 
-HRESULT CMapEditorApp::Render()
+HRESULT CEditorApp::Render()
 {
 	++m_iFrameCount;
 
@@ -86,7 +87,7 @@ HRESULT CMapEditorApp::Render()
 	return S_OK;
 }
 
-HRESULT CMapEditorApp::Ready_Prototype_Component_For_Static()
+HRESULT CEditorApp::Ready_Prototype_Component_For_Static()
 {
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), m_pRenderer = CRenderer::Create(m_pDevice, m_pContext))))
 	{
@@ -123,8 +124,23 @@ HRESULT CMapEditorApp::Ready_Prototype_Component_For_Static()
 	return S_OK;
 }
 
-HRESULT CMapEditorApp::Ready_Prototype_GameObject()
+HRESULT CEditorApp::Ready_Prototype_GameObject()
 {
+#pragma region Light
+	LIGHT_DESC LightDesc{};
+
+	LightDesc.eType = LIGHT_DESC::Directional;
+	LightDesc.vDirection = _float4(0.f, -1.f, 1.f, 0.f);
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+
+	if (FAILED(m_pGameInstance->Add_Light(ToIndex(Level_ID::Static), LightDesc)))
+	{
+		return E_FAIL;
+	}
+#pragma endregion
+
 #pragma region Texture
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Terrain"), CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Test/Tile1.dds")))))
 	{
@@ -150,6 +166,11 @@ HRESULT CMapEditorApp::Ready_Prototype_GameObject()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dummy"), CDummy::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Cursor"), CCursor::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -181,20 +202,20 @@ HRESULT CMapEditorApp::Ready_Prototype_GameObject()
 	return S_OK;
 }
 
-CMapEditorApp* CMapEditorApp::Create()
+CEditorApp* CEditorApp::Create()
 {
-	CMapEditorApp* pInstance = new CMapEditorApp();
+	CEditorApp* pInstance = new CEditorApp();
 
 	if (FAILED(pInstance->Init()))
 	{
-		MSG_BOX("Failed to Create : CMapEditorApp");
+		MSG_BOX("Failed to Create : CEditorApp");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CMapEditorApp::Free()
+void CEditorApp::Free()
 {
 	Safe_Release(m_pImguiMgr);
 	Safe_Release(m_pRenderer);

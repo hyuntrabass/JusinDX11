@@ -1,5 +1,5 @@
 #pragma once
-#include "Client_Define.h"
+#include "MapEditor_Define.h"
 #include "Base.h"
 
 BEGIN(Engine)
@@ -9,11 +9,11 @@ END
 
 BEGIN(MapEditor)
 
-class CMapEditorApp final : public CBase
+class CEditorApp final : public CBase
 {
 private:
-	CMapEditorApp();
-	virtual ~CMapEditorApp() = default;
+	CEditorApp();
+	virtual ~CEditorApp() = default;
 
 public:
 	HRESULT Init();
@@ -33,10 +33,10 @@ private:
 
 private:
 	HRESULT Ready_Prototype_Component_For_Static();
-	HRESULT Ready_Prototype_For_Loading();
+	HRESULT Ready_Prototype_GameObject();
 
 public:
-	static CMapEditorApp* Create();
+	static CEditorApp* Create();
 	virtual void Free() override;
 };
 

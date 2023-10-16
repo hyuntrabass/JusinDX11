@@ -1,42 +1,48 @@
-#include "Terrain.h"
+#include "Cursor.h"
 
-CTerrain::CTerrain(_dev pDevice, _context pContext)
+CCursor::CCursor(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
 {
 }
 
-CTerrain::CTerrain(const CTerrain& rhs)
+CCursor::CCursor(const CCursor& rhs)
 	: CGameObject(rhs)
 {
 }
 
-HRESULT CTerrain::Init_Prototype()
+HRESULT CCursor::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CTerrain::Init(void* pArg)
+HRESULT CCursor::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_RotationPerSec(200.f);
+	if (pArg)
+	{
+		m_pPos = (_float*)pArg;
+	}
+
+	m_pTransformCom->Set_Scale(_float3(0.1f, 5.f, 0.1f));
 
 	return S_OK;
 }
 
-void CTerrain::Tick(_float fTimeDelta)
+void CCursor::Tick(_float fTimeDelta)
 {
+	m_pTransformCom->Set_State(State::Pos, XMVectorSet(m_pPos[0], m_pPos[1], m_pPos[2], 1.f));
 }
 
-void CTerrain::Late_Tick(_float fTimeDelta)
+void CCursor::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
 }
 
-HRESULT CTerrain::Render()
+HRESULT CCursor::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -56,7 +62,7 @@ HRESULT CTerrain::Render()
 	return S_OK;
 }
 
-HRESULT CTerrain::Add_Components()
+HRESULT CCursor::Add_Components()
 {
 	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 	{
@@ -68,12 +74,12 @@ HRESULT CTerrain::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_VIBuffer_Cube"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::CreateCharacter), TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Dummy"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 	{
 		return E_FAIL;
 	}
@@ -81,7 +87,7 @@ HRESULT CTerrain::Add_Components()
 	return S_OK;
 }
 
-HRESULT CTerrain::Bind_ShaderResources()
+HRESULT CCursor::Bind_ShaderResources()
 {
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
@@ -108,62 +114,36 @@ HRESULT CTerrain::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(ToIndex(Level_ID::Static), 0);
-	if (!pLightDesc)
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
-CTerrain* CTerrain::Create(_dev pDevice, _context pContext)
+CCursor* CCursor::Create(_dev pDevice, _context pContext)
 {
-	CTerrain* pInstance = new CTerrain(pDevice, pContext);
+	CCursor* pInstance = new CCursor(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CTerrain");
+		MSG_BOX("Failed to Create : CCursor");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CTerrain::Clone(void* pArg)
+CGameObject* CCursor::Clone(void* pArg)
 {
-	CTerrain* pInstance = new CTerrain(*this);
+	CCursor* pInstance = new CCursor(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CTerrain");
+		MSG_BOX("Failed to Clone : CCursor");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CTerrain::Free()
+void CCursor::Free()
 {
 	__super::Free();
 

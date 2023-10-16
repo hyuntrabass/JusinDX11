@@ -41,6 +41,16 @@ public: // Component Manager
 	HRESULT Add_Prototype_Component(_uint iLevelIndex, const wstring& strPrototype, class CComponent* pPrototype);
 	class CComponent* Clone_Component(_uint iLevelIndex, const wstring& strPrototypeTag, void* pArg = nullptr);
 
+public: // Input Manager
+	_bool Key_Pressing(_uint iKey);
+	_bool Key_Down(_uint iKey, InputChannel eInputChannel = InputChannel::Default);
+	_bool Key_Up(_uint iKey, InputChannel eInputChannel = InputChannel::Default);
+	_long Get_MouseMove(MouseState eMouseState);
+
+public: // Light Manager
+	HRESULT Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc);
+	const LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, _uint iIndex) const;
+
 public: // PipeLine
 	_float4 Get_CameraPos() const;
 	_float4x4 Get_Transform_Float4x4(D3DTS eState) const;
@@ -51,14 +61,8 @@ public: // PipeLine
 	void Set_Transform(D3DTS eState, const _float4x4& TransformMatrix);
 	void Set_Transform(D3DTS eState, _fmatrix TransformMatrix);
 
-public: // Input Manager
-	_bool Key_Pressing(_uint iKey);
-	_bool Key_Down(_uint iKey, InputChannel eInputChannel = InputChannel::Default);
-	_bool Key_Up(_uint iKey, InputChannel eInputChannel = InputChannel::Default);
-	_long Get_MouseMove(MouseState eMouseState);
-
 public: // Picking
-	const _bool& Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* vPickPos);
+	const _bool& Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos);
 
 public: // Camera Mode
 	const _uint& Get_CameraModeIndex() const;
@@ -74,6 +78,7 @@ private:
 	class CObject_Manager* m_pObject_Manager{ nullptr };
 	class CComponent_Manager* m_pComponent_Manager{ nullptr };
 	class CInput_Device* m_pInput_Manager{ nullptr };
+	class CLight_Manager* m_pLight_Manager{ nullptr };
 
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };

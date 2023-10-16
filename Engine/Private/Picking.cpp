@@ -31,10 +31,11 @@ void CPicking::Tick()
 
 	// 뷰 스페이스 상의 위치
 	_matrix ProjMatrix_Inverse{ m_pGameInstance->Get_Transform_Inversed(D3DTS::Proj) };
-	XMVector4Transform(vCursorPos, ProjMatrix_Inverse);
+	vCursorPos = XMVector4Transform(vCursorPos, ProjMatrix_Inverse);
 
 	_vector vRayPos{ XMVectorSet(0.f, 0.f, 0.f, 1.f) };
-	_vector vRayDir{ vCursorPos - vRayPos };
+	_vector vRayDir{ XMVectorSet(vCursorPos.m128_f32[0], vCursorPos.m128_f32[1], 1.f, 0.f) };
+	//_vector vRayDir{ vCursorPos - vRayPos }; 
 
 	// 월드 스페이스 상의 위치
 	_matrix ViewMat_Inverse{ m_pGameInstance->Get_Transform_Inversed(D3DTS::View) };
@@ -42,14 +43,14 @@ void CPicking::Tick()
 	XMStoreFloat4(&m_vRayDir_World, XMVector4Normalize(XMVector4Transform(vRayDir, ViewMat_Inverse)));
 }
 
-const _bool& CPicking::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* vPickPos)
+const _bool& CPicking::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos)
 {
 	_float fDist{};
 	_vector vRayPos{ XMLoadFloat4(&m_vRayPos_World) };
 	_vector vRayDir{ XMLoadFloat4(&m_vRayDir_World) };
 	if (TriangleTests::Intersects(vRayPos, vRayDir, vPoint1, vPoint2, vPoint3, fDist))
 	{
-		XMStoreFloat3(vPickPos, vRayPos + (vRayDir * fDist));
+		XMStoreFloat3(pPickPos, vRayPos + (vRayDir * fDist));
 		return true;
 	}
 	else

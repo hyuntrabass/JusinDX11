@@ -4,6 +4,7 @@
 #include "Level_Manager.h"
 #include "Object_Manager.h"
 #include "Picking.h"
+#include "Light_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -45,6 +46,12 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 
 	m_pInput_Manager = CInput_Device::Create(GraphicDesc.hInst, GraphicDesc.hWnd);
 	if (!m_pInput_Manager)
+	{
+		return E_FAIL;
+	}
+
+	m_pLight_Manager = CLight_Manager::Create(iNumLevels);
+	if (!m_pLight_Manager)
 	{
 		return E_FAIL;
 	}
@@ -222,6 +229,66 @@ CComponent* CGameInstance::Clone_Component(_uint iLevelIndex, const wstring& str
 	return m_pComponent_Manager->Clone_Component(iLevelIndex, strPrototypeTag, pArg);
 }
 
+_bool CGameInstance::Key_Pressing(_uint iKey)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Key_Pressing(iKey);
+}
+
+_bool CGameInstance::Key_Down(_uint iKey, InputChannel eInputChannel)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Key_Down(iKey, eInputChannel);
+}
+
+_bool CGameInstance::Key_Up(_uint iKey, InputChannel eInputChannel)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Key_Up(iKey, eInputChannel);
+}
+
+_long CGameInstance::Get_MouseMove(MouseState eMouseState)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Get_MouseMove(eMouseState);
+}
+
+HRESULT CGameInstance::Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc)
+{
+	if (!m_pLight_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pLight_Manager is NULL");
+	}
+
+	return m_pLight_Manager->Add_Light(iLevelIndex, LightDesc);
+}
+
+const LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iLevelIndex, _uint iIndex) const
+{
+	if (!m_pLight_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pLight_Manager is NULL");
+	}
+
+	return m_pLight_Manager->Get_LightDesc(iLevelIndex, iIndex);
+}
+
 _float4 CGameInstance::Get_CameraPos() const
 {
 	if (!m_pPipeLine)
@@ -292,54 +359,14 @@ void CGameInstance::Set_Transform(D3DTS eState, _fmatrix TransformMatrix)
 	m_pPipeLine->Set_Transform(eState, TransformMatrix);
 }
 
-_bool CGameInstance::Key_Pressing(_uint iKey)
-{
-	if (!m_pInput_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
-	}
-
-	return m_pInput_Manager->Key_Pressing(iKey);
-}
-
-_bool CGameInstance::Key_Down(_uint iKey, InputChannel eInputChannel)
-{
-	if (!m_pInput_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
-	}
-
-	return m_pInput_Manager->Key_Down(iKey, eInputChannel);
-}
-
-_bool CGameInstance::Key_Up(_uint iKey, InputChannel eInputChannel)
-{
-	if (!m_pInput_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
-	}
-
-	return m_pInput_Manager->Key_Up(iKey, eInputChannel);
-}
-
-_long CGameInstance::Get_MouseMove(MouseState eMouseState)
-{
-	if (!m_pInput_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
-	}
-
-	return m_pInput_Manager->Get_MouseMove(eMouseState);
-}
-
-const _bool& CGameInstance::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float3* vPickPos)
+const _bool& CGameInstance::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float3* pPickPos)
 {
 	if (!m_pPicking)
 	{
 		MSG_BOX("FATAL ERROR : m_pPicking is NULL");
 	}
 
-	return m_pPicking->Picking_InWorld(vPoint1, vPoint2, vPoint3, vPickPos);
+	return m_pPicking->Picking_InWorld(vPoint1, vPoint2, vPoint3, pPickPos);
 }
 
 const _uint& CGameInstance::Get_CameraModeIndex() const
@@ -360,6 +387,7 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pPicking);
+	Safe_Release(m_pLight_Manager);
 }
 
 void CGameInstance::Release_Engine()

@@ -3,7 +3,7 @@
 
 #include "framework.h"
 #include "MapEditor.h"
-#include "MapEditorApp.h"
+#include "EditorApp.h"
 #include "GameInstance.h"
 
 #define MAX_LOADSTRING 100
@@ -31,7 +31,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     // TODO: 여기에 코드를 입력합니다.
-    CMapEditorApp* pMapEditorApp{ nullptr };
+    CEditorApp* pMapEditorApp{ nullptr };
 
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -44,7 +44,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-    pMapEditorApp = CMapEditorApp::Create();
+    pMapEditorApp = CEditorApp::Create();
     if (!pMapEditorApp)
     {
         return FALSE;
