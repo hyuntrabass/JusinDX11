@@ -16,7 +16,7 @@ public:
 
 public:
 	HRESULT Bind_ShaderResource(class CShader* pShader, const _char* pVariableName, _uint iTextureIndex = 0);
-	HRESULT Bind_ShaderResources(class CShader* pShader, const _char* pVariableName);
+	HRESULT Bind_ShaderResourceArray(class CShader* pShader, const _char* pVariableName);
 
 private:
 	_uint m_iNumTextures{};

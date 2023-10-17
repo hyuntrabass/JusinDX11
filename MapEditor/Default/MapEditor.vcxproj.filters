@@ -31,9 +31,6 @@
     <Filter Include="02.Objects\Dummy">
       <UniqueIdentifier>{1d533789-08df-447c-9524-05ea05bf8880}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.Objects\Cursor">
-      <UniqueIdentifier>{c7f19c17-27fa-4e0e-a174-9cdbf0d066d7}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -90,9 +87,6 @@
     <ClInclude Include="..\public\Dummy.h">
       <Filter>02.Objects\Dummy</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Cursor.h">
-      <Filter>02.Objects\Cursor</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">
@@ -141,9 +135,6 @@
     </ClCompile>
     <ClCompile Include="..\private\Dummy.cpp">
       <Filter>02.Objects\Dummy</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Cursor.cpp">
-      <Filter>02.Objects\Cursor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

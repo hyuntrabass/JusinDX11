@@ -26,8 +26,8 @@ private:
 private: // for Input
 	_int m_Curr_Stage{};
 	_bool m_bDemo{};
-	_float m_pPos[4]{ 0.f, 0.f, 0.f, 1.f };
-	_float m_pLook[4]{ 0.f, 0.f, 1.f, 0.f };
+	_float4 m_pPos{0.f, 0.f, 0.f, 1.f};
+	_float4 m_pLook{0.f, 0.f, 1.f, 0.f};
 	_int m_Curr_Misc{};
 	const _char* const m_pItemList_Misc[3]
 	{
@@ -52,6 +52,7 @@ private: // for Input
 
 private:
 	void Tick();
+	HRESULT Ready_Layers();
 
 public:
 	static CImguiMgr* Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance);

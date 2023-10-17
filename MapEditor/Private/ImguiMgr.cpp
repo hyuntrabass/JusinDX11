@@ -1,6 +1,19 @@
 #include "ImguiMgr.h"
 #include "GameInstance.h"
 #include "Dummy.h"
+#include "Camera_Debug.h"
+
+static void Tip(const char* desc)
+{
+	ImGui::TextDisabled("(Tip)");
+	if (ImGui::BeginItemTooltip())
+	{
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::TextUnformatted(desc);
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
+}
 
 CImguiMgr::CImguiMgr(_dev pDevice, _context pContext, CGameInstance* pGameInstance)
 	: m_pDevice(pDevice)
@@ -22,9 +35,9 @@ HRESULT CImguiMgr::Init()
 	ImGui_ImplWin32_Init(g_hWnd);
 	ImGui_ImplDX11_Init(m_pDevice, m_pContext);
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Cursor"), TEXT("Prototype_GameObject_Cursor"), &m_pPos)))
+	if (FAILED(Ready_Layers()))
 	{
-		MSG_BOX("Failed to Add Layer : Dummy");
+		return E_FAIL;
 	}
 
 	return S_OK;
@@ -71,6 +84,7 @@ void CImguiMgr::Tick()
 	default:
 		break;
 	}
+	NewLine();
 
 	BeginTabBar("Tab bar");
 
@@ -94,40 +108,139 @@ void CImguiMgr::Tick()
 	}
 	EndTabBar();
 
-	InputFloat3("Pos", m_pPos, "%.2f"); SameLine();
-	if (Button("reset Pos"))
+	SeparatorText("Position");
+
+	Tip("Right Click to Set Position");
+	InputFloat3("Pos", (_float*)&m_pPos, "%.2f"); SameLine();
+	if (Button("Reset"))
 	{
-		for (size_t i = 0; i < IM_ARRAYSIZE(m_pPos); i++)
-		{
-			m_pPos[i] = 0.f;
-		}
+		m_pPos.x = 0.f;
+		m_pPos.y = 0.f;
+		m_pPos.z = 0.f;
+		m_pPos.w = 1.f;
 	}
-	if (m_pGameInstance->Key_Down(VK_RBUTTON))
+	if (m_pGameInstance->Key_Pressing(VK_RBUTTON))
 	{
 		_float3 vPickPos{};
-		if (m_pGameInstance->Picking_InWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), &vPickPos))
+		if (m_pGameInstance->Picking_InWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), &vPickPos) ||
+			m_pGameInstance->Picking_InWorld(XMVectorSet(300.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), &vPickPos))
 		{
-			m_pPos[0] = vPickPos.x;
-			m_pPos[1] = vPickPos.y;
-			m_pPos[2] = vPickPos.z;
+			m_pPos.x = vPickPos.x;
+			m_pPos.z = vPickPos.z;
 		}
+	}
+	static _float fHorizental_Step{1.f};
+	static _float fVertical_Step{0.5f};
+	NewLine();
+	Text("Step Amount");
+	PushItemWidth(50.f);
+	InputFloat("Horizental", &fHorizental_Step); SameLine();
+	InputFloat("Vertical", &fVertical_Step);
+	PopItemWidth();
+	if (m_pGameInstance->Key_Down(VK_UP))
+	{
+		m_pPos.z += fHorizental_Step;
+	}
+	if (m_pGameInstance->Key_Down(VK_DOWN))
+	{
+		m_pPos.z -= fHorizental_Step;
+	}
+	if (m_pGameInstance->Key_Down(VK_RIGHT))
+	{
+		m_pPos.x += fHorizental_Step;
+	}
+	if (m_pGameInstance->Key_Down(VK_LEFT))
+	{
+		m_pPos.x -= fHorizental_Step;
+	}
+	if (m_pGameInstance->Key_Down(VK_RSHIFT))
+	{
+		m_pPos.y += fVertical_Step;
+	}
+	if (m_pGameInstance->Key_Down(VK_RCONTROL))
+	{
+		m_pPos.y -= fVertical_Step;
 	}
 
-	InputFloat3("Look", m_pLook, "%.2f"); SameLine();
-	if (Button("reset Look"))
+	SeparatorText("Look");
+
+	Tip("Press 'V' to Set Look from Marker to Cursor. Normalizes Automatically");
+	InputFloat3("Look", (_float*)&m_pLook, "%.2f"); SameLine();
+	if (Button("Normalize"))
 	{
-		for (size_t i = 0; i < IM_ARRAYSIZE(m_pLook); i++)
+		XMStoreFloat4(&m_pLook, XMVector4Normalize(XMLoadFloat4(&m_pLook)));
+	}
+
+	if (m_pGameInstance->Key_Pressing('V'))
+	{
+		_float3 vPickPos{};
+		if (m_pGameInstance->Picking_InWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), &vPickPos) ||
+			m_pGameInstance->Picking_InWorld(XMVectorSet(300.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), &vPickPos))
 		{
-			m_pLook[i] = 0.f;
+			m_pLook.x = vPickPos.x - m_pPos.x;
+			m_pLook.z = vPickPos.z - m_pPos.z;
+
+			XMStoreFloat4(&m_pLook, XMVector4Normalize(XMLoadFloat4(&m_pLook)));
 		}
 	}
+	NewLine();
+	ImVec2 vButtonSize = ImVec2(45.f, 30.f);
+	if (Button("+X", vButtonSize))
+	{
+		m_pLook.x = 1.f;
+		m_pLook.y = 0.f;
+		m_pLook.z = 0.f;
+		m_pLook.w = 0.f;
+	} SameLine();
+
+	if (Button("-X", vButtonSize))
+	{
+		m_pLook.x = -1.f;
+		m_pLook.y = 0.f;
+		m_pLook.z = 0.f;
+		m_pLook.w = 0.f;
+	} SameLine();
+
+	if (Button("+Y", vButtonSize))
+	{
+		m_pLook.x = 0.f;
+		m_pLook.y = 1.f;
+		m_pLook.z = 0.f;
+		m_pLook.w = 0.f;
+	} SameLine();
+
+	if (Button("-Y", vButtonSize))
+	{
+		m_pLook.x = 0.f;
+		m_pLook.y = -1.f;
+		m_pLook.z = 0.f;
+		m_pLook.w = 0.f;
+	} SameLine();
+
+	if (Button("+Z", vButtonSize))
+	{
+		m_pLook.x = 0.f;
+		m_pLook.y = 0.f;
+		m_pLook.z = 1.f;
+		m_pLook.w = 0.f;
+	} SameLine();
+
+	if (Button("-Z", vButtonSize))
+	{
+		m_pLook.x = 0.f;
+		m_pLook.y = 0.f;
+		m_pLook.z = -1.f;
+		m_pLook.w = 0.f;
+	}
+
+	SeparatorText("");
 
 	if (Button("Create") || m_pGameInstance->Key_Down('C'))
 	{
 		DummyInfo Info{};
-		
-		Info.vPos = _float4(m_pPos);
-		XMStoreFloat4(&Info.vLook,XMVector4Normalize(XMVectorSet(m_pLook[0], m_pLook[1], m_pLook[2], m_pLook[3])));
+
+		Info.vPos = m_pPos;
+		XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_pLook)));
 
 		if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
 		{
@@ -137,6 +250,30 @@ void CImguiMgr::Tick()
 
 	EndChild();
 	End();
+}
+
+HRESULT CImguiMgr::Ready_Layers()
+{
+	CCamera::Camera_Desc CamDesc;
+	CamDesc.vCameraPos = _float4(-10.f, 15.f, -10.f, 1.f);
+	CamDesc.vFocusPos = _float4(10.f, 0.f, 10.f, 1.f);
+	CamDesc.fFovY = XMConvertToRadians(60.f);
+	CamDesc.fAspect = static_cast<_float>(g_iWinSizeX) / g_iWinSizeY;
+	CamDesc.fNear = 0.1f;
+	CamDesc.fFar = 500.f;
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Camera"), TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &m_pPos)))
+	{
+		return E_FAIL;
+	}
+
+
+	return S_OK;
 }
 
 CImguiMgr* CImguiMgr::Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance)

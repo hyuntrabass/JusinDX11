@@ -18,7 +18,7 @@ public:
 	HRESULT Begin(_uint iPassIndex);
 
 	HRESULT Bind_ShaderResourceView(const _char* pVariableName, ID3D11ShaderResourceView* pSRV);
-	HRESULT Bind_ShaderResourceViews(const _char* pVariableName, ID3D11ShaderResourceView** pSRVs, _uint iNumTextures);
+	HRESULT Bind_ShaderResourceViewArray(const _char* pVariableName, ID3D11ShaderResourceView** pSRVs, _uint iNumTextures);
 
 	HRESULT Bind_Matrix(const _char* pVariableName, const _float4x4& Matrix);
 	HRESULT Bind_Matrices(const _char* pVariableName, const _float4x4* pMatrices, _uint iNumMatrices);

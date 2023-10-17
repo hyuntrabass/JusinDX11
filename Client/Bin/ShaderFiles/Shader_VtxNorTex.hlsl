@@ -1,7 +1,10 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_Texture;
+texture2D g_Texture_Cursor;
 
-// temp
+vector g_vCursorPos = vector(15.f, 0.f, 15.f, 1.f);
+float g_fCursorRange = 1.f;
+
 vector g_vLightDir;
 
 vector g_vLightDiffuse;
@@ -17,8 +20,6 @@ vector g_vCamPos;
 sampler PointSampler = sampler_state
 {
     Filter = MIN_MAG_MIP_POINT;
-    AddressU = wrap;
-    AddressV = wrap;
 };
 
 sampler LinearSampler = sampler_state
@@ -26,10 +27,6 @@ sampler LinearSampler = sampler_state
     Filter = MIN_MAG_MIP_LINEAR;
     AddressU = wrap;
     AddressV = wrap;
-};
-
-samplerCUBE CubeSampler = sampler_state
-{
 };
 
 struct VS_IN
@@ -81,7 +78,7 @@ PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_Texture.Sample(PointSampler, Input.vTex * 100.f);
+    vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex * 100.f);
     
     float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
     
@@ -94,11 +91,43 @@ PS_OUT PS_Main(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_Editor(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex * 100.f);
+    vector vCursorDiffuse = vector(0.f, 0.f, 0.f, 0.f);
+    
+    if (Input.vWorldPos.x >= g_vCursorPos.x - g_fCursorRange && Input.vWorldPos.x < g_vCursorPos.x + g_fCursorRange &&
+        Input.vWorldPos.z >= g_vCursorPos.z - g_fCursorRange && Input.vWorldPos.z < g_vCursorPos.z + g_fCursorRange)
+    {
+        float2 vCursorUV;
+        vCursorUV.x = (Input.vWorldPos.x - (g_vCursorPos.x - g_fCursorRange)) / g_fCursorRange * 2.f;
+        vCursorUV.y = (Input.vWorldPos.z - (g_vCursorPos.z + g_fCursorRange)) / g_fCursorRange * -2.f;
+        vCursorDiffuse = g_Texture_Cursor.Sample(LinearSampler, vCursorUV / 4);
+    }
+    
+    float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
+    
+    vector vReflect = reflect(normalize(g_vLightDir), Input.vNor);
+    vector vLook = Input.vWorldPos - g_vCamPos;
+    float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
+
+    Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular) + vCursorDiffuse;
+    
+    return Output;
+}
+
 technique11 DefaultTechniqueShader_VtxNorTex
 {
     pass Terrain
     {
         VertexShader = compile vs_5_0 VS_Main();
         PixelShader = compile ps_5_0 PS_Main();
+    }
+    pass Terrain_Editor
+    {
+        VertexShader = compile vs_5_0 VS_Main();
+        PixelShader = compile ps_5_0 PS_Main_Editor();
     }
 };

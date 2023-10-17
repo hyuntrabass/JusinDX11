@@ -13,7 +13,7 @@ public:
 	void Tick();
 
 public:
-	const _bool& Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos);
+	_bool Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos);
 
 private:
 	HWND m_hWnd{};

@@ -4,7 +4,6 @@
 #include "Terrain.h"
 #include "Camera_Debug.h"
 #include "Dummy.h"
-#include "Cursor.h"
 
 CEditorApp::CEditorApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -121,6 +120,11 @@ HRESULT CEditorApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxCubeTex"), CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxCubeTex.hlsl"), VTXCUBETEX::Elements, VTXCUBETEX::iNumElements))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -152,6 +156,11 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Cursor"), CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Loading/Loading_Icon.dds")))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 #pragma region Prototype
@@ -170,34 +179,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Cursor"), CCursor::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
 #pragma endregion
-
-
-
-#pragma region Layer
-	CCamera::Camera_Desc CamDesc;
-	CamDesc.vCameraPos = _float4(-10.f, 15.f, -10.f, 1.f);
-	CamDesc.vFocusPos = _float4(10.f, 0.f, 10.f, 1.f);
-	CamDesc.fFovY = XMConvertToRadians(60.f);
-	CamDesc.fAspect = static_cast<_float>(g_iWinSizeX) / g_iWinSizeY;
-	CamDesc.fNear = 0.1f;
-	CamDesc.fFar = 500.f;
-
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Camera"), TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"))))
-	{
-		return E_FAIL;
-	}
-#pragma endregion
-
 
 	return S_OK;
 }

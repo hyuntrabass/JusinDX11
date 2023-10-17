@@ -22,6 +22,11 @@ HRESULT CTerrain::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	if (pArg)
+	{
+		m_pPos = (_float*)pArg;
+	}
+
 	m_pTransformCom->Set_RotationPerSec(200.f);
 
 	return S_OK;
@@ -43,7 +48,7 @@ HRESULT CTerrain::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_pShaderCom->Begin(1)))
 	{
 		return E_FAIL;
 	}
@@ -73,7 +78,12 @@ HRESULT CTerrain::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom[TT_Terrain])))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Cursor"), TEXT("Com_Texture_Cursor"), (CComponent**)&m_pTextureCom[TT_Cursor])))
 	{
 		return E_FAIL;
 	}
@@ -103,7 +113,17 @@ HRESULT CTerrain::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	if (FAILED(m_pTextureCom[TT_Terrain]->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTextureCom[TT_Cursor]->Bind_ShaderResource(m_pShaderCom, "g_Texture_Cursor")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCursorPos", m_pPos, sizeof _float * 3)))
 	{
 		return E_FAIL;
 	}
@@ -113,7 +133,7 @@ HRESULT CTerrain::Bind_ShaderResources()
 	{
 		return E_FAIL;
 	}
-	
+
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
 	{
 		return E_FAIL;
@@ -167,7 +187,10 @@ void CTerrain::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pTextureCom);
+	for (size_t i = 0; i < TT_End; i++)
+	{
+		Safe_Release(m_pTextureCom[i]);
+	}
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);

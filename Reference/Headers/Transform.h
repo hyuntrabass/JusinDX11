@@ -28,9 +28,9 @@ private:
 
 public:
 	const _float4x4& Get_World_float4x4() const;
-	const _float4x4& Get_World_Inverse_float4x4() const;
+	_float4x4 Get_World_Inverse_float4x4() const;
 	_vector Get_State(State eState) const;
-	const _float3& Get_Scale() const;
+	_float3 Get_Scale() const;
 
 	void Set_State(State eState, _fvector vState);
 	void Set_Scale(_float3 fScale);

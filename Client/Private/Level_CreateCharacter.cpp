@@ -14,6 +14,11 @@ HRESULT CLevel_CreateCharacter::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Light()))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -75,7 +80,7 @@ HRESULT CLevel_CreateCharacter::Ready_Light()
 	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	return m_pGameInstance->Add_Light(ToIndex(Level_ID::Static), LightDesc);
+	return m_pGameInstance->Add_Light(ToIndex(Level_ID::CreateCharacter), LightDesc);
 }
 
 CLevel_CreateCharacter* CLevel_CreateCharacter::Create(_dev pDevice, _context pContext)

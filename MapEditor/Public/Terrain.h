@@ -6,6 +6,12 @@ BEGIN(MapEditor)
 
 class CTerrain final : public CGameObject
 {
+	enum TextureType
+	{
+		TT_Terrain,
+		TT_Cursor,
+		TT_End
+	};
 private:
 	CTerrain(_dev pDevice, _context pContext);
 	CTerrain(const CTerrain& rhs);
@@ -22,7 +28,10 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
-	CTexture* m_pTextureCom{ nullptr };
+	CTexture* m_pTextureCom[TT_End]{ nullptr };
+
+private:
+	_float* m_pPos{};
 
 private:
 	HRESULT Add_Components();

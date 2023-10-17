@@ -359,7 +359,7 @@ void CGameInstance::Set_Transform(D3DTS eState, _fmatrix TransformMatrix)
 	m_pPipeLine->Set_Transform(eState, TransformMatrix);
 }
 
-const _bool& CGameInstance::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float3* pPickPos)
+_bool CGameInstance::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float3* pPickPos)
 {
 	if (!m_pPicking)
 	{

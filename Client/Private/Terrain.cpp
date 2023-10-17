@@ -108,7 +108,7 @@ HRESULT CTerrain::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(ToIndex(Level_ID::Static), 0);
+	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(ToIndex(Level_ID::CreateCharacter), 0);
 	if (!pLightDesc)
 	{
 		return E_FAIL;

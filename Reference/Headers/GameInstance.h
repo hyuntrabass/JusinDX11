@@ -62,7 +62,7 @@ public: // PipeLine
 	void Set_Transform(D3DTS eState, _fmatrix TransformMatrix);
 
 public: // Picking
-	const _bool& Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos);
+	_bool Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos);
 
 public: // Camera Mode
 	const _uint& Get_CameraModeIndex() const;

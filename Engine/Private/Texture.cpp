@@ -74,9 +74,9 @@ HRESULT CTexture::Bind_ShaderResource(CShader* pShader, const _char* pVariableNa
 	return pShader->Bind_ShaderResourceView(pVariableName, m_SRVs[iTextureIndex]);
 }
 
-HRESULT CTexture::Bind_ShaderResources(CShader* pShader, const _char* pVariableName)
+HRESULT CTexture::Bind_ShaderResourceArray(CShader* pShader, const _char* pVariableName)
 {
-	return pShader->Bind_ShaderResourceViews(pVariableName, &m_SRVs.front(), m_iNumTextures);
+	return pShader->Bind_ShaderResourceViewArray(pVariableName, &m_SRVs.front(), m_iNumTextures);
 }
 
 CTexture* CTexture::Create(_dev pDevice, _context pContext, const wstring& strTextureFilePath, _uint iNumTextures)

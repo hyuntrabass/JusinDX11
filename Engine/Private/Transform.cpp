@@ -17,7 +17,7 @@ _vector CTransform::Get_State(State eState) const
 	return XMLoadFloat4x4(&m_WorldMatrix).r[ToIndex(eState)];
 }
 
-const _float3& CTransform::Get_Scale() const
+_float3 CTransform::Get_Scale() const
 {
 	return _float3(XMVectorGetX(XMVector3Length(Get_State(State::Right)))
 	, XMVectorGetX(XMVector3Length(Get_State(State::Up)))
@@ -29,7 +29,7 @@ const _float4x4& CTransform::Get_World_float4x4() const
 	return m_WorldMatrix;
 }
 
-const _float4x4& CTransform::Get_World_Inverse_float4x4() const
+_float4x4 CTransform::Get_World_Inverse_float4x4() const
 {
 	_float4x4 WorldInversed{};
 	XMStoreFloat4x4(&WorldInversed, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_WorldMatrix)));

@@ -43,7 +43,7 @@ void CPicking::Tick()
 	XMStoreFloat4(&m_vRayDir_World, XMVector4Normalize(XMVector4Transform(vRayDir, ViewMat_Inverse)));
 }
 
-const _bool& CPicking::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos)
+_bool CPicking::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos)
 {
 	_float fDist{};
 	_vector vRayPos{ XMLoadFloat4(&m_vRayPos_World) };

@@ -1,5 +1,6 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_Texture;
+texture2D g_TextureArray[12];
 int g_TexIndex;
 
 sampler PointSampler = sampler_state
@@ -70,13 +71,34 @@ PS_OUT PS_Main(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_Button(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vHighlight = g_TextureArray[1].Sample(LinearSampler, Input.vTex) * g_TexIndex;
+    vHighlight.a = 0.f;
+    
+    Output.vColor = g_TextureArray[0].Sample(LinearSampler, Input.vTex) + vHighlight;
+    
+    if (Output.vColor.a < 0.7f)
+    {
+        discard;
+    }
+
+    return Output;
+}
+
 technique11 DefaultTechnique
 {
     pass UI
     {
-        //SetRasterizerState(RS_Test);
-
         VertexShader = compile vs_5_0 VS_Main();
         PixelShader = compile ps_5_0 PS_Main();
+    }
+
+    pass Button
+    {
+        VertexShader = compile vs_5_0 VS_Main();
+        PixelShader = compile ps_5_0 PS_Main_Button();
     }
 };

@@ -116,7 +116,7 @@ HRESULT CShader::Bind_ShaderResourceView(const _char* pVariableName, ID3D11Shade
     return pShaderResourceVariable->SetResource(pSRV);
 }
 
-HRESULT CShader::Bind_ShaderResourceViews(const _char* pVariableName, ID3D11ShaderResourceView** pSRVs, _uint iNumTextures)
+HRESULT CShader::Bind_ShaderResourceViewArray(const _char* pVariableName, ID3D11ShaderResourceView** pSRVs, _uint iNumTextures)
 {
     if (!m_pEffect)
     {

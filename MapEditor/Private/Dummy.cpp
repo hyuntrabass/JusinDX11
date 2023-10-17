@@ -66,7 +66,7 @@ HRESULT CDummy::Add_Components()
         return E_FAIL;
     }
 
-    if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxNorTex"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+    if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxCubeTex"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
     {
         return E_FAIL;
     }

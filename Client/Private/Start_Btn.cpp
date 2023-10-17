@@ -59,7 +59,7 @@ HRESULT CStart_Btn::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_pShaderCom->Begin(1)))
 	{
 		return E_FAIL;
 	}
@@ -125,7 +125,12 @@ HRESULT CStart_Btn::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iIndex)))
+	if (FAILED(m_pTextureCom->Bind_ShaderResourceArray(m_pShaderCom, "g_TextureArray")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_TexIndex", &m_iIndex, sizeof m_iIndex)))
 	{
 		return E_FAIL;
 	}
