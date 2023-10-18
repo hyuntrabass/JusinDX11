@@ -10,6 +10,11 @@ CBlendObject::CBlendObject(const CBlendObject& rhs)
 {
 }
 
+const _float& CBlendObject::Get_CamDistance() const
+{
+	return m_fCamDistance;
+}
+
 HRESULT CBlendObject::Init_Prototype()
 {
 	return S_OK;
@@ -33,9 +38,9 @@ HRESULT CBlendObject::Render()
 	return S_OK;
 }
 
-HRESULT CBlendObject::Compute_CamDistance(CTransform* pTransform)
+void CBlendObject::Compute_CamDistance()
 {
-	return S_OK;
+	m_fCamDistance = XMVector3Length(m_pTransformCom->Get_State(State::Pos) - XMLoadFloat4(&m_pGameInstance->Get_CameraPos())).m128_f32[0];
 }
 
 void CBlendObject::Free()

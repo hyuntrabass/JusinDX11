@@ -1,24 +1,9 @@
+#include "Engine_Shader_Define.hlsli"
+
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_Texture;
 texture2D g_TextureArray[12];
 int g_TexIndex;
-
-sampler PointSampler = sampler_state
-{
-    Filter = MIN_MAG_MIP_POINT;
-};
-
-sampler LinearSampler = sampler_state
-{
-    Filter = MIN_MAG_MIP_LINEAR;
-    AddressU = wrap;
-    AddressV = wrap;
-};
-
-RasterizerState RS_Test
-{
-    CullMode = None;
-};
 
 struct VS_IN
 {
@@ -63,11 +48,6 @@ PS_OUT PS_Main(PS_IN Input)
     
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
     
-    if (Output.vColor.a < 0.7f)
-    {
-        discard;
-    }
-
     return Output;
 }
 
@@ -80,11 +60,6 @@ PS_OUT PS_Main_Button(PS_IN Input)
     
     Output.vColor = g_TextureArray[0].Sample(LinearSampler, Input.vTex) + vHighlight;
     
-    if (Output.vColor.a < 0.7f)
-    {
-        discard;
-    }
-
     return Output;
 }
 
@@ -92,12 +67,20 @@ technique11 DefaultTechnique
 {
     pass UI
     {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
         VertexShader = compile vs_5_0 VS_Main();
         PixelShader = compile ps_5_0 PS_Main();
     }
 
     pass Button
     {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
         VertexShader = compile vs_5_0 VS_Main();
         PixelShader = compile ps_5_0 PS_Main_Button();
     }

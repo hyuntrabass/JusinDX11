@@ -11,10 +11,7 @@ protected:
 	virtual ~CBlendObject() = default;
 
 public:
-	const _float& Get_CamDistance() const
-	{
-		return m_fCamDistance;
-	}
+	const _float& Get_CamDistance() const;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -24,7 +21,7 @@ public:
 	virtual HRESULT Render() override;
 
 protected:
-	HRESULT Compute_CamDistance(class CTransform* pTransform);
+	void Compute_CamDistance();
 
 protected:
 	_float m_fCamDistance{};

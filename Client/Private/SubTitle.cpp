@@ -25,18 +25,28 @@ HRESULT CSubTitle::Init(void* pArg)
 	m_fSizeX = 796.f * 0.6f;
 	m_fSizeY = 208.f * 0.6f;
 
-	m_fX = 350.f;
-	m_fY = 245.f;
+	m_fX = 350.f - 1000.f;
+	m_fY = 255.f;
 
 	m_pTransformCom->Set_RotationPerSec(540.f);
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 1.f);
 
 	return S_OK;
 }
 
 void CSubTitle::Tick(_float fTimeDelta)
 {
+	if (m_fX < 340.f)
+	{
+		m_fX += 20.f;
+		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 1.f);
+	}
+	else
+	{
+		m_fX = 350.f;
+		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 1.f);
+	}
 }
 
 void CSubTitle::Late_Tick(_float fTimeDelta)

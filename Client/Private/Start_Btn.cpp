@@ -28,7 +28,7 @@ HRESULT CStart_Btn::Init(void* pArg)
 	m_fX = g_iWinSizeX >> 1;
 	m_fY = g_iWinSizeY >> 1;
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 0.9f);
 
 	return S_OK;
 }

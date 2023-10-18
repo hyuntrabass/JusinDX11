@@ -14,6 +14,8 @@
 #include <DirectXTK/DDSTextureLoader.h>
 #include <DirectXTK/WICTextureLoader.h>
 #include <DirectXTK/ScreenGrab.h>
+#include <DirectXTK/SpriteBatch.h>
+#include <DirectXTK/SpriteFont.h>
 using namespace DirectX;
 
 // 외부 라이브러리 lib

@@ -1,12 +1,21 @@
 #pragma once
 #include "MapEditor_Define.h"
 #include "Base.h"
+#include "Dummy.h"
 
 BEGIN(Engine)
 class CGameInstance;
 END
 
 BEGIN(MapEditor)
+
+enum class ItemType
+{
+	Misc,
+	Monster,
+	NPC,
+	End
+};
 
 class CImguiMgr final : public CBase
 {
@@ -25,24 +34,21 @@ private:
 
 private: // for Input
 	_int m_Curr_Stage{};
-	_bool m_bDemo{};
+	ItemType m_eItemType{ ItemType::End };
 	_float4 m_pPos{0.f, 0.f, 0.f, 1.f};
 	_float4 m_pLook{0.f, 0.f, 1.f, 0.f};
-	_int m_Curr_Misc{};
 	const _char* const m_pItemList_Misc[3]
 	{
 		"Box",
 		"Tree",
 		"Rock",
 	};
-	_int m_Curr_Monster{};
 	const _char* const m_pItemList_Monster[3]
 	{
 		"Leaf_Ninja",
 		"Cloud_Ninja",
 		"Sand_Ninja",
 	};
-	_int m_Curr_NPC{};
 	const _char* const m_pItemList_NPC[3]
 	{
 		"Kakashi",
@@ -51,8 +57,14 @@ private: // for Input
 	};
 
 private:
+	list<DummyInfo> m_DummyList{};
+
+private:
 	void Tick();
 	HRESULT Ready_Layers();
+
+	HRESULT Load_Data();
+	HRESULT Export_Data();
 
 public:
 	static CImguiMgr* Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance);

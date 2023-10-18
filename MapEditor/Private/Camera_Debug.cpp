@@ -80,11 +80,11 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_pGameInstance->Key_Pressing(VK_LSHIFT))
+	if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 	{
 		m_pTransformCom->Set_Speed(m_fSpeed * 2.f);
 	}
-	else if (m_pGameInstance->Key_Pressing(VK_LCONTROL))
+	else if (m_pGameInstance->Key_Pressing(DIK_LCONTROL))
 	{
 		m_pTransformCom->Set_Speed(m_fSpeed * 0.2f);
 	}
@@ -93,27 +93,27 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 		m_pTransformCom->Set_Speed(m_fSpeed);
 	}
 
-	if (m_pGameInstance->Key_Pressing('W'))
+	if (m_pGameInstance->Key_Pressing(DIK_W))
 	{
 		m_pTransformCom->Go_Straight(fTimeDelta);
 	}
-	if (m_pGameInstance->Key_Pressing('S'))
+	if (m_pGameInstance->Key_Pressing(DIK_S))
 	{
 		m_pTransformCom->Go_Backward(fTimeDelta);
 	}
-	if (m_pGameInstance->Key_Pressing('A'))
+	if (m_pGameInstance->Key_Pressing(DIK_A))
 	{
 		m_pTransformCom->Go_Left(fTimeDelta);
 	}
-	if (m_pGameInstance->Key_Pressing('D'))
+	if (m_pGameInstance->Key_Pressing(DIK_D))
 	{
 		m_pTransformCom->Go_Right(fTimeDelta);
 	}
-	if (m_pGameInstance->Key_Pressing('Q'))
+	if (m_pGameInstance->Key_Pressing(DIK_Q))
 	{
 		m_pTransformCom->Go_Up(fTimeDelta);
 	}
-	if (m_pGameInstance->Key_Pressing('Z'))
+	if (m_pGameInstance->Key_Pressing(DIK_Z))
 	{
 		m_pTransformCom->Go_Down(fTimeDelta);
 	}

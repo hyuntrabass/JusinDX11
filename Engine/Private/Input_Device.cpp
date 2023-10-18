@@ -19,6 +19,14 @@ HRESULT CInput_Device::Init(HINSTANCE hInst, HWND hWnd)
 	m_pMouse->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
 	m_pMouse->Acquire();
 
+	if (FAILED(m_pInputSDK->CreateDevice(GUID_SysKeyboard, &m_pKeyboard, nullptr)))
+	{
+		return E_FAIL;
+	}
+	m_pKeyboard->SetDataFormat(&c_dfDIKeyboard);
+	m_pKeyboard->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
+	m_pKeyboard->Acquire();
+
 	//if (FAILED(m_pInputSDK->CreateDevice(GUID_Joystick, &m_pGamepad, nullptr)))
 	//{
 	//	return E_FAIL;
@@ -33,41 +41,42 @@ HRESULT CInput_Device::Init(HINSTANCE hInst, HWND hWnd)
 void CInput_Device::Update_InputDev()
 {
 	m_pMouse->GetDeviceState(sizeof m_MouseState, &m_MouseState);
+	m_pKeyboard->GetDeviceState(sizeof m_byKeyState, &m_byKeyState);
 	//m_pGamepad->GetDeviceState(sizeof m_GamepadState, &m_GamepadState);
 }
 
-_bool CInput_Device::Key_Pressing(_uint iKey)
+_bool CInput_Device::Key_Pressing(_ubyte iKey)
 {
-	if (GetAsyncKeyState(iKey) & 0x8000)
+	if (m_byKeyState[iKey] & 0x8000)
 		return true;
 
 	return false;
 }
 
-_bool CInput_Device::Key_Down(_uint iKey, InputChannel eInputChannel)
+_bool CInput_Device::Key_Down(_ubyte iKey, InputChannel eInputChannel)
 {
-	if (!m_bKeyState[ToIndex(eInputChannel)][iKey] && (GetAsyncKeyState(iKey) & 0x8000))
+	if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x8000))
 	{
-		m_bKeyState[ToIndex(eInputChannel)][iKey] = !m_bKeyState[ToIndex(eInputChannel)][iKey];
+		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = true;
 		return true;
 	}
 
-	if (m_bKeyState[ToIndex(eInputChannel)][iKey] && !(GetAsyncKeyState(iKey) & 0x8000))
-		m_bKeyState[ToIndex(eInputChannel)][iKey] = !m_bKeyState[ToIndex(eInputChannel)][iKey];
+	if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x8000))
+		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = false;
 
 	return false;
 }
 
-_bool CInput_Device::Key_Up(_uint iKey, InputChannel eInputChannel)
+_bool CInput_Device::Key_Up(_ubyte iKey, InputChannel eInputChannel)
 {
-	if (m_bKeyState[ToIndex(eInputChannel)][iKey] && !(GetAsyncKeyState(iKey) & 0x8000))
+	if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x8000))
 	{
-		m_bKeyState[ToIndex(eInputChannel)][iKey] = !m_bKeyState[ToIndex(eInputChannel)][iKey];
+		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = false;
 		return true;
 	}
 
-	if (!m_bKeyState[ToIndex(eInputChannel)][iKey] && (GetAsyncKeyState(iKey) & 0x8000))
-		m_bKeyState[ToIndex(eInputChannel)][iKey] = !m_bKeyState[ToIndex(eInputChannel)][iKey];
+	if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x8000))
+		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = true;
 
 
 	return false;

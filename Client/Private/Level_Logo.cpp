@@ -28,7 +28,7 @@ HRESULT CLevel_Logo::Init()
 
 void CLevel_Logo::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(VK_PRIOR))
+	if (m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(ToIndex(Level_ID::Loading), CLevel_Loading::Create(m_pDevice, m_pContext, Level_ID::CreateCharacter))))
 		{

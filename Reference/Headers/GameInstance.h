@@ -42,9 +42,9 @@ public: // Component Manager
 	class CComponent* Clone_Component(_uint iLevelIndex, const wstring& strPrototypeTag, void* pArg = nullptr);
 
 public: // Input Manager
-	_bool Key_Pressing(_uint iKey);
-	_bool Key_Down(_uint iKey, InputChannel eInputChannel = InputChannel::Default);
-	_bool Key_Up(_uint iKey, InputChannel eInputChannel = InputChannel::Default);
+	_bool Key_Pressing(_ubyte iKey);
+	_bool Key_Down(_ubyte iKey, InputChannel eInputChannel = InputChannel::Default);
+	_bool Key_Up(_ubyte iKey, InputChannel eInputChannel = InputChannel::Default);
 	_long Get_MouseMove(MouseState eMouseState);
 
 public: // Light Manager

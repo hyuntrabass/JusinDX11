@@ -53,14 +53,14 @@ void CLogo::Tick(_float fTimeDelta)
 		_float fDecreaseAmount{ 150 };
 		m_fSizeX -= fDecreaseAmount;
 		m_fSizeY -= fDecreaseAmount * 0.25f;
+		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	}
 	else
 	{
 		m_fSizeX = 1024.f;
 		m_fSizeY = 256.f;
+		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 	}
-
-	m_pTransformCom->Set_Scale(_float3(m_fSizeX, m_fSizeY, 1.f));
 }
 
 void CLogo::Late_Tick(_float fTimeDelta)

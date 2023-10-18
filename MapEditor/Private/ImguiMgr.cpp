@@ -1,6 +1,5 @@
 #include "ImguiMgr.h"
 #include "GameInstance.h"
-#include "Dummy.h"
 #include "Camera_Debug.h"
 
 static void Tip(const char* desc)
@@ -60,15 +59,28 @@ HRESULT CImguiMgr::DrawEditor()
 
 void CImguiMgr::Tick()
 {
-	ShowDemoWindow(&m_bDemo);
+	static _bool bDemo{ true };
+	ShowDemoWindow(&bDemo);
 
 	const _char* Test[3]{ "Tutorial", "Stage1", "Stage2" };
 	Begin("Editor");
 
 	Combo("Stage", &m_Curr_Stage, Test, IM_ARRAYSIZE(Test));
 
-	Button("Load", ImVec2(100.f, 50.f)); SameLine();
-	Button("Export", ImVec2(100.f, 50.f));
+	if (Button("Load", ImVec2(100.f, 50.f)))
+	{
+		if (FAILED(Load_Data()))
+		{
+			MSG_BOX("Failed to Load Map Data!");
+		}
+	}SameLine();
+	if (Button("Export", ImVec2(100.f, 50.f)))
+	{
+		if (FAILED(Export_Data()))
+		{
+			MSG_BOX("Failed to Export Map Data!");
+		}
+	}
 
 	switch (m_Curr_Stage)
 	{
@@ -88,22 +100,26 @@ void CImguiMgr::Tick()
 
 	BeginTabBar("Tab bar");
 
+	static _int iCurrListIndex{};
 	if (BeginTabItem("Misc"))
 	{
-		ListBox("Misc", &m_Curr_Misc, m_pItemList_Misc, IM_ARRAYSIZE(m_pItemList_Misc));
+		ListBox("Misc", &iCurrListIndex, m_pItemList_Misc, IM_ARRAYSIZE(m_pItemList_Misc));
 
+		m_eItemType = ItemType::Misc;
 		EndTabItem();
 	}
 	if (BeginTabItem("Monster"))
 	{
-		ListBox("Monster", &m_Curr_Monster, m_pItemList_Monster, IM_ARRAYSIZE(m_pItemList_Monster));
+		ListBox("Monster", &iCurrListIndex, m_pItemList_Monster, IM_ARRAYSIZE(m_pItemList_Monster));
 
+		m_eItemType = ItemType::Monster;
 		EndTabItem();
 	}
 	if (BeginTabItem("NPC"))
 	{
-		ListBox("NPC", &m_Curr_NPC, m_pItemList_NPC, IM_ARRAYSIZE(m_pItemList_NPC));
+		ListBox("NPC", &iCurrListIndex, m_pItemList_NPC, IM_ARRAYSIZE(m_pItemList_NPC));
 
+		m_eItemType = ItemType::NPC;
 		EndTabItem();
 	}
 	EndTabBar();
@@ -137,27 +153,33 @@ void CImguiMgr::Tick()
 	InputFloat("Horizental", &fHorizental_Step); SameLine();
 	InputFloat("Vertical", &fVertical_Step);
 	PopItemWidth();
-	if (m_pGameInstance->Key_Down(VK_UP))
+
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+	{
+		int a = 10;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_UP))
 	{
 		m_pPos.z += fHorizental_Step;
 	}
-	if (m_pGameInstance->Key_Down(VK_DOWN))
+	if (m_pGameInstance->Key_Down(DIK_DOWN))
 	{
 		m_pPos.z -= fHorizental_Step;
 	}
-	if (m_pGameInstance->Key_Down(VK_RIGHT))
+	if (m_pGameInstance->Key_Down(DIK_RIGHT))
 	{
 		m_pPos.x += fHorizental_Step;
 	}
-	if (m_pGameInstance->Key_Down(VK_LEFT))
+	if (m_pGameInstance->Key_Down(DIK_LEFT))
 	{
 		m_pPos.x -= fHorizental_Step;
 	}
-	if (m_pGameInstance->Key_Down(VK_RSHIFT))
+	if (m_pGameInstance->Key_Down(DIK_RSHIFT))
 	{
 		m_pPos.y += fVertical_Step;
 	}
-	if (m_pGameInstance->Key_Down(VK_RCONTROL))
+	if (m_pGameInstance->Key_Down(DIK_RCONTROL))
 	{
 		m_pPos.y -= fVertical_Step;
 	}
@@ -171,7 +193,7 @@ void CImguiMgr::Tick()
 		XMStoreFloat4(&m_pLook, XMVector4Normalize(XMLoadFloat4(&m_pLook)));
 	}
 
-	if (m_pGameInstance->Key_Pressing('V'))
+	if (m_pGameInstance->Key_Pressing(DIK_V))
 	{
 		_float3 vPickPos{};
 		if (m_pGameInstance->Picking_InWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), &vPickPos) ||
@@ -203,7 +225,7 @@ void CImguiMgr::Tick()
 
 	if (Button("+Y", vButtonSize))
 	{
-		m_pLook.x = 0.f;
+		m_pLook.x = 0.0001f;
 		m_pLook.y = 1.f;
 		m_pLook.z = 0.f;
 		m_pLook.w = 0.f;
@@ -211,7 +233,7 @@ void CImguiMgr::Tick()
 
 	if (Button("-Y", vButtonSize))
 	{
-		m_pLook.x = 0.f;
+		m_pLook.x = 0.0001f;
 		m_pLook.y = -1.f;
 		m_pLook.z = 0.f;
 		m_pLook.w = 0.f;
@@ -235,17 +257,21 @@ void CImguiMgr::Tick()
 
 	SeparatorText("");
 
-	if (Button("Create") || m_pGameInstance->Key_Down('C'))
+	if (Button("Create") || m_pGameInstance->Key_Down(DIK_C))
 	{
 		DummyInfo Info{};
 
 		Info.vPos = m_pPos;
 		XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_pLook)));
+		Info.eType = m_eItemType;
+		Info.iIndex = iCurrListIndex;
 
 		if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
 		{
 			MSG_BOX("Failed to Add Layer : Dummy");
 		}
+
+		m_DummyList.push_back(Info);
 	}
 
 	EndChild();
@@ -273,6 +299,68 @@ HRESULT CImguiMgr::Ready_Layers()
 	}
 
 
+	return S_OK;
+}
+
+HRESULT CImguiMgr::Load_Data()
+{
+	wstring strFilePath = L"../../Client/Bin/Resources/Map/Map_Data" + std::to_wstring(m_Curr_Stage) + L".hyntra";
+
+	HANDLE hFile = CreateFile(strFilePath.c_str(), GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		return E_FAIL;
+	}
+
+	_ulong dwByte{};
+	DummyInfo Data{};
+
+	m_DummyList.clear();
+
+	while (true)
+	{
+		ReadFile(hFile, &Data, sizeof DummyInfo, &dwByte, nullptr);
+
+		if (dwByte == 0)
+		{
+			break;
+		}
+
+		if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Data)))
+		{
+			MSG_BOX("Failed to Add Layer : Dummy");
+		}
+
+		m_DummyList.push_back(Data);
+	}
+
+	CloseHandle(hFile);
+	return S_OK;
+}
+
+HRESULT CImguiMgr::Export_Data()
+{
+	wstring strFilePath = L"../../Client/Bin/Resources/Map/Map_Data" + std::to_wstring(m_Curr_Stage) + L".hyntra";
+
+	HANDLE hFile = CreateFile(strFilePath.c_str(), GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		return E_FAIL;
+	}
+
+	_ulong dwByte{};
+	for (auto& Data : m_DummyList)
+	{
+		WriteFile(hFile, &Data, sizeof DummyInfo, &dwByte, nullptr);
+
+		if (dwByte != sizeof DummyInfo)
+		{
+			CloseHandle(hFile);
+			return E_FAIL;
+		}
+	}
+
+	CloseHandle(hFile);
 	return S_OK;
 }
 

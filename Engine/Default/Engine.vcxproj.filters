@@ -94,6 +94,15 @@
     <Filter Include="01.Utility\06.Light\Manager">
       <UniqueIdentifier>{a373189d-7396-476c-bf34-dd0e4a532f94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\98.ShaderFiles">
+      <UniqueIdentifier>{6db7ed90-386d-45f5-94d2-631cad5e6d08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\07.Fonts">
+      <UniqueIdentifier>{0c231ae3-aa73-41b1-92f9-57d677b7eba4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\07.Fonts\Manager">
+      <UniqueIdentifier>{3c4fad97-3f1a-4fec-bc1b-b385cae3e137}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -182,6 +191,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Light_Manager.cpp">
       <Filter>01.Utility\06.Light\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MyFont.cpp">
+      <Filter>01.Utility\07.Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Font_Manager.cpp">
+      <Filter>01.Utility\07.Fonts\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -284,5 +299,16 @@
     <ClInclude Include="..\public\Light_Manager.h">
       <Filter>01.Utility\06.Light\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\MyFont.h">
+      <Filter>01.Utility\07.Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Font_Manager.h">
+      <Filter>01.Utility\07.Fonts\Manager</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Bin\ShaderFiles\Engine_Shader_Define.hlsli">
+      <Filter>01.Utility\98.ShaderFiles</Filter>
+    </None>
   </ItemGroup>
 </Project>

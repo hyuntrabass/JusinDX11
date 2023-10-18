@@ -1,3 +1,5 @@
+#include "Engine_Shader_Define.hlsli"
+
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_Texture;
 texture2D g_Texture_Cursor;
@@ -15,19 +17,6 @@ vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1.f);
 vector g_vMtrlSpecular = vector(0.7f, 1.0f, 0.7f, 1.f);
 
 vector g_vCamPos;
-
-
-sampler PointSampler = sampler_state
-{
-    Filter = MIN_MAG_MIP_POINT;
-};
-
-sampler LinearSampler = sampler_state
-{
-    Filter = MIN_MAG_MIP_LINEAR;
-    AddressU = wrap;
-    AddressV = wrap;
-};
 
 struct VS_IN
 {
@@ -122,11 +111,20 @@ technique11 DefaultTechniqueShader_VtxNorTex
 {
     pass Terrain
     {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
         VertexShader = compile vs_5_0 VS_Main();
         PixelShader = compile ps_5_0 PS_Main();
     }
+
     pass Terrain_Editor
     {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
         VertexShader = compile vs_5_0 VS_Main();
         PixelShader = compile ps_5_0 PS_Main_Editor();
     }

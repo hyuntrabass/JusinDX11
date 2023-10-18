@@ -229,7 +229,7 @@ CComponent* CGameInstance::Clone_Component(_uint iLevelIndex, const wstring& str
 	return m_pComponent_Manager->Clone_Component(iLevelIndex, strPrototypeTag, pArg);
 }
 
-_bool CGameInstance::Key_Pressing(_uint iKey)
+_bool CGameInstance::Key_Pressing(_ubyte iKey)
 {
 	if (!m_pInput_Manager)
 	{
@@ -239,7 +239,7 @@ _bool CGameInstance::Key_Pressing(_uint iKey)
 	return m_pInput_Manager->Key_Pressing(iKey);
 }
 
-_bool CGameInstance::Key_Down(_uint iKey, InputChannel eInputChannel)
+_bool CGameInstance::Key_Down(_ubyte iKey, InputChannel eInputChannel)
 {
 	if (!m_pInput_Manager)
 	{
@@ -249,7 +249,7 @@ _bool CGameInstance::Key_Down(_uint iKey, InputChannel eInputChannel)
 	return m_pInput_Manager->Key_Down(iKey, eInputChannel);
 }
 
-_bool CGameInstance::Key_Up(_uint iKey, InputChannel eInputChannel)
+_bool CGameInstance::Key_Up(_ubyte iKey, InputChannel eInputChannel)
 {
 	if (!m_pInput_Manager)
 	{

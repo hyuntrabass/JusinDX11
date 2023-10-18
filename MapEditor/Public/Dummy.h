@@ -6,6 +6,8 @@ BEGIN(MapEditor)
 
 struct DummyInfo
 {
+	enum class ItemType eType{};
+	_uint iIndex{};
 	_float4 vPos{};
 	_float4 vLook{};
 };

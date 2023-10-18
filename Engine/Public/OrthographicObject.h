@@ -11,6 +11,9 @@ protected:
 	virtual ~COrthographicObject() = default;
 
 public:
+	const _float& Get_Depth() const;
+
+public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
@@ -18,11 +21,12 @@ public:
 	virtual HRESULT Render() override;
 
 protected:
-	void Apply_Orthographic(_uint iWinSizeX, _uint iWinSizeY, _float fPosZ = 0.f);
+	void Apply_Orthographic(_uint iWinSizeX, _uint iWinSizeY, _float fDepth = 0.f);
 
 protected:
 	_float m_fSizeX{}, m_fSizeY{};
 	_float m_fX{}, m_fY{};
+	_float m_fDepth{};
 	_float4x4 m_ViewMatrix{}, m_ProjMatrix{};
 
 public:
