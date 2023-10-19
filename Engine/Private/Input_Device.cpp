@@ -23,31 +23,80 @@ HRESULT CInput_Device::Init(HINSTANCE hInst, HWND hWnd)
 	{
 		return E_FAIL;
 	}
-	m_pKeyboard->SetDataFormat(&c_dfDIKeyboard);
-	m_pKeyboard->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
-	m_pKeyboard->Acquire();
 
-	//if (FAILED(m_pInputSDK->CreateDevice(GUID_Joystick, &m_pGamepad, nullptr)))
-	//{
-	//	return E_FAIL;
-	//}
-	//m_pGamepad->SetDataFormat(&c_dfDIJoystick);
-	//m_pGamepad->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
-	//m_pGamepad->Acquire();
+	if (FAILED(m_pKeyboard->SetDataFormat(&c_dfDIKeyboard)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pKeyboard->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pKeyboard->Acquire()))
+	{
+		return E_FAIL;
+	}
+	_ulong result = XInputGetState(0, nullptr);
+	if (result != ERROR_SUCCESS)
+	{
+		if (result == ERROR_DEVICE_NOT_CONNECTED)
+		{
+			return S_OK;
+		}
+		//return E_FAIL;
+	}
+	XINPUT_VIBRATION Vibe{};
+	Vibe.wLeftMotorSpeed = { 32000 };
+	Vibe.wRightMotorSpeed = { 32000 };
+
+	XInputSetState(0, &Vibe);
 
 	return S_OK;
 }
 
 void CInput_Device::Update_InputDev()
 {
-	m_pMouse->GetDeviceState(sizeof m_MouseState, &m_MouseState);
-	m_pKeyboard->GetDeviceState(sizeof m_byKeyState, &m_byKeyState);
-	//m_pGamepad->GetDeviceState(sizeof m_GamepadState, &m_GamepadState);
+	if (FAILED(m_pMouse->GetDeviceState(sizeof m_MouseState, &m_MouseState)))
+	{
+		MSG_BOX("Failed to Get Mouse State");
+	}
+	if (FAILED(m_pKeyboard->GetDeviceState(256, &m_byKeyState)))
+	{
+		MSG_BOX("Failed to Get Keyboard State");
+	}
+
+	_ulong result = XInputGetState(0, &m_GamepadState);
+	if (result != ERROR_SUCCESS && result != ERROR_DEVICE_NOT_CONNECTED)
+	{
+		MSG_BOX("Failed to Get Gamepad State");
+	}
+
+	if (m_GamepadState.dwPacketNumber != m_dwPrevPacket) // 패드 입력
+	{
+		m_isGamepasMode = true;
+	}
+
+	if (m_MouseState.lX || m_MouseState.lY || m_MouseState.lZ || *(_long*)(&m_MouseState.rgbButtons)) // 마우스 입력
+	{
+		m_isGamepasMode = false;
+	}
+	
+	_bool isKeyInput{};
+	for (auto& Input : m_byKeyState)
+	{
+		isKeyInput += Input;
+	}
+	if (isKeyInput) // 키보드 입력
+	{
+		m_isGamepasMode = false;
+	}
 }
 
 _bool CInput_Device::Key_Pressing(_ubyte iKey)
 {
-	if (m_byKeyState[iKey] & 0x8000)
+	if (m_byKeyState[iKey] & 0x80)
 		return true;
 
 	return false;
@@ -55,13 +104,13 @@ _bool CInput_Device::Key_Pressing(_ubyte iKey)
 
 _bool CInput_Device::Key_Down(_ubyte iKey, InputChannel eInputChannel)
 {
-	if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x8000))
+	if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x80))
 	{
 		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = true;
 		return true;
 	}
 
-	if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x8000))
+	if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x80))
 		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = false;
 
 	return false;
@@ -69,15 +118,51 @@ _bool CInput_Device::Key_Down(_ubyte iKey, InputChannel eInputChannel)
 
 _bool CInput_Device::Key_Up(_ubyte iKey, InputChannel eInputChannel)
 {
-	if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x8000))
+	if (m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && !(m_byKeyState[iKey] & 0x80))
 	{
 		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = false;
 		return true;
 	}
 
-	if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x8000))
+	if (!m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] && (m_byKeyState[iKey] & 0x80))
 		m_bPrevFrame_KeyState[ToIndex(eInputChannel)][iKey] = true;
 
+
+	return false;
+}
+
+_bool CInput_Device::Mouse_Pressing(_long iKey)
+{
+	if (m_MouseState.rgbButtons[iKey] & 0x80)
+		return true;
+
+	return false;
+}
+
+_bool CInput_Device::Mouse_Down(_long iKey, InputChannel eInputChannel)
+{
+	if (!m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] && (m_MouseState.rgbButtons[iKey] & 0x80))
+	{
+		m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] = true;
+		return true;
+	}
+
+	if (m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] && !(m_MouseState.rgbButtons[iKey] & 0x80))
+		m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] = false;
+
+	return false;
+}
+
+_bool CInput_Device::Mouse_Up(_long iKey, InputChannel eInputChannel)
+{
+	if (m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] && !(m_MouseState.rgbButtons[iKey] & 0x80))
+	{
+		m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] = false;
+		return true;
+	}
+
+	if (!m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] && (m_MouseState.rgbButtons[iKey] & 0x80))
+		m_bPrevFrame_MouseState[ToIndex(eInputChannel)][iKey] = true;
 
 	return false;
 }
@@ -85,6 +170,80 @@ _bool CInput_Device::Key_Up(_ubyte iKey, InputChannel eInputChannel)
 _long CInput_Device::Get_MouseMove(MouseState eMouseState)
 {
 	return *(((_long*)&m_MouseState) + ToIndex(eMouseState));
+}
+
+_bool CInput_Device::Gamepad_Pressing(GAMPAD_KEY_STATE eKey)
+{
+	if (m_GamepadState.Gamepad.wButtons & eKey)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+_bool CInput_Device::Gamepad_Down(GAMPAD_KEY_STATE eKey, InputChannel eInputChannel)
+{
+	if (!m_bPrevFrame_GampadState[ToIndex(eInputChannel)][eKey] && m_GamepadState.Gamepad.wButtons & eKey)
+	{
+		m_bPrevFrame_GampadState[ToIndex(eInputChannel)][eKey] = true;
+		return true;
+	}
+
+	if (m_bPrevFrame_GampadState[ToIndex(eInputChannel)][eKey] && !(m_GamepadState.Gamepad.wButtons & eKey))
+		m_bPrevFrame_GampadState[ToIndex(eInputChannel)][eKey] = false;
+
+	return false;
+}
+
+_bool CInput_Device::Gamepad_Up(GAMPAD_KEY_STATE eKey, InputChannel eInputChannel)
+{
+	if (m_bPrevFrame_GampadState[ToIndex(eInputChannel)][eKey] && !(m_GamepadState.Gamepad.wButtons & eKey))
+	{
+		m_bPrevFrame_GampadState[ToIndex(eInputChannel)][eKey] = false;
+		return true;
+	}
+
+	if (!m_bPrevFrame_GampadState[ToIndex(eInputChannel)][eKey] && (m_GamepadState.Gamepad.wButtons & eKey))
+		m_bPrevFrame_GampadState[ToIndex(eInputChannel)][eKey] = true;
+
+	return false;
+}
+
+_float CInput_Device::Gamepad_Trigger(GAMPAD_KEY_STATE eKey)
+{
+	if (eKey == XINPUT_LT)
+	{
+		return static_cast<_float>(m_GamepadState.Gamepad.bLeftTrigger) / UCHAR_MAX;
+	}
+	if (eKey == XINPUT_RT)
+	{
+		return static_cast<_float>(m_GamepadState.Gamepad.bRightTrigger) / UCHAR_MAX;
+	}
+}
+
+_float2 CInput_Device::Gamepad_Stick(GAMPAD_KEY_STATE eKey)
+{
+	_float2 Output{};
+
+	if (eKey == XINPUT_LS)
+	{
+		Output.x = static_cast<_float>(m_GamepadState.Gamepad.sThumbLX) / USHRT_MAX;
+		Output.y = static_cast<_float>(m_GamepadState.Gamepad.sThumbLY) / USHRT_MAX;
+	}
+
+	if (eKey == XINPUT_RS)
+	{
+		Output.x = static_cast<_float>(m_GamepadState.Gamepad.sThumbLX) / USHRT_MAX;
+		Output.y = static_cast<_float>(m_GamepadState.Gamepad.sThumbLY) / USHRT_MAX;
+	}
+
+	return Output;
+}
+
+const _bool& CInput_Device::IsGamepadMode() const
+{
+	return m_isGamepasMode;
 }
 
 CInput_Device* CInput_Device::Create(HINSTANCE hInst, HWND hWnd)

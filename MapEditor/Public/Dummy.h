@@ -1,16 +1,9 @@
 #pragma once
 #include "MapEditor_Define.h"
 #include "GameObject.h"
+#include "ImguiMgr.h"
 
 BEGIN(MapEditor)
-
-struct DummyInfo
-{
-	enum class ItemType eType{};
-	_uint iIndex{};
-	_float4 vPos{};
-	_float4 vLook{};
-};
 
 class CDummy final : public CGameObject
 {
@@ -30,6 +23,9 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
+
+private:
+	DummyInfo m_Info{};
 
 private:
 	HRESULT Add_Components();

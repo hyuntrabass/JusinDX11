@@ -80,7 +80,7 @@ HRESULT CMainApp::Render()
 
 	if (m_fTimeAcc >= 1.f)
 	{
-		wstring fps = to_wstring(m_iFrameCount);
+		wstring fps = L"FPS: " + to_wstring(m_iFrameCount);
 
 		SetWindowText(g_hWnd, fps.c_str());
 

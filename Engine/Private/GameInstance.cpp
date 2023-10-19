@@ -259,6 +259,36 @@ _bool CGameInstance::Key_Up(_ubyte iKey, InputChannel eInputChannel)
 	return m_pInput_Manager->Key_Up(iKey, eInputChannel);
 }
 
+_bool CGameInstance::Mouse_Pressing(_long iKey)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Mouse_Pressing(iKey);
+}
+
+_bool CGameInstance::Mouse_Down(_long iKey, InputChannel eInputChannel)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Mouse_Down(iKey, eInputChannel);
+}
+
+_bool CGameInstance::Mouse_Up(_long iKey, InputChannel eInputChannel)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Mouse_Up(iKey, eInputChannel);
+}
+
 _long CGameInstance::Get_MouseMove(MouseState eMouseState)
 {
 	if (!m_pInput_Manager)
@@ -267,6 +297,56 @@ _long CGameInstance::Get_MouseMove(MouseState eMouseState)
 	}
 
 	return m_pInput_Manager->Get_MouseMove(eMouseState);
+}
+
+_bool CGameInstance::Gamepad_Pressing(GAMPAD_KEY_STATE eKey)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Gamepad_Pressing(eKey);
+}
+
+_bool CGameInstance::Gamepad_Down(GAMPAD_KEY_STATE eKey, InputChannel eInputChannel)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Gamepad_Down(eKey, eInputChannel);
+}
+
+_bool CGameInstance::Gamepad_Up(GAMPAD_KEY_STATE eKey, InputChannel eInputChannel)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Gamepad_Up(eKey, eInputChannel);
+}
+
+_float CGameInstance::Gamepad_Trigger(GAMPAD_KEY_STATE eKey)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Gamepad_Trigger(eKey);
+}
+
+_float2 CGameInstance::Gamepad_Stick(GAMPAD_KEY_STATE eKey)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Gamepad_Stick(eKey);
 }
 
 HRESULT CGameInstance::Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc)

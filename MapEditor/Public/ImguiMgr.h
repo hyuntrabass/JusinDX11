@@ -1,7 +1,6 @@
 #pragma once
 #include "MapEditor_Define.h"
 #include "Base.h"
-#include "Dummy.h"
 
 BEGIN(Engine)
 class CGameInstance;
@@ -17,6 +16,15 @@ enum class ItemType
 	End
 };
 
+struct DummyInfo
+{
+	enum class ItemType eType {};
+	_uint iIndex{};
+	_uint iStageIndex{};
+	_float4 vPos{};
+	_float4 vLook{};
+};
+
 class CImguiMgr final : public CBase
 {
 private:
@@ -25,7 +33,8 @@ private:
 
 public:
 	HRESULT Init();
-	HRESULT DrawEditor();
+	void Tick();
+	HRESULT Render();
 
 private:
 	_dev m_pDevice{ nullptr };
@@ -60,8 +69,8 @@ private:
 	list<DummyInfo> m_DummyList{};
 
 private:
-	void Tick();
 	HRESULT Ready_Layers();
+	void Create_Dummy(const _int& iListIndex);
 
 	HRESULT Load_Data();
 	HRESULT Export_Data();

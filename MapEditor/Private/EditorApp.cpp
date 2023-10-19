@@ -55,6 +55,13 @@ void CEditorApp::Tick(_float fTimeDelta)
 	m_fTimeAcc += fTimeDelta;
 
 	m_pGameInstance->Tick_Engine(fTimeDelta);
+
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	m_pImguiMgr->Tick();
+
 }
 
 HRESULT CEditorApp::Render()
@@ -71,12 +78,12 @@ HRESULT CEditorApp::Render()
 		m_iFrameCount = 0;
 	}
 
-	m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 1.f, 0.f, 1.f));
+	m_pGameInstance->Clear_BackBuffer_View(_float4(0.7f, 0.7f, 0.f, 1.f));
 	m_pGameInstance->Clear_DepthStencil_View();
 
 	m_pRenderer->Draw_RenderGroup();
 
-	if (FAILED(m_pImguiMgr->DrawEditor()))
+	if (FAILED(m_pImguiMgr->Render()))
 	{
 		return E_FAIL;
 	}

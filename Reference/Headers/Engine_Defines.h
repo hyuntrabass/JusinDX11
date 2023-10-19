@@ -18,15 +18,26 @@
 #include <DirectXTK/SpriteFont.h>
 using namespace DirectX;
 
+#include <Xinput.h>
+
+#ifdef CONVERTER
+#include "assimp/scene.h"
+#include "assimp/Importer.hpp"
+#endif // CONVERTER
+
+
 // 외부 라이브러리 lib
+#pragma comment(lib, "xinput.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "DirectXTK.lib")
 #pragma comment(lib, "dinput8.lib")
 
 #ifdef _DEBUG
 #pragma comment(lib, "Effects11d.lib")
+#pragma comment(lib, "assimp-vc143-mtd.lib")
 #else //Release
 #pragma comment(lib, "Effects11.lib")
+#pragma comment(lib, "assimp-vc143-mt.lib")
 #endif
 
 #include <vector>
@@ -63,6 +74,56 @@ using namespace DirectX;
 #endif
 
 #endif // _DEBUG
+
+
+namespace Engine
+{
+	enum class MouseState
+	{
+		x, y, wheel, end
+	};
+	enum MOUSE_KEY_STATE
+	{
+		DIM_LBUTTON,
+		DIM_RBUTTON,
+		DIM_MBUTTON,
+		DIM_END
+	};
+//#define XINPUT_DPAD_UP          0x0001
+//#define XINPUT_DPAD_DOWN        0x0002
+//#define XINPUT_DPAD_LEFT        0x0004
+//#define XINPUT_DPAD_RIGHT       0x0008
+//#define XINPUT_START            0x0010
+//#define XINPUT_BACK             0x0020
+//#define XINPUT_LEFT_THUMB       0x0040
+//#define XINPUT_RIGHT_THUMB      0x0080
+//#define XINPUT_LEFT_SHOULDER    0x0100
+//#define XINPUT_RIGHT_SHOULDER   0x0200
+//#define XINPUT_A                0x1000
+//#define XINPUT_B                0x2000
+//#define XINPUT_X                0x4000
+//#define XINPUT_Y                0x8000
+
+	enum GAMPAD_KEY_STATE
+	{
+		XINPUT_UP = 0x0001,
+		XINPUT_DOWN = 0x0002,
+		XINPUT_LEFT = 0x0004,
+		XINPUT_RIGHT = 0x0008,
+		XINPUT_START = 0x0010,
+		XINPUT_BACK = 0x0020,
+		XINPUT_LS = 0x0040,
+		XINPUT_RS = 0x0080,
+		XINPUT_LB = 0x0100,
+		XINPUT_RB = 0x0200,
+		XINPUT_A = 0x1000,
+		XINPUT_B = 0x2000,
+		XINPUT_X = 0x4000,
+		XINPUT_Y = 0x8000,
+		XINPUT_LT,
+		XINPUT_RT,
+	};
+}
 
 using namespace std;
 using namespace Engine;

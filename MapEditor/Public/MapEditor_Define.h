@@ -24,10 +24,10 @@ namespace MapEditor
 		Stage2,
 		End
 	};
+
 }
 
 extern HWND g_hWnd;
 extern HINSTANCE g_hInst;
 
 using namespace MapEditor;
-using namespace ImGui;

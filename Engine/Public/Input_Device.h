@@ -16,11 +16,6 @@ enum class InputChannel
 	End
 };
 
-enum class MouseState
-{
-	x, y, wheel, end
-};
-
 class CInput_Device final : public CBase
 {
 private:
@@ -35,7 +30,21 @@ public:
 	_bool Key_Pressing(_ubyte iKey);
 	_bool Key_Down(_ubyte iKey, InputChannel eInputChannel);
 	_bool Key_Up(_ubyte iKey, InputChannel eInputChannel);
+
+	_bool Mouse_Pressing(_long iKey);
+	_bool Mouse_Down(_long iKey, InputChannel eInputChannel);
+	_bool Mouse_Up(_long iKey, InputChannel eInputChannel);
 	_long Get_MouseMove(MouseState eMouseState);
+
+	_bool Gamepad_Pressing(GAMPAD_KEY_STATE eKey);
+	_bool Gamepad_Down(GAMPAD_KEY_STATE eKey, InputChannel eInputChannel);
+	_bool Gamepad_Up(GAMPAD_KEY_STATE eKey, InputChannel eInputChannel);
+	// Trigger pushed amount between 0 and 1
+	_float Gamepad_Trigger(GAMPAD_KEY_STATE eKey); 
+	// Stick coord between 0 and 1
+	_float2 Gamepad_Stick(GAMPAD_KEY_STATE eKey); 
+
+	const _bool& IsGamepadMode() const;
 
 private:
 	LPDIRECTINPUT8 m_pInputSDK{ nullptr };
@@ -44,10 +53,16 @@ private:
 	LPDIRECTINPUTDEVICE8 m_pGamepad{ nullptr };
 
 private:
-	_bool m_bPrevFrame_KeyState[ToIndex(InputChannel::End)][0xff]{};
-	_byte m_byKeyState[0xff]{};
+	_bool m_bPrevFrame_KeyState[ToIndex(InputChannel::End)][UCHAR_MAX]{};
+	_bool m_bPrevFrame_MouseState[ToIndex(InputChannel::End)][DIM_END]{};
+	_bool m_bPrevFrame_GampadState[ToIndex(InputChannel::End)][USHRT_MAX]{};
+
+	_byte m_byKeyState[UCHAR_MAX]{};
 	DIMOUSESTATE m_MouseState{};
-	DIJOYSTATE m_GamepadState{};
+	XINPUT_STATE m_GamepadState{};
+
+	_ulong m_dwPrevPacket{};
+	_bool m_isGamepasMode{};
 
 public:
 	static CInput_Device* Create(HINSTANCE hInst, HWND hWnd);
