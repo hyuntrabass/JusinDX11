@@ -40,9 +40,12 @@ public:
 	_bool Gamepad_Down(GAMPAD_KEY_STATE eKey, InputChannel eInputChannel);
 	_bool Gamepad_Up(GAMPAD_KEY_STATE eKey, InputChannel eInputChannel);
 	// Trigger pushed amount between 0 and 1
-	_float Gamepad_Trigger(GAMPAD_KEY_STATE eKey); 
 	// Stick coord between 0 and 1
-	_float2 Gamepad_Stick(GAMPAD_KEY_STATE eKey); 
+	const _float& Gamepad_LTrigger() const;
+	const _float& Gamepad_RTrigger() const;
+	const _float2& Gamepad_LStick() const;
+	const _float2& Gamepad_RStick() const;
+	void Gamepad_Vibration(_ushort LMotorSpeed, _ushort RMotorSpeed);
 
 	const _bool& IsGamepadMode() const;
 
@@ -61,8 +64,13 @@ private:
 	DIMOUSESTATE m_MouseState{};
 	XINPUT_STATE m_GamepadState{};
 
+	_float2 m_vLStick{};
+	_float2 m_vRStick{};
+	_float m_fLTrigger{};
+	_float m_fRTrigger{};
+
 	_ulong m_dwPrevPacket{};
-	_bool m_isGamepasMode{};
+	_bool m_isGamepadMode{};
 
 public:
 	static CInput_Device* Create(HINSTANCE hInst, HWND hWnd);

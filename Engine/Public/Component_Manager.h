@@ -6,6 +6,7 @@
 #include "VIBuffer_Cube.h"
 #include "VIBuffer_Terrain.h"
 #include "Transform.h"
+#include "Model.h"
 
 BEGIN(Engine)
 

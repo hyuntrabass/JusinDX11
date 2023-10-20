@@ -148,6 +148,7 @@
     <ClInclude Include="..\Public\Imgui\imstb_rectpack.h" />
     <ClInclude Include="..\Public\Imgui\imstb_textedit.h" />
     <ClInclude Include="..\Public\Imgui\imstb_truetype.h" />
+    <ClInclude Include="..\public\MeshLoader.h" />
     <ClInclude Include="..\Public\ModelConverter_Define.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Model_Converter.h" />
@@ -158,6 +159,7 @@
     <ClCompile Include="..\Private\Camera_Debug.cpp" />
     <ClCompile Include="..\Private\ConverterApp.cpp" />
     <ClCompile Include="..\Private\ImguiMgr.cpp" />
+    <ClCompile Include="..\private\MeshLoader.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui_demo.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui_draw.cpp" />

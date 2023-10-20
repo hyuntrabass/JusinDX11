@@ -1,5 +1,5 @@
 #include "Input_Device.h"
-
+#include <iostream>
 CInput_Device::CInput_Device()
 {
 }
@@ -47,11 +47,8 @@ HRESULT CInput_Device::Init(HINSTANCE hInst, HWND hWnd)
 		}
 		//return E_FAIL;
 	}
-	XINPUT_VIBRATION Vibe{};
-	Vibe.wLeftMotorSpeed = { 32000 };
-	Vibe.wRightMotorSpeed = { 32000 };
 
-	XInputSetState(0, &Vibe);
+	Gamepad_Vibration(32000, 16000);
 
 	return S_OK;
 }
@@ -73,14 +70,55 @@ void CInput_Device::Update_InputDev()
 		MSG_BOX("Failed to Get Gamepad State");
 	}
 
+	if (abs(m_GamepadState.Gamepad.sThumbLX) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+		abs(m_GamepadState.Gamepad.sThumbLY) < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+	{
+		m_vLStick = _float2(0.f, 0.f);
+	}
+	else
+	{
+		m_vLStick.x = static_cast<_float>(m_GamepadState.Gamepad.sThumbLX) / SHRT_MAX;
+		m_vLStick.y = static_cast<_float>(m_GamepadState.Gamepad.sThumbLY) / SHRT_MAX;
+	}
+
+	if (abs(m_GamepadState.Gamepad.sThumbRX) < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
+		abs(m_GamepadState.Gamepad.sThumbRY) < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
+	{
+		m_vRStick = _float2(0.f, 0.f);
+	}
+	else
+	{
+		m_vRStick.x = static_cast<_float>(m_GamepadState.Gamepad.sThumbRX) / SHRT_MAX;
+		m_vRStick.y = static_cast<_float>(m_GamepadState.Gamepad.sThumbRY) / SHRT_MAX;
+	}
+
+	if (abs(m_GamepadState.Gamepad.bLeftTrigger) < XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+	{
+		m_fLTrigger = 0.f;
+	}
+	else
+	{
+		m_fLTrigger = static_cast<_float>(m_GamepadState.Gamepad.bLeftTrigger) / CHAR_MAX;
+	}
+
+	if (abs(m_GamepadState.Gamepad.bRightTrigger) < XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+	{
+		m_fRTrigger = 0.f;
+	}
+	else
+	{
+		m_fRTrigger = static_cast<_float>(m_GamepadState.Gamepad.bRightTrigger) / CHAR_MAX;
+	}
+
 	if (m_GamepadState.dwPacketNumber != m_dwPrevPacket) // 패드 입력
 	{
-		m_isGamepasMode = true;
+		m_isGamepadMode = true;
 	}
+	m_dwPrevPacket = m_GamepadState.dwPacketNumber;
 
 	if (m_MouseState.lX || m_MouseState.lY || m_MouseState.lZ || *(_long*)(&m_MouseState.rgbButtons)) // 마우스 입력
 	{
-		m_isGamepasMode = false;
+		m_isGamepadMode = false;
 	}
 	
 	_bool isKeyInput{};
@@ -90,7 +128,7 @@ void CInput_Device::Update_InputDev()
 	}
 	if (isKeyInput) // 키보드 입력
 	{
-		m_isGamepasMode = false;
+		m_isGamepadMode = false;
 	}
 }
 
@@ -210,40 +248,38 @@ _bool CInput_Device::Gamepad_Up(GAMPAD_KEY_STATE eKey, InputChannel eInputChanne
 	return false;
 }
 
-_float CInput_Device::Gamepad_Trigger(GAMPAD_KEY_STATE eKey)
+const _float& CInput_Device::Gamepad_LTrigger() const
 {
-	if (eKey == XINPUT_LT)
-	{
-		return static_cast<_float>(m_GamepadState.Gamepad.bLeftTrigger) / UCHAR_MAX;
-	}
-	if (eKey == XINPUT_RT)
-	{
-		return static_cast<_float>(m_GamepadState.Gamepad.bRightTrigger) / UCHAR_MAX;
-	}
+	return m_fLTrigger;
 }
 
-_float2 CInput_Device::Gamepad_Stick(GAMPAD_KEY_STATE eKey)
+const _float& CInput_Device::Gamepad_RTrigger() const
 {
-	_float2 Output{};
+	return m_fRTrigger;
+}
 
-	if (eKey == XINPUT_LS)
-	{
-		Output.x = static_cast<_float>(m_GamepadState.Gamepad.sThumbLX) / USHRT_MAX;
-		Output.y = static_cast<_float>(m_GamepadState.Gamepad.sThumbLY) / USHRT_MAX;
-	}
+const _float2& CInput_Device::Gamepad_LStick() const
+{
+	return m_vLStick;
+}
 
-	if (eKey == XINPUT_RS)
-	{
-		Output.x = static_cast<_float>(m_GamepadState.Gamepad.sThumbLX) / USHRT_MAX;
-		Output.y = static_cast<_float>(m_GamepadState.Gamepad.sThumbLY) / USHRT_MAX;
-	}
+const _float2& CInput_Device::Gamepad_RStick() const
+{
+	return m_vRStick;
+}
 
-	return Output;
+void CInput_Device::Gamepad_Vibration(_ushort LMotorSpeed, _ushort RMotorSpeed)
+{
+	XINPUT_VIBRATION Vibe{};
+	Vibe.wLeftMotorSpeed = { LMotorSpeed };
+	Vibe.wRightMotorSpeed = { RMotorSpeed };
+
+	XInputSetState(0, &Vibe);
 }
 
 const _bool& CInput_Device::IsGamepadMode() const
 {
-	return m_isGamepasMode;
+	return m_isGamepadMode;
 }
 
 CInput_Device* CInput_Device::Create(HINSTANCE hInst, HWND hWnd)

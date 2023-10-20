@@ -26,6 +26,7 @@ HRESULT CDummy::Init(void* pArg)
 
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
 	m_pTransformCom->Look_At_Dir(XMLoadFloat4(&m_Info.vLook));
+	m_pTransformCom->Set_Scale(_float3(0.001f, 0.001f, 0.001f));
 
 	return S_OK;
 }
@@ -55,10 +56,14 @@ HRESULT CDummy::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pVIBufferCom->Render()))
+	if (FAILED(m_pModel->Render()))
 	{
 		return E_FAIL;
 	}
+	//if (FAILED(m_pVIBufferCom->Render()))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }
@@ -70,17 +75,22 @@ HRESULT CDummy::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxCubeTex"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_VIBuffer_Cube"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModel)))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Dummy"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	//if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_VIBuffer_Cube"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+	//{
+	//	return E_FAIL;
+	//}
+
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Sky"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 	{
 		return E_FAIL;
 	}
@@ -174,8 +184,9 @@ void CDummy::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pModel);
 	Safe_Release(m_pTextureCom);
+	//Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pVIBufferCom);
 }

@@ -50,12 +50,17 @@ public: // Input Manager
 	_bool Mouse_Up(_long iKey, InputChannel eInputChannel = InputChannel::Default);
 	_long Get_MouseMove(MouseState eMouseState);
 	_bool Gamepad_Pressing(GAMPAD_KEY_STATE eKey);
-	_bool Gamepad_Down(GAMPAD_KEY_STATE eKey, InputChannel eInputChannel);
-	_bool Gamepad_Up(GAMPAD_KEY_STATE eKey, InputChannel eInputChannel);
+	_bool Gamepad_Down(GAMPAD_KEY_STATE eKey, InputChannel eInputChannel = InputChannel::Default);
+	_bool Gamepad_Up(GAMPAD_KEY_STATE eKey, InputChannel eInputChannel = InputChannel::Default);
 	// Trigger pushed amount between 0 and 1
-	_float Gamepad_Trigger(GAMPAD_KEY_STATE eKey);
+	const _float& Gamepad_LTrigger() const;
+	// Trigger pushed amount between 0 and 1
+	const _float& Gamepad_RTrigger() const;
 	// Stick coord between 0 and 1
-	_float2 Gamepad_Stick(GAMPAD_KEY_STATE eKey);
+	const _float2& Gamepad_LStick() const;
+	// Stick coord between 0 and 1
+	const _float2& Gamepad_RStick() const;
+	void Gamepad_Vibration(_ushort LMotorSpeed, _ushort RMotorSpeed);
 
 public: // Light Manager
 	HRESULT Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc);

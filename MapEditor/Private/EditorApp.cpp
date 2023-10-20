@@ -4,6 +4,7 @@
 #include "Terrain.h"
 #include "Camera_Debug.h"
 #include "Dummy.h"
+#include "Sky.h"
 
 CEditorApp::CEditorApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -17,6 +18,14 @@ HRESULT CEditorApp::Init()
 	{
 		return E_FAIL;
 	}
+
+#ifdef _DEBUG
+#ifdef UNICODE
+#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+#else
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+#endif
+#endif // _DEBUG
 
 	RECT rc{};
 	GetClientRect(g_hWnd, &rc);
@@ -132,6 +141,11 @@ HRESULT CEditorApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxStatMesh"), CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxStatMesh.hlsl"), VTXSTATICMESH::Elements, VTXSTATICMESH::iNumElements))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -168,7 +182,25 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Sky"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Sky.dds")))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
+
+#pragma region Model
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Sky.hyntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Dummy"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill12.hyntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+#pragma endregion
+
 
 #pragma region Prototype
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
@@ -182,6 +214,11 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Dummy"), CDummy::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Sky"), CSky::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

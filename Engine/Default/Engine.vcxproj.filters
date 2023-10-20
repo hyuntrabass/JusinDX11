@@ -103,6 +103,12 @@
     <Filter Include="01.Utility\07.Fonts\Manager">
       <UniqueIdentifier>{3c4fad97-3f1a-4fec-bc1b-b385cae3e137}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\Model">
+      <UniqueIdentifier>{1da3de9f-50d3-4e65-b49d-b3b270c4cc48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Components\Model\StaticMash">
+      <UniqueIdentifier>{51435836-528c-46b4-9e53-247ae771e4f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -197,6 +203,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Font_Manager.cpp">
       <Filter>01.Utility\07.Fonts\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Model.cpp">
+      <Filter>01.Utility\03.Components\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Static_Mash.cpp">
+      <Filter>01.Utility\03.Components\Model\StaticMash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -304,6 +316,12 @@
     </ClInclude>
     <ClInclude Include="..\public\Font_Manager.h">
       <Filter>01.Utility\07.Fonts\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Model.h">
+      <Filter>01.Utility\03.Components\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Static_Mash.h">
+      <Filter>01.Utility\03.Components\Model\StaticMash</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

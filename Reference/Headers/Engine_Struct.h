@@ -53,4 +53,16 @@ namespace Engine
 		static const unsigned int iNumElements{ 3 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
+
+	using VTXSTATICMESH = struct ENGINE_DLL tagVertex_Static_Mesh
+	{
+		XMFLOAT3 vPosition{};
+		XMFLOAT3 vNormal{};
+		XMFLOAT2 vTexcoord{};
+		XMFLOAT3 vTangent{};
+
+		static const unsigned int iNumElements{ 4 };
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	};
+
 }

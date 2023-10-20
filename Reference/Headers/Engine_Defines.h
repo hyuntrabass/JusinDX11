@@ -20,12 +20,6 @@ using namespace DirectX;
 
 #include <Xinput.h>
 
-#ifdef CONVERTER
-#include "assimp/scene.h"
-#include "assimp/Importer.hpp"
-#endif // CONVERTER
-
-
 // 외부 라이브러리 lib
 #pragma comment(lib, "xinput.lib")
 #pragma comment(lib, "d3d11.lib")
@@ -34,10 +28,8 @@ using namespace DirectX;
 
 #ifdef _DEBUG
 #pragma comment(lib, "Effects11d.lib")
-#pragma comment(lib, "assimp-vc143-mtd.lib")
 #else //Release
 #pragma comment(lib, "Effects11.lib")
-#pragma comment(lib, "assimp-vc143-mt.lib")
 #endif
 
 #include <vector>
@@ -47,6 +39,7 @@ using namespace DirectX;
 #include <string>
 #include <unordered_map>
 #include <ctime>
+#include <fstream>
 
 #include "Engine_Macro.h"
 #include "Engine_Struct.h"

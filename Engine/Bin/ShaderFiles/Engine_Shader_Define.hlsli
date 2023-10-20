@@ -22,7 +22,7 @@ RasterizerState RS_Default
     FrontCounterClockWise = false;
 };
 
-RasterizerState RS_Sky
+RasterizerState RS_CCW
 {
     FillMode = Solid;
     CullMode = Back;

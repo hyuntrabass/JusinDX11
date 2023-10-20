@@ -19,6 +19,9 @@
     <Filter Include="97.ImGui\ImGui">
       <UniqueIdentifier>{0cc9b640-468e-43e2-9e49-430855e3927a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. MeshLoader">
+      <UniqueIdentifier>{71783962-6315-4a3e-af61-6a56ad31225c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -69,6 +72,9 @@
     <ClInclude Include="..\Public\ImguiMgr.h">
       <Filter>97.ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\MeshLoader.h">
+      <Filter>02. MeshLoader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Model_Converter.ico">
@@ -116,6 +122,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\ImguiMgr.cpp">
       <Filter>97.ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MeshLoader.cpp">
+      <Filter>02. MeshLoader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

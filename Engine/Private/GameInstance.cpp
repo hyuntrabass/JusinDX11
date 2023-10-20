@@ -329,24 +329,54 @@ _bool CGameInstance::Gamepad_Up(GAMPAD_KEY_STATE eKey, InputChannel eInputChanne
 	return m_pInput_Manager->Gamepad_Up(eKey, eInputChannel);
 }
 
-_float CGameInstance::Gamepad_Trigger(GAMPAD_KEY_STATE eKey)
+const _float& CGameInstance::Gamepad_LTrigger() const
 {
 	if (!m_pInput_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
 	}
 
-	return m_pInput_Manager->Gamepad_Trigger(eKey);
+	return m_pInput_Manager->Gamepad_LTrigger();
 }
 
-_float2 CGameInstance::Gamepad_Stick(GAMPAD_KEY_STATE eKey)
+const _float& CGameInstance::Gamepad_RTrigger() const
 {
 	if (!m_pInput_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
 	}
 
-	return m_pInput_Manager->Gamepad_Stick(eKey);
+	return m_pInput_Manager->Gamepad_RTrigger();
+}
+
+const _float2& CGameInstance::Gamepad_LStick() const
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Gamepad_LStick();
+}
+
+const _float2& CGameInstance::Gamepad_RStick() const
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	return m_pInput_Manager->Gamepad_RStick();
+}
+
+void CGameInstance::Gamepad_Vibration(_ushort LMotorSpeed, _ushort RMotorSpeed)
+{
+	if (!m_pInput_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pInput_Manager is NULL");
+	}
+
+	m_pInput_Manager->Gamepad_Vibration(LMotorSpeed, RMotorSpeed);
 }
 
 HRESULT CGameInstance::Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc)

@@ -146,19 +146,19 @@ void CImguiMgr::Tick()
 	InputFloat("Vertical", &fVertical_Step);
 	PopItemWidth();
 
-	if (m_pGameInstance->Key_Down(DIK_UP))
+	if (m_pGameInstance->Key_Down(DIK_UP) || m_pGameInstance->Gamepad_Down(XINPUT_UP))
 	{
 		m_pPos.z += fHorizental_Step;
 	}
-	if (m_pGameInstance->Key_Down(DIK_DOWN))
+	if (m_pGameInstance->Key_Down(DIK_DOWN) || m_pGameInstance->Gamepad_Down(XINPUT_DOWN))
 	{
 		m_pPos.z -= fHorizental_Step;
 	}
-	if (m_pGameInstance->Key_Down(DIK_RIGHT))
+	if (m_pGameInstance->Key_Down(DIK_RIGHT) || m_pGameInstance->Gamepad_Down(XINPUT_RIGHT))
 	{
 		m_pPos.x += fHorizental_Step;
 	}
-	if (m_pGameInstance->Key_Down(DIK_LEFT))
+	if (m_pGameInstance->Key_Down(DIK_LEFT) || m_pGameInstance->Gamepad_Down(XINPUT_LEFT))
 	{
 		m_pPos.x -= fHorizental_Step;
 	}
@@ -244,9 +244,10 @@ void CImguiMgr::Tick()
 
 	SeparatorText("");
 
-	if (Button("Create") || m_pGameInstance->Key_Down(DIK_C))
+	if (Button("Create") || m_pGameInstance->Key_Down(DIK_C) || m_pGameInstance->Gamepad_Down(XINPUT_RB))
 	{
 		Create_Dummy(iCurrListIndex);
+		m_pGameInstance->Gamepad_Vibration(32000, 16000);
 	} SameLine();
 	if (Button("Modify"))
 	{
@@ -275,7 +276,7 @@ HRESULT CImguiMgr::Ready_Layers()
 	CamDesc.fFovY = XMConvertToRadians(60.f);
 	CamDesc.fAspect = static_cast<_float>(g_iWinSizeX) / g_iWinSizeY;
 	CamDesc.fNear = 0.1f;
-	CamDesc.fFar = 500.f;
+	CamDesc.fFar = 70000.f;
 
 	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Camera"), TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
 	{
@@ -283,6 +284,11 @@ HRESULT CImguiMgr::Ready_Layers()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &m_pPos)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Sky"), TEXT("Prototype_GameObject_Sky"))))
 	{
 		return E_FAIL;
 	}

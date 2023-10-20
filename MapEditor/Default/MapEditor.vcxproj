@@ -150,6 +150,7 @@
     <ClInclude Include="..\Public\Imgui\imstb_truetype.h" />
     <ClInclude Include="..\public\EditorApp.h" />
     <ClInclude Include="..\Public\MapEditor_Define.h" />
+    <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\public\Terrain.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MapEditor.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="..\private\Dummy.cpp" />
     <ClCompile Include="..\private\ImguiMgr.cpp" />
     <ClCompile Include="..\private\EditorApp.cpp" />
+    <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\private\Terrain.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui.cpp" />
     <ClCompile Include="..\Public\Imgui\imgui_demo.cpp" />

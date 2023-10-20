@@ -49,6 +49,16 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 
 	}
 
+	_float fRStickMove{};
+	if (fRStickMove = m_pGameInstance->Gamepad_RStick().x)
+	{
+		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * fRStickMove);
+	}
+	if (fRStickMove = m_pGameInstance->Gamepad_RStick().y)
+	{
+		m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta * -fRStickMove);
+	}
+
 	_float fSpeedRatio{};
 	if (m_fSpeed < 1.5f)
 	{
@@ -93,19 +103,19 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 		m_pTransformCom->Set_Speed(m_fSpeed);
 	}
 
-	if (m_pGameInstance->Key_Pressing(DIK_W) || m_pGameInstance->Gamepad_Stick(XINPUT_LS).y > 0.5f)
+	if (m_pGameInstance->Key_Pressing(DIK_W) || m_pGameInstance->Gamepad_LStick().y > 0.5f)
 	{
 		m_pTransformCom->Go_Straight(fTimeDelta);
 	}
-	if (m_pGameInstance->Key_Pressing(DIK_S) || m_pGameInstance->Gamepad_Stick(XINPUT_LS).y < -0.5f)
+	if (m_pGameInstance->Key_Pressing(DIK_S) || m_pGameInstance->Gamepad_LStick().y < -0.5f)
 	{
 		m_pTransformCom->Go_Backward(fTimeDelta);
 	}
-	if (m_pGameInstance->Key_Pressing(DIK_A) || m_pGameInstance->Gamepad_Stick(XINPUT_LS).x < -0.5f)
+	if (m_pGameInstance->Key_Pressing(DIK_A) || m_pGameInstance->Gamepad_LStick().x < -0.5f)
 	{
 		m_pTransformCom->Go_Left(fTimeDelta);
 	}
-	if (m_pGameInstance->Key_Pressing(DIK_D) || m_pGameInstance->Gamepad_Stick(XINPUT_LS).x > 0.5f)
+	if (m_pGameInstance->Key_Pressing(DIK_D) || m_pGameInstance->Gamepad_LStick().x > 0.5f)
 	{
 		m_pTransformCom->Go_Right(fTimeDelta);
 	}
