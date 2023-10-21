@@ -26,14 +26,6 @@ struct Float2
 	float y{};
 };
 
-struct HyntraMesh
-{
-	std::string strName{};
-	unsigned int iNumVertices{};
-	unsigned int iNumFaces{};
-
-};
-
 int main()
 {
 	Assimp::Importer Importer{};
@@ -58,18 +50,21 @@ int main()
 
 				for (size_t i = 0; i < pAIScene->mNumMeshes; i++)
 				{
-					HyntraMesh MeshInfo{};
-					MeshInfo.strName = pAIScene->mMeshes[i]->mName.C_Str();
-					MeshInfo.iNumVertices = pAIScene->mMeshes[i]->mNumVertices;
-					MeshInfo.iNumFaces = pAIScene->mMeshes[i]->mNumFaces;
+					std::string strName = pAIScene->mMeshes[i]->mName.C_Str();
+					unsigned int iNameSize = strName.size() + 1;
+					unsigned int iNumVertices = pAIScene->mMeshes[i]->mNumVertices;
+					unsigned int iNumFaces = pAIScene->mMeshes[i]->mNumFaces;
 
-					OutputFile.write(reinterpret_cast<const char*>(&MeshInfo), sizeof MeshInfo);
+					OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
+					OutputFile.write(strName.c_str(), iNameSize);
+					OutputFile.write(reinterpret_cast<const char*>(&iNumVertices), sizeof(unsigned int));
+					OutputFile.write(reinterpret_cast<const char*>(&iNumFaces), sizeof(unsigned int));
 
-					Float3* vPos = new Float3[MeshInfo.iNumVertices];
-					Float3* vNor = new Float3[MeshInfo.iNumVertices];
-					Float2* vTex = new Float2[MeshInfo.iNumVertices];
-					Float3* vTan = new Float3[MeshInfo.iNumVertices];
-					for (size_t j = 0; j < MeshInfo.iNumVertices; j++)
+					Float3* vPos = new Float3[iNumVertices];
+					Float3* vNor = new Float3[iNumVertices];
+					Float2* vTex = new Float2[iNumVertices];
+					Float3* vTan = new Float3[iNumVertices];
+					for (size_t j = 0; j < iNumVertices; j++)
 					{
 						OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mMeshes[i]->mVertices[j]), sizeof Float3);
 						OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mMeshes[i]->mNormals[j]), sizeof Float3);
@@ -82,7 +77,7 @@ int main()
 					delete[] vTex;
 					delete[] vTan;
 
-					for (size_t j = 0; j < MeshInfo.iNumFaces; j++)
+					for (size_t j = 0; j < iNumFaces; j++)
 					{
 						OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mMeshes[i]->mFaces[j].mIndices[0]), sizeof(unsigned int));
 						OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mMeshes[i]->mFaces[j].mIndices[1]), sizeof(unsigned int));

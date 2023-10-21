@@ -23,14 +23,14 @@ HRESULT CModel::Init_Prototype(const string& strFilePath)
 	if (ModelFile.is_open())
 	{
 		ModelFile.read(reinterpret_cast<_char*>(&m_iNumMeshes), sizeof _uint);
+		m_iFilePos = ModelFile.tellg();
 		ModelFile.close();
 	}
-
 	m_Meshes.reserve(m_iNumMeshes);
 
 	for (size_t i = 0; i < m_iNumMeshes; i++)
 	{
-		CStatic_Mesh* pMesh = CStatic_Mesh::Create(m_pDevice, m_pContext, strFilePath);
+		CStatic_Mesh* pMesh = CStatic_Mesh::Create(m_pDevice, m_pContext, strFilePath, &m_iFilePos);
 		m_Meshes.push_back(pMesh);
 	}
 
@@ -87,5 +87,5 @@ void CModel::Free()
 	{
 		Safe_Release(pMesh);
 	}
-
+	m_Meshes.clear();
 }

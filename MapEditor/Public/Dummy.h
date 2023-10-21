@@ -23,7 +23,7 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModel{ nullptr };
 	//CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
-	CTexture* m_pTextureCom{ nullptr };
+	//CTexture* m_pTextureCom{ nullptr };
 
 private:
 	DummyInfo m_Info{};

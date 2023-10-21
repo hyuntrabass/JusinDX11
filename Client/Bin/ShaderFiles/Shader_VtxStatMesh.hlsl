@@ -64,8 +64,8 @@ PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    //vector vMtrlDiffuse = vector(0.f, 1.f, 0.f, 1.f);
-    vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vMtrlDiffuse = vector(1.f, 1.f, 1.f, 1.f);
+    //vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex);
     
     float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
     

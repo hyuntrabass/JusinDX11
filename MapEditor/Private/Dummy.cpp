@@ -17,16 +17,17 @@ HRESULT CDummy::Init_Prototype()
 
 HRESULT CDummy::Init(void* pArg)
 {
+	m_Info = *(DummyInfo*)pArg;
+
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
-	DummyInfo m_Info = *(DummyInfo*)pArg;
 
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
 	m_pTransformCom->Look_At_Dir(XMLoadFloat4(&m_Info.vLook));
-	m_pTransformCom->Set_Scale(_float3(0.001f, 0.001f, 0.001f));
+	m_pTransformCom->Set_Scale(_float3(0.01f, 0.01f, 0.01f));
 
 	return S_OK;
 }
@@ -80,7 +81,7 @@ HRESULT CDummy::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModel)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), m_Info.Prototype, TEXT("Com_Model"), (CComponent**)&m_pModel)))
 	{
 		return E_FAIL;
 	}
@@ -90,10 +91,10 @@ HRESULT CDummy::Add_Components()
 	//	return E_FAIL;
 	//}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Sky"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Sky"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }
@@ -120,10 +121,10 @@ HRESULT CDummy::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	//{
+	//	return E_FAIL;
+	//}
 
 	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(ToIndex(Level_ID::Static), 0);
 	if (!pLightDesc)
@@ -185,8 +186,7 @@ void CDummy::Free()
 	__super::Free();
 
 	Safe_Release(m_pModel);
-	Safe_Release(m_pTextureCom);
-	//Safe_Release(m_pVIBufferCom);
+	//Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 }

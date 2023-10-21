@@ -10,6 +10,7 @@ BEGIN(MapEditor)
 
 enum class ItemType
 {
+	Map,
 	Misc,
 	Monster,
 	NPC,
@@ -18,6 +19,7 @@ enum class ItemType
 
 struct DummyInfo
 {
+	wstring Prototype{};
 	enum class ItemType eType {};
 	_uint iIndex{};
 	_uint iStageIndex{};
@@ -46,6 +48,24 @@ private: // for Input
 	ItemType m_eItemType{ ItemType::End };
 	_float4 m_pPos{0.f, 0.f, 0.f, 1.f};
 	_float4 m_pLook{0.f, 0.f, 1.f, 0.f};
+	const _char* const m_pItemList_Map[15]
+	{
+		"Konohavill_Ground_01",
+		"Konohavill_Ground_02",
+		"Konohavill_Ground_03",
+		"Konohavill_Ground_04",
+		"Konohavill_Ground_05",
+		"Konohavill_Ground_06",
+		"Konohavill_Ground_07",
+		"Konohavill_Ground_08",
+		"Konohavill_Ground_09",
+		"Konohavill_Ground_10",
+		"Konohavill_Ground_11",
+		"Konohavill_Ground_12",
+		"Konohavill_Ground_13",
+		"Konohavill_Ground_14",
+		"Konohavill_Building_A",
+	};
 	const _char* const m_pItemList_Misc[3]
 	{
 		"Box",

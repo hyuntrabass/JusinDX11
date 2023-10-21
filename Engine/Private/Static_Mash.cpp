@@ -10,7 +10,7 @@ CStatic_Mesh::CStatic_Mesh(const CStatic_Mesh& rhs)
 {
 }
 
-HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath)
+HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath, streampos* iFilePos)
 {
 	ifstream MeshFile(strFilePath.c_str(), ios::binary);
 
@@ -18,9 +18,11 @@ HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath)
 	{
 		return E_FAIL;
 	}
-	_uint iNumMeshes{};
-	MeshFile.read(reinterpret_cast<_char*>(&iNumMeshes), sizeof _uint);
-	MeshFile.read(reinterpret_cast<_char*>(&m_pName), sizeof string);
+	MeshFile.seekg(*iFilePos);
+	_uint iNameSize{};
+	MeshFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof _uint);
+	m_pName = new char[iNameSize];
+	MeshFile.read(m_pName, iNameSize);
 	MeshFile.read(reinterpret_cast<_char*>(&m_iNumVertices), sizeof _uint);
 	_uint iNumFaces{};
 	MeshFile.read(reinterpret_cast<_char*>(&iNumFaces), sizeof _uint);
@@ -94,7 +96,7 @@ HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath)
 	{
 		return E_FAIL;
 	}
-
+	*iFilePos = MeshFile.tellg();
 	MeshFile.close();
 	Safe_Delete_Array(pIndices);
 #pragma endregion
@@ -107,11 +109,11 @@ HRESULT CStatic_Mesh::Init(void* pArg)
 	return S_OK;
 }
 
-CStatic_Mesh* CStatic_Mesh::Create(_dev pDevice, _context pContext, const string& strFilePath)
+CStatic_Mesh* CStatic_Mesh::Create(_dev pDevice, _context pContext, const string& strFilePath, streampos* iFilePos)
 {
 	CStatic_Mesh* pInstance = new CStatic_Mesh(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(strFilePath)))
+	if (FAILED(pInstance->Init_Prototype(strFilePath, iFilePos)))
 	{
 		MSG_BOX("Failed to Create : CStatic_Mesh");
 		Safe_Release(pInstance);
@@ -136,4 +138,6 @@ CComponent* CStatic_Mesh::Clone(void* pArg)
 void CStatic_Mesh::Free()
 {
 	__super::Free();
+
+	Safe_Delete_Array(m_pName);
 }

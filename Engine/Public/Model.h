@@ -20,6 +20,7 @@ public:
 private:
 	_uint m_iNumMeshes{};
 	vector<class CStatic_Mesh*> m_Meshes{};
+	streampos m_iFilePos{};
 
 public:
 	static CModel* Create(_dev pDevice, _context pContext, const string& strFilePath);

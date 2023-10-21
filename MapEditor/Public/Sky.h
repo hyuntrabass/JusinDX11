@@ -26,9 +26,6 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
-	DummyInfo m_Info{};
-
-private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 

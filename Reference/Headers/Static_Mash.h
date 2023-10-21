@@ -11,14 +11,14 @@ private:
 	virtual ~CStatic_Mesh() = default;
 
 public:
-	HRESULT Init_Prototype(const string& strFilePath);
+	HRESULT Init_Prototype(const string& strFilePath, streampos* iFilePos);
 	HRESULT Init(void* pArg) override;
 
 private:
-	const _char* m_pName{};
+	_char* m_pName{};
 
 public:
-	static CStatic_Mesh* Create(_dev pDevice, _context pContext, const string& strFilePath);
+	static CStatic_Mesh* Create(_dev pDevice, _context pContext, const string& strFilePath, streampos* iFilePos);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

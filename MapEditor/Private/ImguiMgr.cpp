@@ -93,6 +93,13 @@ void CImguiMgr::Tick()
 	BeginTabBar("Tab bar");
 
 	static _int iCurrListIndex{};
+	if (BeginTabItem("Map"))
+	{
+		ListBox("Misc", &iCurrListIndex, m_pItemList_Map, IM_ARRAYSIZE(m_pItemList_Map));
+
+		m_eItemType = ItemType::Map;
+		EndTabItem();
+	}
 	if (BeginTabItem("Misc"))
 	{
 		ListBox("Misc", &iCurrListIndex, m_pItemList_Misc, IM_ARRAYSIZE(m_pItemList_Misc));
@@ -137,8 +144,8 @@ void CImguiMgr::Tick()
 			m_pPos.z = vPickPos.z;
 		}
 	}
-	static _float fHorizental_Step{1.f};
-	static _float fVertical_Step{0.5f};
+	static _float fHorizental_Step{ 1.f };
+	static _float fVertical_Step{ 0.5f };
 	NewLine();
 	Text("Step Amount");
 	PushItemWidth(50.f);
@@ -296,14 +303,34 @@ HRESULT CImguiMgr::Ready_Layers()
 
 	return S_OK;
 }
+#include <locale>
+#include <codecvt>
 
 void CImguiMgr::Create_Dummy(const _int& iListIndex)
 {
 	DummyInfo Info{};
+	typedef std::codecvt_utf8<wchar_t> convert_typeX;
+	wstring_convert<convert_typeX, wchar_t> converterX;
 
 	Info.vPos = m_pPos;
 	XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_pLook)));
+	Info.Prototype = L"Prototype_Model_";
 	Info.eType = m_eItemType;
+	switch (m_eItemType)
+	{
+	case MapEditor::ItemType::Map:
+		Info.Prototype += converterX.from_bytes(m_pItemList_Map[iListIndex]);
+		break;
+	case MapEditor::ItemType::Misc:
+		Info.Prototype += converterX.from_bytes(m_pItemList_Misc[iListIndex]);
+		break;
+	case MapEditor::ItemType::Monster:
+		Info.Prototype += converterX.from_bytes(m_pItemList_Monster[iListIndex]);
+		break;
+	case MapEditor::ItemType::NPC:
+		Info.Prototype += converterX.from_bytes(m_pItemList_NPC[iListIndex]);
+		break;
+	}
 	Info.iIndex = iListIndex;
 	Info.iStageIndex = m_Curr_Stage;
 
@@ -319,35 +346,77 @@ HRESULT CImguiMgr::Load_Data()
 {
 	wstring strFilePath = L"../../Client/Bin/Resources/Map/Map_Data" + std::to_wstring(m_Curr_Stage) + L".hyntramap";
 
-	HANDLE hFile = CreateFile(strFilePath.c_str(), GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-	if (hFile == INVALID_HANDLE_VALUE)
+	//HANDLE hFile = CreateFile(strFilePath.c_str(), GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	//if (hFile == INVALID_HANDLE_VALUE)
+	//{
+	//	return E_FAIL;
+	//}
+
+	//_ulong dwByte{};
+	//DummyInfo Data{};
+
+	//m_DummyList.clear();
+
+	//while (true)
+	//{
+	//	ReadFile(hFile, &Data, sizeof DummyInfo, &dwByte, nullptr);
+
+	//	if (dwByte == 0)
+	//	{
+	//		break;
+	//	}
+
+	//	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Data)))
+	//	{
+	//		MSG_BOX("Failed to Add Layer : Dummy");
+	//	}
+
+	//	m_DummyList.push_back(Data);
+	//}
+
+	//CloseHandle(hFile);
+
+	ifstream InFile(strFilePath.c_str(), ios::binary);
+
+	if (InFile.is_open())
+	{
+		m_DummyList.clear();
+
+		size_t DummySize{};
+		InFile.read(reinterpret_cast<_char*>(&DummySize), sizeof size_t);
+
+		for (size_t i = 0; i < DummySize; i++)
+		{
+			DummyInfo Info{};
+			size_t NameSize{};
+
+			InFile.read(reinterpret_cast<_char*>(&NameSize), sizeof size_t);
+			wchar_t* pBuffer = new wchar_t[NameSize / sizeof(wchar_t)];
+			InFile.read(reinterpret_cast<_char*>(pBuffer), NameSize);
+			Info.Prototype = pBuffer;
+			Safe_Delete_Array(pBuffer);
+			InFile.read(reinterpret_cast<_char*>(&Info.eType), sizeof ItemType);
+			InFile.read(reinterpret_cast<_char*>(&Info.iIndex), sizeof _uint);
+			InFile.read(reinterpret_cast<_char*>(&Info.iStageIndex), sizeof _uint);
+			InFile.read(reinterpret_cast<_char*>(&Info.vPos), sizeof _float4);
+			InFile.read(reinterpret_cast<_char*>(&Info.vLook), sizeof _float4);
+
+			if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+			{
+				MSG_BOX("Failed to Add Layer : Dummy");
+			}
+			else
+			{
+				m_DummyList.push_back(Info);
+			}
+		}
+		InFile.close();
+	}
+	else
 	{
 		return E_FAIL;
 	}
 
-	_ulong dwByte{};
-	DummyInfo Data{};
-
-	m_DummyList.clear();
-
-	while (true)
-	{
-		ReadFile(hFile, &Data, sizeof DummyInfo, &dwByte, nullptr);
-
-		if (dwByte == 0)
-		{
-			break;
-		}
-
-		if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Data)))
-		{
-			MSG_BOX("Failed to Add Layer : Dummy");
-		}
-
-		m_DummyList.push_back(Data);
-	}
-
-	CloseHandle(hFile);
 	return S_OK;
 }
 
@@ -355,25 +424,51 @@ HRESULT CImguiMgr::Export_Data()
 {
 	wstring strFilePath = L"../../Client/Bin/Resources/Map/Map_Data" + std::to_wstring(m_Curr_Stage) + L".hyntramap";
 
-	HANDLE hFile = CreateFile(strFilePath.c_str(), GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-	if (hFile == INVALID_HANDLE_VALUE)
+	//HANDLE hFile = CreateFile(strFilePath.c_str(), GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+	//if (hFile == INVALID_HANDLE_VALUE)
+	//{
+	//	return E_FAIL;
+	//}
+
+	//_ulong dwByte{};
+	//for (auto& Data : m_DummyList)
+	//{
+	//	WriteFile(hFile, &Data, sizeof DummyInfo, &dwByte, nullptr);
+
+	//	if (dwByte != sizeof DummyInfo)
+	//	{
+	//		CloseHandle(hFile);
+	//		return E_FAIL;
+	//	}
+	//}
+
+	//CloseHandle(hFile);
+
+	ofstream OutFile(strFilePath.c_str(), ios::binary);
+
+	if (OutFile.is_open())
+	{
+		size_t DummySize = m_DummyList.size();
+		OutFile.write(reinterpret_cast<_char*>(&DummySize), sizeof size_t);
+
+		for (auto& Data : m_DummyList)
+		{
+			size_t iNameSize = Data.Prototype.size() * sizeof(wchar_t) + sizeof(wchar_t);
+			OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+			OutFile.write(reinterpret_cast<const _char*>(Data.Prototype.data()), iNameSize);
+			OutFile.write(reinterpret_cast<const _char*>(&Data.eType), sizeof ItemType);
+			OutFile.write(reinterpret_cast<const _char*>(&Data.iIndex), sizeof _uint);
+			OutFile.write(reinterpret_cast<const _char*>(&Data.iStageIndex), sizeof _uint);
+			OutFile.write(reinterpret_cast<const _char*>(&Data.vPos), sizeof _float4);
+			OutFile.write(reinterpret_cast<const _char*>(&Data.vLook), sizeof _float4);
+		}
+		OutFile.close();
+	}
+	else
 	{
 		return E_FAIL;
 	}
 
-	_ulong dwByte{};
-	for (auto& Data : m_DummyList)
-	{
-		WriteFile(hFile, &Data, sizeof DummyInfo, &dwByte, nullptr);
-
-		if (dwByte != sizeof DummyInfo)
-		{
-			CloseHandle(hFile);
-			return E_FAIL;
-		}
-	}
-
-	CloseHandle(hFile);
 	return S_OK;
 }
 
