@@ -1,4 +1,5 @@
 #include "Static_Mash.h"
+#include "GameInstance.h"
 
 CStatic_Mesh::CStatic_Mesh(_dev pDevice, _context pContext)
 	: CVIBuffer(pDevice, pContext)
@@ -10,7 +11,7 @@ CStatic_Mesh::CStatic_Mesh(const CStatic_Mesh& rhs)
 {
 }
 
-HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath, streampos* iFilePos)
+HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath, streampos* iFilePos, _fmatrix OffsetMatrix)
 {
 	ifstream MeshFile(strFilePath.c_str(), ios::binary);
 
@@ -19,6 +20,9 @@ HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath, streampos* iFile
 		return E_FAIL;
 	}
 	MeshFile.seekg(*iFilePos);
+
+	MeshFile.read(reinterpret_cast<_char*>(&m_iMatIndex), sizeof _uint);
+
 	_uint iNameSize{};
 	MeshFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof _uint);
 	m_pName = new char[iNameSize];
@@ -26,6 +30,9 @@ HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath, streampos* iFile
 	MeshFile.read(reinterpret_cast<_char*>(&m_iNumVertices), sizeof _uint);
 	_uint iNumFaces{};
 	MeshFile.read(reinterpret_cast<_char*>(&iNumFaces), sizeof _uint);
+
+	m_pVerticesPos = new _float3[m_iNumVertices];
+	m_pIndices = new _uint[iNumFaces * 3];
 
 	m_iNumVertexBuffers = 1;
 	m_iVertexStride = sizeof VTXSTATICMESH;
@@ -52,7 +59,10 @@ HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath, streampos* iFile
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
 		MeshFile.read(reinterpret_cast<_char*>(&pVertices[i].vPosition), sizeof _float3);
+		XMStoreFloat3(&pVertices[i].vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), OffsetMatrix));
+		m_pVerticesPos[i] = pVertices[i].vPosition;
 		MeshFile.read(reinterpret_cast<_char*>(&pVertices[i].vNormal), sizeof _float3);
+		XMStoreFloat3(&pVertices[i].vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices[i].vNormal), OffsetMatrix));
 		MeshFile.read(reinterpret_cast<_char*>(&pVertices[i].vTexcoord), sizeof _float2);
 		MeshFile.read(reinterpret_cast<_char*>(&pVertices[i].vTangent), sizeof _float3);
 	}
@@ -86,8 +96,11 @@ HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath, streampos* iFile
 	for (size_t i = 0; i < iNumFaces; i++)
 	{
 		MeshFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex++]), sizeof _uint);
+		m_pIndices[dwIndex] = static_cast<_uint>(pIndices[dwIndex]);
 		MeshFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex++]), sizeof _uint);
+		m_pIndices[dwIndex] = static_cast<_uint>(pIndices[dwIndex]);
 		MeshFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex++]), sizeof _uint);
+		m_pIndices[dwIndex] = static_cast<_uint>(pIndices[dwIndex]);
 	}
 
 	m_InitialData.pSysMem = pIndices;
@@ -109,11 +122,29 @@ HRESULT CStatic_Mesh::Init(void* pArg)
 	return S_OK;
 }
 
-CStatic_Mesh* CStatic_Mesh::Create(_dev pDevice, _context pContext, const string& strFilePath, streampos* iFilePos)
+_float3 CStatic_Mesh::Intersect_RayMesh(_fmatrix WorldMatrix)
+{
+	_uint Index{};
+	_float3 vPickPos{};
+
+	for (size_t i = 0; i < m_iNumIndices / 3; i++)
+	{
+		if (m_pGameInstance->Picking_InLocal(XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index++]]),
+											 XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index++]]),
+											 XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index++]]), &vPickPos))
+		{
+
+		}
+	}
+
+	return _float3();
+}
+
+CStatic_Mesh* CStatic_Mesh::Create(_dev pDevice, _context pContext, const string& strFilePath, streampos* iFilePos, _fmatrix OffsetMatrix)
 {
 	CStatic_Mesh* pInstance = new CStatic_Mesh(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(strFilePath, iFilePos)))
+	if (FAILED(pInstance->Init_Prototype(strFilePath, iFilePos, OffsetMatrix)))
 	{
 		MSG_BOX("Failed to Create : CStatic_Mesh");
 		Safe_Release(pInstance);

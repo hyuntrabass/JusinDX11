@@ -44,19 +44,25 @@ HRESULT CSky::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(1)))
-	{
-		return E_FAIL;
-	}
+	_uint iNumMeshes = m_pModel->Get_NumMeshes();
 
-	if (FAILED(m_pModel->Render()))
+	for (size_t i = 0; i < iNumMeshes; i++)
 	{
-		return E_FAIL;
+		if (FAILED(m_pModel->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(1)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModel->Render(i)))
+		{
+			return E_FAIL;
+		}
 	}
-	//if (FAILED(m_pVIBufferCom->Render()))
-	//{
-	//	return E_FAIL;
-	//}
 
 	return S_OK;
 }
@@ -78,16 +84,6 @@ HRESULT CSky::Add_Components()
 		return E_FAIL;
 	}
 
-	//if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_VIBuffer_Cube"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
-	//{
-	//	return E_FAIL;
-	//}
-
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Sky"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
@@ -104,11 +100,6 @@ HRESULT CSky::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::Proj))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
 	{
 		return E_FAIL;
 	}
@@ -147,8 +138,6 @@ void CSky::Free()
 	__super::Free();
 
 	Safe_Release(m_pModel);
-	Safe_Release(m_pTextureCom);
-	//Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 }

@@ -469,6 +469,16 @@ void CGameInstance::Set_Transform(D3DTS eState, _fmatrix TransformMatrix)
 	m_pPipeLine->Set_Transform(eState, TransformMatrix);
 }
 
+void CGameInstance::TransformRay_ToLocal(_fmatrix WorldMatrix)
+{
+	if (!m_pPicking)
+	{
+		MSG_BOX("FATAL ERROR : m_pPicking is NULL");
+	}
+
+	return m_pPicking->TransformRay_ToLocal(WorldMatrix);
+}
+
 _bool CGameInstance::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float3* pPickPos)
 {
 	if (!m_pPicking)
@@ -477,6 +487,16 @@ _bool CGameInstance::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvecto
 	}
 
 	return m_pPicking->Picking_InWorld(vPoint1, vPoint2, vPoint3, pPickPos);
+}
+
+_bool CGameInstance::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float3* pPickPos)
+{
+	if (!m_pPicking)
+	{
+		MSG_BOX("FATAL ERROR : m_pPicking is NULL");
+	}
+
+	return m_pPicking->Picking_InLocal(vPoint1, vPoint2, vPoint3, pPickPos);
 }
 
 const _uint& CGameInstance::Get_CameraModeIndex() const

@@ -68,7 +68,6 @@ using namespace DirectX;
 
 #endif // _DEBUG
 
-
 namespace Engine
 {
 	enum class MouseState
@@ -115,6 +114,29 @@ namespace Engine
 		XINPUT_Y = 0x8000,
 		XINPUT_LT,
 		XINPUT_RT,
+	};
+
+	enum class TextureType
+	{
+		None,
+		Diffuse,
+		Specular,
+		Ambient,
+		Emissive,
+		Height,
+		Normals,
+		Shininess,
+		Opacity,
+		Displacement,
+		LightMap,
+		Reflection,
+		Base_Color,
+		Normal_Camera,
+		Emission_Color,
+		Metalness,
+		Diffuse_Roughness,
+		Ambient_Occlusion,
+		End
 	};
 }
 

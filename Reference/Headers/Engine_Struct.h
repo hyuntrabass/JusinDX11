@@ -25,6 +25,11 @@ namespace Engine
 		XMFLOAT4 vSpecular{};
 	};
 
+	using Model_Material = struct tagMaterial
+	{
+		class CTexture* pMaterials[18]{};
+	};
+
 	using VTXPOSTEX = struct ENGINE_DLL tagVertex_Position_Texcoord
 	{
 		XMFLOAT3 vPosition{};

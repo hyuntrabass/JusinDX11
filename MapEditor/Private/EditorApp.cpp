@@ -155,7 +155,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 	LIGHT_DESC LightDesc{};
 
 	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(0.f, -1.f, 1.f, 0.f);
+	LightDesc.vDirection = _float4(0.f, -1.f, 0.5f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
@@ -172,17 +172,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Dummy"), CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Test/Dummy.dds")))))
-	{
-		return E_FAIL;
-	}
-
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Cursor"), CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Loading/Loading_Icon.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Sky"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Sky.dds")))))
 	{
 		return E_FAIL;
 	}
@@ -190,69 +180,71 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 #pragma endregion
 
 #pragma region Model
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Sky.hyntrastatmesh"))))
+	_matrix OffsetMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/Sky.hyntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Building_A"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_AreaA_Building_A.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Building_A"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_AreaA_Building_A.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_01"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_01.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_01"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_01.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_02"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_02.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_02"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_02.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_03"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_03.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_03"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_03.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_04"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_04.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_04"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_04.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_05"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_05.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_05"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_05.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_06"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_06.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_06"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_06.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_07"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_07.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_07"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_07.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_08"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_08.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_08"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_08.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_09"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_09.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_09"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_09.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_10"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_10.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_10"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_10.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_11"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_11.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_11"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_11.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_12"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_12.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_12"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_12.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_13"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_13.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_13"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_13.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_14"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/konohavill_ground_14.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Konohavill_Ground_14"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_ground_14.hyntrastatmesh", OffsetMatrix))))
 	{
 		return E_FAIL;
 	}

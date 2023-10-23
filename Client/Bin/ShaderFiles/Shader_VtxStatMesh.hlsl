@@ -1,7 +1,8 @@
 #include "Engine_Shader_Define.hlsli"
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D g_Texture;
+texture2D g_DiffuseTexture;
+texture2D g_NormalTexture;
 
 vector g_vLightDir;
 
@@ -64,8 +65,8 @@ PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = vector(1.f, 1.f, 1.f, 1.f);
-    //vector vMtrlDiffuse = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    vector vNormal = g_NormalTexture.Sample(LinearSampler, Input.vTex) + Input.vNor;
     
     float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
     
@@ -82,7 +83,7 @@ PS_OUT PS_Main_Sky(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
     
     return Output;
 }

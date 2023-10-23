@@ -43,11 +43,35 @@ void CPicking::Tick()
 	XMStoreFloat4(&m_vRayDir_World, XMVector4Normalize(XMVector4Transform(vRayDir, ViewMat_Inverse)));
 }
 
+void CPicking::TransformRay_ToLocal(_fmatrix WorldMatrix)
+{
+	_matrix InversedWorld{ XMMatrixInverse(nullptr, WorldMatrix) };
+
+	XMStoreFloat4(&m_vRayPos_Local, XMVector4Transform(XMLoadFloat4(&m_vRayPos_World), InversedWorld));
+	XMStoreFloat4(&m_vRayDir_Local, XMVector4Normalize(XMVector4Transform(XMLoadFloat4(&m_vRayDir_World), InversedWorld)));
+}
+
 _bool CPicking::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos)
 {
 	_float fDist{};
 	_vector vRayPos{ XMLoadFloat4(&m_vRayPos_World) };
 	_vector vRayDir{ XMLoadFloat4(&m_vRayDir_World) };
+	if (TriangleTests::Intersects(vRayPos, vRayDir, vPoint1, vPoint2, vPoint3, fDist))
+	{
+		XMStoreFloat3(pPickPos, vRayPos + (vRayDir * fDist));
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+_bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float3* pPickPos)
+{
+	_float fDist{};
+	_vector vRayPos{ XMLoadFloat4(&m_vRayPos_Local) };
+	_vector vRayDir{ XMLoadFloat4(&m_vRayDir_Local) };
 	if (TriangleTests::Intersects(vRayPos, vRayDir, vPoint1, vPoint2, vPoint3, fDist))
 	{
 		XMStoreFloat3(pPickPos, vRayPos + (vRayDir * fDist));

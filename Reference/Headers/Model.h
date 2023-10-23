@@ -11,19 +11,27 @@ private:
 	virtual ~CModel() = default;
 
 public:
-	HRESULT Init_Prototype(const string& strFilePath);
+	const _uint& Get_NumMeshes() const;
+
+public:
+	HRESULT Init_Prototype(const string& strFilePath, _fmatrix OffsetMatrix);
 	HRESULT Init(void* pArg) override;
 
 public:
-	HRESULT Render();
+	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
+	HRESULT Render(_uint iMeshIndex);
 
 private:
 	_uint m_iNumMeshes{};
 	vector<class CStatic_Mesh*> m_Meshes{};
+
+	_uint m_iNumMaterials{};
+	vector<Model_Material> m_Materials{};
+
 	streampos m_iFilePos{};
 
 public:
-	static CModel* Create(_dev pDevice, _context pContext, const string& strFilePath);
+	static CModel* Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix OffsetMatrix = XMMatrixIdentity());
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

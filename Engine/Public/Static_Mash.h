@@ -11,14 +11,24 @@ private:
 	virtual ~CStatic_Mesh() = default;
 
 public:
-	HRESULT Init_Prototype(const string& strFilePath, streampos* iFilePos);
-	HRESULT Init(void* pArg) override;
-
-private:
-	_char* m_pName{};
+	const _uint& Get_MatIndex() const { return m_iMatIndex; }
 
 public:
-	static CStatic_Mesh* Create(_dev pDevice, _context pContext, const string& strFilePath, streampos* iFilePos);
+	HRESULT Init_Prototype(const string& strFilePath, streampos* iFilePos, _fmatrix OffsetMatrix);
+	HRESULT Init(void* pArg) override;
+
+public:
+	_float3 Intersect_RayMesh(_fmatrix WorldMatrix);
+
+private:
+	_float3* m_pVerticesPos{ nullptr };
+	_uint* m_pIndices{ nullptr };
+
+	_char* m_pName{};
+	_uint m_iMatIndex{};
+
+public:
+	static CStatic_Mesh* Create(_dev pDevice, _context pContext, const string& strFilePath, streampos* iFilePos, _fmatrix OffsetMatrix);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };
