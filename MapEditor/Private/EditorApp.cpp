@@ -181,8 +181,14 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 
 #pragma region Model
 	_matrix OffsetMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	_matrix OffsetScale = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/Sky.hyntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Tower"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Mesh/konohavill_CommonBuilding_B_1.hyntrastatmesh", OffsetScale))))
 	{
 		return E_FAIL;
 	}

@@ -1,6 +1,8 @@
 #include "ImguiMgr.h"
 #include "GameInstance.h"
 #include "Camera_Debug.h"
+#include <locale>
+#include <codecvt>
 
 using namespace ImGui;
 
@@ -300,11 +302,28 @@ HRESULT CImguiMgr::Ready_Layers()
 		return E_FAIL;
 	}
 
+	DummyInfo Info{};
+	typedef std::codecvt_utf8<wchar_t> convert_typeX;
+	wstring_convert<convert_typeX, wchar_t> converterX;
+
+	Info.vPos = _float4(0.f, 0.f, 0.f, 1.f);
+	Info.vLook = _float4(0.f, 0.f, 1.f, 0.f);
+	Info.eType = ItemType::Map;
+	Info.iStageIndex = 0;
+
+	for (size_t i = 0; i < IM_ARRAYSIZE(m_pItemList_Map); i++)
+	{
+		Info.Prototype = L"Prototype_Model_";
+		Info.Prototype += converterX.from_bytes(m_pItemList_Map[i]);
+		Info.iIndex = i;
+		if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+		{
+			MSG_BOX("Failed to Add Layer : Dummy");
+		}
+	}
 
 	return S_OK;
 }
-#include <locale>
-#include <codecvt>
 
 void CImguiMgr::Create_Dummy(const _int& iListIndex)
 {
@@ -345,36 +364,6 @@ void CImguiMgr::Create_Dummy(const _int& iListIndex)
 HRESULT CImguiMgr::Load_Data()
 {
 	wstring strFilePath = L"../../Client/Bin/Resources/Map/Map_Data" + std::to_wstring(m_Curr_Stage) + L".hyntramap";
-
-	//HANDLE hFile = CreateFile(strFilePath.c_str(), GENERIC_READ, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-	//if (hFile == INVALID_HANDLE_VALUE)
-	//{
-	//	return E_FAIL;
-	//}
-
-	//_ulong dwByte{};
-	//DummyInfo Data{};
-
-	//m_DummyList.clear();
-
-	//while (true)
-	//{
-	//	ReadFile(hFile, &Data, sizeof DummyInfo, &dwByte, nullptr);
-
-	//	if (dwByte == 0)
-	//	{
-	//		break;
-	//	}
-
-	//	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Data)))
-	//	{
-	//		MSG_BOX("Failed to Add Layer : Dummy");
-	//	}
-
-	//	m_DummyList.push_back(Data);
-	//}
-
-	//CloseHandle(hFile);
 
 	ifstream InFile(strFilePath.c_str(), ios::binary);
 
@@ -423,26 +412,6 @@ HRESULT CImguiMgr::Load_Data()
 HRESULT CImguiMgr::Export_Data()
 {
 	wstring strFilePath = L"../../Client/Bin/Resources/Map/Map_Data" + std::to_wstring(m_Curr_Stage) + L".hyntramap";
-
-	//HANDLE hFile = CreateFile(strFilePath.c_str(), GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-	//if (hFile == INVALID_HANDLE_VALUE)
-	//{
-	//	return E_FAIL;
-	//}
-
-	//_ulong dwByte{};
-	//for (auto& Data : m_DummyList)
-	//{
-	//	WriteFile(hFile, &Data, sizeof DummyInfo, &dwByte, nullptr);
-
-	//	if (dwByte != sizeof DummyInfo)
-	//	{
-	//		CloseHandle(hFile);
-	//		return E_FAIL;
-	//	}
-	//}
-
-	//CloseHandle(hFile);
 
 	ofstream OutFile(strFilePath.c_str(), ios::binary);
 

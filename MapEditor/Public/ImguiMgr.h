@@ -48,7 +48,7 @@ private: // for Input
 	ItemType m_eItemType{ ItemType::End };
 	_float4 m_pPos{0.f, 0.f, 0.f, 1.f};
 	_float4 m_pLook{0.f, 0.f, 1.f, 0.f};
-	const _char* const m_pItemList_Map[15]
+	const _char* const m_pItemList_Map[16]
 	{
 		"Konohavill_Ground_01",
 		"Konohavill_Ground_02",
@@ -65,6 +65,7 @@ private: // for Input
 		"Konohavill_Ground_13",
 		"Konohavill_Ground_14",
 		"Konohavill_Building_A",
+		"Tower"
 	};
 	const _char* const m_pItemList_Misc[3]
 	{

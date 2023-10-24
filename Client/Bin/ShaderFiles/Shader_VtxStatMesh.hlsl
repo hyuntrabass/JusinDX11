@@ -65,16 +65,18 @@ PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
-    vector vNormal = g_NormalTexture.Sample(LinearSampler, Input.vTex) + Input.vNor;
+    //vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    //vector vNormal = g_NormalTexture.Sample(LinearSampler, Input.vTex) + Input.vNor;
     
-    float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
+    //float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
     
-    vector vReflect = reflect(normalize(g_vLightDir), Input.vNor);
-    vector vLook = Input.vWorldPos - g_vCamPos;
-    float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
+    //vector vReflect = reflect(normalize(g_vLightDir), Input.vNor);
+    //vector vLook = Input.vWorldPos - g_vCamPos;
+    //float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
 
-    Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
+    //Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
+    
+    Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
     
     return Output;
 }
@@ -84,6 +86,15 @@ PS_OUT PS_Main_Sky(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    
+    return Output;
+}
+
+PS_OUT PS_Main_Test(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = vector(1.f, 1.f, 1.f, 1.f);
     
     return Output;
 }
@@ -108,5 +119,15 @@ technique11 DefaultTechniqueShader_VtxNorTex
 
         VertexShader = compile vs_5_0 VS_Main();
         PixelShader = compile ps_5_0 PS_Main_Sky();
+    }
+
+    pass Test
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        PixelShader = compile ps_5_0 PS_Main_Test();
     }
 };

@@ -55,21 +55,32 @@ HRESULT CDummy::Render()
 
 	for (size_t i = 0; i < iNumMeshes; i++)
 	{
-		if (FAILED(m_pModel->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-		{
-			return E_FAIL;
-		}
+		//if (m_Info.iIndex == 15)
+		//{
+		//	if (FAILED(m_pShaderCom->Begin(2)))
+		//	{
+		//		return E_FAIL;
+		//	}
+		//}
+		//else
+		//{
 
-		if (FAILED(m_pModel->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			return E_FAIL;
-		}
+			if (FAILED(m_pModel->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+			{
+				return E_FAIL;
+			}
 
-		if (FAILED(m_pShaderCom->Begin(0)))
-		{
-			return E_FAIL;
-		}
+			if (FAILED(m_pModel->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+			{
+				return E_FAIL;
+			}
 
+			if (FAILED(m_pShaderCom->Begin(0)))
+			{
+				return E_FAIL;
+			}
+
+		//}
 		if (FAILED(m_pModel->Render(i)))
 		{
 			return E_FAIL;
