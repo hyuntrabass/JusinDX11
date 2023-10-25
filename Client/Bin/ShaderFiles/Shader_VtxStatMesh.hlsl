@@ -65,18 +65,18 @@ PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    //vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
-    //vector vNormal = g_NormalTexture.Sample(LinearSampler, Input.vTex) + Input.vNor;
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    vector vNormal = (g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) + Input.vNor;
     
-    //float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, Input.vNor));
+    float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
     
-    //vector vReflect = reflect(normalize(g_vLightDir), Input.vNor);
-    //vector vLook = Input.vWorldPos - g_vCamPos;
-    //float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
+    vector vReflect = reflect(normalize(g_vLightDir), vNormal);
+    vector vLook = Input.vWorldPos - g_vCamPos;
+    float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
 
-    //Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
+    Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
     
-    Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    //Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
     
     return Output;
 }

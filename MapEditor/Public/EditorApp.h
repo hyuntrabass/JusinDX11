@@ -30,6 +30,7 @@ private:
 	CRenderer* m_pRenderer{ nullptr };
 	_float m_fTimeAcc{};
 	_uint m_iFrameCount{};
+	vector<wstring> m_Models{};
 
 private:
 	HRESULT Ready_Prototype_Component_For_Static();

@@ -94,6 +94,11 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, _fmatrix OffsetMatrix)
 
 		ModelFile.close();
 	}
+	else
+	{
+		MSG_BOX("Failed to Open File!");
+		return E_FAIL;
+	}
 
 	return S_OK;
 }

@@ -28,7 +28,7 @@ CImguiMgr::CImguiMgr(_dev pDevice, _context pContext, CGameInstance* pGameInstan
 	Safe_AddRef(m_pDevice);
 }
 
-HRESULT CImguiMgr::Init()
+HRESULT CImguiMgr::Init(vector<wstring>* Models)
 {
 	IMGUI_CHECKVERSION();
 	CreateContext();
@@ -38,7 +38,7 @@ HRESULT CImguiMgr::Init()
 	ImGui_ImplWin32_Init(g_hWnd);
 	ImGui_ImplDX11_Init(m_pDevice, m_pContext);
 
-	if (FAILED(Ready_Layers()))
+	if (FAILED(Ready_Layers(Models)))
 	{
 		return E_FAIL;
 	}
@@ -277,7 +277,7 @@ HRESULT CImguiMgr::Render()
 	return S_OK;
 }
 
-HRESULT CImguiMgr::Ready_Layers()
+HRESULT CImguiMgr::Ready_Layers(vector<wstring>* Models)
 {
 	CCamera::Camera_Desc CamDesc;
 	CamDesc.vCameraPos = _float4(-10.f, 15.f, -10.f, 1.f);
@@ -303,24 +303,36 @@ HRESULT CImguiMgr::Ready_Layers()
 	}
 
 	DummyInfo Info{};
-	typedef std::codecvt_utf8<wchar_t> convert_typeX;
-	wstring_convert<convert_typeX, wchar_t> converterX;
+	//typedef std::codecvt_utf8<wchar_t> convert_typeX;
+	//wstring_convert<convert_typeX, wchar_t> converterX;
 
 	Info.vPos = _float4(0.f, 0.f, 0.f, 1.f);
 	Info.vLook = _float4(0.f, 0.f, 1.f, 0.f);
 	Info.eType = ItemType::Map;
 	Info.iStageIndex = 0;
+	_int i{};
 
-	for (size_t i = 0; i < IM_ARRAYSIZE(m_pItemList_Map); i++)
+	for (auto& strFileName : *Models)
 	{
 		Info.Prototype = L"Prototype_Model_";
-		Info.Prototype += converterX.from_bytes(m_pItemList_Map[i]);
-		Info.iIndex = i;
+		Info.Prototype += strFileName;
+		Info.iIndex = i++;
 		if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
 		{
 			MSG_BOX("Failed to Add Layer : Dummy");
 		}
 	}
+
+	//for (size_t i = 0; i < IM_ARRAYSIZE(m_pItemList_Map); i++)
+	//{
+	//	Info.Prototype = L"Prototype_Model_";
+	//	Info.Prototype += converterX.from_bytes(m_pItemList_Map[i]);
+	//	Info.iIndex = i;
+	//	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+	//	{
+	//		MSG_BOX("Failed to Add Layer : Dummy");
+	//	}
+	//}
 
 	return S_OK;
 }
@@ -328,27 +340,26 @@ HRESULT CImguiMgr::Ready_Layers()
 void CImguiMgr::Create_Dummy(const _int& iListIndex)
 {
 	DummyInfo Info{};
-	typedef std::codecvt_utf8<wchar_t> convert_typeX;
-	wstring_convert<convert_typeX, wchar_t> converterX;
 
 	Info.vPos = m_pPos;
 	XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_pLook)));
 	Info.Prototype = L"Prototype_Model_";
 	Info.eType = m_eItemType;
+	_tchar strUnicode[MAX_PATH]{};
 	switch (m_eItemType)
 	{
 	case MapEditor::ItemType::Map:
-		Info.Prototype += converterX.from_bytes(m_pItemList_Map[iListIndex]);
+		Info.Prototype += MultiByteToWideChar(CP_ACP, 0, m_pItemList_Map[iListIndex], strlen(m_pItemList_Map[iListIndex]), strUnicode, strlen(m_pItemList_Map[iListIndex]));
 		break;
-	case MapEditor::ItemType::Misc:
-		Info.Prototype += converterX.from_bytes(m_pItemList_Misc[iListIndex]);
-		break;
-	case MapEditor::ItemType::Monster:
-		Info.Prototype += converterX.from_bytes(m_pItemList_Monster[iListIndex]);
-		break;
-	case MapEditor::ItemType::NPC:
-		Info.Prototype += converterX.from_bytes(m_pItemList_NPC[iListIndex]);
-		break;
+	//case MapEditor::ItemType::Misc:
+	//	Info.Prototype += converterX.from_bytes(m_pItemList_Misc[iListIndex]);
+	//	break;
+	//case MapEditor::ItemType::Monster:
+	//	Info.Prototype += converterX.from_bytes(m_pItemList_Monster[iListIndex]);
+	//	break;
+	//case MapEditor::ItemType::NPC:
+	//	Info.Prototype += converterX.from_bytes(m_pItemList_NPC[iListIndex]);
+	//	break;
 	}
 	Info.iIndex = iListIndex;
 	Info.iStageIndex = m_Curr_Stage;
@@ -441,11 +452,11 @@ HRESULT CImguiMgr::Export_Data()
 	return S_OK;
 }
 
-CImguiMgr* CImguiMgr::Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance)
+CImguiMgr* CImguiMgr::Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance, vector<wstring>* Models)
 {
 	CImguiMgr* pInstance = new CImguiMgr(pDevice, pContext, pGameInstance);
 
-	if (FAILED(pInstance->Init()))
+	if (FAILED(pInstance->Init(Models)))
 	{
 		MSG_BOX("Failed to Create : CImguiMgr");
 		Safe_Release(pInstance);

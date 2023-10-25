@@ -34,7 +34,7 @@ private:
 	virtual ~CImguiMgr() = default;
 
 public:
-	HRESULT Init();
+	HRESULT Init(vector<wstring>* Models);
 	void Tick();
 	HRESULT Render();
 
@@ -48,7 +48,7 @@ private: // for Input
 	ItemType m_eItemType{ ItemType::End };
 	_float4 m_pPos{0.f, 0.f, 0.f, 1.f};
 	_float4 m_pLook{0.f, 0.f, 1.f, 0.f};
-	const _char* const m_pItemList_Map[16]
+	const _char* const m_pItemList_Map[19]
 	{
 		"Konohavill_Ground_01",
 		"Konohavill_Ground_02",
@@ -65,7 +65,10 @@ private: // for Input
 		"Konohavill_Ground_13",
 		"Konohavill_Ground_14",
 		"Konohavill_Building_A",
-		"Tower"
+		"Tower",
+		"AreaH_Building_A_1",
+		"AreaH_Building_A_2",
+		"AreaH_Building_A_3",
 	};
 	const _char* const m_pItemList_Misc[3]
 	{
@@ -90,14 +93,14 @@ private:
 	list<DummyInfo> m_DummyList{};
 
 private:
-	HRESULT Ready_Layers();
+	HRESULT Ready_Layers(vector<wstring>* Models);
 	void Create_Dummy(const _int& iListIndex);
 
 	HRESULT Load_Data();
 	HRESULT Export_Data();
 
 public:
-	static CImguiMgr* Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance);
+	static CImguiMgr* Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance, vector<wstring>* Models);
 	virtual void Free() override;
 };
 
