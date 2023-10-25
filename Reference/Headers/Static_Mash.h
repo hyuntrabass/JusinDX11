@@ -17,7 +17,13 @@ public:
 	HRESULT Init_Prototype(const string& strFilePath, streampos* iFilePos, _fmatrix OffsetMatrix);
 	HRESULT Init(void* pArg) override;
 
+public:
+	_float3 Intersect_RayMesh(_fmatrix WorldMatrix);
+
 private:
+	_float3* m_pVerticesPos{ nullptr };
+	_uint* m_pIndices{ nullptr };
+
 	_char* m_pName{};
 	_uint m_iMatIndex{};
 

@@ -13,7 +13,10 @@ public:
 	void Tick();
 
 public:
+	void TransformRay_ToLocal(_fmatrix WorldMatrix);
+
 	_bool Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos);
+	_bool Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float3* pPickPos);
 
 private:
 	HWND m_hWnd{};
@@ -22,6 +25,9 @@ private:
 
 	_float4 m_vRayPos_World{};
 	_float4 m_vRayDir_World{};
+
+	_float4 m_vRayPos_Local{};
+	_float4 m_vRayDir_Local{};
 
 public:
 	static CPicking* Create(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY, class CGameInstance* pGameInstance);
