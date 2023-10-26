@@ -38,9 +38,27 @@ int main()
 		if (entry.is_regular_file())
 		{
 			std::cout << "Converting... " << entry.path().filename().string() << std::endl;
-			std::string OutputFilePath = "../Output/";
-			OutputFilePath += entry.path().stem().string() + ".hyntrastatmesh";
+
+			// 파일이 속한 폴더의 상대 경로를 구합니다.
+			std::filesystem::path relative_path = std::filesystem::relative(entry.path().parent_path(), InputFilePath);
+
+			// OutputFilePath를 생성합니다. 폴더의 경로는 파일이 속한 폴더의 상대 경로를 사용합니다.
+			std::filesystem::path OutputFilePath = std::filesystem::path("../Output/") / relative_path;
+
+			// 디렉토리가 없다면 생성합니다.
+			if (!std::filesystem::exists(OutputFilePath))
+			{
+				std::filesystem::create_directories(OutputFilePath);
+			}
+
+			// 파일 경로를 생성합니다.
+			OutputFilePath /= entry.path().stem().string() + ".hyntrastatmesh";
 			std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
+
+			//std::cout << "Converting... " << entry.path().filename().string() << std::endl;
+			//std::string OutputFilePath = "../Output/";
+			//OutputFilePath += entry.path().stem().string() + ".hyntrastatmesh";
+			//std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
 
 			if (OutputFile.is_open())
 			{

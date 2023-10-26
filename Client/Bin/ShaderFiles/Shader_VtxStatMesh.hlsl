@@ -15,6 +15,8 @@ vector g_vMtrlSpecular = vector(1.0f, 1.0f, 1.0f, 1.f);
 
 vector g_vCamPos;
 
+float g_fNorTex;
+
 struct VS_IN
 {
     float3 vPos : Position;
@@ -66,7 +68,7 @@ PS_OUT PS_Main(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
-    vector vNormal = (g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) + Input.vNor;
+    vector vNormal = (g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex + Input.vNor;
     
     float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
     

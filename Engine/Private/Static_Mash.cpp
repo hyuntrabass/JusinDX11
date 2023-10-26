@@ -32,7 +32,7 @@ HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath, streampos* iFile
 	MeshFile.read(reinterpret_cast<_char*>(&iNumFaces), sizeof _uint);
 
 	m_pVerticesPos = new _float3[m_iNumVertices];
-	m_pIndices = new _uint[iNumFaces * 3];
+	m_pVerticesNor = new _float3[m_iNumVertices];
 
 	m_iNumVertexBuffers = 1;
 	m_iVertexStride = sizeof VTXSTATICMESH;
@@ -61,9 +61,13 @@ HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath, streampos* iFile
 		MeshFile.read(reinterpret_cast<_char*>(&pVertices[i].vPosition), sizeof _float3);
 		XMStoreFloat3(&pVertices[i].vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), OffsetMatrix));
 		m_pVerticesPos[i] = pVertices[i].vPosition;
+
 		MeshFile.read(reinterpret_cast<_char*>(&pVertices[i].vNormal), sizeof _float3);
 		XMStoreFloat3(&pVertices[i].vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices[i].vNormal), OffsetMatrix));
+		m_pVerticesNor[i] = pVertices[i].vNormal;
+
 		MeshFile.read(reinterpret_cast<_char*>(&pVertices[i].vTexcoord), sizeof _float2);
+
 		MeshFile.read(reinterpret_cast<_char*>(&pVertices[i].vTangent), sizeof _float3);
 	}
 
@@ -90,17 +94,18 @@ HRESULT CStatic_Mesh::Init_Prototype(const string& strFilePath, streampos* iFile
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
 
 	_ulong* pIndices = new _ulong[m_iNumIndices];
+	m_pIndices = new _ulong[m_iNumIndices];
 	ZeroMemory(pIndices, sizeof(_ulong) * m_iNumIndices);
 
 	_ulong dwIndex{};
 	for (size_t i = 0; i < iNumFaces; i++)
 	{
-		MeshFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex++]), sizeof _uint);
-		m_pIndices[dwIndex] = static_cast<_uint>(pIndices[dwIndex]);
-		MeshFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex++]), sizeof _uint);
-		m_pIndices[dwIndex] = static_cast<_uint>(pIndices[dwIndex]);
-		MeshFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex++]), sizeof _uint);
-		m_pIndices[dwIndex] = static_cast<_uint>(pIndices[dwIndex]);
+		MeshFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
+		m_pIndices[dwIndex] = pIndices[dwIndex++];
+		MeshFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
+		m_pIndices[dwIndex] = pIndices[dwIndex++];
+		MeshFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
+		m_pIndices[dwIndex] = pIndices[dwIndex++];
 	}
 
 	m_InitialData.pSysMem = pIndices;
@@ -122,22 +127,44 @@ HRESULT CStatic_Mesh::Init(void* pArg)
 	return S_OK;
 }
 
-_float3 CStatic_Mesh::Intersect_RayMesh(_fmatrix WorldMatrix)
+_bool CStatic_Mesh::Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos)
 {
-	_uint Index{};
+	_uint Index[3]{};
 	_float3 vPickPos{};
+
+	m_pGameInstance->TransformRay_ToLocal(WorldMatrix);
 
 	for (size_t i = 0; i < m_iNumIndices / 3; i++)
 	{
-		if (m_pGameInstance->Picking_InLocal(XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index++]]),
-											 XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index++]]),
-											 XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index++]]), &vPickPos))
-		{
+		Index[0] = i * 3;
+		Index[1] = (i * 3) + 1;
+		Index[2] = (i * 3) + 2;
 
+		_vector Vertices[3]
+		{
+			XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index[0]]]),
+			XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index[1]]]),
+			XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index[2]]])
+		};
+		
+		//if (!BoundingFrustum(m_pGameInstance->Get_Transform(D3DTS::Proj)).Intersects(Vertices[0], Vertices[1], Vertices[2]))
+		//{
+		//	return false;
+		//}
+		_vector Normal = XMVector3Normalize(XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[0]]]) +	
+											XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[1]]]) + 	
+											XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[2]]]));
+
+		if (m_pGameInstance->Picking_InLocal(Vertices[0],
+											 Vertices[1],
+											 Vertices[2],
+											 Normal, pPickPos))
+		{
+			return true;
 		}
 	}
 
-	return _float3();
+	return false;
 }
 
 CStatic_Mesh* CStatic_Mesh::Create(_dev pDevice, _context pContext, const string& strFilePath, streampos* iFilePos, _fmatrix OffsetMatrix)

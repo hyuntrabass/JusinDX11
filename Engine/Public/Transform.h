@@ -27,6 +27,7 @@ private:
 	virtual ~CTransform() = default;
 
 public:
+	_matrix Get_World_Matrix() const;
 	const _float4x4& Get_World_float4x4() const;
 	_float4x4 Get_World_Inverse_float4x4() const;
 	_vector Get_State(State eState) const;

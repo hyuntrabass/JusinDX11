@@ -489,7 +489,7 @@ _bool CGameInstance::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvecto
 	return m_pPicking->Picking_InWorld(vPoint1, vPoint2, vPoint3, pPickPos);
 }
 
-_bool CGameInstance::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float3* pPickPos)
+_bool CGameInstance::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float4* pPickPos)
 {
 	if (!m_pPicking)
 	{
@@ -497,6 +497,16 @@ _bool CGameInstance::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvecto
 	}
 
 	return m_pPicking->Picking_InLocal(vPoint1, vPoint2, vPoint3, pPickPos);
+}
+
+_bool CGameInstance::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _gvector vNormal, _float4* pPickPos)
+{
+	if (!m_pPicking)
+	{
+		MSG_BOX("FATAL ERROR : m_pPicking is NULL");
+	}
+
+	return m_pPicking->Picking_InLocal(vPoint1, vPoint2, vPoint3, vNormal, pPickPos);
 }
 
 const _uint& CGameInstance::Get_CameraModeIndex() const

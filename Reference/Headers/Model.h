@@ -20,6 +20,7 @@ public:
 public:
 	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
 	HRESULT Render(_uint iMeshIndex);
+	_bool Intersect_RayModel(_fmatrix WorldMatrix, _float4* pPickPos);
 
 private:
 	_uint m_iNumMeshes{};

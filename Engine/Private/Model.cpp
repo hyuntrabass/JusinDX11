@@ -120,7 +120,7 @@ HRESULT CModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uin
 	CTexture* pMaterial = m_Materials[iMatIndex].pMaterials[ToIndex(eTextureType)];
 	if (!pMaterial)
 	{
-		return S_OK;
+		return E_FAIL;
 	}
 
 	return pMaterial->Bind_ShaderResource(pShader, pVariableName);
@@ -131,6 +131,19 @@ HRESULT CModel::Render(_uint iMeshIndex)
 	m_Meshes[iMeshIndex]->Render();
 
 	return S_OK;
+}
+
+_bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _float4* pPickPos)
+{
+	for (auto& pMesh : m_Meshes)
+	{
+		if (pMesh->Intersect_RayMesh(WorldMatrix, pPickPos))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 CModel* CModel::Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix OffsetMatrix)

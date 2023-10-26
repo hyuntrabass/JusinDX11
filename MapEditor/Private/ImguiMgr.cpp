@@ -28,7 +28,27 @@ CImguiMgr::CImguiMgr(_dev pDevice, _context pContext, CGameInstance* pGameInstan
 	Safe_AddRef(m_pDevice);
 }
 
-HRESULT CImguiMgr::Init(vector<wstring>* Models)
+void CImguiMgr::SetPos(const _float4& vPos)
+{
+	_vector vCamPos = XMLoadFloat4(&m_pGameInstance->Get_CameraPos());
+	_float fNewDist = XMVector4Length(vCamPos - XMLoadFloat4(&vPos)).m128_f32[0];
+	if (m_fCamDist < 0 || m_fCamDist > fNewDist)
+	{
+		m_pPos.x = vPos.x;
+		m_pPos.y = vPos.y;
+		m_pPos.z = vPos.z;
+		m_pPos.w = 1.f;
+
+		m_fCamDist = fNewDist;
+	}
+}
+
+_bool CImguiMgr::ComputePickPos()
+{
+	return m_ComputePickPos;
+}
+
+HRESULT CImguiMgr::Init(vector<wstring>* Models, vector<string>* pPropCount)
 {
 	IMGUI_CHECKVERSION();
 	CreateContext();
@@ -38,7 +58,7 @@ HRESULT CImguiMgr::Init(vector<wstring>* Models)
 	ImGui_ImplWin32_Init(g_hWnd);
 	ImGui_ImplDX11_Init(m_pDevice, m_pContext);
 
-	if (FAILED(Ready_Layers(Models)))
+	if (FAILED(Ready_Layers(Models, pPropCount)))
 	{
 		return E_FAIL;
 	}
@@ -95,18 +115,11 @@ void CImguiMgr::Tick()
 	BeginTabBar("Tab bar");
 
 	static _int iCurrListIndex{};
-	if (BeginTabItem("Map"))
+	if (BeginTabItem("Props"))
 	{
-		ListBox("Misc", &iCurrListIndex, m_pItemList_Map, IM_ARRAYSIZE(m_pItemList_Map));
+		ListBox("Props", &iCurrListIndex, m_pItemList_Props, m_iNumProps);
 
-		m_eItemType = ItemType::Map;
-		EndTabItem();
-	}
-	if (BeginTabItem("Misc"))
-	{
-		ListBox("Misc", &iCurrListIndex, m_pItemList_Misc, IM_ARRAYSIZE(m_pItemList_Misc));
-
-		m_eItemType = ItemType::Misc;
+		m_eItemType = ItemType::Props;
 		EndTabItem();
 	}
 	if (BeginTabItem("Monster"))
@@ -136,16 +149,23 @@ void CImguiMgr::Tick()
 		m_pPos.z = 0.f;
 		m_pPos.w = 1.f;
 	}
-	if (m_pGameInstance->Mouse_Pressing(DIM_RBUTTON))
+	if (m_pGameInstance->Mouse_Down(DIM_RBUTTON))
 	{
-		_float3 vPickPos{};
-		if (m_pGameInstance->Picking_InWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), &vPickPos) ||
-			m_pGameInstance->Picking_InWorld(XMVectorSet(300.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), &vPickPos))
-		{
-			m_pPos.x = vPickPos.x;
-			m_pPos.z = vPickPos.z;
-		}
+		m_ComputePickPos = true;
+		m_fCamDist = -1.f;
+		//_float3 vPickPos{};
+		//if (m_pGameInstance->Picking_InWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), &vPickPos) ||
+		//	m_pGameInstance->Picking_InWorld(XMVectorSet(300.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), &vPickPos))
+		//{
+		//	m_pPos.x = vPickPos.x;
+		//	m_pPos.z = vPickPos.z;
+		//}
 	}
+	else
+	{
+		m_ComputePickPos = false;
+	}
+
 	static _float fHorizental_Step{ 1.f };
 	static _float fVertical_Step{ 0.5f };
 	NewLine();
@@ -277,7 +297,7 @@ HRESULT CImguiMgr::Render()
 	return S_OK;
 }
 
-HRESULT CImguiMgr::Ready_Layers(vector<wstring>* Models)
+HRESULT CImguiMgr::Ready_Layers(vector<wstring>* Models, vector<string>* pPropCount)
 {
 	CCamera::Camera_Desc CamDesc;
 	CamDesc.vCameraPos = _float4(-10.f, 15.f, -10.f, 1.f);
@@ -310,6 +330,7 @@ HRESULT CImguiMgr::Ready_Layers(vector<wstring>* Models)
 	Info.vLook = _float4(0.f, 0.f, 1.f, 0.f);
 	Info.eType = ItemType::Map;
 	Info.iStageIndex = 0;
+	Info.pImguiMgr = this;
 	_int i{};
 
 	for (auto& strFileName : *Models)
@@ -321,18 +342,16 @@ HRESULT CImguiMgr::Ready_Layers(vector<wstring>* Models)
 		{
 			MSG_BOX("Failed to Add Layer : Dummy");
 		}
+		m_DummyList.push_back(Info);
 	}
 
-	//for (size_t i = 0; i < IM_ARRAYSIZE(m_pItemList_Map); i++)
-	//{
-	//	Info.Prototype = L"Prototype_Model_";
-	//	Info.Prototype += converterX.from_bytes(m_pItemList_Map[i]);
-	//	Info.iIndex = i;
-	//	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
-	//	{
-	//		MSG_BOX("Failed to Add Layer : Dummy");
-	//	}
-	//}
+	m_iNumProps = pPropCount->size();
+	m_pItemList_Props = new const _char * [m_iNumProps];
+
+	for (size_t i = 0; i < m_iNumProps; i++)
+	{
+		m_pItemList_Props[i] = (*pPropCount)[i].c_str();
+	}
 
 	return S_OK;
 }
@@ -348,19 +367,17 @@ void CImguiMgr::Create_Dummy(const _int& iListIndex)
 	_tchar strUnicode[MAX_PATH]{};
 	switch (m_eItemType)
 	{
-	case MapEditor::ItemType::Map:
-		Info.Prototype += MultiByteToWideChar(CP_ACP, 0, m_pItemList_Map[iListIndex], strlen(m_pItemList_Map[iListIndex]), strUnicode, strlen(m_pItemList_Map[iListIndex]));
+	case MapEditor::ItemType::Props:
+		MultiByteToWideChar(CP_ACP, 0, m_pItemList_Props[iListIndex], strlen(m_pItemList_Props[iListIndex]), strUnicode, strlen(m_pItemList_Props[iListIndex]));
 		break;
-	//case MapEditor::ItemType::Misc:
-	//	Info.Prototype += converterX.from_bytes(m_pItemList_Misc[iListIndex]);
-	//	break;
-	//case MapEditor::ItemType::Monster:
-	//	Info.Prototype += converterX.from_bytes(m_pItemList_Monster[iListIndex]);
-	//	break;
-	//case MapEditor::ItemType::NPC:
-	//	Info.Prototype += converterX.from_bytes(m_pItemList_NPC[iListIndex]);
-	//	break;
+		//case MapEditor::ItemType::Monster:
+		//	Info.Prototype += converterX.from_bytes(m_pItemList_Monster[iListIndex]);
+		//	break;
+		//case MapEditor::ItemType::NPC:
+		//	Info.Prototype += converterX.from_bytes(m_pItemList_NPC[iListIndex]);
+		//	break;
 	}
+	Info.Prototype += strUnicode;
 	Info.iIndex = iListIndex;
 	Info.iStageIndex = m_Curr_Stage;
 
@@ -452,11 +469,11 @@ HRESULT CImguiMgr::Export_Data()
 	return S_OK;
 }
 
-CImguiMgr* CImguiMgr::Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance, vector<wstring>* Models)
+CImguiMgr* CImguiMgr::Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance, vector<wstring>* Models, vector<string>* pPropCount)
 {
 	CImguiMgr* pInstance = new CImguiMgr(pDevice, pContext, pGameInstance);
 
-	if (FAILED(pInstance->Init(Models)))
+	if (FAILED(pInstance->Init(Models, pPropCount)))
 	{
 		MSG_BOX("Failed to Create : CImguiMgr");
 		Safe_Release(pInstance);

@@ -67,14 +67,35 @@ _bool CPicking::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPo
 	}
 }
 
-_bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float3* pPickPos)
+_bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float4* pPickPos)
 {
 	_float fDist{};
 	_vector vRayPos{ XMLoadFloat4(&m_vRayPos_Local) };
 	_vector vRayDir{ XMLoadFloat4(&m_vRayDir_Local) };
 	if (TriangleTests::Intersects(vRayPos, vRayDir, vPoint1, vPoint2, vPoint3, fDist))
 	{
-		XMStoreFloat3(pPickPos, vRayPos + (vRayDir * fDist));
+		XMStoreFloat4(pPickPos, vRayPos + (vRayDir * fDist));
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+_bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _gvector vNormal, _float4* pPickPos)
+{
+	if (XMVector4Dot(vNormal, XMLoadFloat4(&m_vRayDir_Local)).m128_f32[0] > 0)
+	{
+		return false;
+	}
+
+	_float fDist{};
+	_vector vRayPos{ XMLoadFloat4(&m_vRayPos_Local) };
+	_vector vRayDir{ XMLoadFloat4(&m_vRayDir_Local) };
+	if (TriangleTests::Intersects(vRayPos, vRayDir, vPoint1, vPoint2, vPoint3, fDist))
+	{
+		XMStoreFloat4(pPickPos, vRayPos + (vRayDir * fDist));
 		return true;
 	}
 	else

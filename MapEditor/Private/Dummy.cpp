@@ -37,6 +37,18 @@ void CDummy::Tick(_float fTimeDelta)
 	{
 		m_isDead = true;
 	}
+
+	if (m_Info.pImguiMgr)
+	{
+		if (m_Info.pImguiMgr->ComputePickPos())
+		{
+			_float4 vPickPos{};
+			if (m_pModel->Intersect_RayModel(m_pTransformCom->Get_World_Matrix(), &vPickPos))
+			{
+				m_Info.pImguiMgr->SetPos(vPickPos);
+			}
+		}
+	}
 }
 
 void CDummy::Late_Tick(_float fTimeDelta)
@@ -55,32 +67,31 @@ HRESULT CDummy::Render()
 
 	for (size_t i = 0; i < iNumMeshes; i++)
 	{
-		//if (m_Info.iIndex == 15)
-		//{
-		//	if (FAILED(m_pShaderCom->Begin(2)))
-		//	{
-		//		return E_FAIL;
-		//	}
-		//}
-		//else
-		//{
+		if (FAILED(m_pModel->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			return E_FAIL;
+		}
 
-			if (FAILED(m_pModel->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-			{
-				return E_FAIL;
-			}
+		_float fNorTex = 0.f;
+		if (FAILED(m_pModel->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		{
+			fNorTex = 0.f;
+		}
+		else
+		{
+			fNorTex = 1.f;
+		}
 
-			if (FAILED(m_pModel->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-			{
-				return E_FAIL;
-			}
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fNorTex", &fNorTex, sizeof _float)))
+		{
+			return E_FAIL;
+		}
 
-			if (FAILED(m_pShaderCom->Begin(0)))
-			{
-				return E_FAIL;
-			}
+		if (FAILED(m_pShaderCom->Begin(0)))
+		{
+			return E_FAIL;
+		}
 
-		//}
 		if (FAILED(m_pModel->Render(i)))
 		{
 			return E_FAIL;

@@ -30,6 +30,8 @@ private:
 	CRenderer* m_pRenderer{ nullptr };
 	_float m_fTimeAcc{};
 	_uint m_iFrameCount{};
+	_uint m_iPropCount{};
+	vector<string> m_Name_Props{};
 	vector<wstring> m_Models{};
 
 private:

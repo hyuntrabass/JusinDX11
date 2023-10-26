@@ -24,6 +24,11 @@ _float3 CTransform::Get_Scale() const
 	, XMVectorGetX(XMVector3Length(Get_State(State::Look))));
 }
 
+_matrix CTransform::Get_World_Matrix() const
+{
+	return XMLoadFloat4x4(&m_WorldMatrix);
+}
+
 const _float4x4& CTransform::Get_World_float4x4() const
 {
 	return m_WorldMatrix;

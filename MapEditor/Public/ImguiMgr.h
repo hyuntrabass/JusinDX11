@@ -11,7 +11,7 @@ BEGIN(MapEditor)
 enum class ItemType
 {
 	Map,
-	Misc,
+	Props,
 	Monster,
 	NPC,
 	End
@@ -25,6 +25,7 @@ struct DummyInfo
 	_uint iStageIndex{};
 	_float4 vPos{};
 	_float4 vLook{};
+	class CImguiMgr* pImguiMgr{ nullptr };
 };
 
 class CImguiMgr final : public CBase
@@ -34,7 +35,11 @@ private:
 	virtual ~CImguiMgr() = default;
 
 public:
-	HRESULT Init(vector<wstring>* Models);
+	void SetPos(const _float4& vPos);
+	_bool ComputePickPos();
+
+public:
+	HRESULT Init(vector<wstring>* Models, vector<string>* pPropCount);
 	void Tick();
 	HRESULT Render();
 
@@ -48,34 +53,8 @@ private: // for Input
 	ItemType m_eItemType{ ItemType::End };
 	_float4 m_pPos{0.f, 0.f, 0.f, 1.f};
 	_float4 m_pLook{0.f, 0.f, 1.f, 0.f};
-	const _char* const m_pItemList_Map[19]
-	{
-		"Konohavill_Ground_01",
-		"Konohavill_Ground_02",
-		"Konohavill_Ground_03",
-		"Konohavill_Ground_04",
-		"Konohavill_Ground_05",
-		"Konohavill_Ground_06",
-		"Konohavill_Ground_07",
-		"Konohavill_Ground_08",
-		"Konohavill_Ground_09",
-		"Konohavill_Ground_10",
-		"Konohavill_Ground_11",
-		"Konohavill_Ground_12",
-		"Konohavill_Ground_13",
-		"Konohavill_Ground_14",
-		"Konohavill_Building_A",
-		"Tower",
-		"AreaH_Building_A_1",
-		"AreaH_Building_A_2",
-		"AreaH_Building_A_3",
-	};
-	const _char* const m_pItemList_Misc[3]
-	{
-		"Box",
-		"Tree",
-		"Rock",
-	};
+	const _char** m_pItemList_Props{ nullptr };
+	_int m_iNumProps{};
 	const _char* const m_pItemList_Monster[3]
 	{
 		"Leaf_Ninja",
@@ -91,16 +70,18 @@ private: // for Input
 
 private:
 	list<DummyInfo> m_DummyList{};
+	_bool m_ComputePickPos{};
+	_float m_fCamDist{};
 
 private:
-	HRESULT Ready_Layers(vector<wstring>* Models);
+	HRESULT Ready_Layers(vector<wstring>* Models, vector<string>* pPropCount);
 	void Create_Dummy(const _int& iListIndex);
 
 	HRESULT Load_Data();
 	HRESULT Export_Data();
 
 public:
-	static CImguiMgr* Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance, vector<wstring>* Models);
+	static CImguiMgr* Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance, vector<wstring>* Models, vector<string>* pPropCount);
 	virtual void Free() override;
 };
 

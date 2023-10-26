@@ -18,11 +18,12 @@ public:
 	HRESULT Init(void* pArg) override;
 
 public:
-	_float3 Intersect_RayMesh(_fmatrix WorldMatrix);
+	_bool Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos);
 
 private:
 	_float3* m_pVerticesPos{ nullptr };
-	_uint* m_pIndices{ nullptr };
+	_float3* m_pVerticesNor{ nullptr };
+	_ulong* m_pIndices{ nullptr };
 
 	_char* m_pName{};
 	_uint m_iMatIndex{};
