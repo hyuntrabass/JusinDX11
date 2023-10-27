@@ -7,9 +7,13 @@ BEGIN(MapEditor)
 
 class CDummy final : public CGameObject
 {
+private:
 	CDummy(_dev pDevice, _context pContext);
 	CDummy(const CDummy& rhs);
 	virtual ~CDummy() = default;
+
+public:
+	void Select(const _bool& isSelected);
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -27,6 +31,7 @@ private:
 
 private:
 	DummyInfo m_Info{};
+	_bool m_isSelected{};
 
 private:
 	HRESULT Add_Components();

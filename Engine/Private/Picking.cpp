@@ -67,7 +67,7 @@ _bool CPicking::Picking_InWorld(_fvector vPoint1, _fvector vPoint2, _fvector vPo
 	}
 }
 
-_bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _float4* pPickPos)
+_bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float4* pPickPos)
 {
 	_float fDist{};
 	_vector vRayPos{ XMLoadFloat4(&m_vRayPos_Local) };
@@ -83,7 +83,7 @@ _bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPo
 	}
 }
 
-_bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _gvector vNormal, _float4* pPickPos)
+_bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _gvector vNormal, _Inout_ _float4* pPickPos)
 {
 	if (XMVector4Dot(vNormal, XMLoadFloat4(&m_vRayDir_Local)).m128_f32[0] > 0)
 	{

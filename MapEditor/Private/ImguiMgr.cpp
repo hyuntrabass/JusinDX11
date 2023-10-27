@@ -1,6 +1,7 @@
 #include "ImguiMgr.h"
 #include "GameInstance.h"
 #include "Camera_Debug.h"
+#include "Dummy.h"
 #include <locale>
 #include <codecvt>
 
@@ -28,7 +29,7 @@ CImguiMgr::CImguiMgr(_dev pDevice, _context pContext, CGameInstance* pGameInstan
 	Safe_AddRef(m_pDevice);
 }
 
-void CImguiMgr::SetPos(const _float4& vPos)
+void CImguiMgr::SetPos(const _float4& vPos, CDummy* pDummy)
 {
 	_vector vCamPos = XMLoadFloat4(&m_pGameInstance->Get_CameraPos());
 	_float fNewDist = XMVector4Length(vCamPos - XMLoadFloat4(&vPos)).m128_f32[0];
@@ -40,6 +41,12 @@ void CImguiMgr::SetPos(const _float4& vPos)
 		m_pPos.w = 1.f;
 
 		m_fCamDist = fNewDist;
+		if (m_pSelectedDummy)
+		{
+			m_pSelectedDummy->Select(false);
+		}
+		m_pSelectedDummy = pDummy;
+		m_pSelectedDummy->Select(true);
 	}
 }
 
@@ -153,6 +160,11 @@ void CImguiMgr::Tick()
 	{
 		m_ComputePickPos = true;
 		m_fCamDist = -1.f;
+		if (m_pSelectedDummy)
+		{
+			m_pSelectedDummy->Select(false);
+		}
+		m_pSelectedDummy = nullptr;
 		//_float3 vPickPos{};
 		//if (m_pGameInstance->Picking_InWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), &vPickPos) ||
 		//	m_pGameInstance->Picking_InWorld(XMVectorSet(300.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), &vPickPos))
@@ -281,6 +293,13 @@ void CImguiMgr::Tick()
 	if (Button("Modify"))
 	{
 
+	} SameLine();
+	if (Button("Delete") || m_pGameInstance->Key_Down(DIK_F))
+	{
+		if (m_pSelectedDummy)
+		{
+			m_pSelectedDummy->Kill();
+		}
 	}
 
 	EndChild();
@@ -360,6 +379,7 @@ void CImguiMgr::Create_Dummy(const _int& iListIndex)
 {
 	DummyInfo Info{};
 
+	Info.pImguiMgr = this;
 	Info.vPos = m_pPos;
 	XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_pLook)));
 	Info.Prototype = L"Prototype_Model_";

@@ -1,5 +1,5 @@
 #include "Model.h"
-#include "Static_Mash.h"
+#include "Mesh.h"
 #include "Texture.h"
 
 CModel::CModel(_dev pDevice, _context pContext)
@@ -39,13 +39,12 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, _fmatrix OffsetMatrix)
 	if (ModelFile.is_open())
 	{
 		ModelFile.read(reinterpret_cast<_char*>(&m_iNumMeshes), sizeof _uint);
-		m_iFilePos = ModelFile.tellg();
 		m_Meshes.reserve(m_iNumMeshes);
 
 		// 매쉬 로드
 		for (size_t i = 0; i < m_iNumMeshes; i++)
 		{
-			CStatic_Mesh* pMesh = CStatic_Mesh::Create(m_pDevice, m_pContext, strFilePath, &m_iFilePos, OffsetMatrix);
+			CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, ModelFile, OffsetMatrix);
 			m_Meshes.push_back(pMesh);
 		}
 
@@ -56,7 +55,6 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, _fmatrix OffsetMatrix)
 		_splitpath_s(strFilePath.c_str(), nullptr, 0, szMatFilePath, MAX_PATH, nullptr, 0, nullptr, 0);
 		strcat_s(szMatFilePath, "../Texture/");
 
-		ModelFile.seekg(m_iFilePos);
 		ModelFile.read(reinterpret_cast<_char*>(&m_iNumMaterials), sizeof _uint);
 
 		for (size_t i = 0; i < m_iNumMaterials; i++)
@@ -139,6 +137,7 @@ _bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _float4* pPickPos)
 	{
 		if (pMesh->Intersect_RayMesh(WorldMatrix, pPickPos))
 		{
+			XMStoreFloat4(pPickPos, XMVector4Transform(XMLoadFloat4(pPickPos), WorldMatrix));
 			return true;
 		}
 	}

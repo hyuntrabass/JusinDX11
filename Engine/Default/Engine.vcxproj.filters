@@ -106,8 +106,11 @@
     <Filter Include="01.Utility\03.Components\Model">
       <UniqueIdentifier>{1da3de9f-50d3-4e65-b49d-b3b270c4cc48}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Components\Model\StaticMash">
+    <Filter Include="01.Utility\03.Components\Model\Mesh">
       <UniqueIdentifier>{51435836-528c-46b4-9e53-247ae771e4f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Components\Model\Bone">
+      <UniqueIdentifier>{a94a0d24-fa57-4809-86a4-b12693e55f58}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -207,8 +210,8 @@
     <ClCompile Include="..\private\Model.cpp">
       <Filter>01.Utility\03.Components\Model</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Static_Mash.cpp">
-      <Filter>01.Utility\03.Components\Model\StaticMash</Filter>
+    <ClCompile Include="..\private\Mesh.cpp">
+      <Filter>01.Utility\03.Components\Model\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -320,8 +323,8 @@
     <ClInclude Include="..\public\Model.h">
       <Filter>01.Utility\03.Components\Model</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Static_Mash.h">
-      <Filter>01.Utility\03.Components\Model\StaticMash</Filter>
+    <ClInclude Include="..\public\Mesh.h">
+      <Filter>01.Utility\03.Components\Model\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

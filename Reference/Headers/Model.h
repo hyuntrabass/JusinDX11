@@ -24,12 +24,10 @@ public:
 
 private:
 	_uint m_iNumMeshes{};
-	vector<class CStatic_Mesh*> m_Meshes{};
+	vector<class CMesh*> m_Meshes{};
 
 	_uint m_iNumMaterials{};
 	vector<Model_Material> m_Materials{};
-
-	streampos m_iFilePos{};
 
 public:
 	static CModel* Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix OffsetMatrix = XMMatrixIdentity());

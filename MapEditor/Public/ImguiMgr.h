@@ -35,7 +35,7 @@ private:
 	virtual ~CImguiMgr() = default;
 
 public:
-	void SetPos(const _float4& vPos);
+	void SetPos(const _float4& vPos, class CDummy* pDummy);
 	_bool ComputePickPos();
 
 public:
@@ -72,6 +72,7 @@ private:
 	list<DummyInfo> m_DummyList{};
 	_bool m_ComputePickPos{};
 	_float m_fCamDist{};
+	class CDummy* m_pSelectedDummy{ nullptr };
 
 private:
 	HRESULT Ready_Layers(vector<wstring>* Models, vector<string>* pPropCount);

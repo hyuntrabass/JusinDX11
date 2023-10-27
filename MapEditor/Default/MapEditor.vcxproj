@@ -112,6 +112,7 @@
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>../Public/;../../Reference/Headers/;../Public/Imgui/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,6 +130,7 @@
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>../Public/;../../Reference/Headers/;../Public/Imgui/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

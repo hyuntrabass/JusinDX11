@@ -3,7 +3,4 @@
   <ItemGroup>
     <ClCompile Include="FBX_Converter.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
 </Project>

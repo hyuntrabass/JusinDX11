@@ -3,21 +3,23 @@
 
 BEGIN(Engine)
 
-class CStatic_Mesh final : public CVIBuffer
+class CMesh final : public CVIBuffer
 {
 private:
-	CStatic_Mesh(_dev pDevice, _context pContext);
-	CStatic_Mesh(const CStatic_Mesh& rhs);
-	virtual ~CStatic_Mesh() = default;
+	CMesh(_dev pDevice, _context pContext);
+	CMesh(const CMesh& rhs);
+	virtual ~CMesh() = default;
 
 public:
 	const _uint& Get_MatIndex() const { return m_iMatIndex; }
 
 public:
-	HRESULT Init_Prototype(const string& strFilePath, streampos* iFilePos, _fmatrix OffsetMatrix);
+	HRESULT Init_Prototype(ifstream& ModelFile, _fmatrix OffsetMatrix);
 	HRESULT Init(void* pArg) override;
 
 public:
+	HRESULT Ready_StaticMesh(ifstream& ModelFile, _fmatrix OffsetMatrix);
+	HRESULT Ready_AnimMesh(ifstream& ModelFile);
 	_bool Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos);
 
 private:
@@ -29,7 +31,7 @@ private:
 	_uint m_iMatIndex{};
 
 public:
-	static CStatic_Mesh* Create(_dev pDevice, _context pContext, const string& strFilePath, streampos* iFilePos, _fmatrix OffsetMatrix);
+	static CMesh* Create(_dev pDevice, _context pContext, ifstream& ModelFile, _fmatrix OffsetMatrix);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

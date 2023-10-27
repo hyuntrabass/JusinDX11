@@ -10,6 +10,11 @@ CDummy::CDummy(const CDummy& rhs)
 {
 }
 
+void CDummy::Select(const _bool& isSelected)
+{
+	m_isSelected = isSelected;
+}
+
 HRESULT CDummy::Init_Prototype()
 {
 	return S_OK;
@@ -45,7 +50,7 @@ void CDummy::Tick(_float fTimeDelta)
 			_float4 vPickPos{};
 			if (m_pModel->Intersect_RayModel(m_pTransformCom->Get_World_Matrix(), &vPickPos))
 			{
-				m_Info.pImguiMgr->SetPos(vPickPos);
+				m_Info.pImguiMgr->SetPos(vPickPos, this);
 			}
 		}
 	}
@@ -83,6 +88,11 @@ HRESULT CDummy::Render()
 		}
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_fNorTex", &fNorTex, sizeof _float)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_bSelected", &m_isSelected, sizeof _bool)))
 		{
 			return E_FAIL;
 		}

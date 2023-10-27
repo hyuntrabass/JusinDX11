@@ -26,53 +26,64 @@ struct Float2
 	float y{};
 };
 
+struct Uint4
+{
+	unsigned int x{};
+	unsigned int y{};
+	unsigned int z{};
+	unsigned int w{};
+};
+
+struct Float4
+{
+	float x{};
+	float y{};
+	float z{};
+	float w{};
+};
+
 int main()
 {
+	unsigned int iNumStatic{};
+	unsigned int iNumAnim{};
 	Assimp::Importer Importer{};
 	const aiScene* pAIScene{ nullptr };
 	int iNumMesh{};
 
 	std::string InputFilePath = "../StaticMesh/";
+	std::cout << "Static Models : Start Converting..." << std::endl;
+	
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(InputFilePath))
 	{
 		if (entry.is_regular_file())
 		{
 			std::cout << "Converting... " << entry.path().filename().string() << std::endl;
 
-			// 파일이 속한 폴더의 상대 경로를 구합니다.
 			std::filesystem::path relative_path = std::filesystem::relative(entry.path().parent_path(), InputFilePath);
-
-			// OutputFilePath를 생성합니다. 폴더의 경로는 파일이 속한 폴더의 상대 경로를 사용합니다.
-			std::filesystem::path OutputFilePath = std::filesystem::path("../Output/") / relative_path;
-
-			// 디렉토리가 없다면 생성합니다.
+			std::filesystem::path OutputFilePath = std::filesystem::path("../Output/Static/") / relative_path;
 			if (!std::filesystem::exists(OutputFilePath))
 			{
 				std::filesystem::create_directories(OutputFilePath);
 			}
-
-			// 파일 경로를 생성합니다.
 			OutputFilePath /= entry.path().stem().string() + ".hyntrastatmesh";
 			std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
-
-			//std::cout << "Converting... " << entry.path().filename().string() << std::endl;
-			//std::string OutputFilePath = "../Output/";
-			//OutputFilePath += entry.path().stem().string() + ".hyntrastatmesh";
-			//std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
 
 			if (OutputFile.is_open())
 			{
 				pAIScene = Importer.ReadFile(entry.path().string(), aiProcess_PreTransformVertices | aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast);
 
+			#pragma region Meshes
 				OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mNumMeshes), sizeof(unsigned int));
 
 				for (size_t i = 0; i < pAIScene->mNumMeshes; i++)
 				{
-					unsigned int iMatIndex = pAIScene->mMeshes[i]->mMaterialIndex;
-					std::string strName = pAIScene->mMeshes[i]->mName.C_Str();
+					aiMesh* pMesh = pAIScene->mMeshes[i];
+
+					unsigned int iMatIndex = pMesh->mMaterialIndex;
+					std::string strName = pMesh->mName.C_Str();
 					unsigned int iNameSize = strName.size() + 1;
-					unsigned int iNumVertices = pAIScene->mMeshes[i]->mNumVertices;
-					unsigned int iNumFaces = pAIScene->mMeshes[i]->mNumFaces;
+					unsigned int iNumVertices = pMesh->mNumVertices;
+					unsigned int iNumFaces = pMesh->mNumFaces;
 
 					OutputFile.write(reinterpret_cast<const char*>(&iMatIndex), sizeof(unsigned int));
 					OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
@@ -80,31 +91,24 @@ int main()
 					OutputFile.write(reinterpret_cast<const char*>(&iNumVertices), sizeof(unsigned int));
 					OutputFile.write(reinterpret_cast<const char*>(&iNumFaces), sizeof(unsigned int));
 
-					Float3* vPos = new Float3[iNumVertices];
-					Float3* vNor = new Float3[iNumVertices];
-					Float2* vTex = new Float2[iNumVertices];
-					Float3* vTan = new Float3[iNumVertices];
 					for (size_t j = 0; j < iNumVertices; j++)
 					{
-						OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mMeshes[i]->mVertices[j]), sizeof Float3);
-						OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mMeshes[i]->mNormals[j]), sizeof Float3);
-						OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mMeshes[i]->mTextureCoords[0][j]), sizeof Float2);
-						OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mMeshes[i]->mTangents[j]), sizeof Float3);
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mVertices[j]), sizeof Float3);
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mNormals[j]), sizeof Float3);
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mTextureCoords[0][j]), sizeof Float2);
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mTangents[j]), sizeof Float3);
 					}
-
-					delete[] vPos;
-					delete[] vNor;
-					delete[] vTex;
-					delete[] vTan;
 
 					for (size_t j = 0; j < iNumFaces; j++)
 					{
-						OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mMeshes[i]->mFaces[j].mIndices[0]), sizeof(unsigned int));
-						OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mMeshes[i]->mFaces[j].mIndices[1]), sizeof(unsigned int));
-						OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mMeshes[i]->mFaces[j].mIndices[2]), sizeof(unsigned int));
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mFaces[j].mIndices[0]), sizeof(unsigned int));
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mFaces[j].mIndices[1]), sizeof(unsigned int));
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mFaces[j].mIndices[2]), sizeof(unsigned int));
 					}
 				}
+			#pragma endregion
 
+			#pragma region Materials
 				unsigned int NumMaterials = pAIScene->mNumMaterials;
 				OutputFile.write(reinterpret_cast<const char*>(&NumMaterials), sizeof(unsigned int));
 
@@ -132,11 +136,158 @@ int main()
 						OutputFile.write(TextureFileName, iTexturePathNameSize);
 					}
 				}
+			#pragma endregion
 
+				iNumStatic++;
 				OutputFile.close();
 			}
 		}
 	}
-	std::cout << "Convert Success!" << std::endl;
+	std::cout << "Static Models : Convert Success!" << std::endl;
+
+	std::cout << "Animation Models : Start Converting..." << std::endl;
+
+	std::string InputFilePath = "../AnimMesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(InputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			std::cout << "Converting... " << entry.path().filename().string() << std::endl;
+
+			// InputFilePath를 기준으로한 상대경로를 구한다.
+			std::filesystem::path relative_path = std::filesystem::relative(entry.path().parent_path(), InputFilePath);
+
+			// 연산자(/)로 Output경로와 위에서 구한 경로를 합친다.
+			std::filesystem::path OutputFilePath = std::filesystem::path("../Output/Anim/") / relative_path;
+
+			// 폴더가 없을때 생성한다.
+			if (!std::filesystem::exists(OutputFilePath))
+			{
+				std::filesystem::create_directories(OutputFilePath);
+			}
+
+			// 최종 파일 경로를 생성
+			OutputFilePath /= entry.path().stem().string() + ".hyntrastatmesh";
+			std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
+
+			if (OutputFile.is_open())
+			{
+				pAIScene = Importer.ReadFile(entry.path().string(), aiProcess_PreTransformVertices | aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast);
+
+			#pragma region Meshes
+				OutputFile.write(reinterpret_cast<const char*>(&pAIScene->mNumMeshes), sizeof(unsigned int));
+
+				for (size_t i = 0; i < pAIScene->mNumMeshes; i++)
+				{
+					aiMesh* pMesh = pAIScene->mMeshes[i];
+
+					unsigned int iMatIndex = pMesh->mMaterialIndex;
+					std::string strName = pMesh->mName.C_Str();
+					unsigned int iNameSize = strName.size() + 1;
+					unsigned int iNumVertices = pMesh->mNumVertices;
+					unsigned int iNumFaces = pMesh->mNumFaces;
+					unsigned int iNumBones = pMesh->mNumBones;
+
+					OutputFile.write(reinterpret_cast<const char*>(&iMatIndex), sizeof(unsigned int));
+					OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
+					OutputFile.write(strName.c_str(), iNameSize);
+					OutputFile.write(reinterpret_cast<const char*>(&iNumVertices), sizeof(unsigned int));
+					OutputFile.write(reinterpret_cast<const char*>(&iNumFaces), sizeof(unsigned int));
+					OutputFile.write(reinterpret_cast<const char*>(&iNumBones), sizeof(unsigned int));
+
+					Uint4* vBlendIndices = new Uint4[iNumVertices]{};
+					Float4* vBlendWeights = new Float4[iNumVertices]{};
+
+					for (size_t j = 0; j < iNumBones; j++)
+					{
+						aiBone* pBone = pMesh->mBones[j];
+
+						for (size_t k = 0; k < pBone->mNumWeights; k++)
+						{
+							if (vBlendWeights[pBone->mWeights[k].mVertexId].x == 0.f)
+							{
+								vBlendIndices[pBone->mWeights[k].mVertexId].x = j;
+								vBlendWeights[pBone->mWeights[k].mVertexId].x = pBone->mWeights[k].mWeight;
+							}
+							else if (vBlendWeights[pBone->mWeights[k].mVertexId].y == 0.f)
+							{
+								vBlendIndices[pBone->mWeights[k].mVertexId].y = j;
+								vBlendWeights[pBone->mWeights[k].mVertexId].y = pBone->mWeights[k].mWeight;
+							}
+							else if (vBlendWeights[pBone->mWeights[k].mVertexId].z == 0.f)
+							{
+								vBlendIndices[pBone->mWeights[k].mVertexId].z = j;
+								vBlendWeights[pBone->mWeights[k].mVertexId].z = pBone->mWeights[k].mWeight;
+							}
+							else if (vBlendWeights[pBone->mWeights[k].mVertexId].w == 0.f)
+							{
+								vBlendIndices[pBone->mWeights[k].mVertexId].w = j;
+								vBlendWeights[pBone->mWeights[k].mVertexId].w = pBone->mWeights[k].mWeight;
+							}
+						}
+					}
+
+					for (size_t j = 0; j < iNumVertices; j++)
+					{
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mVertices[j]), sizeof Float3);
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mNormals[j]), sizeof Float3);
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mTextureCoords[0][j]), sizeof Float2);
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mTangents[j]), sizeof Float3);
+						OutputFile.write(reinterpret_cast<const char*>(&vBlendIndices[j]), sizeof Uint4);
+						OutputFile.write(reinterpret_cast<const char*>(&vBlendWeights[j]), sizeof Float4);
+					}
+
+					for (size_t j = 0; j < iNumFaces; j++)
+					{
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mFaces[j].mIndices[0]), sizeof(unsigned int));
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mFaces[j].mIndices[1]), sizeof(unsigned int));
+						OutputFile.write(reinterpret_cast<const char*>(&pMesh->mFaces[j].mIndices[2]), sizeof(unsigned int));
+					}
+				}
+			#pragma endregion
+
+			#pragma region Materials
+				unsigned int NumMaterials = pAIScene->mNumMaterials;
+				OutputFile.write(reinterpret_cast<const char*>(&NumMaterials), sizeof(unsigned int));
+
+				for (size_t i = 0; i < NumMaterials; i++)
+				{
+					aiMaterial* pAIMaterial = pAIScene->mMaterials[i];
+					unsigned int iTexturePathNameSize{};
+
+					for (size_t j = 0; j < 18; j++)
+					{
+						aiString strTexturePath{};
+						pAIMaterial->GetTexture(aiTextureType(j), 0, &strTexturePath);
+						unsigned int strleng = strTexturePath.length;
+						char TextureFileName[_MAX_PATH]{};
+						char TextureExt[_MAX_PATH]{};
+						_splitpath_s(strTexturePath.C_Str(), nullptr, 0, nullptr, 0, TextureFileName, _MAX_PATH, TextureExt, _MAX_PATH);
+
+						strcat_s(TextureFileName, TextureExt);
+						iTexturePathNameSize = strlen(TextureFileName) + 1;
+						OutputFile.write(reinterpret_cast<const char*>(&iTexturePathNameSize), sizeof(unsigned int));
+						if (iTexturePathNameSize == 1)
+						{
+							continue;
+						}
+						OutputFile.write(TextureFileName, iTexturePathNameSize);
+					}
+				}
+			#pragma endregion
+
+			#pragma region Bones
+
+			#pragma endregion
+
+
+				iNumAnim++;
+				OutputFile.close();
+			}
+		}
+	}
+	std::cout << "Animation Models : Convert Success!" << std::endl;
+
+	std::cout << iNumStatic << " Static Models & " << iNumAnim << " Animation Models are Successfully Converted as hyuntramesh!!" << std::endl;
 	system("pause");
 }
