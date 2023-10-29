@@ -33,7 +33,7 @@ const _uint& CModel::Get_NumMeshes() const
 	return m_iNumMeshes;
 }
 
-HRESULT CModel::Init_Prototype(const string& strFilePath, _fmatrix OffsetMatrix)
+HRESULT CModel::Init_Prototype(ModelType eType, const string& strFilePath, _fmatrix OffsetMatrix)
 {
 	ifstream ModelFile(strFilePath.c_str(), ios::binary);
 	if (ModelFile.is_open())
@@ -44,7 +44,7 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, _fmatrix OffsetMatrix)
 		// 매쉬 로드
 		for (size_t i = 0; i < m_iNumMeshes; i++)
 		{
-			CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, ModelFile, OffsetMatrix);
+			CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, eType, ModelFile, OffsetMatrix);
 			m_Meshes.push_back(pMesh);
 		}
 
@@ -145,11 +145,11 @@ _bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _float4* pPickPos)
 	return false;
 }
 
-CModel* CModel::Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix OffsetMatrix)
+CModel* CModel::Create(_dev pDevice, _context pContext, ModelType eType, const string& strFilePath, _fmatrix OffsetMatrix)
 {
 	CModel* pInstance = new CModel(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(strFilePath, OffsetMatrix)))
+	if (FAILED(pInstance->Init_Prototype(eType, strFilePath, OffsetMatrix)))
 	{
 		MSG_BOX("Failed to Create : CModel");
 	}

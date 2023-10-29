@@ -15,7 +15,7 @@ public:
 	const _uint& Get_MatIndex() const { return m_iMatIndex; }
 
 public:
-	HRESULT Init_Prototype(ifstream& ModelFile, ModelType eType, _fmatrix OffsetMatrix);
+	HRESULT Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix OffsetMatrix);
 	HRESULT Init(void* pArg) override;
 
 public:
@@ -32,7 +32,7 @@ private:
 	_uint m_iMatIndex{};
 
 public:
-	static CMesh* Create(_dev pDevice, _context pContext, ifstream& ModelFile, ModelType eType, _fmatrix OffsetMatrix);
+	static CMesh* Create(_dev pDevice, _context pContext, ModelType eType, ifstream& ModelFile, _fmatrix OffsetMatrix);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

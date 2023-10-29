@@ -21,7 +21,7 @@ public:
 	const _uint& Get_NumMeshes() const;
 
 public:
-	HRESULT Init_Prototype(const string& strFilePath, _fmatrix OffsetMatrix);
+	HRESULT Init_Prototype(ModelType eType, const string& strFilePath, _fmatrix OffsetMatrix);
 	HRESULT Init(void* pArg) override;
 
 public:
@@ -37,7 +37,7 @@ private:
 	vector<Model_Material> m_Materials{};
 
 public:
-	static CModel* Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix OffsetMatrix = XMMatrixIdentity());
+	static CModel* Create(_dev pDevice, _context pContext, ModelType eType, const string& strFilePath, _fmatrix OffsetMatrix = XMMatrixIdentity());
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

@@ -213,6 +213,9 @@
     <ClCompile Include="..\private\Mesh.cpp">
       <Filter>01.Utility\03.Components\Model\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Bone.cpp">
+      <Filter>01.Utility\03.Components\Model\Bone</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -325,6 +328,9 @@
     </ClInclude>
     <ClInclude Include="..\public\Mesh.h">
       <Filter>01.Utility\03.Components\Model\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Bone.h">
+      <Filter>01.Utility\03.Components\Model\Bone</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

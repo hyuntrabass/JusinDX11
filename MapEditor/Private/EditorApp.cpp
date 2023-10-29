@@ -190,7 +190,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, ModelType::Static, strInputFilePath + strFilePath))))
 			{
 				return E_FAIL;
 			}
@@ -212,7 +212,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			string strFileNameString = entry.path().stem().string();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, ModelType::Static, strInputFilePath + strFilePath))))
 			{
 				return E_FAIL;
 			}
@@ -223,7 +223,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		}
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Sky/Mesh/Sky.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, ModelType::Static, "../Bin/Resources/Sky/Mesh/Sky.hyntrastatmesh"))))
 	{
 		return E_FAIL;
 	}

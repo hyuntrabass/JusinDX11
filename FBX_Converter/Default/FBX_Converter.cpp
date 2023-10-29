@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <iostream>
 #include <fstream>
+#include <stack>
 
 #include <assimp\Importer.hpp>
 #include <assimp\scene.h>
@@ -44,8 +45,8 @@ struct Float4
 
 int main()
 {
-	unsigned int iNumStatic{};
-	unsigned int iNumAnim{};
+	unsigned int iNumStaticFiles{};
+	unsigned int iNumAnimFiles{};
 	Assimp::Importer Importer{};
 	const aiScene* pAIScene{ nullptr };
 	int iNumMesh{};
@@ -138,16 +139,16 @@ int main()
 				}
 			#pragma endregion
 
-				iNumStatic++;
+				iNumStaticFiles++;
 				OutputFile.close();
 			}
 		}
 	}
-	std::cout << "Static Models : Convert Success!" << std::endl;
+	std::cout << "Static Models : Convert Success!\n" << std::endl;
 
 	std::cout << "Animation Models : Start Converting..." << std::endl;
 
-	std::string InputFilePath = "../AnimMesh/";
+	InputFilePath = "../AnimMesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(InputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -277,17 +278,31 @@ int main()
 			#pragma endregion
 
 			#pragma region Bones
+				std::stack<aiNode*> BoneStack{};
 
+				BoneStack.push(pAIScene->mRootNode);
+
+				while (!BoneStack.empty())
+				{
+					aiNode* pCurrentBone = BoneStack.top();
+					BoneStack.pop();
+
+					// 필요한 뼈 정보를 출력.
+
+					for (size_t i = 0; i < pCurrentBone->mNumChildren; i++)
+					{
+						BoneStack.push(pCurrentBone->mChildren[i]);
+					}
+				}
 			#pragma endregion
 
-
-				iNumAnim++;
+				iNumAnimFiles++;
 				OutputFile.close();
 			}
 		}
 	}
-	std::cout << "Animation Models : Convert Success!" << std::endl;
+	std::cout << "Animation Models : Convert Success!\n" << std::endl;
 
-	std::cout << iNumStatic << " Static Models & " << iNumAnim << " Animation Models are Successfully Converted as hyuntramesh!!" << std::endl;
+	std::cout << iNumStaticFiles << " Static Models & " << iNumAnimFiles << " Animation Models are Successfully Converted as hyuntramesh!!" << std::endl;
 	system("pause");
 }

@@ -390,12 +390,6 @@ void CImguiMgr::Create_Dummy(const _int& iListIndex)
 	case MapEditor::ItemType::Props:
 		MultiByteToWideChar(CP_ACP, 0, m_pItemList_Props[iListIndex], strlen(m_pItemList_Props[iListIndex]), strUnicode, strlen(m_pItemList_Props[iListIndex]));
 		break;
-		//case MapEditor::ItemType::Monster:
-		//	Info.Prototype += converterX.from_bytes(m_pItemList_Monster[iListIndex]);
-		//	break;
-		//case MapEditor::ItemType::NPC:
-		//	Info.Prototype += converterX.from_bytes(m_pItemList_NPC[iListIndex]);
-		//	break;
 	}
 	Info.Prototype += strUnicode;
 	Info.iIndex = iListIndex;
@@ -437,6 +431,7 @@ HRESULT CImguiMgr::Load_Data()
 			InFile.read(reinterpret_cast<_char*>(&Info.iStageIndex), sizeof _uint);
 			InFile.read(reinterpret_cast<_char*>(&Info.vPos), sizeof _float4);
 			InFile.read(reinterpret_cast<_char*>(&Info.vLook), sizeof _float4);
+			Info.pImguiMgr = this;
 
 			if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
 			{

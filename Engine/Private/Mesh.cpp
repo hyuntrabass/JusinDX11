@@ -11,7 +11,7 @@ CMesh::CMesh(const CMesh& rhs)
 {
 }
 
-HRESULT CMesh::Init_Prototype(ifstream& ModelFile, ModelType eType, _fmatrix OffsetMatrix)
+HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix OffsetMatrix)
 {
 	ModelFile.read(reinterpret_cast<_char*>(&m_iMatIndex), sizeof _uint);
 
@@ -219,11 +219,11 @@ _bool CMesh::Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos)
 	return false;
 }
 
-CMesh* CMesh::Create(_dev pDevice, _context pContext, ifstream& ModelFile, ModelType eType, _fmatrix OffsetMatrix)
+CMesh* CMesh::Create(_dev pDevice, _context pContext, ModelType eType, ifstream& ModelFile, _fmatrix OffsetMatrix)
 {
 	CMesh* pInstance = new CMesh(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(ModelFile, eType, OffsetMatrix)))
+	if (FAILED(pInstance->Init_Prototype(eType, ModelFile, OffsetMatrix)))
 	{
 		MSG_BOX("Failed to Create : CMesh");
 		Safe_Release(pInstance);
