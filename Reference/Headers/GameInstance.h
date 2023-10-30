@@ -28,8 +28,6 @@ public: // Timer Manager
 	_float Compute_TimeDelta(const wstring& strTimerTag);
 
 public: // Level Manager
-	const _uint& Get_CurrentLevelIndex() const;
-
 	HRESULT Open_Level(_uint iLevelIndex, class CLevel* pNextLevel);
 	HRESULT Render();
 
@@ -84,10 +82,12 @@ public: // Picking
 	_bool Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _gvector vNormal, _Inout_ _float4* pPickPos);
 
 
-public: // Camera Mode
+public: // Get_Set
 	const _uint& Get_CameraModeIndex() const;
+	const _uint& Get_CurrentLevelIndex() const;
 
 	void Set_CameraModeIndex(const _uint& iIndex);
+	void Set_CurrentLevelIndex(const _uint& iIndex);
 
 private:
 	class CGraphic_Device* m_pGraphic_Device{ nullptr };
@@ -105,6 +105,7 @@ private:
 
 private:
 	_uint m_iCameraModeIndex{};
+	_uint m_iLevelIndex{};
 
 public:
 	static void Release_Engine();

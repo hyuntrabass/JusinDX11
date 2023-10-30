@@ -17,12 +17,20 @@ HRESULT CTerrain::Init_Prototype()
 
 HRESULT CTerrain::Init(void* pArg)
 {
+	if (pArg)
+	{
+		ObjectInfo Info = *(ObjectInfo*)pArg;
+
+		m_strPrototypeTag = Info.strPrototypeTag;
+
+		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&Info.vPos));
+		m_pTransformCom->Look_At_Dir(XMLoadFloat4(&Info.vLook));
+	}
+
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
-
-	m_pTransformCom->Set_RotationPerSec(200.f);
 
 	return S_OK;
 }
@@ -43,16 +51,47 @@ HRESULT CTerrain::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(0)))
-	{
-		return E_FAIL;
-	}
+	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-	if (FAILED(m_pVIBufferCom->Render()))
+	for (size_t i = 0; i < iNumMeshes; i++)
 	{
-		return E_FAIL;
-	}
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		{
+			return E_FAIL;
+		}
 
+		_float fNorTex = 0.f;
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		{
+			fNorTex = 0.f;
+		}
+		else
+		{
+			fNorTex = 1.f;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fNorTex", &fNorTex, sizeof _float)))
+		{
+			return E_FAIL;
+		}
+
+		_uint iPassIndex{};
+
+		if (m_strPrototypeTag == L"Prototype_Model_SM_ENV_KNFRST_WireMesh_B.mo")
+		{
+			iPassIndex = 1;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(iPassIndex)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom->Render(i)))
+		{
+			return E_FAIL;
+		}
+	}
 	return S_OK;
 }
 
@@ -63,17 +102,12 @@ HRESULT CTerrain::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxNorTex"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::CreateCharacter), TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	if (FAILED(__super::Add_Component(m_pGameInstance->Get_CurrentLevelIndex(), m_strPrototypeTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 	{
 		return E_FAIL;
 	}
@@ -103,12 +137,7 @@ HRESULT CTerrain::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
-	{
-		return E_FAIL;
-	}
-
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(ToIndex(Level_ID::CreateCharacter), 0);
+	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(ToIndex(Level_ID::Tutorial), 0);
 	if (!pLightDesc)
 	{
 		return E_FAIL;
@@ -167,8 +196,7 @@ void CTerrain::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pVIBufferCom);
+	Safe_Release(m_pModelCom);
 }

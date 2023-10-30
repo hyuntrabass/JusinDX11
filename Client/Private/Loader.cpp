@@ -214,10 +214,6 @@ HRESULT CLoader::Load_CreateCharacter()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
 
 #pragma endregion
 
@@ -231,34 +227,49 @@ HRESULT CLoader::Load_Tutorial()
 {
 	m_strLoadingText = L"Tutorial : Loading Texture";
 #pragma region Texture
-	for (size_t i = 0; i < 999999999; i++)
-	{
-		int a = 10;
-	}
 #pragma endregion
 
 	m_strLoadingText = L"Tutorial : Loading Model";
 #pragma region Model
-	for (size_t i = 0; i < 999999999; i++)
+	// Model for Map Assets.
+	string strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Forest/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
-		int a = 10;
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = L"Prototype_Model_";
+			wstring strFileName = entry.path().stem().wstring();
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Tutorial), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, ModelType::Static, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sky"), CModel::Create(m_pDevice, m_pContext, ModelType::Static, "../Bin/Resources/StaticMesh/Sky/Mesh/Sky.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
 	}
 #pragma endregion
 
 	m_strLoadingText = L"Tutorial : Loading Shader";
 #pragma region Shader
-	for (size_t i = 0; i < 999999999; i++)
-	{
-		int a = 10;
-	}
 #pragma endregion
 
 	m_strLoadingText = L"Tutorial : Loading Prototype";
 #pragma region Prototype
-	for (size_t i = 0; i < 999999999; i++)
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
 	{
-		int a = 10;
+		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Sky"), CSky::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Tutorial : Loading Complete!";
@@ -276,7 +287,22 @@ HRESULT CLoader::Load_Stage1()
 
 	m_strLoadingText = L"Stage1 : Loading Model";
 #pragma region Model
+	// Model for Map Assets.
+	string strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Village/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = L"Prototype_Model_";
+			wstring strFileName = entry.path().stem().wstring();
+			string strFilePath = entry.path().filename().string();
 
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Stage1), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, ModelType::Static, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Stage1 : Loading Shader";
@@ -304,7 +330,22 @@ HRESULT CLoader::Load_Stage2()
 
 	m_strLoadingText = L"Stage2 : Loading Model";
 #pragma region Model
+	// Model for Map Assets.
+	string strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Forest/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = L"Prototype_Model_";
+			wstring strFileName = entry.path().stem().wstring();
+			string strFilePath = entry.path().filename().string();
 
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Stage2), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, ModelType::Static, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Stage2 : Loading Shader";

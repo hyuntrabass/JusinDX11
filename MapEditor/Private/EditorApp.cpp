@@ -5,7 +5,6 @@
 #include "Camera_Debug.h"
 #include "Dummy.h"
 #include "Sky.h"
-#include <filesystem>
 
 CEditorApp::CEditorApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -50,7 +49,7 @@ HRESULT CEditorApp::Init()
 		return E_FAIL;
 	}
 
-	m_pImguiMgr = CImguiMgr::Create(m_pDevice, m_pContext, m_pGameInstance, &m_Models, &m_Name_Props);
+	m_pImguiMgr = CImguiMgr::Create(m_pDevice, m_pContext, m_pGameInstance, m_MapModels, &m_Name_Props);
 
 	return S_OK;
 }
@@ -181,7 +180,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 #pragma endregion
 
 #pragma region Model
-	string strInputFilePath = "../Bin/Resources/konohavill/Mesh/";
+	string strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Maps/Village/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -196,12 +195,33 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			}
 			else
 			{
-				m_Models.push_back(strFileName);
+				m_MapModels[1].push_back(strFileName);
 			}
 		}
 	}
 
-	strInputFilePath = "../Bin/Resources/Props/Mesh/";
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Maps/Forest/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = L"Prototype_Model_";
+			wstring strFileName = entry.path().stem().wstring();
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, ModelType::Static, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+			else
+			{
+				m_MapModels[0].push_back(strFileName);
+				m_MapModels[2].push_back(strFileName);
+			}
+		}
+	}
+
+	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Props/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -223,7 +243,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		}
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, ModelType::Static, "../Bin/Resources/Sky/Mesh/Sky.hyntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, ModelType::Static, "../../Client/Bin/Resources/StaticMesh/Sky/Mesh/Sky.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}

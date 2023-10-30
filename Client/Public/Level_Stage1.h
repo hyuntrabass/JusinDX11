@@ -16,6 +16,9 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	HRESULT Ready_Map();
+
+public:
 	static CLevel_Stage1* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;
 };

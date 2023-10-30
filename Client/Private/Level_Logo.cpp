@@ -8,6 +8,8 @@ CLevel_Logo::CLevel_Logo(_dev pDevice, _context pContext)
 
 HRESULT CLevel_Logo::Init()
 {
+	m_pGameInstance->Set_CurrentLevelIndex(ToIndex(Level_ID::Logo));
+
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 	{
 		return E_FAIL;

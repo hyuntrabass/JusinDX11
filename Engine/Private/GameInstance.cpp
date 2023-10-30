@@ -159,16 +159,6 @@ _float CGameInstance::Compute_TimeDelta(const wstring& strTimerTag)
 	return m_pTimer_Manager->Compute_TimeDelta(strTimerTag);
 }
 
-const _uint& CGameInstance::Get_CurrentLevelIndex() const
-{
-	if (!m_pLevel_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pLevel_Manager is NULL");
-	}
-
-	return m_pLevel_Manager->Get_CurrentLevelIndex();
-}
-
 HRESULT CGameInstance::Open_Level(_uint iLevelIndex, CLevel* pNextLevel)
 {
 	if (!m_pLevel_Manager)
@@ -514,9 +504,19 @@ const _uint& CGameInstance::Get_CameraModeIndex() const
 	return m_iCameraModeIndex;
 }
 
+const _uint& CGameInstance::Get_CurrentLevelIndex() const
+{
+	return m_iLevelIndex;
+}
+
 void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
 {
 	m_iCameraModeIndex = iIndex;
+}
+
+void CGameInstance::Set_CurrentLevelIndex(const _uint& iIndex)
+{
+	m_iLevelIndex = iIndex;
 }
 
 void CGameInstance::Clear_Managers()

@@ -40,6 +40,7 @@ using namespace DirectX;
 #include <unordered_map>
 #include <ctime>
 #include <fstream>
+#include <filesystem>
 
 #include "Engine_Macro.h"
 #include "Engine_Struct.h"
@@ -47,7 +48,6 @@ using namespace DirectX;
 #include "Engine_Function.h"
 
 //// 사운드 재생을 위한 헤더
-//#include <filesystem>
 //#include <io.h>
 //#include "fmod.h"
 //#include "fmod.hpp"

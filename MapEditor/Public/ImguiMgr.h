@@ -73,9 +73,10 @@ private:
 	_bool m_ComputePickPos{};
 	_float m_fCamDist{};
 	class CDummy* m_pSelectedDummy{ nullptr };
+	vector<wstring>* m_pMapModels{ nullptr };
 
 private:
-	HRESULT Ready_Layers(vector<wstring>* Models, vector<string>* pPropCount);
+	HRESULT Ready_Layers(vector<string>* pPropCount);
 	void Create_Dummy(const _int& iListIndex);
 
 	HRESULT Load_Data();

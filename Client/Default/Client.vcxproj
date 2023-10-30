@@ -177,6 +177,7 @@
     <ClInclude Include="..\Public\Loading_Objects.h" />
     <ClInclude Include="..\public\Logo.h" />
     <ClInclude Include="..\public\MainApp.h" />
+    <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\public\Start_Btn.h" />
     <ClInclude Include="..\public\SubTitle.h" />
     <ClInclude Include="..\public\Terrain.h" />
@@ -199,6 +200,7 @@
     <ClCompile Include="..\private\Loading_Screen.cpp" />
     <ClCompile Include="..\private\Logo.cpp" />
     <ClCompile Include="..\private\MainApp.cpp" />
+    <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\private\Start_Btn.cpp" />
     <ClCompile Include="..\private\SubTitle.cpp" />
     <ClCompile Include="..\private\Terrain.cpp" />
@@ -212,6 +214,7 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimMesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCubeTex.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>

@@ -7,6 +7,13 @@ CLevel_Stage2::CLevel_Stage2(_dev pDevice, _context pContext)
 
 HRESULT CLevel_Stage2::Init()
 {
+	m_pGameInstance->Set_CurrentLevelIndex(ToIndex(Level_ID::Stage2));
+
+	if (FAILED(Ready_Map()))
+	{
+		MSG_BOX("Failed to Ready Map");
+	}
+
 	return S_OK;
 }
 
@@ -16,6 +23,29 @@ void CLevel_Stage2::Tick(_float fTimeDelta)
 
 HRESULT CLevel_Stage2::Render()
 {
+	return S_OK;
+}
+
+HRESULT CLevel_Stage2::Ready_Map()
+{
+	string strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Forest/Mesh/";
+	wstring strPrototypeTag = L"Prototype_Model_";
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strFileName = entry.path().stem().wstring();
+			ObjectInfo Info{};
+			Info.strPrototypeTag = strPrototypeTag + strFileName;
+
+			if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Stage2), L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
+			{
+				return E_FAIL;
+			}
+
+		}
+	}
 	return S_OK;
 }
 

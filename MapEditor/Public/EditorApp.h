@@ -32,7 +32,7 @@ private:
 	_uint m_iFrameCount{};
 	_uint m_iPropCount{};
 	vector<string> m_Name_Props{};
-	vector<wstring> m_Models{};
+	vector<wstring> m_MapModels[3]{};
 
 private:
 	HRESULT Ready_Prototype_Component_For_Static();

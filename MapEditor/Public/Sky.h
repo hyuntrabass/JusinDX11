@@ -21,7 +21,7 @@ public:
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	CModel* m_pModel{ nullptr };
+	CModel* m_pModelCom{ nullptr };
 
 private:
 	HRESULT Add_Components();

@@ -48,7 +48,7 @@ void CDummy::Tick(_float fTimeDelta)
 		if (m_Info.pImguiMgr->ComputePickPos())
 		{
 			_float4 vPickPos{};
-			if (m_pModel->Intersect_RayModel(m_pTransformCom->Get_World_Matrix(), &vPickPos))
+			if (m_pModelCom->Intersect_RayModel(m_pTransformCom->Get_World_Matrix(), &vPickPos))
 			{
 				m_Info.pImguiMgr->SetPos(vPickPos, this);
 			}
@@ -68,17 +68,17 @@ HRESULT CDummy::Render()
 		return E_FAIL;
 	}
 
-	_uint iNumMeshes = m_pModel->Get_NumMeshes();
+	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	for (size_t i = 0; i < iNumMeshes; i++)
 	{
-		if (FAILED(m_pModel->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
 			return E_FAIL;
 		}
 
 		_float fNorTex = 0.f;
-		if (FAILED(m_pModel->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
 		{
 			fNorTex = 0.f;
 		}
@@ -97,12 +97,19 @@ HRESULT CDummy::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(0)))
+		_uint iPassIndex{};
+
+		if (m_Info.Prototype == L"Prototype_Model_SM_ENV_KNFRST_WireMesh_B.mo")
+		{
+			iPassIndex = 1;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(iPassIndex)))
 		{
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pModel->Render(i)))
+		if (FAILED(m_pModelCom->Render(i)))
 		{
 			return E_FAIL;
 		}
@@ -122,7 +129,7 @@ HRESULT CDummy::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), m_Info.Prototype, TEXT("Com_Model"), (CComponent**)&m_pModel)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), m_Info.Prototype, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 	{
 		return E_FAIL;
 	}
@@ -211,7 +218,7 @@ void CDummy::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pModel);
+	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 }

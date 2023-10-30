@@ -16,6 +16,10 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	HRESULT Ready_Map();
+	HRESULT Ready_Lights();
+
+public:
 	static CLevel_Tutorial* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;
 };

@@ -55,6 +55,12 @@
     <Filter Include="02.GameObjects\00.GUI\01.CreateCharacter">
       <UniqueIdentifier>{ea7699e0-c5ba-4dc1-8c50-780e6566e819}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\02.Terrain">
+      <UniqueIdentifier>{90c92c05-d88a-4fc5-b24f-462b98f98a77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\98.Sky">
+      <UniqueIdentifier>{d3a23928-1a41-4ec2-99aa-5c23dd00543d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -121,7 +127,10 @@
       <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Terrain.h">
-      <Filter>02.GameObjects</Filter>
+      <Filter>02.GameObjects\02.Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sky.h">
+      <Filter>02.GameObjects\98.Sky</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -187,7 +196,10 @@
       <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Terrain.cpp">
-      <Filter>02.GameObjects</Filter>
+      <Filter>02.GameObjects\02.Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sky.cpp">
+      <Filter>02.GameObjects\98.Sky</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -201,6 +213,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxStatMesh.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimMesh.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

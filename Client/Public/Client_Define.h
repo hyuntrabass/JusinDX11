@@ -3,6 +3,7 @@
 #include "../Default/framework.h"
 #include <process.h>
 #include <iostream>
+#include "Engine_Defines.h"
 
 #pragma comment(lib, "Engine.lib")
 
@@ -29,6 +30,13 @@ namespace Client
 	{
 		Debug,
 		End
+	};
+
+	struct ObjectInfo
+	{
+		wstring strPrototypeTag{};
+		_float4 vPos{_float4(0.f, 0.f, 0.f, 1.f)};
+		_float4 vLook{_float4(0.f, 0.f, 1.f, 0.f)};
 	};
 }
 

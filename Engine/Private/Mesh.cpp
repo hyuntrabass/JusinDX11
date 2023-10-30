@@ -250,4 +250,7 @@ void CMesh::Free()
 	__super::Free();
 
 	Safe_Delete_Array(m_pName);
+	Safe_Delete_Array(m_pVerticesPos);
+	Safe_Delete_Array(m_pVerticesNor);
+	Safe_Delete_Array(m_pIndices);
 }

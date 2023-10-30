@@ -21,8 +21,10 @@ public:
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
-	CTexture* m_pTextureCom{ nullptr };
+	CModel* m_pModelCom{ nullptr };
+
+private:
+	wstring m_strPrototypeTag{};
 
 private:
 	HRESULT Add_Components();

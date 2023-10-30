@@ -8,6 +8,13 @@ CLevel_Stage1::CLevel_Stage1(_dev pDevice, _context pContext)
 
 HRESULT CLevel_Stage1::Init()
 {
+	m_pGameInstance->Set_CurrentLevelIndex(ToIndex(Level_ID::Stage1));
+
+	if (FAILED(Ready_Map()))
+	{
+		MSG_BOX("Failed to Ready Map");
+	}
+
 	return S_OK;
 }
 
@@ -24,6 +31,29 @@ void CLevel_Stage1::Tick(_float fTimeDelta)
 
 HRESULT CLevel_Stage1::Render()
 {
+	return S_OK;
+}
+
+HRESULT CLevel_Stage1::Ready_Map()
+{
+	string strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Village/Mesh/";
+	wstring strPrototypeTag = L"Prototype_Model_";
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strFileName = entry.path().stem().wstring();
+			ObjectInfo Info{};
+			Info.strPrototypeTag = strPrototypeTag + strFileName;
+
+			if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Stage1), L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
+			{
+				return E_FAIL;
+			}
+
+		}
+	}
 	return S_OK;
 }
 

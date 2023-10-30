@@ -9,6 +9,8 @@ CLevel_CreateCharacter::CLevel_CreateCharacter(_dev pDevice, _context pContext)
 
 HRESULT CLevel_CreateCharacter::Init()
 {
+	m_pGameInstance->Set_CurrentLevelIndex(ToIndex(Level_ID::CreateCharacter));
+
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 	{
 		return E_FAIL;
@@ -55,14 +57,9 @@ HRESULT CLevel_CreateCharacter::Ready_Layer_Camera(const wstring& strLayerTag)
 	CamDesc.fFovY = XMConvertToRadians(60.f);
 	CamDesc.fAspect = static_cast<_float>(g_iWinSizeX) / g_iWinSizeY;
 	CamDesc.fNear = 0.1f;
-	CamDesc.fFar = 500.f;
+	CamDesc.fFar = 5000.f;
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::CreateCharacter), strLayerTag, TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::CreateCharacter), strLayerTag, TEXT("Prototype_GameObject_Terrain"))))
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), strLayerTag, TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
 	{
 		return E_FAIL;
 	}

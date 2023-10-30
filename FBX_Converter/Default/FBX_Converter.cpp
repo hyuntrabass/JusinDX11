@@ -66,7 +66,7 @@ int main()
 			{
 				std::filesystem::create_directories(OutputFilePath);
 			}
-			OutputFilePath /= entry.path().stem().string() + ".hyntrastatmesh";
+			OutputFilePath /= entry.path().stem().string() + ".hyuntrastatmesh";
 			std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
 
 			if (OutputFile.is_open())
@@ -168,7 +168,7 @@ int main()
 			}
 
 			// 최종 파일 경로를 생성
-			OutputFilePath /= entry.path().stem().string() + ".hyntrastatmesh";
+			OutputFilePath /= entry.path().stem().string() + ".hyuntrastatmesh";
 			std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
 
 			if (OutputFile.is_open())
@@ -288,6 +288,12 @@ int main()
 					BoneStack.pop();
 
 					// 필요한 뼈 정보를 출력.
+					char szName[_MAX_PATH]{}; 
+					strcpy_s(szName, pCurrentBone->mName.C_Str());
+					unsigned int iNameSize = strlen(szName) + 1;
+					OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
+					OutputFile.write(pCurrentBone->mName.C_Str(), iNameSize);
+					OutputFile.write(reinterpret_cast<const char*>(&pCurrentBone->mTransformation), sizeof(aiMatrix4x4));
 
 					for (size_t i = 0; i < pCurrentBone->mNumChildren; i++)
 					{

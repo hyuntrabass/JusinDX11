@@ -93,15 +93,6 @@ PS_OUT PS_Main_Sky(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_Test(PS_IN Input)
-{
-    PS_OUT Output = (PS_OUT) 0;
-    
-    Output.vColor = vector(1.f, 1.f, 1.f, 1.f);
-    
-    return Output;
-}
-
 technique11 DefaultTechniqueShader_VtxNorTex
 {
     pass Default
@@ -109,6 +100,16 @@ technique11 DefaultTechniqueShader_VtxNorTex
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        PixelShader = compile ps_5_0 PS_Main();
+    }
+
+    pass BlendMeshes
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         PixelShader = compile ps_5_0 PS_Main();
@@ -122,15 +123,5 @@ technique11 DefaultTechniqueShader_VtxNorTex
 
         VertexShader = compile vs_5_0 VS_Main();
         PixelShader = compile ps_5_0 PS_Main_Sky();
-    }
-
-    pass Test
-    {
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-        VertexShader = compile vs_5_0 VS_Main();
-        PixelShader = compile ps_5_0 PS_Main_Test();
     }
 };

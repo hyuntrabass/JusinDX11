@@ -2,8 +2,6 @@
 #include "GameInstance.h"
 #include "Camera_Debug.h"
 #include "Dummy.h"
-#include <locale>
-#include <codecvt>
 
 using namespace ImGui;
 
@@ -65,7 +63,9 @@ HRESULT CImguiMgr::Init(vector<wstring>* Models, vector<string>* pPropCount)
 	ImGui_ImplWin32_Init(g_hWnd);
 	ImGui_ImplDX11_Init(m_pDevice, m_pContext);
 
-	if (FAILED(Ready_Layers(Models, pPropCount)))
+	m_pMapModels = Models;
+
+	if (FAILED(Ready_Layers(pPropCount)))
 	{
 		return E_FAIL;
 	}
@@ -78,10 +78,10 @@ void CImguiMgr::Tick()
 	static _bool bDemo{ true };
 	ShowDemoWindow(&bDemo);
 
-	const _char* Test[3]{ "Tutorial", "Stage1", "Stage2" };
+	const _char* szStages[3]{ "Tutorial", "Stage1", "Stage2" };
 	Begin("Editor");
 
-	if (Combo("Stage", &m_Curr_Stage, Test, IM_ARRAYSIZE(Test)))
+	if (Combo("Stage", &m_Curr_Stage, szStages, IM_ARRAYSIZE(szStages)))
 	{
 		m_DummyList.clear();
 		m_pGameInstance->Open_Level(m_Curr_Stage, nullptr);
@@ -316,7 +316,7 @@ HRESULT CImguiMgr::Render()
 	return S_OK;
 }
 
-HRESULT CImguiMgr::Ready_Layers(vector<wstring>* Models, vector<string>* pPropCount)
+HRESULT CImguiMgr::Ready_Layers(vector<string>* pPropCount)
 {
 	CCamera::Camera_Desc CamDesc;
 	CamDesc.vCameraPos = _float4(-10.f, 15.f, -10.f, 1.f);
@@ -339,29 +339,6 @@ HRESULT CImguiMgr::Ready_Layers(vector<wstring>* Models, vector<string>* pPropCo
 	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Sky"), TEXT("Prototype_GameObject_Sky"))))
 	{
 		return E_FAIL;
-	}
-
-	DummyInfo Info{};
-	//typedef std::codecvt_utf8<wchar_t> convert_typeX;
-	//wstring_convert<convert_typeX, wchar_t> converterX;
-
-	Info.vPos = _float4(0.f, 0.f, 0.f, 1.f);
-	Info.vLook = _float4(0.f, 0.f, 1.f, 0.f);
-	Info.eType = ItemType::Map;
-	Info.iStageIndex = 0;
-	Info.pImguiMgr = this;
-	_int i{};
-
-	for (auto& strFileName : *Models)
-	{
-		Info.Prototype = L"Prototype_Model_";
-		Info.Prototype += strFileName;
-		Info.iIndex = i++;
-		if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
-		{
-			MSG_BOX("Failed to Add Layer : Dummy");
-		}
-		m_DummyList.push_back(Info);
 	}
 
 	m_iNumProps = pPropCount->size();
@@ -405,7 +382,26 @@ void CImguiMgr::Create_Dummy(const _int& iListIndex)
 
 HRESULT CImguiMgr::Load_Data()
 {
-	wstring strFilePath = L"../../Client/Bin/Resources/Map/Map_Data" + std::to_wstring(m_Curr_Stage) + L".hyntramap";
+	DummyInfo Info{};
+	Info.vPos = _float4(0.f, 0.f, 0.f, 1.f);
+	Info.vLook = _float4(0.f, 0.f, 1.f, 0.f);
+	Info.eType = ItemType::Map;
+	Info.iStageIndex = m_Curr_Stage;
+	Info.pImguiMgr = this;
+	_int i{};
+
+	for (auto& strFileName : m_pMapModels[m_Curr_Stage])
+	{
+		Info.Prototype = L"Prototype_Model_";
+		Info.Prototype += strFileName;
+		Info.iIndex = i++;
+		if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+		{
+			MSG_BOX("Failed to Add Layer : Dummy");
+		}
+	}
+
+	filesystem::path strFilePath = L"../../Client/Bin/Resources/MapData/" + std::to_wstring(m_Curr_Stage) + L".hyuntramap";
 
 	ifstream InFile(strFilePath.c_str(), ios::binary);
 
@@ -454,7 +450,7 @@ HRESULT CImguiMgr::Load_Data()
 
 HRESULT CImguiMgr::Export_Data()
 {
-	wstring strFilePath = L"../../Client/Bin/Resources/Map/Map_Data" + std::to_wstring(m_Curr_Stage) + L".hyntramap";
+	filesystem::path strFilePath = L"../../Client/Bin/Resources/MapData/" + std::to_wstring(m_Curr_Stage) + L".hyuntramap";
 
 	ofstream OutFile(strFilePath.c_str(), ios::binary);
 
