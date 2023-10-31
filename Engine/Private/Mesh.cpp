@@ -1,5 +1,7 @@
 #include "Mesh.h"
 #include "GameInstance.h"
+#include "Bone.h"
+#include "Shader.h"
 
 CMesh::CMesh(_dev pDevice, _context pContext)
 	: CVIBuffer(pDevice, pContext)
@@ -17,7 +19,6 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix Off
 
 	_uint iNameSize{};
 	ModelFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof _uint);
-	m_pName = new char[iNameSize];
 	ModelFile.read(m_pName, iNameSize);
 	ModelFile.read(reinterpret_cast<_char*>(&m_iNumVertices), sizeof _uint);
 	_uint iNumFaces{};
@@ -89,6 +90,66 @@ HRESULT CMesh::Init(void* pArg)
 	return S_OK;
 }
 
+HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const vector<CBone*>& Bones, const _char* pVariableName, _fmatrix PivotMatrix)
+{
+	_float4x4* BoneMatrices = new _float4x4[m_iNumBones]{};
+
+	for (size_t i = 0; i < m_iNumBones; i++)
+	{
+		XMStoreFloat4x4(&BoneMatrices[i], XMLoadFloat4x4(&m_OffsetMatrices[i]) * XMLoadFloat4x4(Bones[m_BoneIndices[i]]->Get_CombinedMatrix()) * PivotMatrix);
+	}
+
+	if (FAILED(pShader->Bind_Matrices(pVariableName, BoneMatrices, m_iNumBones)))
+	{
+		MSG_BOX("Failed to Bind Bone Matrices!");
+		Safe_Delete_Array(BoneMatrices);
+		return E_FAIL;
+	}
+
+	Safe_Delete_Array(BoneMatrices);
+	return S_OK;
+}
+
+_bool CMesh::Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos)
+{
+	_uint Index[3]{};
+	_float3 vPickPos{};
+
+	m_pGameInstance->TransformRay_ToLocal(WorldMatrix);
+
+	for (size_t i = 0; i < m_iNumIndices / 3; i++)
+	{
+		Index[0] = i * 3;
+		Index[1] = (i * 3) + 1;
+		Index[2] = (i * 3) + 2;
+
+		_vector Vertices[3]
+		{
+			XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index[0]]]),
+			XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index[1]]]),
+			XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index[2]]])
+		};
+
+		//if (!BoundingFrustum(m_pGameInstance->Get_Transform(D3DTS::Proj)).Intersects(Vertices[0], Vertices[1], Vertices[2]))
+		//{
+		//	return false;
+		//}
+		_vector Normal = XMVector3Normalize(XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[0]]]) +
+											XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[1]]]) +
+											XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[2]]]));
+
+		if (m_pGameInstance->Picking_InLocal(Vertices[0],
+											 Vertices[1],
+											 Vertices[2],
+											 Normal, pPickPos))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _fmatrix OffsetMatrix)
 {
 	m_iVertexStride = sizeof VTXSTATICMESH;
@@ -135,6 +196,11 @@ HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _fmatrix OffsetMatrix)
 
 HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 {
+	ModelFile.read(reinterpret_cast<_char*>(&m_iNumBones), sizeof _uint);
+	if (m_iNumBones > 256)
+	{
+		MSG_BOX("Too Many Bones!");
+	}
 	m_iVertexStride = sizeof VTXANIMMESH;
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
 	m_BufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
@@ -161,7 +227,7 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vTangent), sizeof _float3);
 
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vBlendIndices), sizeof XMUINT4);
-		
+
 		ModelFile.read(reinterpret_cast<_char*>(&pVertices[i].vBlendWeights), sizeof _float4);
 	}
 
@@ -175,48 +241,18 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 
 	Safe_Delete_Array(pVertices);
 
-
-	return S_OK;
-}
-
-_bool CMesh::Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos)
-{
-	_uint Index[3]{};
-	_float3 vPickPos{};
-
-	m_pGameInstance->TransformRay_ToLocal(WorldMatrix);
-
-	for (size_t i = 0; i < m_iNumIndices / 3; i++)
+	for (size_t i = 0; i < m_iNumBones; i++)
 	{
-		Index[0] = i * 3;
-		Index[1] = (i * 3) + 1;
-		Index[2] = (i * 3) + 2;
+		_float4x4 OffsetMatrix{};
+		_uint iBoneIndex{};
+		ModelFile.read(reinterpret_cast<_char*>(&OffsetMatrix), sizeof _float4x4);
+		ModelFile.read(reinterpret_cast<_char*>(&iBoneIndex), sizeof _uint);
 
-		_vector Vertices[3]
-		{
-			XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index[0]]]),
-			XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index[1]]]),
-			XMLoadFloat3(&m_pVerticesPos[m_pIndices[Index[2]]])
-		};
-
-		//if (!BoundingFrustum(m_pGameInstance->Get_Transform(D3DTS::Proj)).Intersects(Vertices[0], Vertices[1], Vertices[2]))
-		//{
-		//	return false;
-		//}
-		_vector Normal = XMVector3Normalize(XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[0]]]) +
-											XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[1]]]) +
-											XMLoadFloat3(&m_pVerticesNor[m_pIndices[Index[2]]]));
-
-		if (m_pGameInstance->Picking_InLocal(Vertices[0],
-											 Vertices[1],
-											 Vertices[2],
-											 Normal, pPickPos))
-		{
-			return true;
-		}
+		m_OffsetMatrices.push_back(OffsetMatrix);
+		m_BoneIndices.push_back(iBoneIndex);
 	}
 
-	return false;
+	return S_OK;
 }
 
 CMesh* CMesh::Create(_dev pDevice, _context pContext, ModelType eType, ifstream& ModelFile, _fmatrix OffsetMatrix)
@@ -249,7 +285,6 @@ void CMesh::Free()
 {
 	__super::Free();
 
-	Safe_Delete_Array(m_pName);
 	Safe_Delete_Array(m_pVerticesPos);
 	Safe_Delete_Array(m_pVerticesNor);
 	Safe_Delete_Array(m_pIndices);

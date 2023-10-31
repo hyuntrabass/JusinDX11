@@ -9,14 +9,22 @@ private:
 	CBone();
 	virtual ~CBone() = default;
 
+public:
+	const _char* Get_BoneName() const;
+	const _float4x4* Get_CombinedMatrix() const;
+
 private:
 	HRESULT Init(ifstream& ModelFile);
 
 private:
+	_char m_szName[MAX_PATH]{};
 	_float4x4 m_TransformationMatrix{};
 	_float4x4 m_CombindTransformationMatrix{};
 
-	_uint m_iParentIndex{};
+	_int m_iParentIndex{};
+
+public:
+	void Update_CombinedMatrix(const vector<CBone*>& Bones);
 
 public:
 	static CBone* Create(ifstream& ModelFile);

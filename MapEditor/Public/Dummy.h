@@ -1,11 +1,11 @@
 #pragma once
 #include "MapEditor_Define.h"
-#include "GameObject.h"
+#include "BlendObject.h"
 #include "ImguiMgr.h"
 
 BEGIN(MapEditor)
 
-class CDummy final : public CGameObject
+class CDummy final : public CBlendObject
 {
 private:
 	CDummy(_dev pDevice, _context pContext);
@@ -30,6 +30,7 @@ private:
 private:
 	DummyInfo m_Info{};
 	_bool m_isSelected{};
+	_bool m_isBlendObject{};
 
 private:
 	HRESULT Add_Components();

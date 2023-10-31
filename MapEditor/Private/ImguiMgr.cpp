@@ -69,6 +69,7 @@ HRESULT CImguiMgr::Init(vector<wstring>* Models, vector<string>* pPropCount)
 	{
 		return E_FAIL;
 	}
+	Load_Data();
 
 	return S_OK;
 }
@@ -84,7 +85,7 @@ void CImguiMgr::Tick()
 	if (Combo("Stage", &m_Curr_Stage, szStages, IM_ARRAYSIZE(szStages)))
 	{
 		m_DummyList.clear();
-		m_pGameInstance->Open_Level(m_Curr_Stage, nullptr);
+		m_pGameInstance->Set_CurrentLevelIndex(m_Curr_Stage);
 		Load_Data();
 	}
 
@@ -124,10 +125,11 @@ void CImguiMgr::Tick()
 	static _int iCurrListIndex{};
 	if (BeginTabItem("Props"))
 	{
+		PushItemWidth(300.f);
 		ListBox("Props", &iCurrListIndex, m_pItemList_Props, m_iNumProps);
-
 		m_eItemType = ItemType::Props;
 		EndTabItem();
+		PopItemWidth();
 	}
 	if (BeginTabItem("Monster"))
 	{
@@ -331,10 +333,10 @@ HRESULT CImguiMgr::Ready_Layers(vector<string>* pPropCount)
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &m_pPos)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &m_pPos)))
+	//{
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Sky"), TEXT("Prototype_GameObject_Sky"))))
 	{
@@ -366,6 +368,9 @@ void CImguiMgr::Create_Dummy(const _int& iListIndex)
 	{
 	case MapEditor::ItemType::Props:
 		MultiByteToWideChar(CP_ACP, 0, m_pItemList_Props[iListIndex], strlen(m_pItemList_Props[iListIndex]), strUnicode, strlen(m_pItemList_Props[iListIndex]));
+		break;
+	case MapEditor::ItemType::Monster:
+		MultiByteToWideChar(CP_ACP, 0, m_pItemList_Monster[iListIndex], strlen(m_pItemList_Monster[iListIndex]), strUnicode, strlen(m_pItemList_Monster[iListIndex]));
 		break;
 	}
 	Info.Prototype += strUnicode;

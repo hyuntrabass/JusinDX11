@@ -1,6 +1,7 @@
 #include "Model.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "Bone.h"
 
 CModel::CModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
@@ -13,6 +14,8 @@ CModel::CModel(const CModel& rhs)
 	, m_Meshes(rhs.m_Meshes)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_Materials(rhs.m_Materials)
+	, m_Bones(rhs.m_Bones)
+	, m_PivotMatrix(rhs.m_PivotMatrix)
 {
 	for (auto& pMesh : m_Meshes)
 	{
@@ -33,18 +36,43 @@ const _uint& CModel::Get_NumMeshes() const
 	return m_iNumMeshes;
 }
 
-HRESULT CModel::Init_Prototype(ModelType eType, const string& strFilePath, _fmatrix OffsetMatrix)
+HRESULT CModel::Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix)
 {
+	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
+	ModelType eType{};
+	_char szExt[MAX_PATH]{};
+	_splitpath_s(strFilePath.c_str(), nullptr, 0, nullptr, 0, nullptr, 0, szExt, MAX_PATH);
+	if (!strcmp(szExt, ".hyuntraanimmesh"))
+	{
+		eType = ModelType::Anim;
+	}
+	else
+	{
+		eType = ModelType::Static;
+	}
+
 	ifstream ModelFile(strFilePath.c_str(), ios::binary);
 	if (ModelFile.is_open())
 	{
+		if (eType == ModelType::Anim)
+		{
+			// 뼈 로드
+			_uint iNumBones{};
+			ModelFile.read(reinterpret_cast<_char*>(&iNumBones), sizeof _uint);
+
+			for (size_t i = 0; i < iNumBones; i++)
+			{
+				m_Bones.push_back(CBone::Create(ModelFile));
+			}
+		}
+
 		ModelFile.read(reinterpret_cast<_char*>(&m_iNumMeshes), sizeof _uint);
 		m_Meshes.reserve(m_iNumMeshes);
 
 		// 매쉬 로드
 		for (size_t i = 0; i < m_iNumMeshes; i++)
 		{
-			CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, eType, ModelFile, OffsetMatrix);
+			CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, eType, ModelFile, PivotMatrix);
 			m_Meshes.push_back(pMesh);
 		}
 
@@ -106,6 +134,19 @@ HRESULT CModel::Init(void* pArg)
 	return S_OK;
 }
 
+void CModel::Play_Animation(_float fTimeDelta)
+{
+	for (auto& pBone : m_Bones)
+	{
+		pBone->Update_CombinedMatrix(m_Bones);
+	}
+}
+
+HRESULT CModel::Bind_BoneMatrices(_uint iMeshIndex, CShader* pShader, const _char* pVariableName)
+{
+	return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, m_Bones, pVariableName, XMLoadFloat4x4(&m_PivotMatrix));
+}
+
 HRESULT CModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType)
 {
 	_uint iMatIndex = m_Meshes[iMeshIndex]->Get_MatIndex();
@@ -145,11 +186,11 @@ _bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _float4* pPickPos)
 	return false;
 }
 
-CModel* CModel::Create(_dev pDevice, _context pContext, ModelType eType, const string& strFilePath, _fmatrix OffsetMatrix)
+CModel* CModel::Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix PivotMatrix)
 {
 	CModel* pInstance = new CModel(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(eType, strFilePath, OffsetMatrix)))
+	if (FAILED(pInstance->Init_Prototype(strFilePath, PivotMatrix)))
 	{
 		MSG_BOX("Failed to Create : CModel");
 	}

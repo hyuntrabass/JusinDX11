@@ -26,7 +26,7 @@ struct VS_IN
     float3 vNor : Normal;
     float2 vTex : Texcoord0;
     float3 vTan : Tangent;
-    uint4 vBlendIndices : BlendIndices;
+    uint4 vBlendIndices : BlendIndex;
     float4 vBlendWeight : BlendWeight;
 };
 

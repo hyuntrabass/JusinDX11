@@ -4,9 +4,36 @@ CBone::CBone()
 {
 }
 
+const _char* CBone::Get_BoneName() const
+{
+	return m_szName;
+}
+
+const _float4x4* CBone::Get_CombinedMatrix() const
+{
+	return &m_CombindTransformationMatrix;
+}
+
 HRESULT CBone::Init(ifstream& ModelFile)
 {
+	_uint iNameSize{};
+	ModelFile.read(reinterpret_cast<char*>(&iNameSize), sizeof _uint);
+	ModelFile.read(m_szName, iNameSize);
+	ModelFile.read(reinterpret_cast<char*>(&m_TransformationMatrix), sizeof _float4x4);
+	ModelFile.read(reinterpret_cast<char*>(&m_iParentIndex), sizeof _int);
+
 	return S_OK;
+}
+
+void CBone::Update_CombinedMatrix(const vector<CBone*>& Bones)
+{
+	if (m_iParentIndex < 0)
+	{
+		m_CombindTransformationMatrix = m_TransformationMatrix;
+		return;
+	}
+	
+	XMStoreFloat4x4(&m_CombindTransformationMatrix, XMLoadFloat4x4(&m_TransformationMatrix) * XMLoadFloat4x4(Bones[m_iParentIndex]->Get_CombinedMatrix()));
 }
 
 CBone* CBone::Create(ifstream& ModelFile)

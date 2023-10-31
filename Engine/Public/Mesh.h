@@ -19,8 +19,7 @@ public:
 	HRESULT Init(void* pArg) override;
 
 public:
-	HRESULT Ready_StaticMesh(ifstream& ModelFile, _fmatrix OffsetMatrix);
-	HRESULT Ready_AnimMesh(ifstream& ModelFile);
+	HRESULT Bind_BoneMatrices(class CShader* pShader, const vector<class CBone*>& Bones, const _char* pVariableName, _fmatrix PivotMatrix);
 	_bool Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos);
 
 private:
@@ -28,8 +27,15 @@ private:
 	_float3* m_pVerticesNor{ nullptr };
 	_ulong* m_pIndices{ nullptr };
 
-	_char* m_pName{};
+	_char m_pName[MAX_PATH]{};
 	_uint m_iMatIndex{};
+	_uint m_iNumBones{};
+	vector<_uint> m_BoneIndices{};
+	vector<_float4x4> m_OffsetMatrices{};
+
+private:
+	HRESULT Ready_StaticMesh(ifstream& ModelFile, _fmatrix OffsetMatrix);
+	HRESULT Ready_AnimMesh(ifstream& ModelFile);
 
 public:
 	static CMesh* Create(_dev pDevice, _context pContext, ModelType eType, ifstream& ModelFile, _fmatrix OffsetMatrix);

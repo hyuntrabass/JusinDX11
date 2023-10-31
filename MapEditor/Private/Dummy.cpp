@@ -1,12 +1,12 @@
 #include "Dummy.h"
 
 CDummy::CDummy(_dev pDevice, _context pContext)
-	: CGameObject(pDevice, pContext)
+	: CBlendObject(pDevice, pContext)
 {
 }
 
 CDummy::CDummy(const CDummy& rhs)
-	: CGameObject(rhs)
+	: CBlendObject(rhs)
 {
 }
 
@@ -29,6 +29,12 @@ HRESULT CDummy::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	if (m_Info.Prototype == L"Prototype_Model_SM_ENV_KNFRST_WireMesh_B.mo" ||
+		m_Info.Prototype == L"Prototype_Model_MERGED_SM_ENV_KNVLLG_FarTree_A1.mo" ||
+		m_Info.Prototype == L"Prototype_Model_SM_ENV_KNVLLG_RockWall_Set_01.mo")
+	{
+		m_isBlendObject = true;
+	}
 
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
 	m_pTransformCom->Look_At_Dir(XMLoadFloat4(&m_Info.vLook));
@@ -54,11 +60,24 @@ void CDummy::Tick(_float fTimeDelta)
 			}
 		}
 	}
+
+	if (m_Info.Prototype == L"Prototype_Model_Kurama")
+	{
+		m_pModelCom->Play_Animation(fTimeDelta);
+	}
 }
 
 void CDummy::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	if (m_isBlendObject)
+	{
+		__super::Compute_CamDistance();
+		m_pRendererCom->Add_RenderGroup(RenderGroup::Blend, this);
+	}
+	else
+	{
+		m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	}
 }
 
 HRESULT CDummy::Render()
@@ -97,14 +116,15 @@ HRESULT CDummy::Render()
 			return E_FAIL;
 		}
 
-		_uint iPassIndex{};
-
-		if (m_Info.Prototype == L"Prototype_Model_SM_ENV_KNFRST_WireMesh_B.mo")
+		if (m_Info.Prototype == L"Prototype_Model_Kurama")
 		{
-			iPassIndex = 1;
+			if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+			{
+				return E_FAIL;
+			}
 		}
 
-		if (FAILED(m_pShaderCom->Begin(iPassIndex)))
+		if (FAILED(m_pShaderCom->Begin(m_isBlendObject)))
 		{
 			return E_FAIL;
 		}
@@ -123,10 +143,19 @@ HRESULT CDummy::Add_Components()
 	{
 		return E_FAIL;
 	}
-
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (m_Info.Prototype == L"Prototype_Model_Kurama")
 	{
-		return E_FAIL;
+		if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+		{
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxStatMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+		{
+			return E_FAIL;
+		}
 	}
 
 	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), m_Info.Prototype, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))

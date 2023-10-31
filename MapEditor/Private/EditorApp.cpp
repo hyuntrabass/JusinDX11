@@ -146,6 +146,11 @@ HRESULT CEditorApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxAnimMesh"), CShader::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/ShaderFiles/Shader_VtxAnimMesh.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -167,10 +172,10 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 #pragma endregion
 
 #pragma region Texture
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Terrain"), CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Test/Tile1.dds")))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Terrain"), CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Test/Tile1.dds")))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_Cursor"), CTexture::Create(m_pDevice, m_pContext, TEXT("../../Client/Bin/Resources/Textures/Loading/Loading_Icon.dds")))))
 	{
@@ -189,7 +194,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, ModelType::Static, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
 			{
 				return E_FAIL;
 			}
@@ -209,7 +214,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, ModelType::Static, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
 			{
 				return E_FAIL;
 			}
@@ -221,7 +226,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		}
 	}
 
-	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Props/Mesh/";
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Maps/Props/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -232,7 +237,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			string strFileNameString = entry.path().stem().string();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, ModelType::Static, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
 			{
 				return E_FAIL;
 			}
@@ -243,7 +248,12 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		}
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, ModelType::Static, "../../Client/Bin/Resources/StaticMesh/Sky/Mesh/Sky.hyuntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Sky/Mesh/Sky.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Kurama"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Kurama/Mesh/Kurama.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -252,10 +262,10 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 
 
 #pragma region Prototype
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Debug"), CCamera_Debug::Create(m_pDevice, m_pContext))))
 	{
