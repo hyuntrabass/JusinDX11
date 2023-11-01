@@ -10,11 +10,34 @@ CMyFont::CMyFont(_dev pDevice, _context pContext)
 
 HRESULT CMyFont::Init(const wstring& strFilePath)
 {
+    m_pBatch = new SpriteBatch(m_pContext);
+    if (!m_pBatch)
+    {
+        return E_FAIL;
+    }
+
+    m_pFont = new SpriteFont(m_pDevice, strFilePath.c_str());
+    if (!m_pFont)
+    {
+        return E_FAIL;
+    }
+
     return S_OK;
 }
 
-HRESULT CMyFont::Render(const wstring& strText)
+HRESULT CMyFont::Render(const wstring& strText, const _float2& vPosition, _float fScale, _fvector vColor, _float fRotation, const _float2& vOrigin)
 {
+    if (!m_pFont || !m_pBatch)
+    {
+        return E_FAIL;
+    }
+
+    m_pBatch->Begin();
+    
+    m_pFont->DrawString(m_pBatch, strText.c_str(), vPosition, vColor, fRotation, vOrigin, fScale);
+
+    m_pBatch->End();
+
     return S_OK;
 }
 
@@ -33,6 +56,9 @@ CMyFont* CMyFont::Create(_dev pDevice, _context pContext, const wstring& strFile
 
 void CMyFont::Free()
 {
+    Safe_Delete(m_pBatch);
+    Safe_Delete(m_pFont);
+
     Safe_Release(m_pDevice);
     Safe_Release(m_pContext);
 }

@@ -35,8 +35,21 @@ private:
 	vector<wstring> m_MapModels[3]{};
 
 private:
+	HANDLE m_hThread{};
+	CRITICAL_SECTION m_Critical_Section{};
+	_bool m_bLoadComplete{};
+	wstring m_strLoadingText{};
+	_uint m_iNumDots{};
+	_float m_fLoadingTime{};
+
+private:
 	HRESULT Ready_Prototype_Component_For_Static();
+	HRESULT Ready_Loading_Screen();
+
+public:
+	void Begin_Thread();
 	HRESULT Ready_Prototype_GameObject();
+	void End_Thread();
 
 public:
 	static CEditorApp* Create();

@@ -33,6 +33,8 @@ private:
 	vector<_uint> m_BoneIndices{};
 	vector<_float4x4> m_OffsetMatrices{};
 
+	_float4x4* m_BoneMatrices{};
+
 private:
 	HRESULT Ready_StaticMesh(ifstream& ModelFile, _fmatrix OffsetMatrix);
 	HRESULT Ready_AnimMesh(ifstream& ModelFile);

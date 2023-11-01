@@ -30,6 +30,14 @@ namespace Engine
 		class CTexture* pMaterials[18]{};
 	};
 
+	using KEYFRAME = struct tagKeyFrame
+	{
+		float fTime{};
+		XMFLOAT4 vScale{};
+		XMFLOAT4 vRotation{};
+		XMFLOAT4 vPosition{};
+	};
+
 	using VTXPOSTEX = struct ENGINE_DLL tagVertex_Position_Texcoord
 	{
 		XMFLOAT3 vPosition{};

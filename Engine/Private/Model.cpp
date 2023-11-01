@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include "Bone.h"
+#include "Animation.h"
 
 CModel::CModel(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
@@ -56,27 +57,39 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix)
 	{
 		if (eType == ModelType::Anim)
 		{
-			// 뼈 로드
+		#pragma region Bones
 			_uint iNumBones{};
 			ModelFile.read(reinterpret_cast<_char*>(&iNumBones), sizeof _uint);
 
 			for (size_t i = 0; i < iNumBones; i++)
 			{
-				m_Bones.push_back(CBone::Create(ModelFile));
+				CBone* pBone = CBone::Create(ModelFile);
+				if (!pBone)
+				{
+					return E_FAIL;
+				}
+				m_Bones.push_back(pBone);
 			}
+		#pragma endregion
+
 		}
 
+	#pragma region Meshes
 		ModelFile.read(reinterpret_cast<_char*>(&m_iNumMeshes), sizeof _uint);
 		m_Meshes.reserve(m_iNumMeshes);
 
-		// 매쉬 로드
 		for (size_t i = 0; i < m_iNumMeshes; i++)
 		{
 			CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, eType, ModelFile, PivotMatrix);
+			if (!pMesh)
+			{
+				return E_FAIL;
+			}
 			m_Meshes.push_back(pMesh);
 		}
+	#pragma endregion
 
-		// 메테리얼 로드
+	#pragma region Materials
 		_char szMatFilePath[MAX_PATH]{};
 		_char szFullPath[MAX_PATH]{};
 
@@ -117,6 +130,25 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix)
 
 			m_Materials.push_back(Material);
 		}
+	#pragma endregion
+
+		if (eType == ModelType::Anim)
+		{
+		#pragma region Animations
+			ModelFile.read(reinterpret_cast<_char*>(&m_iNumAnimations), sizeof _uint);
+
+			for (size_t i = 0; i < m_iNumAnimations; i++)
+			{
+				CAnimation* pAnimation = CAnimation::Create(ModelFile);
+				if (!pAnimation)
+				{
+					return E_FAIL;
+				}
+				m_Animations.push_back(pAnimation);
+			}
+		#pragma endregion
+		}
+
 
 		ModelFile.close();
 	}

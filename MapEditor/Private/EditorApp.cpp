@@ -5,11 +5,33 @@
 #include "Camera_Debug.h"
 #include "Dummy.h"
 #include "Sky.h"
+#include "LoadingImg.h"
 
 CEditorApp::CEditorApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
 {
 	Safe_AddRef(m_pGameInstance);
+}
+
+_uint APIENTRY ThreadEntry(void* pArg)
+{
+	if (FAILED(CoInitializeEx(nullptr, 0)))
+	{
+		return FALSE;
+	}
+
+	CEditorApp* pApp = reinterpret_cast<CEditorApp*>(pArg);
+
+	pApp->Begin_Thread();
+
+	if (FAILED(pApp->Ready_Prototype_GameObject()))
+	{
+		return FALSE;
+	}
+
+	pApp->End_Thread();
+
+	return TRUE;
 }
 
 HRESULT CEditorApp::Init()
@@ -44,12 +66,18 @@ HRESULT CEditorApp::Init()
 		return E_FAIL;
 	}
 
-	if (FAILED(Ready_Prototype_GameObject()))
+	if (FAILED(Ready_Loading_Screen()))
 	{
 		return E_FAIL;
 	}
 
-	m_pImguiMgr = CImguiMgr::Create(m_pDevice, m_pContext, m_pGameInstance, m_MapModels, &m_Name_Props);
+	InitializeCriticalSection(&m_Critical_Section);
+
+	m_hThread = reinterpret_cast<HANDLE>(_beginthreadex(0, 0, ThreadEntry, this, 0, nullptr));
+	if (!m_hThread)
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -62,14 +90,42 @@ void CEditorApp::Tick(_float fTimeDelta)
 	}
 
 	m_fTimeAcc += fTimeDelta;
+	m_fLoadingTime += fTimeDelta;
+
+	m_strLoadingText = L"맵 에디터 로딩중";
+
+	if (m_fLoadingTime >= 0.3f)
+	{
+		if (m_iNumDots > 2)
+		{
+			m_iNumDots = 0;
+		}
+		m_iNumDots++;
+
+		m_fLoadingTime = 0.f;
+	}
+	for (size_t i = 0; i < m_iNumDots; i++)
+	{
+		m_strLoadingText += L".";
+	}
+
+	if (m_bLoadComplete)
+	{
+		if (!m_pImguiMgr)
+		{
+			m_pImguiMgr = CImguiMgr::Create(m_pDevice, m_pContext, m_pGameInstance, m_MapModels, &m_Name_Props);
+		}
+	}
 
 	m_pGameInstance->Tick_Engine(fTimeDelta);
 
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-
-	m_pImguiMgr->Tick();
+	if (m_pImguiMgr)
+	{
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+		m_pImguiMgr->Tick();
+	}
 
 }
 
@@ -92,9 +148,17 @@ HRESULT CEditorApp::Render()
 
 	m_pRenderer->Draw_RenderGroup();
 
-	if (FAILED(m_pImguiMgr->Render()))
+	if (!m_bLoadComplete)
 	{
-		return E_FAIL;
+		m_pGameInstance->Render_Text(L"Font_Malang", m_strLoadingText, _float2(200.f, 300.f), 1.f, Colors::Salmon);
+	}
+
+	if (m_pImguiMgr)
+	{
+		if (FAILED(m_pImguiMgr->Render()))
+		{
+			return E_FAIL;
+		}
 	}
 
 	m_pGameInstance->Present();
@@ -152,6 +216,36 @@ HRESULT CEditorApp::Ready_Prototype_Component_For_Static()
 	}
 
 	return S_OK;
+}
+
+HRESULT CEditorApp::Ready_Loading_Screen()
+{
+	if (FAILED(m_pGameInstance->Add_Font(L"Font_Malang", L"../../Client/Bin/Resources/Font/Naruto.spritefont")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), L"Prototype_Component_Texture_Loading_Screen", CTexture::Create(m_pDevice, m_pContext, L"../Bin/Resources/Loading.dds"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(L"Prototype_GameObject_LoadingImg", CLoadingImg::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), L"Layer_LoadingImg", L"Prototype_GameObject_LoadingImg", &m_bLoadComplete)))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+void CEditorApp::Begin_Thread()
+{
+	EnterCriticalSection(&m_Critical_Section);
 }
 
 HRESULT CEditorApp::Ready_Prototype_GameObject()
@@ -284,7 +378,14 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 
 #pragma endregion
 
+	m_bLoadComplete = true;
+
 	return S_OK;
+}
+
+void CEditorApp::End_Thread()
+{
+	LeaveCriticalSection(&m_Critical_Section);
 }
 
 CEditorApp* CEditorApp::Create()
@@ -302,6 +403,12 @@ CEditorApp* CEditorApp::Create()
 
 void CEditorApp::Free()
 {
+	WaitForSingleObject(m_hThread, INFINITE);
+
+	DeleteCriticalSection(&m_Critical_Section);
+
+	CloseHandle(m_hThread);
+
 	Safe_Release(m_pImguiMgr);
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);

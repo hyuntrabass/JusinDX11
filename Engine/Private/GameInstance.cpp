@@ -5,6 +5,7 @@
 #include "Object_Manager.h"
 #include "Picking.h"
 #include "Light_Manager.h"
+#include "Font_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -52,6 +53,12 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 
 	m_pLight_Manager = CLight_Manager::Create(iNumLevels);
 	if (!m_pLight_Manager)
+	{
+		return E_FAIL;
+	}
+
+	m_pFont_Manager = CFont_Manager::Create(*ppDevice, *ppContext);
+	if (!m_pFont_Manager)
 	{
 		return E_FAIL;
 	}
@@ -499,6 +506,26 @@ _bool CGameInstance::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvecto
 	return m_pPicking->Picking_InLocal(vPoint1, vPoint2, vPoint3, vNormal, pPickPos);
 }
 
+HRESULT CGameInstance::Add_Font(const wstring& strFontTag, const wstring& strFilePath)
+{
+	if (!m_pFont_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pFont_Manager is NULL");
+	}
+
+	return m_pFont_Manager->Add_Font(strFontTag, strFilePath);
+}
+
+HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale, _fvector vColor, _float fRotation, const _float2& vOrigin)
+{
+	if (!m_pFont_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pFont_Manager is NULL");
+	}
+
+	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation, vOrigin);
+}
+
 const _uint& CGameInstance::Get_CameraModeIndex() const
 {
 	return m_iCameraModeIndex;
@@ -528,6 +555,7 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pLight_Manager);
+	Safe_Release(m_pFont_Manager);
 }
 
 void CGameInstance::Release_Engine()

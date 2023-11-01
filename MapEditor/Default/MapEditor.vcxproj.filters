@@ -31,6 +31,9 @@
     <Filter Include="01.Objects\Sky">
       <UniqueIdentifier>{1c2d07b5-0d12-42e6-a74c-54e9e70536ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Objects\Loading">
+      <UniqueIdentifier>{7df7fca7-4dd7-4e1f-b418-8224ed731ec5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -90,6 +93,9 @@
     <ClInclude Include="..\Public\Sky.h">
       <Filter>01.Objects\Sky</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\LoadingImg.h">
+      <Filter>01.Objects\Loading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">
@@ -141,6 +147,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sky.cpp">
       <Filter>01.Objects\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\LoadingImg.cpp">
+      <Filter>01.Objects\Loading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

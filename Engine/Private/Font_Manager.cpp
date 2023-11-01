@@ -14,6 +14,48 @@ HRESULT CFont_Manager::Init()
 	return S_OK;
 }
 
+HRESULT CFont_Manager::Add_Font(const wstring& strFontTag, const wstring& strFilePath)
+{
+	if (Find_Font(strFontTag))
+	{
+		MSG_BOX("Font Tag Already Exist!");
+		return E_FAIL;
+	}
+
+	CMyFont* pFont = CMyFont::Create(m_pDevice, m_pContext, strFilePath);
+	if (!pFont)
+	{
+		return E_FAIL;
+	}
+
+	m_Fonts.emplace(strFontTag, pFont);
+
+	return S_OK;
+}
+
+HRESULT CFont_Manager::Render(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale, _fvector vColor, _float fRotation, const _float2& vOrigin)
+{
+	CMyFont* pFont = Find_Font(strFontTag);
+	if (!pFont)
+	{
+		return E_FAIL;
+	}
+
+	return pFont->Render(strText, vPosition, fScale, vColor, fRotation, vOrigin);
+}
+
+CMyFont* CFont_Manager::Find_Font(const wstring& strFontTag)
+{
+	auto iter = m_Fonts.find(strFontTag);
+
+	if (iter == m_Fonts.end())
+	{
+		return nullptr;
+	}
+
+	return iter->second;
+}
+
 CFont_Manager* CFont_Manager::Create(_dev pDevice, _context pContext)
 {
 	CFont_Manager* pInstance = new CFont_Manager(pDevice, pContext);

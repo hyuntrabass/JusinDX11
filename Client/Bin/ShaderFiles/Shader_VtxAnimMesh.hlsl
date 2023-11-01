@@ -43,18 +43,20 @@ VS_OUT VS_Main(VS_IN Input)
     VS_OUT Output = (VS_OUT) 0;
 	
     matrix matWV, matWVP;
+    float fW = 1.f - (Input.vBlendWeight.x + Input.vBlendWeight.y + Input.vBlendWeight.z);
     matrix Bone = g_BoneMatrices[Input.vBlendIndices.x] * Input.vBlendWeight.x +
     g_BoneMatrices[Input.vBlendIndices.y] * Input.vBlendWeight.y +
     g_BoneMatrices[Input.vBlendIndices.z] * Input.vBlendWeight.z +
-    g_BoneMatrices[Input.vBlendIndices.w] * Input.vBlendWeight.w;
+    g_BoneMatrices[Input.vBlendIndices.w] * fW;
     
     vector vPos = mul(vector(Input.vPos, 1.f), Bone);
+    vector vNor = mul(vector(Input.vNor, 0.f), Bone);
     
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
 	
     Output.vPos = mul(vPos, matWVP);
-    Output.vNor = mul(vector(Input.vNor, 0.f), g_WorldMatrix);
+    Output.vNor = normalize(mul(vNor, g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
 	

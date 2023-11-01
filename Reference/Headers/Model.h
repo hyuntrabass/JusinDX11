@@ -42,6 +42,9 @@ private:
 
 	vector<class CBone*> m_Bones{};
 
+	_uint m_iNumAnimations{};
+	vector<class CAnimation*> m_Animations{};
+
 	_float4x4 m_PivotMatrix{};
 
 public:

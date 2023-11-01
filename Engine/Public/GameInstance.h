@@ -81,6 +81,10 @@ public: // Picking
 	_bool Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _Inout_ _float4* pPickPos);
 	_bool Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPoint3, _gvector vNormal, _Inout_ _float4* pPickPos);
 
+public: // Font
+	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);
+	HRESULT Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _fvector vColor = Colors::White, _float fRotation = 0.f, const _float2& vOrigin = _float2(0.f, 0.f));
+
 
 public: // Get_Set
 	const _uint& Get_CameraModeIndex() const;
@@ -99,6 +103,7 @@ private:
 	class CComponent_Manager* m_pComponent_Manager{ nullptr };
 	class CInput_Device* m_pInput_Manager{ nullptr };
 	class CLight_Manager* m_pLight_Manager{ nullptr };
+	class CFont_Manager* m_pFont_Manager{ nullptr };
 
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };

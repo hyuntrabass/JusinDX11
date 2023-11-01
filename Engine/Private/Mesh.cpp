@@ -24,8 +24,8 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix Off
 	_uint iNumFaces{};
 	ModelFile.read(reinterpret_cast<_char*>(&iNumFaces), sizeof _uint);
 
-	m_pVerticesPos = new _float3[m_iNumVertices];
-	m_pVerticesNor = new _float3[m_iNumVertices];
+	m_pVerticesPos = new _float3[m_iNumVertices]{};
+	m_pVerticesNor = new _float3[m_iNumVertices]{};
 
 	m_iNumVertexBuffers = 1;
 
@@ -58,19 +58,18 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix Off
 
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
 
-	_ulong* pIndices = new _ulong[m_iNumIndices];
-	m_pIndices = new _ulong[m_iNumIndices];
-	ZeroMemory(pIndices, sizeof(_ulong) * m_iNumIndices);
+	_ulong* pIndices = new _ulong[m_iNumIndices]{};
+	m_pIndices = new _ulong[m_iNumIndices]{};
 
 	_ulong dwIndex{};
 	for (size_t i = 0; i < iNumFaces; i++)
 	{
 		ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-		m_pIndices[dwIndex] = pIndices[dwIndex++];
+		m_pIndices[dwIndex++] = pIndices[dwIndex];
 		ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-		m_pIndices[dwIndex] = pIndices[dwIndex++];
+		m_pIndices[dwIndex++] = pIndices[dwIndex];
 		ModelFile.read(reinterpret_cast<_char*>(&pIndices[dwIndex]), sizeof _uint);
-		m_pIndices[dwIndex] = pIndices[dwIndex++];
+		m_pIndices[dwIndex++] = pIndices[dwIndex];
 	}
 
 	m_InitialData.pSysMem = pIndices;
@@ -92,21 +91,17 @@ HRESULT CMesh::Init(void* pArg)
 
 HRESULT CMesh::Bind_BoneMatrices(CShader* pShader, const vector<CBone*>& Bones, const _char* pVariableName, _fmatrix PivotMatrix)
 {
-	_float4x4* BoneMatrices = new _float4x4[m_iNumBones]{};
-
 	for (size_t i = 0; i < m_iNumBones; i++)
 	{
-		XMStoreFloat4x4(&BoneMatrices[i], XMLoadFloat4x4(&m_OffsetMatrices[i]) * XMLoadFloat4x4(Bones[m_BoneIndices[i]]->Get_CombinedMatrix()) * PivotMatrix);
+		XMStoreFloat4x4(&m_BoneMatrices[i], XMLoadFloat4x4(&m_OffsetMatrices[i]) * XMLoadFloat4x4(Bones[m_BoneIndices[i]]->Get_CombinedMatrix()) * PivotMatrix);
 	}
 
-	if (FAILED(pShader->Bind_Matrices(pVariableName, BoneMatrices, m_iNumBones)))
+	if (FAILED(pShader->Bind_Matrices(pVariableName, m_BoneMatrices, m_iNumBones)))
 	{
 		MSG_BOX("Failed to Bind Bone Matrices!");
-		Safe_Delete_Array(BoneMatrices);
 		return E_FAIL;
 	}
 
-	Safe_Delete_Array(BoneMatrices);
 	return S_OK;
 }
 
@@ -117,7 +112,7 @@ _bool CMesh::Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos)
 
 	m_pGameInstance->TransformRay_ToLocal(WorldMatrix);
 
-	for (size_t i = 0; i < m_iNumIndices / 3; i++)
+	for (_uint i = 0; i < m_iNumIndices / 3; i++)
 	{
 		Index[0] = i * 3;
 		Index[1] = (i * 3) + 1;
@@ -163,7 +158,7 @@ HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _fmatrix OffsetMatrix)
 
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
 
-	VTXSTATICMESH* pVertices = new VTXSTATICMESH[m_iNumVertices];
+	VTXSTATICMESH* pVertices = new VTXSTATICMESH[m_iNumVertices]{};
 
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
@@ -201,6 +196,8 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 	{
 		MSG_BOX("Too Many Bones!");
 	}
+	m_BoneMatrices = new _float4x4[m_iNumBones];
+
 	m_iVertexStride = sizeof VTXANIMMESH;
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
 	m_BufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
@@ -212,7 +209,7 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
 
-	VTXANIMMESH* pVertices = new VTXANIMMESH[m_iNumVertices];
+	VTXANIMMESH* pVertices = new VTXANIMMESH[m_iNumVertices]{};
 
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
@@ -285,6 +282,7 @@ void CMesh::Free()
 {
 	__super::Free();
 
+	Safe_Delete_Array(m_BoneMatrices);
 	Safe_Delete_Array(m_pVerticesPos);
 	Safe_Delete_Array(m_pVerticesNor);
 	Safe_Delete_Array(m_pIndices);

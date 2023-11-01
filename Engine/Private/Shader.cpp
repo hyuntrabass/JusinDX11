@@ -179,7 +179,7 @@ HRESULT CShader::Bind_Matrices(const _char* pVariableName, const _float4x4* pMat
         return E_FAIL;
     }
 
-    return pMatrixVariable->SetMatrixArray((_float*)&pMatrices, 0, iNumMatrices);
+    return pMatrixVariable->SetMatrixArray((_float*)pMatrices, 0, iNumMatrices);
 }
 
 HRESULT CShader::Bind_RawValue(const _char* pVariableName, const void* pData, _uint iDataSize)
