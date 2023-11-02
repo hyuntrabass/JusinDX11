@@ -61,7 +61,7 @@ void CDummy::Tick(_float fTimeDelta)
 		}
 	}
 
-	if (m_Info.Prototype == L"Prototype_Model_Kurama")
+	if (m_Info.Prototype == L"Prototype_Model_Kurama" || m_Info.Prototype == L"Prototype_Model_Pain")
 	{
 		m_pModelCom->Play_Animation(fTimeDelta);
 	}
@@ -116,7 +116,7 @@ HRESULT CDummy::Render()
 			return E_FAIL;
 		}
 
-		if (m_Info.Prototype == L"Prototype_Model_Kurama")
+		if (m_Info.Prototype == L"Prototype_Model_Kurama" || m_Info.Prototype == L"Prototype_Model_Pain")
 		{
 			if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 			{
@@ -143,7 +143,7 @@ HRESULT CDummy::Add_Components()
 	{
 		return E_FAIL;
 	}
-	if (m_Info.Prototype == L"Prototype_Model_Kurama")
+	if (m_Info.Prototype == L"Prototype_Model_Kurama" || m_Info.Prototype == L"Prototype_Model_Pain")
 	{
 		if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		{

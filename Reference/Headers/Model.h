@@ -19,13 +19,15 @@ private:
 
 public:
 	const _uint& Get_NumMeshes() const;
+	
+	void Set_Animation(_uint iAnimIndex);
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix);
 	HRESULT Init(void* pArg) override;
 
 public:
-	void Play_Animation(_float fTimeDelta);
+	_bool Play_Animation(_float fTimeDelta);
 	HRESULT Bind_BoneMatrices(_uint iMeshIndex, class CShader* pShader, const _char* pVariableName);
 	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
 
@@ -46,6 +48,10 @@ private:
 	vector<class CAnimation*> m_Animations{};
 
 	_float4x4 m_PivotMatrix{};
+
+	_uint m_iCurrentAnimIndex{};
+	_uint m_iPrevAnimIndex{};
+	_bool m_isAnimChanged{};
 
 public:
 	static CModel* Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix PivotMatrix = XMMatrixIdentity());

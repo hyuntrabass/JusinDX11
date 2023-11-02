@@ -466,7 +466,7 @@ HRESULT CImguiMgr::Export_Data()
 
 		for (auto& Data : m_DummyList)
 		{
-			size_t iNameSize = Data.Prototype.size() * sizeof(wchar_t) + sizeof(wchar_t);
+			size_t iNameSize = Data.Prototype.size() * sizeof(_tchar) + sizeof(_tchar);
 			OutFile.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
 			OutFile.write(reinterpret_cast<const _char*>(Data.Prototype.data()), iNameSize);
 			OutFile.write(reinterpret_cast<const _char*>(&Data.eType), sizeof ItemType);

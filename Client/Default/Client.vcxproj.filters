@@ -61,6 +61,9 @@
     <Filter Include="02.GameObjects\98.Sky">
       <UniqueIdentifier>{d3a23928-1a41-4ec2-99aa-5c23dd00543d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player">
+      <UniqueIdentifier>{5557466c-214f-4ff9-85f9-dd1f819f08b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -132,6 +135,9 @@
     <ClInclude Include="..\Public\Sky.h">
       <Filter>02.GameObjects\98.Sky</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Player.h">
+      <Filter>02.GameObjects\03.Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -200,6 +206,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sky.cpp">
       <Filter>02.GameObjects\98.Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Player.cpp">
+      <Filter>02.GameObjects\03.Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

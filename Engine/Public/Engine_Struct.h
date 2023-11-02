@@ -33,7 +33,7 @@ namespace Engine
 	using KEYFRAME = struct tagKeyFrame
 	{
 		float fTime{};
-		XMFLOAT4 vScale{};
+		XMFLOAT4 vScaling{};
 		XMFLOAT4 vRotation{};
 		XMFLOAT4 vPosition{};
 	};

@@ -177,6 +177,7 @@
     <ClInclude Include="..\Public\Loading_Objects.h" />
     <ClInclude Include="..\public\Logo.h" />
     <ClInclude Include="..\public\MainApp.h" />
+    <ClInclude Include="..\public\Player.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\public\Start_Btn.h" />
     <ClInclude Include="..\public\SubTitle.h" />
@@ -200,6 +201,7 @@
     <ClCompile Include="..\private\Loading_Screen.cpp" />
     <ClCompile Include="..\private\Logo.cpp" />
     <ClCompile Include="..\private\MainApp.cpp" />
+    <ClCompile Include="..\private\Player.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\private\Start_Btn.cpp" />
     <ClCompile Include="..\private\SubTitle.cpp" />

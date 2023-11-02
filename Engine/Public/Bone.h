@@ -12,6 +12,9 @@ private:
 public:
 	const _char* Get_BoneName() const;
 	const _float4x4* Get_CombinedMatrix() const;
+	const _float4x4& Get_Transformation() const;
+
+	void Set_Transformation(_fmatrix TransformationMatrix);
 
 private:
 	HRESULT Init(ifstream& ModelFile);

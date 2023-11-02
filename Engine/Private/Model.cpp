@@ -17,7 +17,20 @@ CModel::CModel(const CModel& rhs)
 	, m_Materials(rhs.m_Materials)
 	, m_Bones(rhs.m_Bones)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
+	, m_iNumAnimations(rhs.m_iNumAnimations)
+	, m_Animations(rhs.m_Animations)
+	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
 {
+	for (auto& pBone : m_Bones)
+	{
+		Safe_AddRef(pBone);
+	}
+
+	for (auto& pAnimation : m_Animations)
+	{
+		Safe_AddRef(pAnimation);
+	}
+
 	for (auto& pMesh : m_Meshes)
 	{
 		Safe_AddRef(pMesh);
@@ -35,6 +48,15 @@ CModel::CModel(const CModel& rhs)
 const _uint& CModel::Get_NumMeshes() const
 {
 	return m_iNumMeshes;
+}
+
+void CModel::Set_Animation(_uint iAnimIndex)
+{
+	if (m_iCurrentAnimIndex != iAnimIndex)
+	{
+		m_isAnimChanged = true;
+	}
+	m_iCurrentAnimIndex = iAnimIndex;
 }
 
 HRESULT CModel::Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix)
@@ -166,12 +188,16 @@ HRESULT CModel::Init(void* pArg)
 	return S_OK;
 }
 
-void CModel::Play_Animation(_float fTimeDelta)
+_bool CModel::Play_Animation(_float fTimeDelta)
 {
+	_bool isFinished{ m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta, m_isAnimChanged) };
+
 	for (auto& pBone : m_Bones)
 	{
 		pBone->Update_CombinedMatrix(m_Bones);
 	}
+
+	return isFinished;
 }
 
 HRESULT CModel::Bind_BoneMatrices(_uint iMeshIndex, CShader* pShader, const _char* pVariableName)
@@ -245,6 +271,18 @@ CComponent* CModel::Clone(void* pArg)
 void CModel::Free()
 {
 	__super::Free();
+
+	for (auto& pBone : m_Bones)
+	{
+		Safe_Release(pBone);
+	}
+	m_Bones.clear();
+
+	for (auto& pAinmation : m_Animations)
+	{
+		Safe_Release(pAinmation);
+	}
+	m_Animations.clear();
 
 	for (auto& pMesh : m_Meshes)
 	{

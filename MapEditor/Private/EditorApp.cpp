@@ -352,6 +352,11 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Pain"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Pain/Mesh/Pain.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 

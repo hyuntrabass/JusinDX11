@@ -383,6 +383,18 @@ int main()
 						OutputFile.write(reinterpret_cast<const char*>(&iChannelNameSize), sizeof(unsigned int));
 						OutputFile.write(pChannel->mNodeName.C_Str(), iChannelNameSize);
 
+						unsigned int iBoneIndex{};
+						std::find_if(BoneNames.begin(), BoneNames.end(), [&pChannel, &iBoneIndex](aiString strBoneName)
+						{
+							if (pChannel->mNodeName == strBoneName)
+							{
+								return true;
+							}
+							iBoneIndex++;
+							return false;
+						});
+						OutputFile.write(reinterpret_cast<const char*>(&iBoneIndex), sizeof(unsigned int));
+
 						unsigned int iNumKeyFrame = max(pChannel->mNumScalingKeys, pChannel->mNumRotationKeys);
 						iNumKeyFrame = max(iNumKeyFrame, pChannel->mNumPositionKeys);
 						OutputFile.write(reinterpret_cast<const char*>(&iNumKeyFrame), sizeof(unsigned int));
@@ -395,26 +407,26 @@ int main()
 						{
 							if (k < pChannel->mNumScalingKeys)
 							{
-								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mScalingKeys->mValue), sizeof(aiVector3D));
+								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mScalingKeys[k].mValue), sizeof(aiVector3D));
 								OutputFile.write(reinterpret_cast<const char*>(&fScaleW), sizeof(float));
 
-								fTime = static_cast<float>(pChannel->mScalingKeys->mTime);
+								fTime = static_cast<float>(pChannel->mScalingKeys[k].mTime);
 							}
 							if (k < pChannel->mNumRotationKeys)
 							{
-								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys->mValue.x), sizeof(float));
-								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys->mValue.y), sizeof(float));
-								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys->mValue.z), sizeof(float));
-								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys->mValue.w), sizeof(float));
+								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.x), sizeof(float));
+								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.y), sizeof(float));
+								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.z), sizeof(float));
+								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.w), sizeof(float));
 
-								fTime = static_cast<float>(pChannel->mRotationKeys->mTime);
+								fTime = static_cast<float>(pChannel->mRotationKeys[k].mTime);
 							}
 							if (k < pChannel->mNumPositionKeys)
 							{
-								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mPositionKeys->mValue), sizeof(aiVector3D));
+								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mPositionKeys[k].mValue), sizeof(aiVector3D));
 								OutputFile.write(reinterpret_cast<const char*>(&fPositionW), sizeof(float));
 
-								fTime = static_cast<float>(pChannel->mPositionKeys->mTime);
+								fTime = static_cast<float>(pChannel->mPositionKeys[k].mTime);
 							}
 
 							OutputFile.write(reinterpret_cast<const char*>(&fTime), sizeof(float));

@@ -11,12 +11,16 @@ private:
 
 public:
 	HRESULT Init(ifstream& ModelFile);
+	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float& fCurrentAnimPos, _bool& isAnimChanged);
 
 private:
 	_char m_szName[MAX_PATH]{};
 
 	_uint m_iNumkeyFrames{};
+	_uint m_iCurrentKeyFrame{};
 	vector<KEYFRAME> m_KeyFrames{};
+	_uint m_iBoneIndex{};
+	_float4x4 m_PrevTransformation{};
 
 public:
 	static CChannel* Create(ifstream& ModelFile);

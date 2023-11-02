@@ -140,18 +140,10 @@ HRESULT CLoader::Load_Logo()
 
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
-	for (size_t i = 0; i < 999999999; i++)
-	{
-		int a = 10;
-	}
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Shader";
 #pragma region Shader
-	for (size_t i = 0; i < 999999999; i++)
-	{
-		int a = 10;
-	}
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Prototype";
@@ -196,10 +188,18 @@ HRESULT CLoader::Load_CreateCharacter()
 
 	m_strLoadingText = L"CreateCharacter : Loading Model";
 #pragma region Model
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Pain"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Pain/Mesh/Pain.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"CreateCharacter : Loading Shader";
 #pragma region Shader
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxAnimMesh"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxAnimMesh.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"CreateCharacter : Loading Prototype";
@@ -214,7 +214,10 @@ HRESULT CLoader::Load_CreateCharacter()
 		return E_FAIL;
 	}
 
-
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Player"), CPlayer::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"CreateCharacter : Loading Complete!";
@@ -241,14 +244,14 @@ HRESULT CLoader::Load_Tutorial()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Tutorial), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, ModelType::Static, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Tutorial), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
 			{
 				return E_FAIL;
 			}
 		}
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sky"), CModel::Create(m_pDevice, m_pContext, ModelType::Static, "../Bin/Resources/StaticMesh/Sky/Mesh/Sky.hyuntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Sky"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Sky/Mesh/Sky.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -297,7 +300,7 @@ HRESULT CLoader::Load_Stage1()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Stage1), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, ModelType::Static, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Stage1), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
 			{
 				return E_FAIL;
 			}
@@ -340,7 +343,7 @@ HRESULT CLoader::Load_Stage2()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Stage2), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, ModelType::Static, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Stage2), strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
 			{
 				return E_FAIL;
 			}

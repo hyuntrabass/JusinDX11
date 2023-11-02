@@ -14,6 +14,16 @@ const _float4x4* CBone::Get_CombinedMatrix() const
 	return &m_CombindTransformationMatrix;
 }
 
+const _float4x4& CBone::Get_Transformation() const
+{
+	return m_TransformationMatrix;
+}
+
+void CBone::Set_Transformation(_fmatrix TransformationMatrix)
+{
+	XMStoreFloat4x4(&m_TransformationMatrix, TransformationMatrix);
+}
+
 HRESULT CBone::Init(ifstream& ModelFile)
 {
 	_uint iNameSize{};

@@ -21,6 +21,11 @@ HRESULT CLevel_CreateCharacter::Init()
 		return E_FAIL;
 	}
 
+	if (FAILED(Ready_Player()))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -72,12 +77,22 @@ HRESULT CLevel_CreateCharacter::Ready_Light()
 	LIGHT_DESC LightDesc{};
 
 	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(0.f, -1.f, 1.f, 0.f);
+	LightDesc.vDirection = _float4(-1.f, -1.f, 0.5f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	return m_pGameInstance->Add_Light(ToIndex(Level_ID::CreateCharacter), LightDesc);
+}
+
+HRESULT CLevel_CreateCharacter::Ready_Player()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Player"), TEXT("Prototype_GameObject_Player"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
 }
 
 CLevel_CreateCharacter* CLevel_CreateCharacter::Create(_dev pDevice, _context pContext)
