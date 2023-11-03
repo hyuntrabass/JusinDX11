@@ -59,6 +59,11 @@ CBone* CBone::Create(ifstream& ModelFile)
 	return pInstance;
 }
 
+CBone* CBone::Clone()
+{
+	return new CBone(*this);
+}
+
 void CBone::Free()
 {
 }

@@ -51,8 +51,8 @@ private:
 private: // for Input
 	_int m_Curr_Stage{};
 	ItemType m_eItemType{ ItemType::End };
-	_float4 m_pPos{0.f, 0.f, 0.f, 1.f};
-	_float4 m_pLook{0.f, 0.f, 1.f, 0.f};
+	_float4 m_vPos{0.f, 0.f, 0.f, 1.f};
+	_float4 m_vLook{0.f, 0.f, 1.f, 0.f};
 	const _char** m_pItemList_Props{ nullptr };
 	_int m_iNumProps{};
 	const _char* const m_pItemList_Monster[2]

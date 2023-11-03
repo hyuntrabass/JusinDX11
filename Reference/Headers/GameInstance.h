@@ -34,6 +34,7 @@ public: // Level Manager
 public: // Object Manager
 	HRESULT Add_Prototype_GameObejct(const wstring& strPrototypeTag, class CGameObject* pPrototype);
 	HRESULT Add_Layer(_uint iLevelIndex, const wstring strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr);
+	class CComponent* Get_Component(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex = 0);
 
 public: // Component Manager
 	HRESULT Add_Prototype_Component(_uint iLevelIndex, const wstring& strPrototype, class CComponent* pPrototype);
@@ -66,6 +67,7 @@ public: // Light Manager
 
 public: // PipeLine
 	_float4 Get_CameraPos() const;
+	_float4 Get_CameraLook() const;
 	_float4x4 Get_Transform_Float4x4(D3DTS eState) const;
 	_float4x4 Get_Transform_Inversed_Float4x4(D3DTS eState) const;
 	_matrix Get_Transform(D3DTS eState) const;

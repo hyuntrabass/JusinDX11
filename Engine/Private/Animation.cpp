@@ -5,6 +5,27 @@ CAnimation::CAnimation()
 {
 }
 
+CAnimation::CAnimation(const CAnimation& rhs)
+	: m_fDuration(rhs.m_fDuration)
+	, m_fTickPerSec(rhs.m_fTickPerSec)
+	, m_iNumChannels(rhs.m_iNumChannels)
+	//, m_Channels(rhs.m_Channels)
+	//, m_CurrentKeyFrames(rhs.m_CurrentKeyFrames)
+	//, m_PrevTransformations(rhs.m_PrevTransformations)
+{
+	//strcpy_s(m_szName, rhs.m_szName);
+	//for (auto& pChannel : m_Channels)
+	//{
+	//	Safe_AddRef(pChannel);
+	//}
+	for (auto& pPrototypeChannel : rhs.m_Channels)
+	{
+		CChannel* pChannel = pPrototypeChannel->Clone();
+
+		m_Channels.push_back(pChannel);
+	}
+}
+
 HRESULT CAnimation::Init(ifstream& ModelFile)
 {
 	_uint iNameSize{};
@@ -15,6 +36,10 @@ HRESULT CAnimation::Init(ifstream& ModelFile)
 	ModelFile.read(reinterpret_cast<_char*>(&m_fTickPerSec), sizeof _float);
 
 	ModelFile.read(reinterpret_cast<_char*>(&m_iNumChannels), sizeof _uint);
+
+	//m_CurrentKeyFrames.resize(m_iNumChannels);
+	//m_PrevTransformations.resize(m_iNumChannels);
+
 	for (size_t i = 0; i < m_iNumChannels; i++)
 	{
 		CChannel* pChannel = CChannel::Create(ModelFile);
@@ -61,9 +86,9 @@ _bool CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones,
 		m_isFinished = false;
 	}
 
-	for (auto& pChannel : m_Channels)
+	for (size_t i = 0; i < m_iNumChannels; i++)
 	{
-		pChannel->Update_TransformationMatrix(Bones, m_fCurrentAnimPos, isAnimChanged);
+		m_Channels[i]->Update_TransformationMatrix(Bones, m_fCurrentAnimPos, /*m_CurrentKeyFrames[i], m_PrevTransformations[i],*/ isAnimChanged);
 	}
 
 	return m_isFinished;
@@ -80,6 +105,11 @@ CAnimation* CAnimation::Create(ifstream& ModelFile)
 	}
 
 	return pInstance;
+}
+
+CAnimation* CAnimation::Clone()
+{
+	return new CAnimation(*this);
 }
 
 void CAnimation::Free()

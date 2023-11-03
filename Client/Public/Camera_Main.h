@@ -4,12 +4,12 @@
 
 BEGIN(Client)
 
-class CCamera_Debug final : public CCamera
+class CCamera_Main final : public CCamera
 {
 private:
-	CCamera_Debug(_dev pDevice, _context pContext);
-	CCamera_Debug(const CCamera_Debug& rhs);
-	virtual ~CCamera_Debug() = default;
+	CCamera_Main(_dev pDevice, _context pContext);
+	CCamera_Main(const CCamera_Main& rhs);
+	virtual ~CCamera_Main() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -18,12 +18,13 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 
 private:
+	CTransform* m_pPlayerTransform{ nullptr };
 	_bool m_isMoveMode{ true };
-	_float m_fMouseSensor{ 0.05f };
+	_float m_fMouseSensor{ 0.08f };
 	_float m_fSpeed{ 10.f };
 
 public:
-	static CCamera_Debug* Create(_dev pDevice, _context pContext);
+	static CCamera_Main* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

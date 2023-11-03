@@ -31,16 +31,7 @@ HRESULT CPlayer::Init(void* pArg)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Pressing(DIK_UP))
-	{
-		//m_pTransformCom->Go_Straight(fTimeDelta);
-		m_pModelCom->Set_Animation(2);
-	}
-	else
-	{
-		m_pModelCom->Set_Animation(0);
-	}
-
+	Move(fTimeDelta);
 	m_pModelCom->Play_Animation(fTimeDelta);
 }
 
@@ -95,6 +86,50 @@ HRESULT CPlayer::Render()
 		}
 	}
 	return S_OK;
+}
+
+void CPlayer::Move(_float fTimeDelta)
+{
+	if (m_pGameInstance->Get_CameraModeIndex() == ToIndex(CameraMode::Debug))
+	{
+		return;
+	}
+	_bool hasMoved{};
+	_vector vCamLook = XMLoadFloat4(&m_pGameInstance->Get_CameraLook());
+	_vector vCamRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vCamLook);
+	_vector vDirection{};
+
+	if (m_pGameInstance->Key_Pressing(DIK_W))
+	{
+		vDirection += vCamLook;
+		hasMoved = true;
+	}
+	else if (m_pGameInstance->Key_Pressing(DIK_S))
+	{
+		vDirection -= vCamLook;
+		hasMoved = true;
+	}
+	if (m_pGameInstance->Key_Pressing(DIK_D))
+	{
+		vDirection += vCamRight;
+		hasMoved = true;
+	}
+	else if (m_pGameInstance->Key_Pressing(DIK_A))
+	{
+		vDirection -= vCamRight;
+		hasMoved = true;
+	}
+
+	if (hasMoved)
+	{
+		m_pTransformCom->Look_At_Dir(vDirection);
+		m_pTransformCom->Go_Straight(fTimeDelta);
+		m_pModelCom->Set_Animation(2);
+	}
+	else
+	{
+		m_pModelCom->Set_Animation(0);
+	}
 }
 
 HRESULT CPlayer::Add_Components()

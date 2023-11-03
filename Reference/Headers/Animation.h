@@ -7,6 +7,7 @@ class CAnimation final : public CBase
 {
 private:
 	CAnimation();
+	CAnimation(const CAnimation& rhs);
 	virtual ~CAnimation() = default;
 
 public:
@@ -19,6 +20,8 @@ private:
 	_float m_fDuration{};
 	_float m_fTickPerSec{};
 	_float m_fCurrentAnimPos{};
+	//vector<_uint> m_CurrentKeyFrames{};
+	//vector<_float4x4> m_PrevTransformations{};
 
 	_uint m_iNumChannels{};
 	vector<class CChannel*> m_Channels{};
@@ -28,6 +31,7 @@ private:
 
 public:
 	static CAnimation* Create(ifstream& ModelFile);
+	CAnimation* Clone();
 	virtual void Free() override;
 };
 

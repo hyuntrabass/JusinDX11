@@ -29,6 +29,7 @@ namespace Client
 	enum class CameraMode
 	{
 		Debug,
+		Main,
 		End
 	};
 

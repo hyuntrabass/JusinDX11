@@ -206,6 +206,16 @@ HRESULT CGameInstance::Add_Layer(_uint iLevelIndex, const wstring strLayerTag, c
 	return m_pObject_Manager->Add_Layer(iLevelIndex, strLayerTag, strPrototypeTag, pArg);
 }
 
+CComponent* CGameInstance::Get_Component(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex)
+{
+	if (!m_pObject_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
+	}
+
+	return m_pObject_Manager->Get_Component(iLevelIndex, strLayerTag, strComponentTag, iIndex);
+}
+
 HRESULT CGameInstance::Add_Prototype_Component(_uint iLevelIndex, const wstring& strPrototype, CComponent* pPrototype)
 {
 	if (!m_pComponent_Manager)
@@ -404,6 +414,16 @@ _float4 CGameInstance::Get_CameraPos() const
 	}
 
 	return m_pPipeLine->Get_CameraPos();
+}
+
+_float4 CGameInstance::Get_CameraLook() const
+{
+	if (!m_pPipeLine)
+	{
+		MSG_BOX("FATAL ERROR : m_pPipeLine is NULL");
+	}
+
+	return m_pPipeLine->Get_CameraLook();
 }
 
 _float4x4 CGameInstance::Get_Transform_Float4x4(D3DTS eState) const

@@ -64,6 +64,12 @@
     <Filter Include="02.GameObjects\03.Player">
       <UniqueIdentifier>{5557466c-214f-4ff9-85f9-dd1f819f08b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\01.Cameras\99.Debug">
+      <UniqueIdentifier>{c96fa7c0-0a1c-4db8-ac4e-828ec9e715dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\01.Cameras\00.Main">
+      <UniqueIdentifier>{e16c9a97-25e3-488f-b526-e54dcf940fc6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -114,9 +120,6 @@
     <ClInclude Include="..\public\Start_Btn.h">
       <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Camera_Debug.h">
-      <Filter>02.GameObjects\01.Cameras</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Loading_Screen.h">
       <Filter>02.GameObjects\99.LoadingObjects</Filter>
     </ClInclude>
@@ -137,6 +140,12 @@
     </ClInclude>
     <ClInclude Include="..\public\Player.h">
       <Filter>02.GameObjects\03.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Camera_Main.h">
+      <Filter>02.GameObjects\01.Cameras\00.Main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Camera_Debug.h">
+      <Filter>02.GameObjects\01.Cameras\99.Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -186,9 +195,6 @@
     <ClCompile Include="..\private\Start_Btn.cpp">
       <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Camera_Debug.cpp">
-      <Filter>02.GameObjects\01.Cameras</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\Loading_Screen.cpp">
       <Filter>02.GameObjects\99.LoadingObjects</Filter>
     </ClCompile>
@@ -209,6 +215,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Player.cpp">
       <Filter>02.GameObjects\03.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Camera_Main.cpp">
+      <Filter>02.GameObjects\01.Cameras\00.Main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Camera_Debug.cpp">
+      <Filter>02.GameObjects\01.Cameras\99.Debug</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

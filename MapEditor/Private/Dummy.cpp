@@ -15,6 +15,12 @@ void CDummy::Select(const _bool& isSelected)
 	m_isSelected = isSelected;
 }
 
+void CDummy::Modify(_fvector vPos, _fvector vLook)
+{
+	m_pTransformCom->Set_State(State::Pos, vPos);
+	m_pTransformCom->Look_At_Dir(vLook);
+}
+
 HRESULT CDummy::Init_Prototype()
 {
 	return S_OK;
@@ -34,6 +40,11 @@ HRESULT CDummy::Init(void* pArg)
 		m_Info.Prototype == L"Prototype_Model_SM_ENV_KNVLLG_RockWall_Set_01.mo")
 	{
 		m_isBlendObject = true;
+	}
+
+	if (m_Info.Prototype == L"Prototype_Model_Pain")
+	{
+		m_iAnimIndex = (rand() % 2) + 1;
 	}
 
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
@@ -63,6 +74,17 @@ void CDummy::Tick(_float fTimeDelta)
 
 	if (m_Info.Prototype == L"Prototype_Model_Kurama" || m_Info.Prototype == L"Prototype_Model_Pain")
 	{
+		if (m_pGameInstance->Key_Pressing(DIK_UP))
+		{
+			//m_pTransformCom->Go_Straight(fTimeDelta);
+			m_pModelCom->Set_Animation(m_iAnimIndex);
+			//m_pModelCom->Set_Animation(1);
+		}
+		else
+		{
+			m_pModelCom->Set_Animation(0);
+		}
+
 		m_pModelCom->Play_Animation(fTimeDelta);
 	}
 }
@@ -89,7 +111,7 @@ HRESULT CDummy::Render()
 
 	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 
-	for (size_t i = 0; i < iNumMeshes; i++)
+	for (_uint i = 0; i < iNumMeshes; i++)
 	{
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{

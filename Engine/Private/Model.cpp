@@ -15,20 +15,22 @@ CModel::CModel(const CModel& rhs)
 	, m_Meshes(rhs.m_Meshes)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_Materials(rhs.m_Materials)
-	, m_Bones(rhs.m_Bones)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
-	, m_Animations(rhs.m_Animations)
 	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
 {
-	for (auto& pBone : m_Bones)
+	for (auto& pPrototypeBone : rhs.m_Bones)
 	{
-		Safe_AddRef(pBone);
+		CBone* pBone = pPrototypeBone->Clone();
+
+		m_Bones.push_back(pBone);
 	}
 
-	for (auto& pAnimation : m_Animations)
+	for (auto& pPrototypeAnimation : rhs.m_Animations)
 	{
-		Safe_AddRef(pAnimation);
+		CAnimation* pAnimation = pPrototypeAnimation->Clone();
+
+		m_Animations.push_back(pAnimation);
 	}
 
 	for (auto& pMesh : m_Meshes)

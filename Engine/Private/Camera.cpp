@@ -22,7 +22,7 @@ HRESULT CCamera::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	Camera_Desc* pCameraDesc = (Camera_Desc*)pArg;
+	Camera_Desc* pCameraDesc = reinterpret_cast<Camera_Desc*>(pArg);
 
 	m_fFovY = pCameraDesc->fFovY;
 	m_fAspect = pCameraDesc->fAspect;

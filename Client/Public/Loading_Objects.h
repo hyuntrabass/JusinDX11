@@ -4,6 +4,7 @@
 #include "Logo.h"
 #include "Start_Btn.h"
 #include "Camera_Debug.h"
+#include "Camera_Main.h"
 #include "Terrain.h"
 #include "SubTitle.h"
 #include "Sky.h"

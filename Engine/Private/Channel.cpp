@@ -30,7 +30,7 @@ HRESULT CChannel::Init(ifstream& ModelFile)
 	return S_OK;
 }
 
-void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float& fCurrentAnimPos, _bool& isAnimChanged)
+void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float& fCurrentAnimPos, /*_uint& m_iKeyFrame, _float4x4& PrevTransMatrix,*/ _bool& isAnimChanged)
 {
 	if (fCurrentAnimPos == 0.f && !isAnimChanged)
 	{
@@ -45,6 +45,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 
 	if (isAnimChanged)
 	{
+		m_iCurrentKeyFrame = 0;
 		if (m_PrevTransformation.m[3][3] == 0.f)
 		{
 			m_PrevTransformation = Bones[m_iBoneIndex]->Get_Transformation();
@@ -53,7 +54,6 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 		_vector vSrcScaling{}, vDstScaling{};
 		_vector vSrcRotation{}, vDstRotation{};
 		_vector vSrcPotition{}, vDstPosition{};
-		//_float fRatio{ (0.2f) / (m_KeyFrames[m_iCurrentKeyFrame + 1].fTime - m_KeyFrames[m_iCurrentKeyFrame].fTime) };
 		_float fRatio = fCurrentAnimPos / 0.2f;
 
 		vSrcScaling.m128_f32[0] = XMVector4Length(PrevTransformation.r[0]).m128_f32[0];
@@ -75,10 +75,6 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 		{
 			isAnimChanged = false;
 			fCurrentAnimPos = 0.f;
-			m_PrevTransformation = {};
-			//vScaling = vDstScaling;
-			//vRotation = vDstRotation;
-			//vPosition = vDstPosition;
 		}
 	}
 	else if (fCurrentAnimPos >= LastKeyFrame.fTime)
@@ -89,6 +85,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 	}
 	else
 	{
+		m_PrevTransformation = {};
 		if (fCurrentAnimPos >= m_KeyFrames[m_iCurrentKeyFrame + 1].fTime)
 		{
 			m_iCurrentKeyFrame++;
@@ -129,6 +126,11 @@ CChannel* CChannel::Create(ifstream& ModelFile)
 	}
 
 	return pInstance;
+}
+
+CChannel* CChannel::Clone()
+{
+	return new CChannel(*this);
 }
 
 void CChannel::Free()

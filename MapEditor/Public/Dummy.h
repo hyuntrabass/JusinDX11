@@ -14,6 +14,7 @@ private:
 
 public:
 	void Select(const _bool& isSelected);
+	void Modify(_fvector vPos, _fvector vLook);
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -31,6 +32,7 @@ private:
 	DummyInfo m_Info{};
 	_bool m_isSelected{};
 	_bool m_isBlendObject{};
+	_uint m_iAnimIndex{};
 
 private:
 	HRESULT Add_Components();

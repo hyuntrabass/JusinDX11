@@ -31,6 +31,7 @@ public:
 
 public:
 	static CBone* Create(ifstream& ModelFile);
+	CBone* Clone();
 	virtual void Free() override;
 };
 

@@ -24,6 +24,9 @@ private:
 	CModel* m_pModelCom{ nullptr };
 
 private:
+	void Move(_float fTimeDelta);
+
+private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 

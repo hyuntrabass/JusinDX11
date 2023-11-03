@@ -18,6 +18,7 @@ private:
 
 public:
 	_float4 Get_CameraPos() const;
+	_float4 Get_CameraLook() const;
 	_float4x4 Get_Transform_Float4x4(D3DTS eState) const;
 	_float4x4 Get_Transform_Inversed_Float4x4(D3DTS eState) const;
 	_matrix Get_Transform(D3DTS eState) const;
@@ -32,6 +33,7 @@ public:
 
 private:
 	_float4 m_vCameraPos{};
+	_float4 m_vCameraLook{};
 	_float4x4 m_TransformMatrix[ToIndex(D3DTS::End)]{};
 	_float4x4 m_TransformMatrix_Inversed[ToIndex(D3DTS::End)]{};
 

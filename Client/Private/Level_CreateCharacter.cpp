@@ -11,17 +11,17 @@ HRESULT CLevel_CreateCharacter::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(ToIndex(Level_ID::CreateCharacter));
 
-	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-	{
-		return E_FAIL;
-	}
-
 	if (FAILED(Ready_Light()))
 	{
 		return E_FAIL;
 	}
 
 	if (FAILED(Ready_Player()))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 	{
 		return E_FAIL;
 	}
@@ -68,6 +68,13 @@ HRESULT CLevel_CreateCharacter::Ready_Layer_Camera(const wstring& strLayerTag)
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), strLayerTag, TEXT("Prototype_GameObject_Camera_Main"), &CamDesc)))
+	{
+		return E_FAIL;
+	}
+
+	m_pGameInstance->Set_CameraModeIndex(ToIndex(CameraMode::Main));
 
 	return S_OK;
 }

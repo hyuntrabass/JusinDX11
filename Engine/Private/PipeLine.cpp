@@ -9,6 +9,11 @@ _float4 CPipeLine::Get_CameraPos() const
 	return m_vCameraPos;
 }
 
+_float4 CPipeLine::Get_CameraLook() const
+{
+	return m_vCameraLook;
+}
+
 _float4x4 CPipeLine::Get_Transform_Float4x4(D3DTS eState) const
 {
 	return m_TransformMatrix[ToIndex(eState)];
@@ -57,6 +62,7 @@ void CPipeLine::Tick()
 		XMStoreFloat4x4(&m_TransformMatrix_Inversed[i], XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_TransformMatrix[i])));
 	}
 	m_vCameraPos = _float4(&m_TransformMatrix_Inversed[ToIndex(D3DTS::View)]._41);
+	m_vCameraLook = _float4(&m_TransformMatrix_Inversed[ToIndex(D3DTS::View)]._31);
 }
 
 CPipeLine* CPipeLine::Create()
