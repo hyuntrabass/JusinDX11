@@ -9,3 +9,8 @@
 #include "SubTitle.h"
 #include "Sky.h"
 #include "Player.h"
+#include "Parts_Window.h"
+#include "HpBar_Player.h"
+#include "HpBar_Player_Base.h"
+#include "SlotBase_Skill.h"
+#include "SlotBase_Tool.h"

@@ -70,6 +70,33 @@
     <Filter Include="02.GameObjects\01.Cameras\00.Main">
       <UniqueIdentifier>{e16c9a97-25e3-488f-b526-e54dcf940fc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.GUI\01.CreateCharacter\Parts_Window">
+      <UniqueIdentifier>{b7e614df-45f6-42d8-8533-013818827322}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud">
+      <UniqueIdentifier>{96a83024-ad79-4bd9-a8f3-3fd584767fc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\HPBar_Player">
+      <UniqueIdentifier>{1692f2c1-096e-4592-ae8b-318df7604533}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\HPBar_Player\Base">
+      <UniqueIdentifier>{cc23cb6b-6c8a-445c-a8a0-cd0f01b60c7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\Slots">
+      <UniqueIdentifier>{33153331-edbf-4894-b38e-ba61b801cfdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\Slots\Skill">
+      <UniqueIdentifier>{91045042-34b1-4559-90b4-4b324669b779}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\Slots\Tool">
+      <UniqueIdentifier>{382acfa1-b0c3-4399-8ad2-f9d6795ba528}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\Slots\Tool\Base">
+      <UniqueIdentifier>{43948878-d190-4272-acf5-795b53c7eeda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\Slots\Skill\Base">
+      <UniqueIdentifier>{bbd70bf7-b7a8-4f19-b3a6-18e3999f356e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -108,9 +135,6 @@
     <ClInclude Include="..\public\Level_Stage2.h">
       <Filter>01.Levels\04.Stage2</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Loading_Objects.h">
-      <Filter>99.Headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\BackGround.h">
       <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClInclude>
@@ -146,6 +170,24 @@
     </ClInclude>
     <ClInclude Include="..\public\Camera_Debug.h">
       <Filter>02.GameObjects\01.Cameras\99.Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Parts_Window.h">
+      <Filter>02.GameObjects\00.GUI\01.CreateCharacter\Parts_Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Loading_Objects.h">
+      <Filter>01.Levels\99.Loading\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\HpBar_Player.h">
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HpBar_Player_Base.h">
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SlotBase_Tool.h">
+      <Filter>02.GameObjects\00.GUI\02.Hud\Slots\Tool\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SlotBase_Skill.h">
+      <Filter>02.GameObjects\00.GUI\02.Hud\Slots\Skill\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -221,6 +263,21 @@
     </ClCompile>
     <ClCompile Include="..\private\Camera_Debug.cpp">
       <Filter>02.GameObjects\01.Cameras\99.Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Parts_Window.cpp">
+      <Filter>02.GameObjects\00.GUI\01.CreateCharacter\Parts_Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\HpBar_Player.cpp">
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HpBar_Player_Base.cpp">
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SlotBase_Tool.cpp">
+      <Filter>02.GameObjects\00.GUI\02.Hud\Slots\Tool\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SlotBase_Skill.cpp">
+      <Filter>02.GameObjects\00.GUI\02.Hud\Slots\Skill\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -536,14 +536,14 @@ HRESULT CGameInstance::Add_Font(const wstring& strFontTag, const wstring& strFil
 	return m_pFont_Manager->Add_Font(strFontTag, strFilePath);
 }
 
-HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale, _fvector vColor, _float fRotation, const _float2& vOrigin)
+HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale, _fvector vColor, _float fRotation)
 {
 	if (!m_pFont_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pFont_Manager is NULL");
 	}
 
-	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation, vOrigin);
+	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation);
 }
 
 const _uint& CGameInstance::Get_CameraModeIndex() const

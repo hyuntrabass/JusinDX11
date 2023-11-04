@@ -40,9 +40,11 @@ void CStart_Btn::Tick(_float fTimeDelta)
 	if (PtInRect(&rc, pt))
 	{
 		m_iIndex = 1;
+		m_Color = Colors::Gold;
 	}
 	else
 	{
+		m_Color = Colors::White;
 		m_iIndex = 0;
 	}
 }
@@ -68,7 +70,7 @@ HRESULT CStart_Btn::Render()
 	{
 		return E_FAIL;
 	}
-
+	m_pGameInstance->Render_Text(TEXT("Font_Malang"), TEXT("게임 시작"), _float2(m_fX, m_fY), 0.7f, m_Color);
 	//if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", 1)))
 	//{
 	//	return E_FAIL;
@@ -89,22 +91,22 @@ HRESULT CStart_Btn::Render()
 
 HRESULT CStart_Btn::Add_Components()
 {
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_StartBtn"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_StartBtn"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}

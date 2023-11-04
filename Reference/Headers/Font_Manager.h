@@ -12,7 +12,7 @@ private:
 public:
 	HRESULT Init();
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);
-	HRESULT Render(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _fvector vColor = Colors::White, _float fRotation = 0.f, const _float2& vOrigin = _float2(0.f, 0.f));
+	HRESULT Render(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _fvector vColor = Colors::White, _float fRotation = 0.f);
 
 private:
 	_dev m_pDevice{ nullptr };

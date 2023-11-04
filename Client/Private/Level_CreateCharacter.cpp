@@ -13,17 +13,22 @@ HRESULT CLevel_CreateCharacter::Init()
 
 	if (FAILED(Ready_Light()))
 	{
-		return E_FAIL;
+		MSG_BOX("Failed to Ready Lights");
 	}
 
 	if (FAILED(Ready_Player()))
 	{
-		return E_FAIL;
+		MSG_BOX("Failed to Ready Player");
 	}
 
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 	{
-		return E_FAIL;
+		MSG_BOX("Failed to Ready Camera");
+	}
+
+	if (FAILED(Ready_UIs()))
+	{
+		MSG_BOX("Failed to Ready UIs");
 	}
 
 	return S_OK;
@@ -95,6 +100,16 @@ HRESULT CLevel_CreateCharacter::Ready_Light()
 HRESULT CLevel_CreateCharacter::Ready_Player()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Player"), TEXT("Prototype_GameObject_Player"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_CreateCharacter::Ready_UIs()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::CreateCharacter), TEXT("Layer_PartsWindow"), TEXT("Prototype_GameObject_PartsWindow"))))
 	{
 		return E_FAIL;
 	}

@@ -18,6 +18,7 @@ private:
 	HRESULT Ready_Layer_Camera(const wstring& strLayerTag);
 	HRESULT Ready_Light();
 	HRESULT Ready_Player();
+	HRESULT Ready_UIs();
 
 public:
 	static CLevel_CreateCharacter* Create(_dev pDevice, _context pContext);

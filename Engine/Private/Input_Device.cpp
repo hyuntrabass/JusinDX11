@@ -120,11 +120,14 @@ void CInput_Device::Update_InputDev()
 	{
 		m_isGamepadMode = false;
 	}
-	
+
 	_bool isKeyInput{};
 	for (auto& Input : m_byKeyState)
 	{
-		isKeyInput += Input;
+		if (Input)
+		{
+			isKeyInput = true;
+		}
 	}
 	if (isKeyInput) // 키보드 입력
 	{

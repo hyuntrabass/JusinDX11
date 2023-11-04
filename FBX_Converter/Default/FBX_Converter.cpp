@@ -216,7 +216,7 @@ int main()
 					BoneNames.push_back(BoneName);
 
 					strcpy_s(szName, BoneName.C_Str());
-					unsigned int iNameSize = strlen(szName) + 1;
+					unsigned int iNameSize = static_cast<unsigned int>(strlen(szName)) + 1;
 					OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
 					OutputFile.write(BoneName.C_Str(), iNameSize);
 					OutputFile.write(reinterpret_cast<const char*>(&pCurrentBone->mTransformation.Transpose()), sizeof(aiMatrix4x4));
@@ -255,11 +255,11 @@ int main()
 					Uint4* vBlendIndices = new Uint4[iNumVertices]{};
 					Float4* vBlendWeights = new Float4[iNumVertices]{};
 
-					for (size_t j = 0; j < iNumBones; j++)
+					for (unsigned int j = 0; j < iNumBones; j++)
 					{
 						aiBone* pBone = pMesh->mBones[j];
 
-						for (size_t k = 0; k < pBone->mNumWeights; k++)
+						for (unsigned int k = 0; k < pBone->mNumWeights; k++)
 						{
 							if (vBlendWeights[pBone->mWeights[k].mVertexId].x == 0.f)
 							{
@@ -304,7 +304,7 @@ int main()
 						OutputFile.write(reinterpret_cast<const char*>(&pBone->mOffsetMatrix.Transpose()), sizeof aiMatrix4x4);
 
 						unsigned int iBoneIndex{};
-						std::find_if(BoneNames.begin(), BoneNames.end(), [&pBone, &iBoneIndex](aiString strBoneName)
+						auto iter = std::find_if(BoneNames.begin(), BoneNames.end(), [&pBone, &iBoneIndex](aiString strBoneName)
 						{
 							if (pBone->mName == strBoneName)
 							{
@@ -313,6 +313,10 @@ int main()
 							iBoneIndex++;
 							return false;
 						});
+						if (iter == BoneNames.end())
+						{
+							std::cout << "Failed to Find matching name" << std::endl;
+						}
 
 						OutputFile.write(reinterpret_cast<const char*>(&iBoneIndex), sizeof(unsigned int));
 					}
@@ -344,7 +348,7 @@ int main()
 						_splitpath_s(strTexturePath.C_Str(), nullptr, 0, nullptr, 0, TextureFileName, _MAX_PATH, TextureExt, _MAX_PATH);
 
 						strcat_s(TextureFileName, TextureExt);
-						iTexturePathNameSize = strlen(TextureFileName) + 1;
+						iTexturePathNameSize = static_cast<unsigned int>(strlen(TextureFileName)) + 1;
 						OutputFile.write(reinterpret_cast<const char*>(&iTexturePathNameSize), sizeof(unsigned int));
 						if (iTexturePathNameSize == 1)
 						{
@@ -384,7 +388,7 @@ int main()
 						OutputFile.write(pChannel->mNodeName.C_Str(), iChannelNameSize);
 
 						unsigned int iBoneIndex{};
-						std::find_if(BoneNames.begin(), BoneNames.end(), [&pChannel, &iBoneIndex](aiString strBoneName)
+						auto iter = std::find_if(BoneNames.begin(), BoneNames.end(), [&pChannel, &iBoneIndex](aiString strBoneName)
 						{
 							if (pChannel->mNodeName == strBoneName)
 							{
@@ -393,6 +397,11 @@ int main()
 							iBoneIndex++;
 							return false;
 						});
+						if (iter == BoneNames.end())
+						{
+							std::cout << "Failed to Find matching name" << std::endl;
+						}
+
 						OutputFile.write(reinterpret_cast<const char*>(&iBoneIndex), sizeof(unsigned int));
 
 						unsigned int iNumKeyFrame = max(pChannel->mNumScalingKeys, pChannel->mNumRotationKeys);

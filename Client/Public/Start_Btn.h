@@ -25,6 +25,7 @@ private:
 
 private:
 	_uint m_iIndex{};
+	_vector m_Color{};
 
 private:
 	HRESULT Add_Components();

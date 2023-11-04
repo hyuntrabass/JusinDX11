@@ -20,6 +20,11 @@ HRESULT CLevel_Tutorial::Init()
 		MSG_BOX("Failed to Ready Lights");
 	}
 
+	if (FAILED(Ready_UIs()))
+	{
+		MSG_BOX("Failed to Ready UIs");
+	}
+
 	return S_OK;
 }
 
@@ -79,6 +84,31 @@ HRESULT CLevel_Tutorial::Ready_Lights()
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	return m_pGameInstance->Add_Light(ToIndex(Level_ID::Tutorial), LightDesc);
+}
+
+HRESULT CLevel_Tutorial::Ready_UIs()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_UI_HpBar"), TEXT("Prototype_GameObject_UI_HpBar"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_HpBar_Base"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_SlotBase_Skill"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_HpBar_SlotBase_Tool"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
 }
 
 CLevel_Tutorial* CLevel_Tutorial::Create(_dev pDevice, _context pContext)

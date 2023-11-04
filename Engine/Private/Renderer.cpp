@@ -50,7 +50,10 @@ HRESULT CRenderer::Draw_RenderGroup()
 		{
 			if (pGameObject)
 			{
-				pGameObject->Render();
+				if (FAILED(pGameObject->Render()))
+				{
+					MSG_BOX("Failed to Render");
+				}
 			}
 
 			Safe_Release(pGameObject);

@@ -20,7 +20,7 @@ CGameObject::CGameObject(const CGameObject& rhs)
 	Safe_AddRef(m_pContext);
 	Safe_AddRef(m_pDevice);
 
-	if (FAILED(Add_Component(0, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+	if (FAILED(Add_Component(0, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
 	{
 		MSG_BOX("Failed to Import TransformCom");
 	}

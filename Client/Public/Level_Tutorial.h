@@ -18,6 +18,7 @@ public:
 public:
 	HRESULT Ready_Map();
 	HRESULT Ready_Lights();
+	HRESULT Ready_UIs();
 
 public:
 	static CLevel_Tutorial* Create(_dev pDevice, _context pContext);

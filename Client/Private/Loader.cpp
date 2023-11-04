@@ -179,7 +179,7 @@ HRESULT CLoader::Load_CreateCharacter()
 {
 	m_strLoadingText = L"CreateCharacter : Loading Texture";
 #pragma region Texture
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::CreateCharacter), TEXT("Prototype_Component_Texture_Terrain"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Test/Tile1.dds")))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::CreateCharacter), TEXT("Prototype_Component_Texture_PartsWindow"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/CreateCharacter/T_UI_Roll_Parts_Window_02_BC.dds")))))
 	{
 		return E_FAIL;
 	}
@@ -223,6 +223,11 @@ HRESULT CLoader::Load_CreateCharacter()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_PartsWindow"), CParts_Window::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"CreateCharacter : Loading Complete!";
@@ -235,6 +240,41 @@ HRESULT CLoader::Load_Tutorial()
 {
 	m_strLoadingText = L"Tutorial : Loading Texture";
 #pragma region Texture
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_HpBar"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/T_UI_LifeGauge_Base2.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_HpBar_Base"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/T_UI_SP_Gauge_Base_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_HpBar_Base_Frame"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/T_UI_SP_Gauge_Base_Frame_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_SlotBase_Skill"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/T_UI_Skill_Gauge_Base_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_SlotBase_Skill_Frame"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/T_UI_Skill_Gauge_Base2_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_SlotBase_Tool"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/T_UI_Tool_Gauge_Base_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Texture_SlotBase_Tool_Frame"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/T_UI_Tool_Gauge_Base2_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Tutorial : Loading Model";
@@ -274,6 +314,26 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Sky"), CSky::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_UI_HpBar"), CHpBar_Player::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_UI_HpBar_Base"), CHpBar_Player_Base::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_UI_SlotBase_Skill"), CSlotBase_Skill::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_UI_HpBar_SlotBase_Tool"), CSlotBase_Tool::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

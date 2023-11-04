@@ -120,6 +120,15 @@ void CPlayer::Move(_float fTimeDelta)
 		hasMoved = true;
 	}
 
+	if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
+	{
+		m_pTransformCom->Set_Speed(15.f);
+	}
+	else
+	{
+		m_pTransformCom->Set_Speed(5.f);
+	}
+
 	if (hasMoved)
 	{
 		m_pTransformCom->Look_At_Dir(vDirection);
@@ -134,17 +143,17 @@ void CPlayer::Move(_float fTimeDelta)
 
 HRESULT CPlayer::Add_Components()
 {
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
 		return E_FAIL;
 	}
 	
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Pain"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Pain"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}

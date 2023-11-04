@@ -1,0 +1,57 @@
+TwoSided = false
+bDisableDepthTest = false
+bIsMasked = false
+ReferencedTextures[1] =
+{
+    ReferencedTextures[0] = Texture2D'/Game/UI/Common_Textures/Button/T_Widget_Button_Circle.T_Widget_Button_Circle'
+}
+Expressions[10] =
+{
+    Expressions[1] = MaterialExpressionTextureSample'/Game/UI/Common_Textures/Button/Materials/M_UI_Button_NoUse.MaterialExpressionTextureSample_2'
+    Expressions[2] = MaterialExpressionVectorParameter'/Game/UI/Common_Textures/Button/Materials/M_UI_Button_NoUse.MaterialExpressionVectorParameter_5'
+    Expressions[4] = MaterialExpressionScalarParameter'/Game/UI/Common_Textures/Button/Materials/M_UI_Button_NoUse.MaterialExpressionScalarParameter_19'
+    Expressions[7] = MaterialExpressionScalarParameter'/Game/UI/Common_Textures/Button/Materials/M_UI_Button_NoUse.MaterialExpressionScalarParameter_2'
+}
+CachedExpressionData =
+{
+    Parameters =
+    {
+        Entries[5] =
+        {
+            Entries[0] = { ParameterInfos[0]={} }
+            Entries[1] = { ParameterInfos[0]={} }
+            Entries[2] = { ParameterInfos[0]={} }
+            Entries[3] = { ParameterInfos[0]={} }
+            Entries[4] = { ParameterInfos[0]={} }
+        }
+        ScalarValues[0] = {}
+        VectorValues[0] = {}
+        TextureValues[0] = {}
+    }
+    ReferencedTextures[0] = {}
+}
+BlendMode = BLEND_Translucent (2)
+OpacityMaskClipValue = 0.333
+CollectedTextureParameters[0] = {}
+CollectedScalarParameters[2] =
+{
+    CollectedScalarParameters[0] = { Value=1, Name=Min_1, Group=None }
+    CollectedScalarParameters[1] = { Value=1, Name=Use_NoUse, Group=None }
+}
+CollectedVectorParameters[1] =
+{
+    CollectedVectorParameters[0] =
+    {
+        Value = { R=0.3, G=0.3, B=0.3, A=1 }
+        Name = Skill_NoUse_Color
+        Group = None
+    }
+}
+FlattenedTexture = None
+MobileBaseTexture = None
+MobileNormalTexture = None
+bUseMobileSpecular = false
+MobileSpecularPower = 16
+MobileSpecularMask = MSM_Constant (0)
+MobileMaskTexture = None
+TextureStreamingData[0] = {}

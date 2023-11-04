@@ -1,18 +1,18 @@
 #include "SubTitle.h"
 
 CSubTitle::CSubTitle(_dev pDevice, _context pContext)
-    : COrthographicObject(pDevice, pContext)
+	: COrthographicObject(pDevice, pContext)
 {
 }
 
 CSubTitle::CSubTitle(const CSubTitle& rhs)
-    : COrthographicObject(rhs)
+	: COrthographicObject(rhs)
 {
 }
 
 HRESULT CSubTitle::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CSubTitle::Init(void* pArg)
@@ -28,8 +28,6 @@ HRESULT CSubTitle::Init(void* pArg)
 	m_fX = 350.f - 1000.f;
 	m_fY = 255.f;
 
-	m_pTransformCom->Set_RotationPerSec(540.f);
-
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 1.f);
 
 	return S_OK;
@@ -40,13 +38,12 @@ void CSubTitle::Tick(_float fTimeDelta)
 	if (m_fX < 340.f)
 	{
 		m_fX += 20.f;
-		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 1.f);
 	}
 	else
 	{
 		m_fX = 350.f;
-		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 1.f);
 	}
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 1.f);
 }
 
 void CSubTitle::Late_Tick(_float fTimeDelta)
@@ -76,22 +73,22 @@ HRESULT CSubTitle::Render()
 
 HRESULT CSubTitle::Add_Components()
 {
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_SubTitle"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Logo), TEXT("Prototype_Component_Texture_SubTitle"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 	{
 		return E_FAIL;
 	}
