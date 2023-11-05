@@ -8,7 +8,7 @@ CLevel_Stage1::CLevel_Stage1(_dev pDevice, _context pContext)
 
 HRESULT CLevel_Stage1::Init()
 {
-	m_pGameInstance->Set_CurrentLevelIndex(ToIndex(Level_ID::Stage1));
+	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_STAGE1);
 
 	if (FAILED(Ready_Map()))
 	{
@@ -22,7 +22,7 @@ void CLevel_Stage1::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
-		if (FAILED(m_pGameInstance->Open_Level(ToIndex(Level_ID::Loading), CLevel_Loading::Create(m_pDevice, m_pContext, Level_ID::Stage2))))
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_STAGE2))))
 		{
 			return;
 		}
@@ -47,7 +47,7 @@ HRESULT CLevel_Stage1::Ready_Map()
 			ObjectInfo Info{};
 			Info.strPrototypeTag = strPrototypeTag + strFileName;
 
-			if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Stage1), L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STAGE1, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
 			{
 				return E_FAIL;
 			}

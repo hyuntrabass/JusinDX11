@@ -165,6 +165,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\public\BackGround.h" />
+    <ClInclude Include="..\public\BackGround_CreateCharacter.h" />
     <ClInclude Include="..\public\Camera_Debug.h" />
     <ClInclude Include="..\public\Camera_Main.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
@@ -190,6 +191,7 @@
     <ClInclude Include="..\public\Start_Btn.h" />
     <ClInclude Include="..\public\SubTitle.h" />
     <ClInclude Include="..\public\Terrain.h" />
+    <ClInclude Include="..\public\Title_Custom.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -197,6 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\BackGround.cpp" />
+    <ClCompile Include="..\private\BackGround_CreateCharacter.cpp" />
     <ClCompile Include="..\private\Camera_Debug.cpp" />
     <ClCompile Include="..\private\Camera_Main.cpp" />
     <ClCompile Include="..\private\HpBar_Player.cpp" />
@@ -220,6 +223,7 @@
     <ClCompile Include="..\private\Start_Btn.cpp" />
     <ClCompile Include="..\private\SubTitle.cpp" />
     <ClCompile Include="..\private\Terrain.cpp" />
+    <ClCompile Include="..\private\Title_Custom.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>

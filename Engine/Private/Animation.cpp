@@ -26,6 +26,16 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	}
 }
 
+const _bool& CAnimation::IsFinished()
+{
+	return m_isFinished;
+}
+
+void CAnimation::ResetFinished()
+{
+	m_isFinished = false;
+}
+
 HRESULT CAnimation::Init(ifstream& ModelFile)
 {
 	_uint iNameSize{};
@@ -53,7 +63,7 @@ HRESULT CAnimation::Init(ifstream& ModelFile)
 	return S_OK;
 }
 
-_bool CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged)
+void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop)
 {
 	if (isAnimChanged)
 	{
@@ -69,29 +79,31 @@ _bool CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones,
 	{
 		if (m_isInterpolating)
 		{
-			m_fCurrentAnimPos = 0.f;
 			m_isInterpolating = false;
 		}
-
 		m_fCurrentAnimPos += m_fTickPerSec * fTimeDelta;
-	}
 
-	if (m_fCurrentAnimPos >= m_fDuration)
-	{
-		m_isFinished = true;
-		m_fCurrentAnimPos = 0.f;
-	}
-	else
-	{
-		m_isFinished = false;
+		if (m_fCurrentAnimPos >= m_fDuration)
+		{
+			if (isLoop)
+			{
+				m_fCurrentAnimPos = 0.f;
+			}
+			else
+			{
+				m_isFinished = true;
+			}
+		}
+		else
+		{
+			m_isFinished = false;
+		}
 	}
 
 	for (size_t i = 0; i < m_iNumChannels; i++)
 	{
-		m_Channels[i]->Update_TransformationMatrix(Bones, m_fCurrentAnimPos, /*m_CurrentKeyFrames[i], m_PrevTransformations[i],*/ isAnimChanged);
+		m_Channels[i]->Update_TransformationMatrix(Bones, m_fCurrentAnimPos, isAnimChanged);
 	}
-
-	return m_isFinished;
 }
 
 CAnimation* CAnimation::Create(ifstream& ModelFile)

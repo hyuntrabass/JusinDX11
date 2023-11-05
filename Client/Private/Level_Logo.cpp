@@ -8,7 +8,7 @@ CLevel_Logo::CLevel_Logo(_dev pDevice, _context pContext)
 
 HRESULT CLevel_Logo::Init()
 {
-	m_pGameInstance->Set_CurrentLevelIndex(ToIndex(Level_ID::Logo));
+	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_LOGO);
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 	{
@@ -32,7 +32,7 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
-		if (FAILED(m_pGameInstance->Open_Level(ToIndex(Level_ID::Loading), CLevel_Loading::Create(m_pDevice, m_pContext, Level_ID::CreateCharacter))))
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_CREATECHARACTER))))
 		{
 			MSG_BOX("Failed to Open Level");
 		}
@@ -55,7 +55,7 @@ HRESULT CLevel_Logo::Ready_Layer_BackGround(const wstring& strLayerTag)
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Logo), strLayerTag, TEXT("Prototype_GameObject_BackGround"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_BackGround"))))
 	{
 		return E_FAIL;
 	}
@@ -70,12 +70,12 @@ HRESULT CLevel_Logo::Ready_Layer_Logo(const wstring& strLayerTag)
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Logo), strLayerTag, TEXT("Prototype_GameObject_Logo"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_Logo"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Logo), strLayerTag, TEXT("Prototype_GameObject_SubTitle"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_SubTitle"))))
 	{
 		return E_FAIL;
 	}
@@ -90,7 +90,7 @@ HRESULT CLevel_Logo::Ready_Layer_Buttons(const wstring& strLayerTag)
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Logo), strLayerTag, TEXT("Prototype_GameObject_StartBtn"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_StartBtn"))))
 	{
 		return E_FAIL;
 	}

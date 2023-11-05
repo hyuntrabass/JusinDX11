@@ -52,11 +52,27 @@ const _uint& CModel::Get_NumMeshes() const
 	return m_iNumMeshes;
 }
 
-void CModel::Set_Animation(_uint iAnimIndex)
+const _bool& CModel::IsAnimationFinished(_uint iAnimIndex) const
 {
+	return m_Animations[iAnimIndex]->IsFinished();
+}
+
+const _uint& CModel::Get_CurrentAnimationIndex() const
+{
+	return m_iCurrentAnimIndex;
+}
+
+void CModel::Set_Animation(_uint iAnimIndex, const _bool& isLoop)
+{
+	m_isLoop = isLoop;
 	if (m_iCurrentAnimIndex != iAnimIndex)
 	{
 		m_isAnimChanged = true;
+
+		for (auto& pAnim : m_Animations)
+		{
+			pAnim->ResetFinished();
+		}
 	}
 	m_iCurrentAnimIndex = iAnimIndex;
 }
@@ -95,7 +111,6 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix)
 				m_Bones.push_back(pBone);
 			}
 		#pragma endregion
-
 		}
 
 	#pragma region Meshes
@@ -190,16 +205,14 @@ HRESULT CModel::Init(void* pArg)
 	return S_OK;
 }
 
-_bool CModel::Play_Animation(_float fTimeDelta)
+void CModel::Play_Animation(_float fTimeDelta)
 {
-	_bool isFinished{ m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta, m_isAnimChanged) };
+	m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta, m_isAnimChanged, m_isLoop);
 
 	for (auto& pBone : m_Bones)
 	{
 		pBone->Update_CombinedMatrix(m_Bones);
 	}
-
-	return isFinished;
 }
 
 HRESULT CModel::Bind_BoneMatrices(_uint iMeshIndex, CShader* pShader, const _char* pVariableName)

@@ -9,7 +9,7 @@ CLevel_CreateCharacter::CLevel_CreateCharacter(_dev pDevice, _context pContext)
 
 HRESULT CLevel_CreateCharacter::Init()
 {
-	m_pGameInstance->Set_CurrentLevelIndex(ToIndex(Level_ID::CreateCharacter));
+	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_CREATECHARACTER);
 
 	if (FAILED(Ready_Light()))
 	{
@@ -38,7 +38,7 @@ void CLevel_CreateCharacter::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_PRIOR))
 	{
-		if (FAILED(m_pGameInstance->Open_Level(ToIndex(Level_ID::Loading), CLevel_Loading::Create(m_pDevice, m_pContext, Level_ID::Tutorial))))
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_TUTORIAL))))
 		{
 			MSG_BOX("Failed to Open Level");
 		}
@@ -69,12 +69,12 @@ HRESULT CLevel_CreateCharacter::Ready_Layer_Camera(const wstring& strLayerTag)
 	CamDesc.fNear = 0.1f;
 	CamDesc.fFar = 5000.f;
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), strLayerTag, TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, strLayerTag, TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), strLayerTag, TEXT("Prototype_GameObject_Camera_Main"), &CamDesc)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, strLayerTag, TEXT("Prototype_GameObject_Camera_Main"), &CamDesc)))
 	{
 		return E_FAIL;
 	}
@@ -89,17 +89,17 @@ HRESULT CLevel_CreateCharacter::Ready_Light()
 	LIGHT_DESC LightDesc{};
 
 	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(-1.f, -1.f, 0.5f, 0.f);
+	LightDesc.vDirection = _float4(-1.f, -1.f, -2.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	return m_pGameInstance->Add_Light(ToIndex(Level_ID::CreateCharacter), LightDesc);
+	return m_pGameInstance->Add_Light(LEVEL_CREATECHARACTER, LightDesc);
 }
 
 HRESULT CLevel_CreateCharacter::Ready_Player()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Player"), TEXT("Prototype_GameObject_Player"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Prototype_GameObject_Player"))))
 	{
 		return E_FAIL;
 	}
@@ -109,7 +109,17 @@ HRESULT CLevel_CreateCharacter::Ready_Player()
 
 HRESULT CLevel_CreateCharacter::Ready_UIs()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::CreateCharacter), TEXT("Layer_PartsWindow"), TEXT("Prototype_GameObject_PartsWindow"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_PartsWindow"), TEXT("Prototype_GameObject_PartsWindow"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_BackGroundCC"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_Title"), TEXT("Prototype_GameObject_Title_Custom"))))
 	{
 		return E_FAIL;
 	}

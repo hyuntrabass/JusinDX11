@@ -70,9 +70,6 @@
     <Filter Include="02.GameObjects\01.Cameras\00.Main">
       <UniqueIdentifier>{e16c9a97-25e3-488f-b526-e54dcf940fc6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.GUI\01.CreateCharacter\Parts_Window">
-      <UniqueIdentifier>{b7e614df-45f6-42d8-8533-013818827322}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.GUI\02.Hud">
       <UniqueIdentifier>{96a83024-ad79-4bd9-a8f3-3fd584767fc1}</UniqueIdentifier>
     </Filter>
@@ -96,6 +93,15 @@
     </Filter>
     <Filter Include="02.GameObjects\00.GUI\02.Hud\Slots\Skill\Base">
       <UniqueIdentifier>{bbd70bf7-b7a8-4f19-b3a6-18e3999f356e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\01.CreateCharacter\00.BackGround">
+      <UniqueIdentifier>{4a950a8d-46e1-40a9-b7f3-43447c5016f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\01.CreateCharacter\01.Title">
+      <UniqueIdentifier>{eacac11a-2126-4636-9d3c-22d3b972692b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\01.CreateCharacter\02.Parts_Window">
+      <UniqueIdentifier>{b7e614df-45f6-42d8-8533-013818827322}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -172,7 +178,7 @@
       <Filter>02.GameObjects\01.Cameras\99.Debug</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Parts_Window.h">
-      <Filter>02.GameObjects\00.GUI\01.CreateCharacter\Parts_Window</Filter>
+      <Filter>02.GameObjects\00.GUI\01.CreateCharacter\02.Parts_Window</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Loading_Objects.h">
       <Filter>01.Levels\99.Loading\Loader</Filter>
@@ -188,6 +194,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\SlotBase_Skill.h">
       <Filter>02.GameObjects\00.GUI\02.Hud\Slots\Skill\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BackGround_CreateCharacter.h">
+      <Filter>02.GameObjects\00.GUI\01.CreateCharacter\00.BackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Title_Custom.h">
+      <Filter>02.GameObjects\00.GUI\01.CreateCharacter\01.Title</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -265,7 +277,7 @@
       <Filter>02.GameObjects\01.Cameras\99.Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Parts_Window.cpp">
-      <Filter>02.GameObjects\00.GUI\01.CreateCharacter\Parts_Window</Filter>
+      <Filter>02.GameObjects\00.GUI\01.CreateCharacter\02.Parts_Window</Filter>
     </ClCompile>
     <ClCompile Include="..\private\HpBar_Player.cpp">
       <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player</Filter>
@@ -278,6 +290,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\SlotBase_Skill.cpp">
       <Filter>02.GameObjects\00.GUI\02.Hud\Slots\Skill\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BackGround_CreateCharacter.cpp">
+      <Filter>02.GameObjects\00.GUI\01.CreateCharacter\00.BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Title_Custom.cpp">
+      <Filter>02.GameObjects\00.GUI\01.CreateCharacter\01.Title</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

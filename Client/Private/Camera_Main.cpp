@@ -17,7 +17,7 @@ HRESULT CCamera_Main::Init_Prototype()
 
 HRESULT CCamera_Main::Init(void* pArg)
 {
-	m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(ToIndex(Level_ID::Static), TEXT("Layer_Player"), TEXT("Com_Transform")));
+	m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	if (!m_pTransformCom)
 	{
 		MSG_BOX("Can't Find Player!! : Camera Main");
@@ -46,6 +46,13 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		return;
 	}
 
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CREATECHARACTER)
+	{
+		m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.f, 1.5f, 2.5f, 1.f));
+		m_pTransformCom->Look_At(XMVectorSet(1.f, 1.f, 0.f, 1.f));
+		__super::Tick(fTimeDelta);
+		return;
+	}
 
 	_long dwMouseMove;
 

@@ -30,7 +30,7 @@ HRESULT CChannel::Init(ifstream& ModelFile)
 	return S_OK;
 }
 
-void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float& fCurrentAnimPos, /*_uint& m_iKeyFrame, _float4x4& PrevTransMatrix,*/ _bool& isAnimChanged)
+void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float& fCurrentAnimPos, _bool& isAnimChanged)
 {
 	if (fCurrentAnimPos == 0.f && !isAnimChanged)
 	{

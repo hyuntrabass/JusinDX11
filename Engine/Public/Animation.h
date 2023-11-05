@@ -11,8 +11,13 @@ private:
 	virtual ~CAnimation() = default;
 
 public:
+	const _bool& IsFinished();
+
+	void ResetFinished();
+
+public:
 	HRESULT Init(ifstream& ModelFile);
-	_bool Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged);
+	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop);
 
 private:
 	_char m_szName[MAX_PATH]{};

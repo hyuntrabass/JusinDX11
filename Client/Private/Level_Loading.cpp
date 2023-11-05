@@ -12,7 +12,7 @@ CLevel_Loading::CLevel_Loading(_dev pDevice, _context pContext)
 {
 }
 
-HRESULT CLevel_Loading::Init(Level_ID eNextLevel)
+HRESULT CLevel_Loading::Init(LEVEL_ID eNextLevel)
 {
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround_Loading"))))
 	{
@@ -50,19 +50,19 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 
 		switch (m_eNextLevel)
 		{
-		case Client::Level_ID::Logo:
+		case Client::LEVEL_LOGO:
 			pLevel = CLevel_Logo::Create(m_pDevice, m_pContext);
 			break;
-		case Client::Level_ID::CreateCharacter:
+		case Client::LEVEL_CREATECHARACTER:
 			pLevel = CLevel_CreateCharacter::Create(m_pDevice, m_pContext);
 			break;
-		case Client::Level_ID::Tutorial:
+		case Client::LEVEL_TUTORIAL:
 			pLevel = CLevel_Tutorial::Create(m_pDevice, m_pContext);
 			break;
-		case Client::Level_ID::Stage1:
+		case Client::LEVEL_STAGE1:
 			pLevel = CLevel_Stage1::Create(m_pDevice, m_pContext);
 			break;
-		case Client::Level_ID::Stage2:
+		case Client::LEVEL_STAGE2:
 			pLevel = CLevel_Stage2::Create(m_pDevice, m_pContext);
 			break;
 		}
@@ -95,7 +95,7 @@ HRESULT CLevel_Loading::Ready_Layer_BackGround(const wstring& strLayerTag)
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Loading), strLayerTag, TEXT("Prototype_GameObject_Loading_Screen"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOADING, strLayerTag, TEXT("Prototype_GameObject_Loading_Screen"))))
 	{
 		return E_FAIL;
 	}
@@ -110,7 +110,7 @@ HRESULT CLevel_Loading::Ready_Layer_LoadingBar(const wstring& strLayerTag)
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Loading), strLayerTag, TEXT("Prototype_GameObject_BackGround"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOADING, strLayerTag, TEXT("Prototype_GameObject_BackGround"))))
 	{
 		return E_FAIL;
 	}
@@ -125,7 +125,7 @@ HRESULT CLevel_Loading::Ready_Layer_Icon(const wstring& strLayerTag)
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Loading), strLayerTag, TEXT("Prototype_GameObject_Loading_Icon"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOADING, strLayerTag, TEXT("Prototype_GameObject_Loading_Icon"))))
 	{
 		return E_FAIL;
 	}
@@ -133,7 +133,7 @@ HRESULT CLevel_Loading::Ready_Layer_Icon(const wstring& strLayerTag)
 	return S_OK;
 }
 
-CLevel_Loading* CLevel_Loading::Create(_dev pDevice, _context pContext, Level_ID eNextLevel)
+CLevel_Loading* CLevel_Loading::Create(_dev pDevice, _context pContext, LEVEL_ID eNextLevel)
 {
 	CLevel_Loading* pInstance = new CLevel_Loading(pDevice, pContext);
 

@@ -13,16 +13,16 @@ namespace MapEditor
 	static const unsigned int g_iWinSizeX = 1280;
 	static const unsigned int g_iWinSizeY = 720;
 
-	enum class Level_ID
+	enum class LEVEL_ID
 	{
-		Static,
-		Editor,
-		Logo,
-		CreateCharacter,
-		Tutorial,
-		Stage1,
-		Stage2,
-		End
+		LEVEL_STATIC,
+		LEVEL_EDITOR,
+		LEVEL_LOGO,
+		LEVEL_CREATECHARACTER,
+		LEVEL_TUTORIAL,
+		LEVEL_STAGE1,
+		LEVEL_STAGE2,
+		LEVEL_END
 	};
 
 }

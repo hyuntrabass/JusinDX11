@@ -11,12 +11,12 @@ private:
 	virtual ~CLevel_Loading() = default;
 
 public:
-	virtual HRESULT Init(Level_ID eNextLevel);
+	virtual HRESULT Init(LEVEL_ID eNextLevel);
 	virtual void Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
 private:
-	Level_ID m_eNextLevel{ Level_ID::End };
+	LEVEL_ID m_eNextLevel{ LEVEL_END };
 	class CLoader* m_pLoader{ nullptr };
 
 private:
@@ -25,7 +25,7 @@ private:
 	HRESULT Ready_Layer_Icon(const wstring& strLayerTag);
 
 public:
-	static CLevel_Loading* Create(_dev pDevice, _context pContext, Level_ID eNextLevel);
+	static CLevel_Loading* Create(_dev pDevice, _context pContext, LEVEL_ID eNextLevel);
 	virtual void Free() override;
 };
 

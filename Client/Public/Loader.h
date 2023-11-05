@@ -15,7 +15,7 @@ private:
 	virtual ~CLoader() = default;
 
 public:
-	HRESULT Init(Level_ID eNextLevel);
+	HRESULT Init(LEVEL_ID eNextLevel);
 	HRESULT Begin_Thread();
 	HRESULT End_Thread();
 	HRESULT Show_LoadingText();
@@ -28,7 +28,7 @@ private:
 	_dev m_pDevice{ nullptr };
 	_context m_pContext{ nullptr };
 	CGameInstance* m_pGameInstance{ nullptr };
-	Level_ID m_eNextLevel{ Level_ID::End };
+	LEVEL_ID m_eNextLevel{ LEVEL_END };
 	wstring m_strLoadingText{};
 	_bool m_isFinished{ false };
 
@@ -44,7 +44,7 @@ private:
 	HRESULT Load_Stage2();
 
 public:
-	static CLoader* Create(_dev pDevice, _context pContext, Level_ID eNextLevel);
+	static CLoader* Create(_dev pDevice, _context pContext, LEVEL_ID eNextLevel);
 	virtual void Free() override;
 };
 

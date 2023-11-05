@@ -13,17 +13,16 @@ namespace Client
 	static const unsigned int g_iWinSizeY = 720;
 	static const POINT g_ptCenter = { static_cast<signed long>(g_iWinSizeX * 0.5f), static_cast<signed long>(g_iWinSizeY * 0.5f) };
 
-	enum class Level_ID
+	enum LEVEL_ID
 	{
-		Static,
-		Loading,
-		Editor,
-		Logo,
-		CreateCharacter,
-		Tutorial,
-		Stage1,
-		Stage2,
-		End
+		LEVEL_STATIC,
+		LEVEL_LOADING,
+		LEVEL_LOGO,
+		LEVEL_CREATECHARACTER,
+		LEVEL_TUTORIAL,
+		LEVEL_STAGE1,
+		LEVEL_STAGE2,
+		LEVEL_END
 	};
 
 	enum class CameraMode

@@ -14,3 +14,5 @@
 #include "HpBar_Player_Base.h"
 #include "SlotBase_Skill.h"
 #include "SlotBase_Tool.h"
+#include "BackGround_CreateCharacter.h"
+#include "Title_Custom.h"

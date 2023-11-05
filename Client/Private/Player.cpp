@@ -22,7 +22,7 @@ HRESULT CPlayer::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pModelCom->Set_Animation(0);
+	m_pModelCom->Set_Animation(PlayerAnim_Idle_Loop, true);
 
 	m_pTransformCom->Set_Speed(5.f);
 
@@ -31,7 +31,14 @@ HRESULT CPlayer::Init(void* pArg)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-	Move(fTimeDelta);
+	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CREATECHARACTER)
+	{
+		Move(fTimeDelta);
+	}
+	else
+	{
+		Customize(fTimeDelta);
+	}
 	m_pModelCom->Play_Animation(fTimeDelta);
 }
 
@@ -123,37 +130,112 @@ void CPlayer::Move(_float fTimeDelta)
 	if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 	{
 		m_pTransformCom->Set_Speed(15.f);
+		m_isRunning = true;
 	}
 	else
 	{
 		m_pTransformCom->Set_Speed(5.f);
+		m_isRunning = false;
 	}
 
 	if (hasMoved)
 	{
 		m_pTransformCom->Look_At_Dir(vDirection);
 		m_pTransformCom->Go_Straight(fTimeDelta);
-		m_pModelCom->Set_Animation(2);
+		if (m_isRunning)
+		{
+			m_pModelCom->Set_Animation(PlayerAnim_Run_Loop, true);
+			m_fSliding = 1.f;
+		}
+		else
+		{
+			m_pModelCom->Set_Animation(PlayerAnim_Walk_Loop, true);
+		}
 	}
 	else
 	{
-		m_pModelCom->Set_Animation(0);
+		_uint iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
+
+		if (iCurrentAnimIndex == PlayerAnim_Run_Loop || iCurrentAnimIndex == PlayerAnim_Run_End)
+		{
+			if (m_pModelCom->IsAnimationFinished(PlayerAnim_Run_End))
+			{
+				m_pModelCom->Set_Animation(PlayerAnim_Idle_Loop, true);
+			}
+			else
+			{
+				m_pModelCom->Set_Animation(PlayerAnim_Run_End);
+				if (m_fSliding > 0.f)
+				{
+					m_fSliding -= 0.02f;
+				}
+				m_pTransformCom->Go_Straight(fTimeDelta * m_fSliding);
+			}
+		}
+
+		if (iCurrentAnimIndex == PlayerAnim_Walk_Loop || iCurrentAnimIndex == PlayerAnim_Walk_End)
+		{
+			if (m_pModelCom->IsAnimationFinished(PlayerAnim_Walk_End))
+			{
+				m_pModelCom->Set_Animation(PlayerAnim_Idle_Loop, true);
+			}
+			else
+			{
+				m_pModelCom->Set_Animation(PlayerAnim_Walk_End);
+			}
+		}
+	}
+}
+
+void CPlayer::Customize(_float fTimeDelta)
+{
+	if (m_pGameInstance->Mouse_Pressing(DIM_LBUTTON))
+	{
+		_long dwMouseMove;
+
+		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
+		{
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -0.3f);
+		}
+	}
+
+	if (m_pGameInstance->Mouse_Pressing(DIM_MBUTTON))
+	{
+		_long dwMouseMove;
+
+		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
+		{
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * -0.3f);
+		}
+	}
+
+	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
+	{
+		_float3 fScale = m_pTransformCom->Get_Scale();
+		XMStoreFloat3(&fScale, XMLoadFloat3(&fScale) * 1.25f);
+		m_pTransformCom->Set_Scale(fScale);
+	}
+	else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
+	{
+		_float3 fScale = m_pTransformCom->Get_Scale();
+		XMStoreFloat3(&fScale, XMLoadFloat3(&fScale) * 0.8f);
+		m_pTransformCom->Set_Scale(fScale);
 	}
 }
 
 HRESULT CPlayer::Add_Components()
 {
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
-	{
-		return E_FAIL;
-	}
-	
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(ToIndex(Level_ID::Static), TEXT("Prototype_Model_Pain"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Pain"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}
@@ -183,7 +265,7 @@ HRESULT CPlayer::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(ToIndex(Level_ID::CreateCharacter), 0);
+	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_CREATECHARACTER, 0);
 	if (!pLightDesc)
 	{
 		return E_FAIL;

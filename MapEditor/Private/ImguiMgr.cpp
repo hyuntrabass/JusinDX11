@@ -332,17 +332,17 @@ HRESULT CImguiMgr::Ready_Layers(vector<string>* pPropCount)
 	CamDesc.fNear = 0.1f;
 	CamDesc.fFar = 70000.f;
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Camera"), TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Prototype_GameObject_Camera_Debug"), &CamDesc)))
 	{
 		return E_FAIL;
 	}
 
-	//if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &m_vPos)))
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Terrain"), TEXT("Prototype_GameObject_Terrain"), &m_vPos)))
 	//{
 	//	return E_FAIL;
 	//}
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Sky"), TEXT("Prototype_GameObject_Sky"))))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Sky"), TEXT("Prototype_GameObject_Sky"))))
 	{
 		return E_FAIL;
 	}
@@ -381,7 +381,7 @@ void CImguiMgr::Create_Dummy(const _int& iListIndex)
 	Info.iIndex = iListIndex;
 	Info.iStageIndex = m_Curr_Stage;
 
-	if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
 	{
 		MSG_BOX("Failed to Add Layer : Dummy");
 	}
@@ -404,7 +404,7 @@ HRESULT CImguiMgr::Load_Data()
 		Info.Prototype = L"Prototype_Model_";
 		Info.Prototype += strFileName;
 		Info.iIndex = i++;
-		if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
 		{
 			MSG_BOX("Failed to Add Layer : Dummy");
 		}
@@ -438,7 +438,7 @@ HRESULT CImguiMgr::Load_Data()
 			InFile.read(reinterpret_cast<_char*>(&Info.vLook), sizeof _float4);
 			Info.pImguiMgr = this;
 
-			if (FAILED(m_pGameInstance->Add_Layer(ToIndex(Level_ID::Static), TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
 			{
 				MSG_BOX("Failed to Add Layer : Dummy");
 			}
