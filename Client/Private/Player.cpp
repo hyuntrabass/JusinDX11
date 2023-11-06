@@ -22,7 +22,7 @@ HRESULT CPlayer::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pModelCom->Set_Animation(PlayerAnim_Idle_Loop, true);
+	m_pModelCom->Set_Animation(etc_Appearance);
 
 	m_pTransformCom->Set_Speed(5.f);
 
@@ -38,6 +38,10 @@ void CPlayer::Tick(_float fTimeDelta)
 	else
 	{
 		Customize(fTimeDelta);
+		if (m_pModelCom->IsAnimationFinished(etc_Appearance))
+		{
+			m_pModelCom->Set_Animation(Idle_Loop, true);
+		}
 	}
 	m_pModelCom->Play_Animation(fTimeDelta);
 }
@@ -97,7 +101,7 @@ HRESULT CPlayer::Render()
 
 void CPlayer::Move(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraModeIndex() == ToIndex(CameraMode::Debug))
+	if (m_pGameInstance->Get_CameraModeIndex() == CM_DEBUG)
 	{
 		return;
 	}
@@ -144,27 +148,28 @@ void CPlayer::Move(_float fTimeDelta)
 		m_pTransformCom->Go_Straight(fTimeDelta);
 		if (m_isRunning)
 		{
-			m_pModelCom->Set_Animation(PlayerAnim_Run_Loop, true);
+			m_pModelCom->Set_Animation(Run_Loop, true);
 			m_fSliding = 1.f;
 		}
 		else
 		{
-			m_pModelCom->Set_Animation(PlayerAnim_Walk_Loop, true);
+			m_pModelCom->Set_Animation(Walk_Loop, true);
 		}
 	}
 	else
 	{
 		_uint iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
 
-		if (iCurrentAnimIndex == PlayerAnim_Run_Loop || iCurrentAnimIndex == PlayerAnim_Run_End)
+		if (iCurrentAnimIndex == Run_Loop || iCurrentAnimIndex == Run_End)
 		{
-			if (m_pModelCom->IsAnimationFinished(PlayerAnim_Run_End))
+			if (m_pModelCom->IsAnimationFinished(Run_End))
 			{
-				m_pModelCom->Set_Animation(PlayerAnim_Idle_Loop, true);
+				m_pModelCom->Set_Animation(Idle_Loop, true);
 			}
 			else
 			{
-				m_pModelCom->Set_Animation(PlayerAnim_Run_End);
+				m_pModelCom->Set_Animation(Run_End);
+				m_pTransformCom->Set_Speed(15.f);
 				if (m_fSliding > 0.f)
 				{
 					m_fSliding -= 0.02f;
@@ -173,15 +178,15 @@ void CPlayer::Move(_float fTimeDelta)
 			}
 		}
 
-		if (iCurrentAnimIndex == PlayerAnim_Walk_Loop || iCurrentAnimIndex == PlayerAnim_Walk_End)
+		if (iCurrentAnimIndex == Walk_Loop || iCurrentAnimIndex == Walk_End)
 		{
-			if (m_pModelCom->IsAnimationFinished(PlayerAnim_Walk_End))
+			if (m_pModelCom->IsAnimationFinished(Walk_End))
 			{
-				m_pModelCom->Set_Animation(PlayerAnim_Idle_Loop, true);
+				m_pModelCom->Set_Animation(Idle_Loop, true);
 			}
 			else
 			{
-				m_pModelCom->Set_Animation(PlayerAnim_Walk_End);
+				m_pModelCom->Set_Animation(Walk_End);
 			}
 		}
 	}
@@ -220,6 +225,11 @@ void CPlayer::Customize(_float fTimeDelta)
 		_float3 fScale = m_pTransformCom->Get_Scale();
 		XMStoreFloat3(&fScale, XMLoadFloat3(&fScale) * 0.8f);
 		m_pTransformCom->Set_Scale(fScale);
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_RETURN))
+	{
+		m_pModelCom->Set_Animation(etc_Exit);
 	}
 }
 

@@ -28,7 +28,9 @@ HRESULT CLoading_Icon::Init(void* pArg)
 	m_fX = 1180;
 	m_fY = 650;
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 0.1f);
+	m_fDepth = 0.1f;
+
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	m_pTransformCom->Set_RotationPerSec(200.f);
 

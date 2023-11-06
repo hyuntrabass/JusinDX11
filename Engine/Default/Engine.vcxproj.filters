@@ -118,6 +118,9 @@
     <Filter Include="01.Utility\03.Components\Model\Animation\Channel">
       <UniqueIdentifier>{9ecb9a69-b883-452f-b41d-0c2d4691cc0a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\08.Button">
+      <UniqueIdentifier>{29769188-792b-4bb3-a5ac-e1fe318a5814}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -227,6 +230,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Channel.cpp">
       <Filter>01.Utility\03.Components\Model\Animation\Channel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Button_Manager.cpp">
+      <Filter>01.Utility\08.Button</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -349,6 +355,9 @@
     </ClInclude>
     <ClInclude Include="..\public\Channel.h">
       <Filter>01.Utility\03.Components\Model\Animation\Channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Button_Manager.h">
+      <Filter>01.Utility\08.Button</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

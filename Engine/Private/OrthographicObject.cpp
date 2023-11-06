@@ -38,11 +38,10 @@ HRESULT COrthographicObject::Render()
 	return S_OK;
 }
 
-void COrthographicObject::Apply_Orthographic(_uint iWinSizeX, _uint iWinSizeY, _float fDepth)
+void COrthographicObject::Apply_Orthographic(_uint iWinSizeX, _uint iWinSizeY)
 {
 	m_pTransformCom->Set_Scale(_float3(m_fSizeX, m_fSizeY, 1.f));
 	m_pTransformCom->Set_State(State::Pos, XMVectorSet(m_fX - iWinSizeX * 0.5f, -m_fY + iWinSizeY * 0.5f, 0.f, 1.f));
-	m_fDepth = fDepth;
 	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(static_cast<_float>(iWinSizeX), static_cast<_float>(iWinSizeY), 0.f, 1.1f));
 }

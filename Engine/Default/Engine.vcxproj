@@ -96,6 +96,7 @@
     <ClCompile Include="..\Private\Base.cpp" />
     <ClCompile Include="..\private\BlendObject.cpp" />
     <ClCompile Include="..\private\Bone.cpp" />
+    <ClCompile Include="..\Private\Button_Manager.cpp" />
     <ClCompile Include="..\private\Camera.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />
     <ClCompile Include="..\private\Component.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="..\Public\Base.h" />
     <ClInclude Include="..\public\BlendObject.h" />
     <ClInclude Include="..\public\Bone.h" />
+    <ClInclude Include="..\Public\Button_Manager.h" />
     <ClInclude Include="..\public\Camera.h" />
     <ClInclude Include="..\public\Channel.h" />
     <ClInclude Include="..\public\Component.h" />

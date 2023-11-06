@@ -33,9 +33,7 @@ HRESULT CCamera_Debug::Init(void* pArg)
 
 void CCamera_Debug::Tick(_float fTimeDelta)
 {
-	CameraMode CamMode = static_cast<CameraMode>(m_pGameInstance->Get_CameraModeIndex());
-
-	if (CamMode != CameraMode::Debug)
+	if (m_pGameInstance->Get_CameraModeIndex() != CM_DEBUG)
 	{
 		return;
 	}

@@ -30,7 +30,7 @@ HRESULT CLevel_Tutorial::Init()
 
 void CLevel_Tutorial::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_PRIOR))
+	if (m_pGameInstance->Key_Down(DIK_PRIOR) || m_pGameInstance->Key_Down(DIK_NUMPAD9))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_STAGE1))))
 		{
@@ -68,6 +68,19 @@ HRESULT CLevel_Tutorial::Ready_Map()
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Sky", L"Prototype_GameObject_Sky")))
 	{
 		return E_FAIL;
+	}
+
+	for (size_t i = 0; i < 10; i++)
+	{
+		_float4 vPos{};
+		vPos.x = 2.f * (rand() % 5);
+		vPos.y = 0.f;
+		vPos.z = 2.f * (rand() % 5);
+		vPos.w = 1.f;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Sandman", L"Prototype_GameObject_Sandman", &vPos)))
+		{
+			return E_FAIL;
+		}
 	}
 
 	return S_OK;

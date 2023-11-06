@@ -21,7 +21,7 @@ public:
 	virtual HRESULT Render() override;
 
 protected:
-	void Apply_Orthographic(_uint iWinSizeX, _uint iWinSizeY, _float fDepth = 0.f);
+	void Apply_Orthographic(_uint iWinSizeX, _uint iWinSizeY);
 
 protected:
 	_float m_fSizeX{}, m_fSizeY{};

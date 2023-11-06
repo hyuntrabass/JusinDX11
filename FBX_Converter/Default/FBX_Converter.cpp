@@ -362,7 +362,7 @@ int main()
 			#pragma region Animations
 				unsigned int iNumAnimations = pAIScene->mNumAnimations;
 				OutputFile.write(reinterpret_cast<const char*>(&iNumAnimations), sizeof(unsigned int));
-
+				std::cout << "Animation name list: " << std::endl;
 				for (size_t i = 0; i < iNumAnimations; i++)
 				{
 					aiAnimation* pAnimation = pAIScene->mAnimations[i];
@@ -370,6 +370,7 @@ int main()
 					unsigned int iNameSize = pAnimation->mName.length + 1;
 					OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
 					OutputFile.write(pAnimation->mName.C_Str(), iNameSize);
+					std::cout << pAnimation->mName.C_Str() << std::endl;
 
 					float fDuration{ static_cast<float>(pAnimation->mDuration) };
 					float fTickPerSec{ static_cast<float>(pAnimation->mTicksPerSecond) };

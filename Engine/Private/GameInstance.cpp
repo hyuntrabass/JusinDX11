@@ -6,6 +6,7 @@
 #include "Picking.h"
 #include "Light_Manager.h"
 #include "Font_Manager.h"
+#include "Button_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -59,6 +60,12 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 
 	m_pFont_Manager = CFont_Manager::Create(*ppDevice, *ppContext);
 	if (!m_pFont_Manager)
+	{
+		return E_FAIL;
+	}
+
+	m_pButton_Manager = CButton_Manager::Create(iNumLevels);
+	if (!m_pButton_Manager)
 	{
 		return E_FAIL;
 	}
@@ -406,6 +413,37 @@ const LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iLevelIndex, _uint iIndex) 
 	return m_pLight_Manager->Get_LightDesc(iLevelIndex, iIndex);
 }
 
+void CGameInstance::Register_Button(_uint iLevelIndex, const wstring& strButtonTag)
+{
+	if (!m_pButton_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pButton_Manager is NULL");
+	}
+
+	return m_pButton_Manager->Register_Button(iLevelIndex, strButtonTag);
+}
+
+void CGameInstance::Set_ButtonState(_uint iLevelIndex, const wstring& strButtonTag, const _bool& bState)
+{
+	if (!m_pButton_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pButton_Manager is NULL");
+	}
+
+	return m_pButton_Manager->Set_ButtonState(iLevelIndex, strButtonTag, bState);
+}
+
+const _bool CGameInstance::Get_ButtonState(_uint iLevelIndex, const wstring& strButtonTag) const
+{
+	if (!m_pButton_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pButton_Manager is NULL");
+	}
+
+	return m_pButton_Manager->Get_ButtonState(iLevelIndex, strButtonTag);
+
+}
+
 _float4 CGameInstance::Get_CameraPos() const
 {
 	if (!m_pPipeLine)
@@ -576,6 +614,7 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pFont_Manager);
+	Safe_Release(m_pButton_Manager);
 }
 
 void CGameInstance::Release_Engine()

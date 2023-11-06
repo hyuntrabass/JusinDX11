@@ -25,11 +25,11 @@ namespace Client
 		LEVEL_END
 	};
 
-	enum class CameraMode
+	enum CAMERA_MODE
 	{
-		Debug,
-		Main,
-		End
+		CM_DEBUG,
+		CM_MAIN,
+		CM_END
 	};
 
 	struct ObjectInfo
@@ -37,6 +37,12 @@ namespace Client
 		wstring strPrototypeTag{};
 		_float4 vPos{_float4(0.f, 0.f, 0.f, 1.f)};
 		_float4 vLook{_float4(0.f, 0.f, 1.f, 0.f)};
+	};
+
+	struct ButtonInfo
+	{
+		wstring strText{};
+		_float2 vPos{};
 	};
 }
 

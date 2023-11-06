@@ -185,6 +185,7 @@
     <ClInclude Include="..\public\MainApp.h" />
     <ClInclude Include="..\public\Parts_Window.h" />
     <ClInclude Include="..\public\Player.h" />
+    <ClInclude Include="..\public\Sandman.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\SlotBase_Skill.h" />
     <ClInclude Include="..\Public\SlotBase_Tool.h" />
@@ -217,6 +218,7 @@
     <ClCompile Include="..\private\MainApp.cpp" />
     <ClCompile Include="..\private\Parts_Window.cpp" />
     <ClCompile Include="..\private\Player.cpp" />
+    <ClCompile Include="..\private\Sandman.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\SlotBase_Skill.cpp" />
     <ClCompile Include="..\Private\SlotBase_Tool.cpp" />

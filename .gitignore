@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.fbx
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -362,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /FBX_Converter/Output/Static
 /FBX_Converter/StaticMesh/KNFRST
+/FBX_Converter/AnimMesh/Pain.fbx
+/FBX_Converter/AnimMesh/Kurama.fbx
+/FBX_Converter/AnimMesh/SandNinja.fbx

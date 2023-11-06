@@ -28,7 +28,9 @@ HRESULT CSlotBase_Tool::Init(void* pArg)
 	m_fX = 960.f;
 	m_fY = 640.f;
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 1.f);
+	m_fDepth = 1.f;
+
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	return S_OK;
 }

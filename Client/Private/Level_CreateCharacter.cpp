@@ -36,7 +36,7 @@ HRESULT CLevel_CreateCharacter::Init()
 
 void CLevel_CreateCharacter::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_PRIOR))
+	if (m_pGameInstance->Key_Down(DIK_PRIOR) || m_pGameInstance->Key_Down(DIK_NUMPAD9))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_TUTORIAL))))
 		{
@@ -79,7 +79,7 @@ HRESULT CLevel_CreateCharacter::Ready_Layer_Camera(const wstring& strLayerTag)
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Set_CameraModeIndex(ToIndex(CameraMode::Main));
+	m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
 
 	return S_OK;
 }

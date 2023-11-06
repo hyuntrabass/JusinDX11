@@ -28,7 +28,9 @@ HRESULT CSubTitle::Init(void* pArg)
 	m_fX = 350.f - 1000.f;
 	m_fY = 255.f;
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 1.f);
+	m_fDepth = 1.f;
+
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	return S_OK;
 }
@@ -43,7 +45,7 @@ void CSubTitle::Tick(_float fTimeDelta)
 	{
 		m_fX = 350.f;
 	}
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 1.f);
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
 void CSubTitle::Late_Tick(_float fTimeDelta)

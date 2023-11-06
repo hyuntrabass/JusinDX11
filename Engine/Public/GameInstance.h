@@ -65,6 +65,12 @@ public: // Light Manager
 	HRESULT Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc);
 	const LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, _uint iIndex) const;
 
+public: // Button Manager
+	void Register_Button(_uint iLevelIndex, const wstring& strButtonTag);
+
+	void Set_ButtonState(_uint iLevelIndex, const wstring& strButtonTag, const _bool& bState);
+	const _bool Get_ButtonState(_uint iLevelIndex, const wstring& strButtonTag) const;
+
 public: // PipeLine
 	_float4 Get_CameraPos() const;
 	_float4 Get_CameraLook() const;
@@ -87,7 +93,6 @@ public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);
 	HRESULT Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _fvector vColor = Colors::White, _float fRotation = 0.f);
 
-
 public: // Get_Set
 	const _uint& Get_CameraModeIndex() const;
 	const _uint& Get_CurrentLevelIndex() const;
@@ -106,6 +111,7 @@ private:
 	class CInput_Device* m_pInput_Manager{ nullptr };
 	class CLight_Manager* m_pLight_Manager{ nullptr };
 	class CFont_Manager* m_pFont_Manager{ nullptr };
+	class CButton_Manager* m_pButton_Manager{ nullptr };
 
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };

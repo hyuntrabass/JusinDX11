@@ -39,9 +39,7 @@ HRESULT CCamera_Main::Init(void* pArg)
 
 void CCamera_Main::Tick(_float fTimeDelta)
 {
-	CameraMode CamMode = static_cast<CameraMode>(m_pGameInstance->Get_CameraModeIndex());
-
-	if (CamMode != CameraMode::Main)
+	if (m_pGameInstance->Get_CameraModeIndex() != CM_MAIN)
 	{
 		return;
 	}

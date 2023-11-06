@@ -22,13 +22,23 @@ HRESULT CStart_Btn::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	ButtonInfo Info = *reinterpret_cast<ButtonInfo*>(pArg);
+
 	m_fSizeX = 740 * 0.75f;
 	m_fSizeY = 90 * 0.75f;
 
-	m_fX = g_iWinSizeX >> 1;
-	m_fY = g_iWinSizeY >> 1;
+	//m_fX = g_iWinSizeX >> 1;
+	//m_fY = g_iWinSizeY >> 1;
+	m_fX = Info.vPos.x;
+	m_fY = Info.vPos.y;
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 0.9f);
+	m_fDepth = 0.9f;
+
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	
+	m_strButtonTag = Info.strText;
+
+	m_pGameInstance->Register_Button(LEVEL_LOGO, m_strButtonTag);
 
 	return S_OK;
 }
@@ -36,11 +46,20 @@ HRESULT CStart_Btn::Init(void* pArg)
 void CStart_Btn::Tick(_float fTimeDelta)
 {
 	GET_CURSOR_POINT(pt);
-	RECT rc = { static_cast<_long>(m_fX - m_fSizeX * 0.5f), 317, static_cast<_long>(m_fX + m_fSizeX * 0.5f), static_cast<_long>(m_fY) };
+	RECT rc = { 
+		static_cast<_long>(m_fX - m_fSizeX * 0.5f), 
+		static_cast<_long>(m_fY - 43.f), 
+		static_cast<_long>(m_fX + m_fSizeX * 0.5f), 
+		static_cast<_long>(m_fY) };
+
 	if (PtInRect(&rc, pt))
 	{
 		m_iIndex = 1;
 		m_Color = Colors::Gold;
+		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
+		{
+			m_pGameInstance->Set_ButtonState(LEVEL_LOGO, m_strButtonTag, true);
+		}
 	}
 	else
 	{
@@ -70,7 +89,7 @@ HRESULT CStart_Btn::Render()
 	{
 		return E_FAIL;
 	}
-	m_pGameInstance->Render_Text(TEXT("Font_Malang"), TEXT("게임 시작"), _float2(m_fX, m_fY), 0.7f, m_Color);
+	m_pGameInstance->Render_Text(TEXT("Font_Malang"), m_strButtonTag, _float2(m_fX, m_fY), 0.7f, m_Color);
 	//if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", 1)))
 	//{
 	//	return E_FAIL;

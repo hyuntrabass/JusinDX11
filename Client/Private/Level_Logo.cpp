@@ -30,7 +30,7 @@ HRESULT CLevel_Logo::Init()
 
 void CLevel_Logo::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_PRIOR))
+	if (m_pGameInstance->Key_Down(DIK_PRIOR) || m_pGameInstance->Get_ButtonState(LEVEL_LOGO, TEXT("새 게임")))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_CREATECHARACTER))))
 		{
@@ -90,7 +90,36 @@ HRESULT CLevel_Logo::Ready_Layer_Buttons(const wstring& strLayerTag)
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_StartBtn"))))
+	ButtonInfo Info{};
+
+	Info.strText = TEXT("새 게임");
+	Info.vPos = _float2(g_iWinSizeX >> 1, g_iWinSizeY >> 1);
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_StartBtn"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strText = TEXT("불러오기");
+	Info.vPos = _float2(g_iWinSizeX >> 1, (g_iWinSizeY >> 1) + 100.f);
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_StartBtn"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strText = TEXT("설정");
+	Info.vPos = _float2(g_iWinSizeX >> 1, (g_iWinSizeY >> 1) + 200.f);
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_StartBtn"), &Info)))
+	{
+		return E_FAIL;
+	}
+
+	Info.strText = TEXT("게임 종료");
+	Info.vPos = _float2(g_iWinSizeX >> 1, (g_iWinSizeY >> 1) + 300.f);
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_StartBtn"), &Info)))
 	{
 		return E_FAIL;
 	}

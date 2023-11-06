@@ -103,6 +103,9 @@
     <Filter Include="02.GameObjects\00.GUI\01.CreateCharacter\02.Parts_Window">
       <UniqueIdentifier>{b7e614df-45f6-42d8-8533-013818827322}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Sandman">
+      <UniqueIdentifier>{c216a115-63c5-4700-af2d-e072b844cef2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -201,6 +204,9 @@
     <ClInclude Include="..\public\Title_Custom.h">
       <Filter>02.GameObjects\00.GUI\01.CreateCharacter\01.Title</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Sandman.h">
+      <Filter>02.GameObjects\04.Sandman</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -296,6 +302,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Title_Custom.cpp">
       <Filter>02.GameObjects\00.GUI\01.CreateCharacter\01.Title</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Sandman.cpp">
+      <Filter>02.GameObjects\04.Sandman</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

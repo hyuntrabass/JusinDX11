@@ -28,7 +28,9 @@ HRESULT CParts_Window::Init(void* pArg)
 	m_fX = 400.f;
 	m_fY = g_iWinSizeY * 0.5f;
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 1.f);
+	m_fDepth = 1.f;
+
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	return S_OK;
 }

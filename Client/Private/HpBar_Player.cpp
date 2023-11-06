@@ -28,7 +28,9 @@ HRESULT CHpBar_Player::Init(void* pArg)
 	m_fX = 305.f;
 	m_fY = 645.f;
 
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY, 0.8f);
+	m_fDepth = 0.8f;
+
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
 	return S_OK;
 }

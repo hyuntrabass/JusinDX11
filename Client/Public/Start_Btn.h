@@ -24,6 +24,7 @@ private:
 	CTexture* m_pTextureCom{ nullptr };
 
 private:
+	wstring m_strButtonTag{};
 	_uint m_iIndex{};
 	_vector m_Color{};
 

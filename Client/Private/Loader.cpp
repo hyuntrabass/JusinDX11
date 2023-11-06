@@ -320,6 +320,11 @@ HRESULT CLoader::Load_Tutorial()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sandman"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Sandman/Mesh/SandNinja.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Tutorial : Loading Shader";
@@ -354,6 +359,11 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_UI_HpBar_SlotBase_Tool"), CSlotBase_Tool::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Sandman"), CSandman::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
