@@ -27,7 +27,7 @@ protected:
 	_float m_fSizeX{}, m_fSizeY{};
 	_float m_fX{}, m_fY{};
 	_float m_fDepth{};
-	_float4x4 m_ViewMatrix{}, m_ProjMatrix{};
+	_float44 m_ViewMatrix{}, m_ProjMatrix{};
 
 public:
 	virtual CGameObject* Clone(void*) = 0;

@@ -7,6 +7,7 @@
 #include "Light_Manager.h"
 #include "Font_Manager.h"
 #include "Button_Manager.h"
+#include "PhysX.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -82,6 +83,12 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
+	m_pPhysX = CPhysX::Create();
+	if (!m_pPhysX)
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -102,6 +109,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	m_pObject_Manager->Tick(fTimeDelta);
 	m_pPipeLine->Tick();
 	m_pPicking->Tick();
+	m_pPhysX->Tick(fTimeDelta);
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
@@ -464,7 +472,7 @@ _float4 CGameInstance::Get_CameraLook() const
 	return m_pPipeLine->Get_CameraLook();
 }
 
-_float4x4 CGameInstance::Get_Transform_Float4x4(D3DTS eState) const
+_float44 CGameInstance::Get_Transform_Float4x4(D3DTS eState) const
 {
 	if (!m_pPipeLine)
 	{
@@ -474,7 +482,7 @@ _float4x4 CGameInstance::Get_Transform_Float4x4(D3DTS eState) const
 	return m_pPipeLine->Get_Transform_Float4x4(eState);
 }
 
-_float4x4 CGameInstance::Get_Transform_Inversed_Float4x4(D3DTS eState) const
+_float44 CGameInstance::Get_Transform_Inversed_Float4x4(D3DTS eState) const
 {
 	if (!m_pPipeLine)
 	{
@@ -504,7 +512,7 @@ _matrix CGameInstance::Get_Transform_Inversed(D3DTS eState) const
 	return m_pPipeLine->Get_Transform_Inversed(eState);
 }
 
-void CGameInstance::Set_Transform(D3DTS eState, const _float4x4& TransformMatrix)
+void CGameInstance::Set_Transform(D3DTS eState, const _float44& TransformMatrix)
 {
 	if (!m_pPipeLine)
 	{
@@ -584,6 +592,46 @@ HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& str
 	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation);
 }
 
+void CGameInstance::Init_Dynamic_PhysX(CTransform* pTransform)
+{
+	if (!m_pPhysX)
+	{
+		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
+	}
+
+	m_pPhysX->Init_Dynamic_PhysX(pTransform);
+}
+
+void CGameInstance::Init_Static_PhysX(CTransform* pTransform)
+{
+	if (!m_pPhysX)
+	{
+		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
+	}
+
+	m_pPhysX->Init_Static_PhysX(pTransform);
+}
+
+void CGameInstance::Fetch_PhysX(CTransform* pTransform)
+{
+	if (!m_pPhysX)
+	{
+		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
+	}
+
+	m_pPhysX->Fetch_PhysX(pTransform);
+}
+
+void CGameInstance::Update_PhysX(CTransform* pTransform)
+{
+	if (!m_pPhysX)
+	{
+		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
+	}
+
+	m_pPhysX->Update_PhysX(pTransform);
+}
+
 const _uint& CGameInstance::Get_CameraModeIndex() const
 {
 	return m_iCameraModeIndex;
@@ -626,6 +674,7 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
+	Safe_Release(m_pPhysX);
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pGraphic_Device);
 }

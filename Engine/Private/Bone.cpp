@@ -9,12 +9,12 @@ const _char* CBone::Get_BoneName() const
 	return m_szName;
 }
 
-const _float4x4* CBone::Get_CombinedMatrix() const
+const _float44* CBone::Get_CombinedMatrix() const
 {
 	return &m_CombindTransformationMatrix;
 }
 
-const _float4x4& CBone::Get_Transformation() const
+const _float44& CBone::Get_Transformation() const
 {
 	return m_TransformationMatrix;
 }
@@ -29,7 +29,7 @@ HRESULT CBone::Init(ifstream& ModelFile)
 	_uint iNameSize{};
 	ModelFile.read(reinterpret_cast<char*>(&iNameSize), sizeof _uint);
 	ModelFile.read(m_szName, iNameSize);
-	ModelFile.read(reinterpret_cast<char*>(&m_TransformationMatrix), sizeof _float4x4);
+	ModelFile.read(reinterpret_cast<char*>(&m_TransformationMatrix), sizeof _float44);
 	ModelFile.read(reinterpret_cast<char*>(&m_iParentIndex), sizeof _int);
 
 	return S_OK;

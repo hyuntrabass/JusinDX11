@@ -196,7 +196,7 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 	{
 		MSG_BOX("Too Many Bones!");
 	}
-	m_BoneMatrices = new _float4x4[m_iNumBones];
+	m_BoneMatrices = new _float44[m_iNumBones];
 
 	m_iVertexStride = sizeof VTXANIMMESH;
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
@@ -240,9 +240,9 @@ HRESULT CMesh::Ready_AnimMesh(ifstream& ModelFile)
 
 	for (size_t i = 0; i < m_iNumBones; i++)
 	{
-		_float4x4 OffsetMatrix{};
+		_float44 OffsetMatrix{};
 		_uint iBoneIndex{};
-		ModelFile.read(reinterpret_cast<_char*>(&OffsetMatrix), sizeof _float4x4);
+		ModelFile.read(reinterpret_cast<_char*>(&OffsetMatrix), sizeof _float44);
 		ModelFile.read(reinterpret_cast<_char*>(&iBoneIndex), sizeof _uint);
 
 		m_OffsetMatrices.push_back(OffsetMatrix);

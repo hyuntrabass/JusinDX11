@@ -33,7 +33,7 @@ namespace Engine
 	using _fvector = FXMVECTOR;
 	using _gvector = GXMVECTOR;
 
-	using _float4x4 = XMFLOAT4X4;
+	using _float44 = XMFLOAT4X4;
 	using _matrix = XMMATRIX;
 	using _fmatrix = FXMMATRIX;
 	using _cmatrix = CXMMATRIX;

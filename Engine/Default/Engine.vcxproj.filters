@@ -121,6 +121,9 @@
     <Filter Include="01.Utility\08.Button">
       <UniqueIdentifier>{29769188-792b-4bb3-a5ac-e1fe318a5814}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\PhysX">
+      <UniqueIdentifier>{5494524b-a225-41eb-992f-3eadd560bc05}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -233,6 +236,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Button_Manager.cpp">
       <Filter>01.Utility\08.Button</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\PhysX.cpp">
+      <Filter>01.Utility\03.Components\PhysX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -358,6 +364,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Button_Manager.h">
       <Filter>01.Utility\08.Button</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\PhysX.h">
+      <Filter>01.Utility\03.Components\PhysX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

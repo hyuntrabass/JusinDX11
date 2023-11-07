@@ -74,12 +74,12 @@ public: // Button Manager
 public: // PipeLine
 	_float4 Get_CameraPos() const;
 	_float4 Get_CameraLook() const;
-	_float4x4 Get_Transform_Float4x4(D3DTS eState) const;
-	_float4x4 Get_Transform_Inversed_Float4x4(D3DTS eState) const;
+	_float44 Get_Transform_Float4x4(D3DTS eState) const;
+	_float44 Get_Transform_Inversed_Float4x4(D3DTS eState) const;
 	_matrix Get_Transform(D3DTS eState) const;
 	_matrix Get_Transform_Inversed(D3DTS eState) const;
 
-	void Set_Transform(D3DTS eState, const _float4x4& TransformMatrix);
+	void Set_Transform(D3DTS eState, const _float44& TransformMatrix);
 	void Set_Transform(D3DTS eState, _fmatrix TransformMatrix);
 
 public: // Picking
@@ -92,6 +92,13 @@ public: // Picking
 public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);
 	HRESULT Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _fvector vColor = Colors::White, _float fRotation = 0.f);
+
+public: // PhysX
+	void Init_Dynamic_PhysX(class CTransform* pTransform);
+	void Init_Static_PhysX(class CTransform* pTransform);
+	void Fetch_PhysX(class CTransform* pTransform);
+	void Update_PhysX(class CTransform* pTransform);
+
 
 public: // Get_Set
 	const _uint& Get_CameraModeIndex() const;
@@ -115,6 +122,7 @@ private:
 
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };
+	class CPhysX* m_pPhysX{ nullptr };
 
 private:
 	_uint m_iCameraModeIndex{};

@@ -20,7 +20,7 @@ private:
 	_uint m_iCurrentKeyFrame{};
 	vector<KEYFRAME> m_KeyFrames{};
 	_uint m_iBoneIndex{};
-	_float4x4 m_PrevTransformation{};
+	_float44 m_PrevTransformation{};
 
 public:
 	static CChannel* Create(ifstream& ModelFile);

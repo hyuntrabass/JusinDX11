@@ -31,9 +31,9 @@ private:
 	_uint m_iMatIndex{};
 	_uint m_iNumBones{};
 	vector<_uint> m_BoneIndices{};
-	vector<_float4x4> m_OffsetMatrices{};
+	vector<_float44> m_OffsetMatrices{};
 
-	_float4x4* m_BoneMatrices{};
+	_float44* m_BoneMatrices{};
 
 private:
 	HRESULT Ready_StaticMesh(ifstream& ModelFile, _fmatrix OffsetMatrix);

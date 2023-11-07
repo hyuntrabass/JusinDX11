@@ -28,8 +28,8 @@ private:
 
 public:
 	_matrix Get_World_Matrix() const;
-	const _float4x4& Get_World_float4x4() const;
-	_float4x4 Get_World_Inverse_float4x4() const;
+	const _float44& Get_World_float4x4() const;
+	_float44 Get_World_Inverse_float4x4() const;
 	_vector Get_State(State eState) const;
 	_float3 Get_Scale() const;
 
@@ -54,12 +54,13 @@ public:
 	void Move_to(_fvector vTargetPos, _float fTimeDelta, _float fMargin = 0.1f);
 	void Turn(_fvector vAxis, _float fTimeDelta);
 	void Rotation(_fvector vAxis, _float fAngle);
+	void Set_Rotation(_vector vQuaternion);
 
 public:
 	HRESULT Bind_WorldMatrix(class CShader* pShader, const _char* pVariableName);
 
 private:
-	_float4x4 m_WorldMatrix{};
+	_float44 m_WorldMatrix{};
 
 	_float m_fSpeedPerSec{10.f};
 	_float m_fRotationPerSec{XMConvertToRadians(90.f)};

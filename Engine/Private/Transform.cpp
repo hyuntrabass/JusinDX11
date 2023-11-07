@@ -29,14 +29,14 @@ _matrix CTransform::Get_World_Matrix() const
 	return XMLoadFloat4x4(&m_WorldMatrix);
 }
 
-const _float4x4& CTransform::Get_World_float4x4() const
+const _float44& CTransform::Get_World_float4x4() const
 {
 	return m_WorldMatrix;
 }
 
-_float4x4 CTransform::Get_World_Inverse_float4x4() const
+_float44 CTransform::Get_World_Inverse_float4x4() const
 {
-	_float4x4 WorldInversed{};
+	_float44 WorldInversed{};
 	XMStoreFloat4x4(&WorldInversed, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_WorldMatrix)));
 	return WorldInversed;
 }
@@ -208,6 +208,25 @@ void CTransform::Rotation(_fvector vAxis, _float fAngle)
 	_vector vLook = XMVectorSet(0.f, 0.f, 1.f, 0.f) * vScale.z;
 
 	_matrix Rotation = XMMatrixRotationAxis(vAxis, XMConvertToRadians(fAngle));
+
+	vRight = XMVector3TransformNormal(vRight, Rotation);
+	vUp = XMVector3TransformNormal(vUp, Rotation);
+	vLook = XMVector3TransformNormal(vLook, Rotation);
+
+	Set_State(State::Right, vRight);
+	Set_State(State::Up, vUp);
+	Set_State(State::Look, vLook);
+}
+
+void CTransform::Set_Rotation(_vector vQuaternion)
+{
+	_float3 vScale = Get_Scale();
+
+	_vector vRight = XMVectorSet(1.f, 0.f, 0.f, 0.f) * vScale.x;
+	_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f) * vScale.y;
+	_vector vLook = XMVectorSet(0.f, 0.f, 1.f, 0.f) * vScale.z;
+
+	_matrix Rotation = XMMatrixRotationQuaternion(vQuaternion);
 
 	vRight = XMVector3TransformNormal(vRight, Rotation);
 	vUp = XMVector3TransformNormal(vUp, Rotation);

@@ -26,14 +26,21 @@ HRESULT CPlayer::Init(void* pArg)
 
 	m_pTransformCom->Set_Speed(5.f);
 
+	m_pGameInstance->Init_Dynamic_PhysX(m_pTransformCom);
+
 	return S_OK;
 }
 
 void CPlayer::Tick(_float fTimeDelta)
 {
+
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CREATECHARACTER)
 	{
+		m_pGameInstance->Fetch_PhysX(m_pTransformCom);
+
 		Move(fTimeDelta);
+		
+		m_pGameInstance->Update_PhysX(m_pTransformCom);
 	}
 	else
 	{
@@ -43,7 +50,9 @@ void CPlayer::Tick(_float fTimeDelta)
 			m_pModelCom->Set_Animation(Idle_Loop, true);
 		}
 	}
+
 	m_pModelCom->Play_Animation(fTimeDelta);
+
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)

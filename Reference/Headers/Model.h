@@ -49,7 +49,7 @@ private:
 	_uint m_iNumAnimations{};
 	vector<class CAnimation*> m_Animations{};
 
-	_float4x4 m_PivotMatrix{};
+	_float44 m_PivotMatrix{};
 
 	_uint m_iCurrentAnimIndex{};
 	_uint m_iPrevAnimIndex{};

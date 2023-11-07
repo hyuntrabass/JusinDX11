@@ -14,12 +14,12 @@ _float4 CPipeLine::Get_CameraLook() const
 	return m_vCameraLook;
 }
 
-_float4x4 CPipeLine::Get_Transform_Float4x4(D3DTS eState) const
+_float44 CPipeLine::Get_Transform_Float4x4(D3DTS eState) const
 {
 	return m_TransformMatrix[ToIndex(eState)];
 }
 
-_float4x4 CPipeLine::Get_Transform_Inversed_Float4x4(D3DTS eState) const
+_float44 CPipeLine::Get_Transform_Inversed_Float4x4(D3DTS eState) const
 {
 	return m_TransformMatrix_Inversed[ToIndex(eState)];
 }
@@ -34,7 +34,7 @@ _matrix CPipeLine::Get_Transform_Inversed(D3DTS eState) const
 	return XMLoadFloat4x4(&m_TransformMatrix_Inversed[ToIndex(eState)]);
 }
 
-void CPipeLine::Set_Transform(D3DTS eState, const _float4x4& TransformMatrix)
+void CPipeLine::Set_Transform(D3DTS eState, const _float44& TransformMatrix)
 {
 	m_TransformMatrix[ToIndex(eState)] = TransformMatrix;
 }
