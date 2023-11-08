@@ -81,6 +81,11 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix Off
 	Safe_Delete_Array(pIndices);
 #pragma endregion
 
+	if (eType == ModelType::Static)
+	{
+		m_pGameInstance->Cook_StaticMesh(m_iNumVertices, m_pVerticesPos, m_iNumIndices, m_pIndices);
+	}
+
 	return S_OK;
 }
 

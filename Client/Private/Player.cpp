@@ -36,7 +36,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CREATECHARACTER)
 	{
-		m_pGameInstance->Fetch_PhysX(m_pTransformCom);
+		m_pGameInstance->Apply_PhysX(m_pTransformCom);
 
 		Move(fTimeDelta);
 		

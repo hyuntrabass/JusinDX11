@@ -96,9 +96,12 @@ public: // Font
 public: // PhysX
 	void Init_Dynamic_PhysX(class CTransform* pTransform);
 	void Init_Static_PhysX(class CTransform* pTransform);
-	void Fetch_PhysX(class CTransform* pTransform);
+	void Apply_PhysX(class CTransform* pTransform);
 	void Update_PhysX(class CTransform* pTransform);
-
+	void Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
+#ifdef _DEBUG
+	HRESULT Render_PhysX();
+#endif // _DEBUG
 
 public: // Get_Set
 	const _uint& Get_CameraModeIndex() const;

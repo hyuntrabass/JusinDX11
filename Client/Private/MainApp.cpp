@@ -93,6 +93,8 @@ HRESULT CMainApp::Render()
 
 	m_pRenderer->Draw_RenderGroup();
 
+	m_pGameInstance->Render_PhysX();
+	
 	m_pGameInstance->Present();
 
 	return S_OK;

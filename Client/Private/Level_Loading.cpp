@@ -14,6 +14,8 @@ CLevel_Loading::CLevel_Loading(_dev pDevice, _context pContext)
 
 HRESULT CLevel_Loading::Init(LEVEL_ID eNextLevel)
 {
+	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_LOADING);
+
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround_Loading"))))
 	{
 		return E_FAIL;
@@ -72,7 +74,7 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 			return;
 		}
 
-		if (FAILED(m_pGameInstance->Open_Level(ToIndex(m_eNextLevel), pLevel)))
+		if (FAILED(m_pGameInstance->Open_Level(m_eNextLevel, pLevel)))
 		{
 			MSG_BOX("Failed to Open Level");
 		}

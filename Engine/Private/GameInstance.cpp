@@ -83,7 +83,7 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
-	m_pPhysX = CPhysX::Create();
+	m_pPhysX = CPhysX::Create(*ppDevice, *ppContext, this);
 	if (!m_pPhysX)
 	{
 		return E_FAIL;
@@ -109,7 +109,10 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	m_pObject_Manager->Tick(fTimeDelta);
 	m_pPipeLine->Tick();
 	m_pPicking->Tick();
-	m_pPhysX->Tick(fTimeDelta);
+	if (m_iLevelIndex != 1)
+	{
+		m_pPhysX->Tick(fTimeDelta);
+	}
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
@@ -217,7 +220,7 @@ HRESULT CGameInstance::Add_Layer(_uint iLevelIndex, const wstring strLayerTag, c
 	{
 		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
 	}
-	
+
 	return m_pObject_Manager->Add_Layer(iLevelIndex, strLayerTag, strPrototypeTag, pArg);
 }
 
@@ -237,7 +240,7 @@ HRESULT CGameInstance::Add_Prototype_Component(_uint iLevelIndex, const wstring&
 	{
 		MSG_BOX("FATAL ERROR : m_pComponent_Manager is NULL");
 	}
-	
+
 	return m_pComponent_Manager->Add_Prototype(iLevelIndex, strPrototype, pPrototype);
 }
 
@@ -612,14 +615,14 @@ void CGameInstance::Init_Static_PhysX(CTransform* pTransform)
 	m_pPhysX->Init_Static_PhysX(pTransform);
 }
 
-void CGameInstance::Fetch_PhysX(CTransform* pTransform)
+void CGameInstance::Apply_PhysX(CTransform* pTransform)
 {
 	if (!m_pPhysX)
 	{
 		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
 	}
 
-	m_pPhysX->Fetch_PhysX(pTransform);
+	m_pPhysX->Apply_PhysX(pTransform);
 }
 
 void CGameInstance::Update_PhysX(CTransform* pTransform)
@@ -631,6 +634,29 @@ void CGameInstance::Update_PhysX(CTransform* pTransform)
 
 	m_pPhysX->Update_PhysX(pTransform);
 }
+
+void CGameInstance::Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices)
+{
+	if (!m_pPhysX)
+	{
+		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
+	}
+
+	m_pPhysX->Cook_StaticMesh(iNumVertices, pVertices, iNumIndices, pIndices);
+}
+
+#ifdef _DEBUG
+HRESULT CGameInstance::Render_PhysX()
+{
+	if (FAILED(m_pPhysX->Render()))
+	{
+		MSG_BOX("Failed to Render PhysX");
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+#endif // _DEBUG
 
 const _uint& CGameInstance::Get_CameraModeIndex() const
 {
@@ -663,6 +689,7 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pButton_Manager);
+	Safe_Release(m_pPhysX);
 }
 
 void CGameInstance::Release_Engine()
@@ -674,7 +701,6 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
-	Safe_Release(m_pPhysX);
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pGraphic_Device);
 }

@@ -20,7 +20,7 @@ using namespace DirectX;
 
 #include <Xinput.h>
 
-#include <PhysX/PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 using namespace physx;
 
 // 외부 라이브러리 lib
