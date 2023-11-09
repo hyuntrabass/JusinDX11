@@ -175,6 +175,7 @@ private:
 		WallJump_Loop,
 		WallStop,
 		WireJump_Ready,
+		End
 	};
 
 private:

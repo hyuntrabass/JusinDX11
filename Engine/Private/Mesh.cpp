@@ -15,6 +15,7 @@ CMesh::CMesh(const CMesh& rhs)
 
 HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix OffsetMatrix)
 {
+	m_eType = eType;
 	ModelFile.read(reinterpret_cast<_char*>(&m_iMatIndex), sizeof _uint);
 
 	_uint iNameSize{};
@@ -36,7 +37,7 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix Off
 	m_ePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 #pragma region Vertex
-	switch (eType)
+	switch (m_eType)
 	{
 	case Engine::ModelType::Static:
 		Ready_StaticMesh(ModelFile, OffsetMatrix);
@@ -81,9 +82,9 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix Off
 	Safe_Delete_Array(pIndices);
 #pragma endregion
 
-	if (eType == ModelType::Static)
+	if (m_eType == ModelType::Static)
 	{
-		m_pGameInstance->Cook_StaticMesh(m_iNumVertices, m_pVerticesPos, m_iNumIndices, m_pIndices);
+		m_pActor = m_pGameInstance->Cook_StaticMesh(m_iNumVertices, m_pVerticesPos, m_iNumIndices, m_pIndices);
 	}
 
 	return S_OK;
@@ -287,6 +288,10 @@ void CMesh::Free()
 {
 	__super::Free();
 
+	if (m_eType == ModelType::Static)
+	{
+		m_pActor->release();
+	}
 	Safe_Delete_Array(m_BoneMatrices);
 	Safe_Delete_Array(m_pVerticesPos);
 	Safe_Delete_Array(m_pVerticesNor);

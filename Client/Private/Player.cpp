@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "PhysX_Manager.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -26,7 +27,8 @@ HRESULT CPlayer::Init(void* pArg)
 
 	m_pTransformCom->Set_Speed(5.f);
 
-	m_pGameInstance->Init_Dynamic_PhysX(m_pTransformCom);
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
+	//m_pGameInstance->Init_PhysX_MoveableObject(m_pTransformCom);
 
 	return S_OK;
 }
@@ -36,11 +38,11 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CREATECHARACTER)
 	{
-		m_pGameInstance->Apply_PhysX(m_pTransformCom);
+		//m_pGameInstance->Apply_PhysX(m_pTransformCom);
 
 		Move(fTimeDelta);
-		
-		m_pGameInstance->Update_PhysX(m_pTransformCom);
+
+		//m_pGameInstance->Update_PhysX(m_pTransformCom);
 	}
 	else
 	{
@@ -62,6 +64,19 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 HRESULT CPlayer::Render()
 {
+#ifdef _DEBUG
+	GET_CURSOR_POINT(pt);
+	_vector Pos = m_pTransformCom->Get_State(State::Pos);
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD());
+	cout << "Cursor X : " << pt.x << endl;
+	cout << "Cursor Y : " << pt.y << endl;
+	cout << endl;
+	cout << "PlayerPos X :" << Pos.m128_f32[0] << endl;
+	cout << "PlayerPos Y :" << Pos.m128_f32[1] << endl;
+	cout << "PlayerPos Z :" << Pos.m128_f32[2] << endl;
+	cout << endl;
+#endif // _DEBUG
+
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
@@ -116,6 +131,7 @@ void CPlayer::Move(_float fTimeDelta)
 	}
 	_bool hasMoved{};
 	_vector vCamLook = XMLoadFloat4(&m_pGameInstance->Get_CameraLook());
+	vCamLook.m128_f32[1] = 0.f;
 	_vector vCamRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vCamLook);
 	_vector vDirection{};
 
@@ -151,23 +167,48 @@ void CPlayer::Move(_float fTimeDelta)
 		m_isRunning = false;
 	}
 
-	if (hasMoved)
+	if (m_pGameInstance->Key_Down(DIK_SPACE))
 	{
-		m_pTransformCom->Look_At_Dir(vDirection);
-		m_pTransformCom->Go_Straight(fTimeDelta);
-		if (m_isRunning)
+		m_pTransformCom->Jump(10.f);
+		if (hasMoved)
 		{
-			m_pModelCom->Set_Animation(Run_Loop, true);
-			m_fSliding = 1.f;
+			m_pModelCom->Set_Animation(Jump_Front);
 		}
 		else
 		{
-			m_pModelCom->Set_Animation(Walk_Loop, true);
+			m_pModelCom->Set_Animation(Jump_Vertical);
 		}
 	}
-	else
+
+	_uint iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
+
+	if (hasMoved /*&& iCurrentAnimIndex != Land*/)
 	{
-		_uint iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
+		m_pTransformCom->Look_At_Dir(vDirection);
+		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		if (!m_pTransformCom->Is_Jumping())
+		{
+			if (iCurrentAnimIndex != Jump_Front &&
+				iCurrentAnimIndex != Jump_Vertical &&
+				iCurrentAnimIndex != Fall_Vertical_Loop &&
+				iCurrentAnimIndex != Fall_Front_Loop)
+			{
+				if (m_isRunning)
+				{
+					m_pModelCom->Set_Animation(Run_Loop, true);
+					m_fSliding = 1.f;
+				}
+				else
+				{
+					m_pModelCom->Set_Animation(Walk_Loop, true);
+				}
+			}
+		}
+	}
+	else if (!m_pTransformCom->Is_Jumping())
+	{
+		iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
 
 		if (iCurrentAnimIndex == Run_Loop || iCurrentAnimIndex == Run_End)
 		{
@@ -199,6 +240,45 @@ void CPlayer::Move(_float fTimeDelta)
 			}
 		}
 	}
+
+	iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
+
+	if (iCurrentAnimIndex == Jump_Vertical || iCurrentAnimIndex == Fall_Vertical_Loop)
+	{
+		if (m_pModelCom->IsAnimationFinished(Jump_Vertical))
+		{
+			m_pModelCom->Set_Animation(Fall_Vertical_Loop, true);
+		}
+		if (!m_pTransformCom->Is_Jumping())
+		{
+			m_pModelCom->Set_Animation(Land);
+		}
+	}
+	else if (iCurrentAnimIndex == Jump_Front || iCurrentAnimIndex == Fall_Front_Loop)
+	{
+		if (m_pModelCom->IsAnimationFinished(Jump_Front))
+		{
+			m_pModelCom->Set_Animation(Fall_Front_Loop, true);
+		}
+		if (!m_pTransformCom->Is_Jumping())
+		{
+			m_pModelCom->Set_Animation(Land);
+		}
+	}
+	else if (iCurrentAnimIndex == Land)
+	{
+		if (m_pModelCom->IsAnimationFinished(Land))
+		{
+			m_pModelCom->Set_Animation(Idle_Loop, true);
+		}
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
+	{
+		m_pModelCom->Set_Animation(Attack_BodyBlow);
+	}
+
+	m_pTransformCom->Gravity(fTimeDelta);
 }
 
 void CPlayer::Customize(_float fTimeDelta)

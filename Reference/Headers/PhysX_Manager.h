@@ -1,14 +1,28 @@
 #pragma once
 #include "Base.h"
-#include <cooking/PxCooking.h>
 
 BEGIN(Engine)
 
-class CPhysX final : public CBase
+enum CollisionGroup
+{
+	COLGROUP_NON_COLLIdable = 0,
+	COLGROUP_PLAYER =  1 << 0,
+	COLGROUP_MONSTER = 1 << 1,
+	COLGROUP_TERRAIN = 1 << 2,
+};
+
+enum CollisionMask
+{
+	MASK_PLAYER = COLGROUP_MONSTER | COLGROUP_TERRAIN,
+	MASK_MONSTER = COLGROUP_PLAYER | COLGROUP_TERRAIN,
+	MASK_TERRAIN = COLGROUP_PLAYER | COLGROUP_MONSTER | COLGROUP_TERRAIN,
+};
+
+class CPhysX_Manager final : public CBase
 {
 private:
-	CPhysX(_dev pDevice, _context pContext);
-	virtual ~CPhysX() = default;
+	CPhysX_Manager(_dev pDevice, _context pContext);
+	virtual ~CPhysX_Manager() = default;
 
 public:
 	HRESULT Init(class CGameInstance* pGameInstance);
@@ -19,13 +33,11 @@ public:
 
 
 public:
-	void Init_PhysX_Character(class CTransform* pTransform);
+	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup);
 	void Init_PhysX_MoveableObject(class CTransform* pTransform);
 	void Apply_PhysX(class CTransform* pTransform);
 	void Update_PhysX(class CTransform* pTransform);
-	void Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
-	void Move(class CTransform* pTransform, _float fTimeDelta);
-
+	PxRigidStatic* Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
 private:
 	_dev m_pDevice{ nullptr };
 	_context m_pContext{ nullptr };
@@ -33,10 +45,10 @@ private:
 	class CGameInstance* m_pGameInstance{ nullptr };
 
 	PxFoundation* m_pFoundation{ nullptr };
-	//PxPvd* m_pPvd{ nullptr };
 	PxPhysics* m_pPhysics{ nullptr };
 
 	PxScene* m_pScene{ nullptr };
+	PxControllerManager* m_pControllerManager{ nullptr };
 	PxDefaultCpuDispatcher* m_pDispatcher{ nullptr };
 	PxMaterial* m_pMaterial{ nullptr };
 
@@ -49,12 +61,8 @@ private:
 	class CShader* m_pDebugShader{ nullptr };
 #endif // _DEBUG
 
-private:
-	const PxVec3 VectorToPxVec3(_fvector vVector);
-	const _vector PxExVec3ToVector(PxExtendedVec3 Src, _float w);
-
 public:
-	static CPhysX* Create(_dev pDevice, _context pContext, class CGameInstance* pGameInstance);
+	static CPhysX_Manager* Create(_dev pDevice, _context pContext, class CGameInstance* pGameInstance);
 	virtual void Free() override;
 };
 

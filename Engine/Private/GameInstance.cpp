@@ -7,7 +7,6 @@
 #include "Light_Manager.h"
 #include "Font_Manager.h"
 #include "Button_Manager.h"
-#include "PhysX.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -83,7 +82,7 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
-	m_pPhysX = CPhysX::Create(*ppDevice, *ppContext, this);
+	m_pPhysX = CPhysX_Manager::Create(*ppDevice, *ppContext, this);
 	if (!m_pPhysX)
 	{
 		return E_FAIL;
@@ -595,24 +594,24 @@ HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& str
 	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation);
 }
 
-void CGameInstance::Init_Dynamic_PhysX(CTransform* pTransform)
+void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup)
 {
 	if (!m_pPhysX)
 	{
 		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
 	}
 
-	m_pPhysX->Init_Dynamic_PhysX(pTransform);
+	m_pPhysX->Init_PhysX_Character(pTransform, eGroup);
 }
 
-void CGameInstance::Init_Static_PhysX(CTransform* pTransform)
+void CGameInstance::Init_PhysX_MoveableObject(CTransform* pTransform)
 {
 	if (!m_pPhysX)
 	{
 		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
 	}
 
-	m_pPhysX->Init_Static_PhysX(pTransform);
+	m_pPhysX->Init_PhysX_MoveableObject(pTransform);
 }
 
 void CGameInstance::Apply_PhysX(CTransform* pTransform)
@@ -635,14 +634,14 @@ void CGameInstance::Update_PhysX(CTransform* pTransform)
 	m_pPhysX->Update_PhysX(pTransform);
 }
 
-void CGameInstance::Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices)
+PxRigidStatic* CGameInstance::Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices)
 {
 	if (!m_pPhysX)
 	{
 		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
 	}
 
-	m_pPhysX->Cook_StaticMesh(iNumVertices, pVertices, iNumIndices, pIndices);
+	return m_pPhysX->Cook_StaticMesh(iNumVertices, pVertices, iNumIndices, pIndices);
 }
 
 #ifdef _DEBUG

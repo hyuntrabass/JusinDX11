@@ -10,6 +10,10 @@ HRESULT CLevel_Tutorial::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_TUTORIAL);
 
+	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+
+	pPlayerTransform->Set_Position(_float3(40.f, 32.f, 126.f));
+
 	if (FAILED(Ready_Map()))
 	{
 		MSG_BOX("Failed to Ready Map");
@@ -73,9 +77,9 @@ HRESULT CLevel_Tutorial::Ready_Map()
 	for (size_t i = 0; i < 10; i++)
 	{
 		_float4 vPos{};
-		vPos.x = 2.f * (rand() % 5);
-		vPos.y = 0.f;
-		vPos.z = 2.f * (rand() % 5);
+		vPos.x = -11 + (2.f * (rand() % 7));
+		vPos.y = 50.f;
+		vPos.z = 85.f + (2.f * (rand() % 10));
 		vPos.w = 1.f;
 		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Sandman", L"Prototype_GameObject_Sandman", &vPos)))
 		{

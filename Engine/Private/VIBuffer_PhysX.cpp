@@ -79,7 +79,7 @@ HRESULT CVIBuffer_PhysX::Init_Prototype(const PxRenderBuffer& Buffer)
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
 	_ushort* pIndices = new _ushort[m_iNumIndices]{};
 
-	for (size_t i = 0; i < m_iNumIndices; i++)
+	for (_ushort i = 0; i < m_iNumIndices; i++)
 	{
 		pIndices[i] = i;
 	}
@@ -145,13 +145,13 @@ HRESULT CVIBuffer_PhysX::Update_Buffer(const PxRenderBuffer& Buffer)
 
 	_ushort* pIndices = new _ushort[m_iNumIndices]{};
 
-	for (size_t i = 0; i < m_iNumIndices; i++)
+	for (_ushort i = 0; i < m_iNumIndices; i++)
 	{
 		pIndices[i] = i;
 	}
 
 	_uint* pIndexBuffer = reinterpret_cast<_uint*>(MappedResource.pData);
-	memcpy(pIndexBuffer, pIndices, sizeof(_uint) * m_iNumIndices);
+	memcpy(pIndexBuffer, pIndices, sizeof(_ushort) * m_iNumIndices);
 
 	m_pContext->Unmap(m_pIB, 0);
 

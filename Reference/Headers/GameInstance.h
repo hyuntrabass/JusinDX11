@@ -3,6 +3,7 @@
 #include "Component_Manager.h"
 #include "PipeLine.h"
 #include "Input_Device.h"
+#include "PhysX_Manager.h"
 
 BEGIN(Engine)
 
@@ -94,11 +95,11 @@ public: // Font
 	HRESULT Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _fvector vColor = Colors::White, _float fRotation = 0.f);
 
 public: // PhysX
-	void Init_Dynamic_PhysX(class CTransform* pTransform);
-	void Init_Static_PhysX(class CTransform* pTransform);
+	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup);
+	void Init_PhysX_MoveableObject(class CTransform* pTransform);
 	void Apply_PhysX(class CTransform* pTransform);
 	void Update_PhysX(class CTransform* pTransform);
-	void Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
+	PxRigidStatic* Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
 #ifdef _DEBUG
 	HRESULT Render_PhysX();
 #endif // _DEBUG
@@ -125,7 +126,7 @@ private:
 
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };
-	class CPhysX* m_pPhysX{ nullptr };
+	class CPhysX_Manager* m_pPhysX{ nullptr };
 
 private:
 	_uint m_iCameraModeIndex{};

@@ -35,6 +35,9 @@ private:
 
 	_float44* m_BoneMatrices{};
 
+	PxRigidStatic* m_pActor{ nullptr };
+	ModelType m_eType{};
+
 private:
 	HRESULT Ready_StaticMesh(ifstream& ModelFile, _fmatrix OffsetMatrix);
 	HRESULT Ready_AnimMesh(ifstream& ModelFile);

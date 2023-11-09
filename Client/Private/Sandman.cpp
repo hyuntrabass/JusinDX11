@@ -38,6 +38,8 @@ HRESULT CSandman::Init(void* pArg)
 		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&vPos));
 	}
 
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
+
 	m_pTransformCom->Set_Speed(5.f);
 
 	return S_OK;
@@ -45,11 +47,13 @@ HRESULT CSandman::Init(void* pArg)
 
 void CSandman::Tick(_float fTimeDelta)
 {
-	if (m_pModelCom->IsAnimationFinished(etc_Appearance_Type01) || m_pModelCom->IsAnimationFinished(etc_Appearance_Type02))
+	if (m_pModelCom->IsAnimationFinished(m_pModelCom->Get_CurrentAnimationIndex()))
 	{
-		m_pModelCom->Set_Animation(Idle_Type03_Loop, true);
+		m_pModelCom->Set_Animation(rand() % 144);
 		Move(fTimeDelta);
 	}
+
+	m_pTransformCom->Gravity(fTimeDelta);
 
 	m_pModelCom->Play_Animation(fTimeDelta);
 }

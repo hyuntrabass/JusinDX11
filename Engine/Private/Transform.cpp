@@ -1,5 +1,16 @@
 #include "Transform.h"
 #include "Shader.h"
+#include "GameInstance.h"
+
+const PxVec3 VectorToPxVec3(XMVECTOR vVector)
+{
+	return PxVec3(vVector.m128_f32[0], vVector.m128_f32[1], vVector.m128_f32[2]);
+}
+
+const _vector PxExVec3ToVector(PxExtendedVec3 Src, float w)
+{
+	return XMVectorSet(static_cast<float>(Src.x), static_cast<float>(Src.y), static_cast<float>(Src.z), w);
+}
 
 CTransform::CTransform(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
@@ -20,8 +31,18 @@ _vector CTransform::Get_State(State eState) const
 _float3 CTransform::Get_Scale() const
 {
 	return _float3(XMVectorGetX(XMVector3Length(Get_State(State::Right)))
-	, XMVectorGetX(XMVector3Length(Get_State(State::Up)))
-	, XMVectorGetX(XMVector3Length(Get_State(State::Look))));
+				   , XMVectorGetX(XMVector3Length(Get_State(State::Up)))
+				   , XMVectorGetX(XMVector3Length(Get_State(State::Look))));
+}
+
+const _float& CTransform::Get_Speed() const
+{
+	return m_fSpeedPerSec;
+}
+
+const _bool& CTransform::Is_Jumping() const
+{
+	return m_isJumping;
 }
 
 _matrix CTransform::Get_World_Matrix() const
@@ -39,6 +60,20 @@ _float44 CTransform::Get_World_Inverse_float4x4() const
 	_float44 WorldInversed{};
 	XMStoreFloat4x4(&WorldInversed, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_WorldMatrix)));
 	return WorldInversed;
+}
+
+void CTransform::Set_Position(_float3 vPosition)
+{
+	if (m_pController)
+	{
+
+	PxExtendedVec3 NewPos{ static_cast<_double>(vPosition.x), static_cast<_double>(vPosition.y), static_cast<_double>(vPosition.z) };
+	m_pController->setPosition(NewPos);
+	}
+	else
+	{
+		return;
+	}
 }
 
 void CTransform::Set_State(State eState, _fvector vState)
@@ -69,6 +104,11 @@ void CTransform::Set_RotationPerSec(_float fAngle)
 	m_fRotationPerSec = XMConvertToRadians(fAngle);
 }
 
+void CTransform::Set_Controller(PxController* pController)
+{
+	m_pController = pController;
+}
+
 HRESULT CTransform::Init_Prototype()
 {
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
@@ -89,14 +129,53 @@ HRESULT CTransform::Init(void* pArg)
 	return S_OK;
 }
 
+void CTransform::Gravity(_float fTimeDelta)
+{
+	_float Gravity{ -19.81f };
+	if (m_fJumpForce > 0.f)
+	{
+		m_fJumpForce += Gravity * fTimeDelta;
+		m_fGravity = m_fJumpForce;
+		//m_fGravity = 25 * sin(40.f * XM_PI / 180.f) - 9.8f * fTimeDelta;
+		//Gravity.y = m_fGravity;
+	}
+	else if (!m_CollisionFlags.isSet(PxControllerCollisionFlag::eCOLLISION_DOWN))
+	{
+		m_fGravity += Gravity * fTimeDelta;
+	}
+
+	m_CollisionFlags = m_pController->move(PxVec3(0.f, m_fGravity, 0.f) * fTimeDelta, 0.0001f, fTimeDelta, 0);
+	if (m_CollisionFlags.isSet(PxControllerCollisionFlag::eCOLLISION_DOWN))
+	{
+		m_fJumpForce = 0.f;
+		m_fGravity = 0.f;
+		m_isJumping = false;
+	}
+	PxExtendedVec3 MovedPos = m_pController->getPosition();
+	Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
+}
+
 void CTransform::Go_Straight(_float fTimeDelta)
 {
-	_vector vPos = Get_State(State::Pos);
-	_vector vLook = Get_State(State::Look);
+	if (m_pController)
+	{
+		PxControllerFilters Filters{};
+		Filters.mFilterData = &PxFilterData(0, 0, 0, 0);
+		PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(XMVectorSetY(Get_State(State::Look), 0.f)) * m_fSpeedPerSec * fTimeDelta);
+		m_pController->move(Disp, 0.0001f, fTimeDelta, Filters);
 
-	vPos += XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+		PxExtendedVec3 MovedPos = m_pController->getPosition();
+		Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
+	}
+	else
+	{
+		_vector vPos = Get_State(State::Pos);
+		_vector vLook = Get_State(State::Look);
 
-	Set_State(State::Pos, vPos);
+		vPos += XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+		Set_State(State::Pos, vPos);
+	}
+
 }
 
 void CTransform::Go_Backward(_float fTimeDelta)
@@ -147,6 +226,12 @@ void CTransform::Go_Down(_float fTimeDelta)
 	vPos -= XMVector3Normalize(vUp) * m_fSpeedPerSec * fTimeDelta;
 
 	Set_State(State::Pos, vPos);
+}
+
+void CTransform::Jump(_float fJumpForce)
+{
+	m_isJumping = true;
+	m_fJumpForce = fJumpForce;
 }
 
 void CTransform::Look_At(_fvector vTargetPos)
@@ -271,4 +356,9 @@ CComponent* CTransform::Clone(void* pArg)
 void CTransform::Free()
 {
 	__super::Free();
+
+	if (m_pController)
+	{
+		m_pController->release();
+	}
 }

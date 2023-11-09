@@ -63,14 +63,6 @@ void CMainApp::Tick(_float fTimeDelta)
 
 	m_fTimeAcc += fTimeDelta;
 
-#ifdef _DEBUG
-	GET_CURSOR_POINT(pt);
-	system("cls");
-	std::cout << "Cursor X : " << pt.x << std::endl;
-	std::cout << "Cursor Y : " << pt.y << std::endl;
-#endif // _DEBUG
-
-
 	m_pGameInstance->Tick_Engine(fTimeDelta);
 }
 

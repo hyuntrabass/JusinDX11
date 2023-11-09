@@ -27,7 +27,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 #ifdef _DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    //_CrtSetBreakAlloc(8648013);
+    //_CrtSetBreakAlloc(2007750);
 #endif
 
     UNREFERENCED_PARAMETER(hPrevInstance);
@@ -90,11 +90,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
 
-        fTimeAcc += pGameInstance->Compute_TimeDelta(L"Timer_Default");
+        fTimeAcc += pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
 
         if (fTimeAcc > 1.f / 60.f)
         {
-            pMainApp->Tick(pGameInstance->Compute_TimeDelta(L"Timer_60"));
+            pMainApp->Tick(pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
             pMainApp->Render();
 
             fTimeAcc = 0.f;

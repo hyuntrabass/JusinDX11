@@ -121,11 +121,11 @@
     <Filter Include="01.Utility\08.Button">
       <UniqueIdentifier>{29769188-792b-4bb3-a5ac-e1fe318a5814}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Components\PhysX">
-      <UniqueIdentifier>{5494524b-a225-41eb-992f-3eadd560bc05}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\03.Components\VIBuffer\PhysX">
       <UniqueIdentifier>{07fea700-ead9-4eda-989d-3efa01e4d881}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\09.PhysX">
+      <UniqueIdentifier>{5494524b-a225-41eb-992f-3eadd560bc05}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -240,8 +240,8 @@
     <ClCompile Include="..\Private\Button_Manager.cpp">
       <Filter>01.Utility\08.Button</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\PhysX.cpp">
-      <Filter>01.Utility\03.Components\PhysX</Filter>
+    <ClCompile Include="..\private\PhysX_Manager.cpp">
+      <Filter>01.Utility\09.PhysX</Filter>
     </ClCompile>
     <ClCompile Include="..\private\VIBuffer_PhysX.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\PhysX</Filter>
@@ -371,8 +371,8 @@
     <ClInclude Include="..\Public\Button_Manager.h">
       <Filter>01.Utility\08.Button</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\PhysX.h">
-      <Filter>01.Utility\03.Components\PhysX</Filter>
+    <ClInclude Include="..\public\PhysX_Manager.h">
+      <Filter>01.Utility\09.PhysX</Filter>
     </ClInclude>
     <ClInclude Include="..\public\VIBuffer_PhysX.h">
       <Filter>01.Utility\03.Components\VIBuffer\PhysX</Filter>

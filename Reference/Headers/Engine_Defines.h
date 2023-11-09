@@ -33,6 +33,7 @@ using namespace physx;
 #pragma comment(lib, "PhysXFoundation_64.lib")
 #pragma comment(lib, "PhysXCooking_64.lib")
 #pragma comment(lib, "PhysXExtensions_static_64.lib")
+#pragma comment(lib, "PhysXCharacterKinematic_static_64.lib")
 
 
 #ifdef _DEBUG

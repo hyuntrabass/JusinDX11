@@ -115,7 +115,7 @@
     <ClCompile Include="..\private\MyFont.cpp" />
     <ClCompile Include="..\private\Object_Manager.cpp" />
     <ClCompile Include="..\private\OrthographicObject.cpp" />
-    <ClCompile Include="..\private\PhysX.cpp" />
+    <ClCompile Include="..\private\PhysX_Manager.cpp" />
     <ClCompile Include="..\private\Picking.cpp" />
     <ClCompile Include="..\private\PipeLine.cpp" />
     <ClCompile Include="..\private\Renderer.cpp" />
@@ -161,7 +161,7 @@
     <ClInclude Include="..\public\MyFont.h" />
     <ClInclude Include="..\public\Object_Manager.h" />
     <ClInclude Include="..\public\OrthographicObject.h" />
-    <ClInclude Include="..\public\PhysX.h" />
+    <ClInclude Include="..\public\PhysX_Manager.h" />
     <ClInclude Include="..\public\Picking.h" />
     <ClInclude Include="..\public\PipeLine.h" />
     <ClInclude Include="..\public\Renderer.h" />
