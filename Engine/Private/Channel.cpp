@@ -86,7 +86,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 	else
 	{
 		m_PrevTransformation = {};
-		if (fCurrentAnimPos >= m_KeyFrames[m_iCurrentKeyFrame + 1].fTime)
+		while (fCurrentAnimPos >= m_KeyFrames[m_iCurrentKeyFrame + 1].fTime)
 		{
 			m_iCurrentKeyFrame++;
 		}

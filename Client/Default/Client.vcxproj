@@ -183,6 +183,7 @@
     <ClInclude Include="..\Public\Loading_Objects.h" />
     <ClInclude Include="..\public\Logo.h" />
     <ClInclude Include="..\public\MainApp.h" />
+    <ClInclude Include="..\public\MapCollider.h" />
     <ClInclude Include="..\public\Parts_Window.h" />
     <ClInclude Include="..\public\Player.h" />
     <ClInclude Include="..\public\Sandman.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="..\private\Loading_Screen.cpp" />
     <ClCompile Include="..\private\Logo.cpp" />
     <ClCompile Include="..\private\MainApp.cpp" />
+    <ClCompile Include="..\private\MapCollider.cpp" />
     <ClCompile Include="..\private\Parts_Window.cpp" />
     <ClCompile Include="..\private\Player.cpp" />
     <ClCompile Include="..\private\Sandman.cpp" />

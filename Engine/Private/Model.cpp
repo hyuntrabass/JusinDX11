@@ -77,24 +77,71 @@ void CModel::Set_Animation(_uint iAnimIndex, const _bool& isLoop)
 	m_iCurrentAnimIndex = iAnimIndex;
 }
 
-HRESULT CModel::Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix)
+HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
 {
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 	ModelType eType{};
 	_char szExt[MAX_PATH]{};
-	_splitpath_s(strFilePath.c_str(), nullptr, 0, nullptr, 0, nullptr, 0, szExt, MAX_PATH);
-	if (!strcmp(szExt, ".hyuntraanimmesh"))
+	if (!isCOLMesh)
 	{
-		eType = ModelType::Anim;
+		_splitpath_s(strFilePath.c_str(), nullptr, 0, nullptr, 0, nullptr, 0, szExt, MAX_PATH);
+		if (!strcmp(szExt, ".hyuntraanimmesh"))
+		{
+			eType = ModelType::Anim;
+		}
+		else if (!strcmp(szExt, ".hyuntraplayer"))
+		{
+			eType = ModelType::Player;
+		}
+		else
+		{
+			eType = ModelType::Static;
+		}
 	}
 	else
 	{
-		eType = ModelType::Static;
+		eType = ModelType::Collision;
 	}
 
 	ifstream ModelFile(strFilePath.c_str(), ios::binary);
 	if (ModelFile.is_open())
 	{
+		if (eType == ModelType::Player)
+		{
+		#pragma region Bones
+			_uint iNumBones{};
+			ModelFile.read(reinterpret_cast<_char*>(&iNumBones), sizeof _uint);
+
+			for (size_t i = 0; i < iNumBones; i++)
+			{
+				CBone* pBone = CBone::Create(ModelFile);
+				if (!pBone)
+				{
+					return E_FAIL;
+				}
+				m_Bones.push_back(pBone);
+			}
+		#pragma endregion
+
+		#pragma region Animations
+			ModelFile.read(reinterpret_cast<_char*>(&m_iNumAnimations), sizeof _uint);
+
+			for (size_t i = 0; i < m_iNumAnimations; i++)
+			{
+				CAnimation* pAnimation = CAnimation::Create(ModelFile);
+				if (!pAnimation)
+				{
+					return E_FAIL;
+				}
+				m_Animations.push_back(pAnimation);
+			}
+		#pragma endregion
+
+
+
+			return S_OK;
+		}
+
 		if (eType == ModelType::Anim)
 		{
 		#pragma region Bones
@@ -259,11 +306,11 @@ _bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _float4* pPickPos)
 	return false;
 }
 
-CModel* CModel::Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix PivotMatrix)
+CModel* CModel::Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
 {
 	CModel* pInstance = new CModel(pDevice, pContext);
 
-	if (FAILED(pInstance->Init_Prototype(strFilePath, PivotMatrix)))
+	if (FAILED(pInstance->Init_Prototype(strFilePath, isCOLMesh, PivotMatrix)))
 	{
 		MSG_BOX("Failed to Create : CModel");
 	}

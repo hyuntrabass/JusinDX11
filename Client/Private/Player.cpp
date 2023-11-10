@@ -23,7 +23,8 @@ HRESULT CPlayer::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pModelCom->Set_Animation(etc_Appearance);
+	m_pModelCom->Set_Animation(0, true);
+	//m_pModelCom->Set_Animation(etc_Appearance);
 
 	m_pTransformCom->Set_Speed(5.f);
 
@@ -35,9 +36,17 @@ HRESULT CPlayer::Init(void* pArg)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
+	if (m_pGameInstance->Get_CameraModeIndex() == CM_DEBUG)
+	{
+		return;
+	}
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CREATECHARACTER)
 	{
+		if (m_pModelCom->IsAnimationFinished(etc_Exit))
+		{
+			m_pModelCom->Set_Animation(Idle_Loop, true);
+		}
 		//m_pGameInstance->Apply_PhysX(m_pTransformCom);
 
 		Move(fTimeDelta);
@@ -46,11 +55,12 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 	else
 	{
+		m_pModelCom->Set_Animation(0, true);
 		Customize(fTimeDelta);
-		if (m_pModelCom->IsAnimationFinished(etc_Appearance))
-		{
-			m_pModelCom->Set_Animation(Idle_Loop, true);
-		}
+		//if (m_pModelCom->IsAnimationFinished(etc_Appearance))
+		//{
+		//	m_pModelCom->Set_Animation(Idle_Loop, true);
+		//}
 	}
 
 	m_pModelCom->Play_Animation(fTimeDelta);
@@ -86,31 +96,31 @@ HRESULT CPlayer::Render()
 
 	for (_uint i = 0; i < iNumMeshes; i++)
 	{
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-		{
-		}
+		//if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+		//{
+		//}
 
-		_float fNorTex = 0.f;
-		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		{
-			fNorTex = 0.f;
-		}
-		else
-		{
-			fNorTex = 1.f;
-		}
+		//_float fNorTex = 0.f;
+		//if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+		//{
+		//	fNorTex = 0.f;
+		//}
+		//else
+		//{
+		//	fNorTex = 1.f;
+		//}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fNorTex", &fNorTex, sizeof _float)))
-		{
-			return E_FAIL;
-		}
+		//if (FAILED(m_pShaderCom->Bind_RawValue("g_fNorTex", &fNorTex, sizeof _float)))
+		//{
+		//	return E_FAIL;
+		//}
 
 		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 		{
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(0)))
+		if (FAILED(m_pShaderCom->Begin(1)))
 		{
 			return E_FAIL;
 		}
@@ -125,10 +135,6 @@ HRESULT CPlayer::Render()
 
 void CPlayer::Move(_float fTimeDelta)
 {
-	if (m_pGameInstance->Get_CameraModeIndex() == CM_DEBUG)
-	{
-		return;
-	}
 	_bool hasMoved{};
 	_vector vCamLook = XMLoadFloat4(&m_pGameInstance->Get_CameraLook());
 	vCamLook.m128_f32[1] = 0.f;
@@ -258,7 +264,7 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		if (m_pModelCom->IsAnimationFinished(Jump_Front))
 		{
-			m_pModelCom->Set_Animation(Fall_Front_Loop, true);
+			m_pModelCom->Set_Animation(Fall_Front_Loop, true); 
 		}
 		if (!m_pTransformCom->Is_Jumping())
 		{
@@ -275,7 +281,11 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
 	{
-		m_pModelCom->Set_Animation(Attack_BodyBlow);
+		m_pModelCom->Set_Animation(Attack_Aerial_DownStrike);
+	}
+	if (m_pModelCom->IsAnimationFinished(Attack_Aerial_DownStrike))
+	{
+		m_pModelCom->Set_Animation(Land);
 	}
 
 	m_pTransformCom->Gravity(fTimeDelta);
@@ -334,10 +344,15 @@ HRESULT CPlayer::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Pain"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Test"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}
+
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Pain"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }

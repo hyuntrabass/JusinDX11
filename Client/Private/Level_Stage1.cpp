@@ -10,6 +10,10 @@ HRESULT CLevel_Stage1::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_STAGE1);
 
+	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+
+	pPlayerTransform->Set_Position(_float3(100.f, 45.f, -75.f));
+
 	if (FAILED(Ready_Map()))
 	{
 		MSG_BOX("Failed to Ready Map");
@@ -54,6 +58,26 @@ HRESULT CLevel_Stage1::Ready_Map()
 
 		}
 	}
+
+	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Village/COL_Mesh/";
+	strPrototypeTag = L"Prototype_Model_COL_";
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strFileName = entry.path().stem().wstring();
+			ObjectInfo Info{};
+			Info.strPrototypeTag = strPrototypeTag + strFileName;
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STAGE1, L"Layer_Terrain_COL", L"Prototype_GameObject_MapCollider", &Info)))
+			{
+				return E_FAIL;
+			}
+
+		}
+	}
+
 	return S_OK;
 }
 

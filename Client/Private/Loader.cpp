@@ -202,6 +202,10 @@ HRESULT CLoader::Load_CreateCharacter()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Test"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/CustomTest.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"CreateCharacter : Loading Shader";
@@ -316,6 +320,23 @@ HRESULT CLoader::Load_Tutorial()
 		}
 	}
 
+	// Model for Map Collider.
+	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Forest/COL_Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = L"Prototype_Model_COL_";
+			wstring strFileName = entry.path().stem().wstring();
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TUTORIAL, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sky"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Sky/Mesh/Sky.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
@@ -334,6 +355,11 @@ HRESULT CLoader::Load_Tutorial()
 	m_strLoadingText = L"Tutorial : Loading Prototype";
 #pragma region Prototype
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Terrain"), CTerrain::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_MapCollider"), CMapCollider::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -401,6 +427,24 @@ HRESULT CLoader::Load_Stage1()
 			}
 		}
 	}
+
+	// Model for Map Collider.
+	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Village/COL_Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = L"Prototype_Model_COL_";
+			wstring strFileName = entry.path().stem().wstring();
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STAGE1, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Stage1 : Loading Shader";
@@ -444,6 +488,24 @@ HRESULT CLoader::Load_Stage2()
 			}
 		}
 	}
+
+	// Model for Map Collider.
+	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Forest/COL_Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = L"Prototype_Model_COL_";
+			wstring strFileName = entry.path().stem().wstring();
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STAGE2, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Stage2 : Loading Shader";

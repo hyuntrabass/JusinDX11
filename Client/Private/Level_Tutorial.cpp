@@ -69,6 +69,25 @@ HRESULT CLevel_Tutorial::Ready_Map()
 		}
 	}
 
+	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Forest/COL_Mesh/";
+	strPrototypeTag = L"Prototype_Model_COL_";
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strFileName = entry.path().stem().wstring();
+			ObjectInfo Info{};
+			Info.strPrototypeTag = strPrototypeTag + strFileName;
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Terrain_COL", L"Prototype_GameObject_MapCollider", &Info)))
+			{
+				return E_FAIL;
+			}
+
+		}
+	}
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Sky", L"Prototype_GameObject_Sky")))
 	{
 		return E_FAIL;

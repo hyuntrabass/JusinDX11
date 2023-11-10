@@ -7,6 +7,8 @@ enum class ModelType
 {
 	Static,
 	Anim,
+	Collision,
+	Player,
 	End
 };
 
@@ -25,7 +27,7 @@ public:
 	void Set_Animation(_uint iAnimIndex, const _bool& isLoop = false);
 
 public:
-	HRESULT Init_Prototype(const string& strFilePath, _fmatrix PivotMatrix);
+	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
 	HRESULT Init(void* pArg) override;
 
 public:
@@ -57,7 +59,7 @@ private:
 	_bool m_isLoop{};
 
 public:
-	static CModel* Create(_dev pDevice, _context pContext, const string& strFilePath, _fmatrix PivotMatrix = XMMatrixIdentity());
+	static CModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

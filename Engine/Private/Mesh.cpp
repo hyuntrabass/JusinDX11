@@ -40,6 +40,7 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix Off
 	switch (m_eType)
 	{
 	case Engine::ModelType::Static:
+	case Engine::ModelType::Collision:
 		Ready_StaticMesh(ModelFile, OffsetMatrix);
 		break;
 	case Engine::ModelType::Anim:
@@ -82,7 +83,7 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix Off
 	Safe_Delete_Array(pIndices);
 #pragma endregion
 
-	if (m_eType == ModelType::Static)
+	if (m_eType == ModelType::Collision)
 	{
 		m_pActor = m_pGameInstance->Cook_StaticMesh(m_iNumVertices, m_pVerticesPos, m_iNumIndices, m_pIndices);
 	}
@@ -288,7 +289,7 @@ void CMesh::Free()
 {
 	__super::Free();
 
-	if (m_eType == ModelType::Static)
+	if (m_eType == ModelType::Collision)
 	{
 		m_pActor->release();
 	}

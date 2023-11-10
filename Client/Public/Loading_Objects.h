@@ -17,3 +17,4 @@
 #include "BackGround_CreateCharacter.h"
 #include "Title_Custom.h"
 #include "Sandman.h"
+#include "MapCollider.h"

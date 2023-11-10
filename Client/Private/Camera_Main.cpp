@@ -44,6 +44,11 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		return;
 	}
 
+	if (m_pGameInstance->Key_Down(DIK_P))
+	{
+		m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
+	}
+
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CREATECHARACTER)
 	{
 		m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.f, 1.5f, 2.5f, 1.f));

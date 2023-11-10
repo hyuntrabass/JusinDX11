@@ -46,6 +46,11 @@ void CSlotBase_Tool::Late_Tick(_float fTimeDelta)
 
 HRESULT CSlotBase_Tool::Render()
 {
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
+	{
+		return S_OK;
+	}
+
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;

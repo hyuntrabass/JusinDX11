@@ -106,6 +106,9 @@
     <Filter Include="02.GameObjects\04.Sandman">
       <UniqueIdentifier>{c216a115-63c5-4700-af2d-e072b844cef2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\02.Terrain\Collider">
+      <UniqueIdentifier>{cb5d90e4-68f2-4033-b4d9-22fc6efdfc8b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -207,6 +210,9 @@
     <ClInclude Include="..\public\Sandman.h">
       <Filter>02.GameObjects\04.Sandman</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\MapCollider.h">
+      <Filter>02.GameObjects\02.Terrain\Collider</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -305,6 +311,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Sandman.cpp">
       <Filter>02.GameObjects\04.Sandman</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MapCollider.cpp">
+      <Filter>02.GameObjects\02.Terrain\Collider</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

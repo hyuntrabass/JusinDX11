@@ -46,6 +46,11 @@ void CHpBar_Player_Base::Late_Tick(_float fTimeDelta)
 
 HRESULT CHpBar_Player_Base::Render()
 {
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
+	{
+		return S_OK;
+	}
+
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;

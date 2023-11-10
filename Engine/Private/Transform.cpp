@@ -151,7 +151,7 @@ void CTransform::Gravity(_float fTimeDelta)
 		m_fGravity = 0.f;
 		m_isJumping = false;
 	}
-	PxExtendedVec3 MovedPos = m_pController->getPosition();
+	PxExtendedVec3 MovedPos = m_pController->getFootPosition();
 	Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
 }
 
@@ -164,7 +164,7 @@ void CTransform::Go_Straight(_float fTimeDelta)
 		PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(XMVectorSetY(Get_State(State::Look), 0.f)) * m_fSpeedPerSec * fTimeDelta);
 		m_pController->move(Disp, 0.0001f, fTimeDelta, Filters);
 
-		PxExtendedVec3 MovedPos = m_pController->getPosition();
+		PxExtendedVec3 MovedPos = m_pController->getFootPosition();
 		Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
 	}
 	else

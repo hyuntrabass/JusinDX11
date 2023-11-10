@@ -46,6 +46,12 @@ void CTerrain::Late_Tick(_float fTimeDelta)
 
 HRESULT CTerrain::Render()
 {
+	if ((m_pGameInstance->Get_CameraModeIndex() == CM_DEBUG && !m_pGameInstance->Key_Pressing(DIK_O)) ||
+		(m_pGameInstance->Get_CameraModeIndex() != CM_DEBUG && m_pGameInstance->Key_Pressing(DIK_O)))
+	{
+		return S_OK;
+	}
+
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;

@@ -94,6 +94,22 @@ PS_OUT PS_Main_Sky(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_COL(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = vector(0.7f, 0.7f, 0.7f, 1.f);
+    vector vNormal = Input.vNor;
+    
+    float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
+    
+    vector vReflect = reflect(normalize(g_vLightDir), vNormal);
+
+    Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient));
+    
+    return Output;
+}
+
 technique11 DefaultTechniqueShader_VtxNorTex
 {
     pass Default
@@ -124,5 +140,15 @@ technique11 DefaultTechniqueShader_VtxNorTex
 
         VertexShader = compile vs_5_0 VS_Main();
         PixelShader = compile ps_5_0 PS_Main_Sky();
+    }
+
+    pass Collider
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        PixelShader = compile ps_5_0 PS_Main_COL();
     }
 };

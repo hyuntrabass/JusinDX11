@@ -35,7 +35,13 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Get_CameraModeIndex() != CM_DEBUG)
 	{
+		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
 		return;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_P))
+	{
+		m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
 	}
 
 	if (m_pGameInstance->Mouse_Pressing(DIM_MBUTTON))
