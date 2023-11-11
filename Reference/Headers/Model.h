@@ -52,10 +52,21 @@ private:
 
 	_float44 m_PivotMatrix{};
 
+	_uint m_iNumFaceMeshes{};
+	_uint m_iNumHeadMeshes{};
+	_uint m_iNumLowerMeshes{};
+	_uint m_iNumUpperMeshes{};
+
 	_uint m_iCurrentAnimIndex{};
 	_uint m_iPrevAnimIndex{};
 	_bool m_isAnimChanged{};
 	_bool m_isLoop{};
+
+private:
+	HRESULT Read_Bones(ifstream& File);
+	HRESULT Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix);
+	HRESULT Read_Animations(ifstream& File);
+	HRESULT Read_Materials(ifstream& File, const string& strFilePath);
 
 public:
 	static CModel* Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh = false, _fmatrix PivotMatrix = XMMatrixIdentity());

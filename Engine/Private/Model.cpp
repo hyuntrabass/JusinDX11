@@ -89,10 +89,6 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 		{
 			eType = ModelType::Anim;
 		}
-		else if (!strcmp(szExt, ".hyuntraplayer"))
-		{
-			eType = ModelType::Player;
-		}
 		else
 		{
 			eType = ModelType::Static;
@@ -106,133 +102,30 @@ HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh
 	ifstream ModelFile(strFilePath.c_str(), ios::binary);
 	if (ModelFile.is_open())
 	{
-		if (eType == ModelType::Player)
-		{
-		#pragma region Bones
-			_uint iNumBones{};
-			ModelFile.read(reinterpret_cast<_char*>(&iNumBones), sizeof _uint);
-
-			for (size_t i = 0; i < iNumBones; i++)
-			{
-				CBone* pBone = CBone::Create(ModelFile);
-				if (!pBone)
-				{
-					return E_FAIL;
-				}
-				m_Bones.push_back(pBone);
-			}
-		#pragma endregion
-
-		#pragma region Animations
-			ModelFile.read(reinterpret_cast<_char*>(&m_iNumAnimations), sizeof _uint);
-
-			for (size_t i = 0; i < m_iNumAnimations; i++)
-			{
-				CAnimation* pAnimation = CAnimation::Create(ModelFile);
-				if (!pAnimation)
-				{
-					return E_FAIL;
-				}
-				m_Animations.push_back(pAnimation);
-			}
-		#pragma endregion
-
-
-
-			return S_OK;
-		}
-
 		if (eType == ModelType::Anim)
 		{
-		#pragma region Bones
-			_uint iNumBones{};
-			ModelFile.read(reinterpret_cast<_char*>(&iNumBones), sizeof _uint);
-
-			for (size_t i = 0; i < iNumBones; i++)
-			{
-				CBone* pBone = CBone::Create(ModelFile);
-				if (!pBone)
-				{
-					return E_FAIL;
-				}
-				m_Bones.push_back(pBone);
-			}
-		#pragma endregion
-		}
-
-	#pragma region Meshes
-		ModelFile.read(reinterpret_cast<_char*>(&m_iNumMeshes), sizeof _uint);
-		m_Meshes.reserve(m_iNumMeshes);
-
-		for (size_t i = 0; i < m_iNumMeshes; i++)
-		{
-			CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, eType, ModelFile, PivotMatrix);
-			if (!pMesh)
+			if (FAILED(Read_Bones(ModelFile)))
 			{
 				return E_FAIL;
 			}
-			m_Meshes.push_back(pMesh);
 		}
-	#pragma endregion
 
-	#pragma region Materials
-		_char szMatFilePath[MAX_PATH]{};
-		_char szFullPath[MAX_PATH]{};
-
-		_splitpath_s(strFilePath.c_str(), nullptr, 0, szMatFilePath, MAX_PATH, nullptr, 0, nullptr, 0);
-		strcat_s(szMatFilePath, "../Texture/");
-
-		ModelFile.read(reinterpret_cast<_char*>(&m_iNumMaterials), sizeof _uint);
-
-		for (size_t i = 0; i < m_iNumMaterials; i++)
+		if (FAILED(Read_Meshes(ModelFile, eType, PivotMatrix)))
 		{
-			Model_Material Material{};
-			_uint iNameSize{};
-			_char* pFileName{};
-
-			for (size_t j = 0; j < ToIndex(TextureType::End); j++)
-			{
-				ModelFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof _uint);
-				if (iNameSize == 1)
-				{
-					continue;
-				}
-
-				pFileName = new _char[iNameSize];
-				ModelFile.read(pFileName, iNameSize);
-				strcpy_s(szFullPath, szMatFilePath);
-				strcat_s(szFullPath, pFileName);
-				Safe_Delete_Array(pFileName);
-
-				_tchar szTexturePath[MAX_PATH]{};
-				MultiByteToWideChar(CP_ACP, 0, szFullPath, static_cast<_int>(strlen(szFullPath)), szTexturePath, MAX_PATH);
-
-				Material.pMaterials[j] = CTexture::Create(m_pDevice, m_pContext, szTexturePath);
-				if (!Material.pMaterials[j])
-				{
-					MSG_BOX("Failed to Create Texture from Model!");
-				}
-			}
-
-			m_Materials.push_back(Material);
+			return E_FAIL;
 		}
-	#pragma endregion
+
+		if (FAILED(Read_Materials(ModelFile, strFilePath)))
+		{
+			return E_FAIL;
+		}
 
 		if (eType == ModelType::Anim)
 		{
-		#pragma region Animations
-			ModelFile.read(reinterpret_cast<_char*>(&m_iNumAnimations), sizeof _uint);
-
-			for (size_t i = 0; i < m_iNumAnimations; i++)
+			if (FAILED(Read_Animations(ModelFile)))
 			{
-				CAnimation* pAnimation = CAnimation::Create(ModelFile);
-				if (!pAnimation)
-				{
-					return E_FAIL;
-				}
-				m_Animations.push_back(pAnimation);
+				return E_FAIL;
 			}
-		#pragma endregion
 		}
 
 
@@ -304,6 +197,109 @@ _bool CModel::Intersect_RayModel(_fmatrix WorldMatrix, _float4* pPickPos)
 	}
 
 	return false;
+}
+
+HRESULT CModel::Read_Bones(ifstream& File)
+{
+	_uint iNumBones{};
+	File.read(reinterpret_cast<_char*>(&iNumBones), sizeof _uint);
+
+	for (size_t i = 0; i < iNumBones; i++)
+	{
+		CBone* pBone = CBone::Create(File);
+		if (!pBone)
+		{
+			MSG_BOX("Failed to Read Bone!");
+			return E_FAIL;
+		}
+		m_Bones.push_back(pBone);
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Read_Meshes(ifstream& File, const ModelType& eType, _fmatrix PivotMatrix)
+{
+	File.read(reinterpret_cast<_char*>(&m_iNumMeshes), sizeof _uint);
+	m_Meshes.reserve(m_iNumMeshes);
+
+	for (size_t i = 0; i < m_iNumMeshes; i++)
+	{
+		CMesh* pMesh = CMesh::Create(m_pDevice, m_pContext, eType, File, PivotMatrix);
+		if (!pMesh)
+		{
+			MSG_BOX("Failed to Read Meshes!");
+			return E_FAIL;
+		}
+		m_Meshes.push_back(pMesh);
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Read_Animations(ifstream& File)
+{
+	File.read(reinterpret_cast<_char*>(&m_iNumAnimations), sizeof _uint);
+
+	for (size_t i = 0; i < m_iNumAnimations; i++)
+	{
+		CAnimation* pAnimation = CAnimation::Create(File);
+		if (!pAnimation)
+		{
+			MSG_BOX("Failed to Read Animations!");
+			return E_FAIL;
+		}
+		m_Animations.push_back(pAnimation);
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Read_Materials(ifstream& File, const string& strFilePath)
+{
+	_char szMatFilePath[MAX_PATH]{};
+	_char szFullPath[MAX_PATH]{};
+
+	_splitpath_s(strFilePath.c_str(), nullptr, 0, szMatFilePath, MAX_PATH, nullptr, 0, nullptr, 0);
+	strcat_s(szMatFilePath, "../Texture/");
+
+	File.read(reinterpret_cast<_char*>(&m_iNumMaterials), sizeof _uint);
+
+	for (size_t i = 0; i < m_iNumMaterials; i++)
+	{
+		Model_Material Material{};
+		_uint iNameSize{};
+		_char* pFileName{};
+
+		for (size_t j = 0; j < ToIndex(TextureType::End); j++)
+		{
+			File.read(reinterpret_cast<_char*>(&iNameSize), sizeof _uint);
+			if (iNameSize == 1)
+			{
+				continue;
+			}
+
+			pFileName = new _char[iNameSize];
+			File.read(pFileName, iNameSize);
+			strcpy_s(szFullPath, szMatFilePath);
+			strcat_s(szFullPath, pFileName);
+			Safe_Delete_Array(pFileName);
+
+			_tchar szTexturePath[MAX_PATH]{};
+			MultiByteToWideChar(CP_ACP, 0, szFullPath, static_cast<_int>(strlen(szFullPath)), szTexturePath, MAX_PATH);
+
+			Material.pMaterials[j] = CTexture::Create(m_pDevice, m_pContext, szTexturePath);
+			if (!Material.pMaterials[j])
+			{
+				MSG_BOX("Failed to Create Texture from Model!");
+				return E_FAIL;
+			}
+		}
+
+		m_Materials.push_back(Material);
+	}
+
+	return S_OK;
 }
 
 CModel* CModel::Create(_dev pDevice, _context pContext, const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)

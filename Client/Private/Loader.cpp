@@ -202,7 +202,7 @@ HRESULT CLoader::Load_CreateCharacter()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Test"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/CustomTest.hyuntraanimmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Custom_W"), CCustom_Model::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Custom_w/Mesh/Bone.hyuntraplayer"))))
 	{
 		return E_FAIL;
 	}

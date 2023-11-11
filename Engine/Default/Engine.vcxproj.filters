@@ -127,6 +127,12 @@
     <Filter Include="01.Utility\09.PhysX">
       <UniqueIdentifier>{5494524b-a225-41eb-992f-3eadd560bc05}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\Model\Custom Model">
+      <UniqueIdentifier>{4bd3abee-8e6d-4a0e-bbe0-b7c6d2132e77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Components\Model\Custom Model\Custom Part">
+      <UniqueIdentifier>{a29e18d8-4277-4579-a954-2d77508ed257}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -245,6 +251,12 @@
     </ClCompile>
     <ClCompile Include="..\private\VIBuffer_PhysX.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Custom_Part.cpp">
+      <Filter>01.Utility\03.Components\Model\Custom Model\Custom Part</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Custom_Model.cpp">
+      <Filter>01.Utility\03.Components\Model\Custom Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -376,6 +388,12 @@
     </ClInclude>
     <ClInclude Include="..\public\VIBuffer_PhysX.h">
       <Filter>01.Utility\03.Components\VIBuffer\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Custom_Part.h">
+      <Filter>01.Utility\03.Components\Model\Custom Model\Custom Part</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Custom_Model.h">
+      <Filter>01.Utility\03.Components\Model\Custom Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

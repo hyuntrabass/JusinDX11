@@ -23,8 +23,7 @@ HRESULT CPlayer::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pModelCom->Set_Animation(0, true);
-	//m_pModelCom->Set_Animation(etc_Appearance);
+	m_pModelCom->Set_Animation(etc_Appearance);
 
 	m_pTransformCom->Set_Speed(5.f);
 
@@ -43,7 +42,8 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CREATECHARACTER)
 	{
-		if (m_pModelCom->IsAnimationFinished(etc_Exit))
+		if (m_pModelCom->IsAnimationFinished(0))
+		//if (m_pModelCom->IsAnimationFinished(etc_Exit))
 		{
 			m_pModelCom->Set_Animation(Idle_Loop, true);
 		}
@@ -55,8 +55,20 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 	else
 	{
-		m_pModelCom->Set_Animation(0, true);
+		m_pModelCom->Set_Animation(CharaSelect_Idle, true);
 		Customize(fTimeDelta);
+		if (m_pGameInstance->Key_Down(DIK_J))
+		{
+			m_iPartNum--;
+		}
+		if (m_pGameInstance->Key_Down(DIK_K))
+		{
+			m_iPartNum++;
+		}
+		m_pModelCom->Select_Part(PT_UPPER_BODY, m_iPartNum);
+		m_pModelCom->Select_Part(PT_HEAD, m_iPartNum);
+		m_pModelCom->Select_Part(PT_FACE, m_iPartNum);
+		m_pModelCom->Select_Part(PT_LOWER_BODY, m_iPartNum);
 		//if (m_pModelCom->IsAnimationFinished(etc_Appearance))
 		//{
 		//	m_pModelCom->Set_Animation(Idle_Loop, true);
@@ -92,44 +104,55 @@ HRESULT CPlayer::Render()
 		return E_FAIL;
 	}
 
-	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-	for (_uint i = 0; i < iNumMeshes; i++)
+	for (_uint i = 0; i < PT_END; i++)
 	{
-		//if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-		//{
-		//}
-
-		//_float fNorTex = 0.f;
-		//if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-		//{
-		//	fNorTex = 0.f;
-		//}
-		//else
-		//{
-		//	fNorTex = 1.f;
-		//}
-
-		//if (FAILED(m_pShaderCom->Bind_RawValue("g_fNorTex", &fNorTex, sizeof _float)))
-		//{
-		//	return E_FAIL;
-		//}
-
-		if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		for (_uint j = 0; j < m_pModelCom->Get_NumMeshes(i); j++)
 		{
-			return E_FAIL;
-		}
-
-		if (FAILED(m_pShaderCom->Begin(1)))
-		{
-			return E_FAIL;
-		}
-
-		if (FAILED(m_pModelCom->Render(i)))
-		{
-			return E_FAIL;
+			m_pModelCom->Bind_Material(i, m_pShaderCom, "g_DiffuseTexture", j, TextureType::Diffuse);
+			m_pModelCom->Bind_BoneMatrices(i, j, m_pShaderCom, "g_BoneMatrices");
+			m_pShaderCom->Begin(0);
+			m_pModelCom->Render(i, j);
 		}
 	}
+
+	//_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	//for (_uint i = 0; i < iNumMeshes; i++)
+	//{
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
+	//	{
+	//	}
+
+	//	_float fNorTex = 0.f;
+	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
+	//	{
+	//		fNorTex = 0.f;
+	//	}
+	//	else
+	//	{
+	//		fNorTex = 1.f;
+	//	}
+
+	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_fNorTex", &fNorTex, sizeof _float)))
+	//	{
+	//		return E_FAIL;
+	//	}
+
+	//	if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+	//	{
+	//		return E_FAIL;
+	//	}
+
+	//	if (FAILED(m_pShaderCom->Begin(0)))
+	//	{
+	//		return E_FAIL;
+	//	}
+
+	//	if (FAILED(m_pModelCom->Render(i)))
+	//	{
+	//		return E_FAIL;
+	//	}
+	//}
 	return S_OK;
 }
 
@@ -264,7 +287,7 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		if (m_pModelCom->IsAnimationFinished(Jump_Front))
 		{
-			m_pModelCom->Set_Animation(Fall_Front_Loop, true); 
+			m_pModelCom->Set_Animation(Fall_Front_Loop, true);
 		}
 		if (!m_pTransformCom->Is_Jumping())
 		{
@@ -281,9 +304,11 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
 	{
-		m_pModelCom->Set_Animation(Attack_Aerial_DownStrike);
+		m_pModelCom->Set_Animation(0);
+		//m_pModelCom->Set_Animation(Attack_Aerial_DownStrike);
 	}
-	if (m_pModelCom->IsAnimationFinished(Attack_Aerial_DownStrike))
+	if (m_pModelCom->IsAnimationFinished(0))
+	//if (m_pModelCom->IsAnimationFinished(Attack_Aerial_DownStrike))
 	{
 		m_pModelCom->Set_Animation(Land);
 	}
@@ -328,7 +353,8 @@ void CPlayer::Customize(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_RETURN))
 	{
-		m_pModelCom->Set_Animation(etc_Exit);
+		m_pModelCom->Set_Animation(0);
+		//m_pModelCom->Set_Animation(etc_Exit);
 	}
 }
 
@@ -344,7 +370,7 @@ HRESULT CPlayer::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Test"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Custom_W"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}

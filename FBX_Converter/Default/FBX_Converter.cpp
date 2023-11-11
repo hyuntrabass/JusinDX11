@@ -199,6 +199,8 @@ void Write_Materials(std::ofstream& OutputFile, const aiScene* pAIScene)
 
 void Write_Parts(const std::string& InputFilePath, std::ofstream& OutputFile, const aiScene* pAIScene, const std::vector<aiString>& BoneNames)
 {
+	Assimp::Importer Importer{};
+
 	unsigned int iFileCount{};
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(InputFilePath))
 	{
@@ -222,12 +224,22 @@ void Write_Parts(const std::string& InputFilePath, std::ofstream& OutputFile, co
 			{
 				continue;
 			}
+			pAIScene = Importer.ReadFile(entry.path().string(), aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast);
+			if (pAIScene)
+			{
+				std::cout << "Read File Succssefully" << std::endl;
+			}
+			else
+			{
+				std::cout << "Read Fail!!!!!!!!!!!!" << std::endl;
+				std::cout << std::endl;
+				std::cout << std::endl;
+			}
+
 			std::cout << "Converting... " << entry.path().filename().string() << std::endl;
 
 			Write_AnimMeshes(OutputFile, pAIScene, BoneNames);
 			Write_Materials(OutputFile, pAIScene);
-
-			OutputFile.close();
 		}
 	}
 }
@@ -244,42 +256,42 @@ int main()
 	std::cout << "Static Models : Start Converting..." << std::endl;
 
 #pragma region Static Meshes
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(InputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
-			if (entry.path().extension() != ".fbx")
-			{
-				continue;
-			}
+	//for (const auto& entry : std::filesystem::recursive_directory_iterator(InputFilePath))
+	//{
+	//	if (entry.is_regular_file())
+	//	{
+	//		if (entry.path().extension() != ".fbx")
+	//		{
+	//			continue;
+	//		}
 
-			std::cout << "Converting... " << entry.path().filename().string() << std::endl;
+	//		std::cout << "Converting... " << entry.path().filename().string() << std::endl;
 
-			std::filesystem::path relative_path = std::filesystem::relative(entry.path().parent_path(), InputFilePath);
-			std::filesystem::path OutputFilePath = std::filesystem::path("../Output/Static/") / relative_path;
-			if (!std::filesystem::exists(OutputFilePath))
-			{
-				std::filesystem::create_directories(OutputFilePath);
-			}
-			OutputFilePath /= entry.path().stem().string() + ".hyuntrastatmesh";
-			std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
+	//		std::filesystem::path relative_path = std::filesystem::relative(entry.path().parent_path(), InputFilePath);
+	//		std::filesystem::path OutputFilePath = std::filesystem::path("../Output/Static/") / relative_path;
+	//		if (!std::filesystem::exists(OutputFilePath))
+	//		{
+	//			std::filesystem::create_directories(OutputFilePath);
+	//		}
+	//		OutputFilePath /= entry.path().stem().string() + ".hyuntrastatmesh";
+	//		std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
 
-			if (OutputFile.is_open())
-			{
-				pAIScene = Importer.ReadFile(entry.path().string(), aiProcess_PreTransformVertices | aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast);
-				if (pAIScene)
-				{
-					std::cout << "Read File Succssefully" << std::endl;
-				}
+	//		if (OutputFile.is_open())
+	//		{
+	//			pAIScene = Importer.ReadFile(entry.path().string(), aiProcess_PreTransformVertices | aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast);
+	//			if (pAIScene)
+	//			{
+	//				std::cout << "Read File Succssefully" << std::endl;
+	//			}
 
-				Write_StatMeshes(OutputFile, pAIScene);
-				Write_Materials(OutputFile, pAIScene);
+	//			Write_StatMeshes(OutputFile, pAIScene);
+	//			Write_Materials(OutputFile, pAIScene);
 
-				iNumStaticFiles++;
-				OutputFile.close();
-			}
-		}
-	}
+	//			iNumStaticFiles++;
+	//			OutputFile.close();
+	//		}
+	//	}
+	//}
 #pragma endregion
 
 
@@ -288,183 +300,183 @@ int main()
 	std::cout << "Animation Models : Start Converting..." << std::endl;
 
 #pragma region Animation Meshes
-	InputFilePath = "../AnimMesh/";
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(InputFilePath))
-	{
-		if (entry.is_regular_file())
-		{
-			if (entry.path().extension() != ".fbx")
-			{
-				continue;
-			}
-			std::cout << "Converting... " << entry.path().filename().string() << std::endl;
+	//InputFilePath = "../AnimMesh/";
+	//for (const auto& entry : std::filesystem::recursive_directory_iterator(InputFilePath))
+	//{
+	//	if (entry.is_regular_file())
+	//	{
+	//		if (entry.path().extension() != ".fbx")
+	//		{
+	//			continue;
+	//		}
+	//		std::cout << "Converting... " << entry.path().filename().string() << std::endl;
 
-			// InputFilePath를 기준으로한 상대경로를 구한다.
-			std::filesystem::path relative_path = std::filesystem::relative(entry.path().parent_path(), InputFilePath);
+	//		// InputFilePath를 기준으로한 상대경로를 구한다.
+	//		std::filesystem::path relative_path = std::filesystem::relative(entry.path().parent_path(), InputFilePath);
 
-			// 연산자(/)로 Output경로와 위에서 구한 경로를 합친다.
-			std::filesystem::path OutputFilePath = std::filesystem::path("../Output/Anim/") / relative_path;
+	//		// 연산자(/)로 Output경로와 위에서 구한 경로를 합친다.
+	//		std::filesystem::path OutputFilePath = std::filesystem::path("../Output/Anim/") / relative_path;
 
-			// 폴더가 없을때 생성한다.
-			if (!std::filesystem::exists(OutputFilePath))
-			{
-				std::filesystem::create_directories(OutputFilePath);
-			}
+	//		// 폴더가 없을때 생성한다.
+	//		if (!std::filesystem::exists(OutputFilePath))
+	//		{
+	//			std::filesystem::create_directories(OutputFilePath);
+	//		}
 
-			// 최종 파일 경로를 생성
-			OutputFilePath /= entry.path().stem().string() + ".hyuntraanimmesh";
-			std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
+	//		// 최종 파일 경로를 생성
+	//		OutputFilePath /= entry.path().stem().string() + ".hyuntraanimmesh";
+	//		std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
 
-			if (OutputFile.is_open())
-			{
-				pAIScene = Importer.ReadFile(entry.path().string(), aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast);
-				if (pAIScene)
-				{
-					std::cout << "Read File Succssefully" << std::endl;
-				}
-				std::vector<aiString> BoneNames{};
-			#pragma region Bones
-				std::stack<aiNode*> Nodes{};
-				Nodes.push(pAIScene->mRootNode);
-				unsigned int iNumBones{};
-				while (!Nodes.empty())
-				{
-					aiNode* pCurrNode = Nodes.top();
-					Nodes.pop();
-					iNumBones++;
+	//		if (OutputFile.is_open())
+	//		{
+	//			pAIScene = Importer.ReadFile(entry.path().string(), aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast);
+	//			if (pAIScene)
+	//			{
+	//				std::cout << "Read File Succssefully" << std::endl;
+	//			}
+	//			std::vector<aiString> BoneNames{};
+	//		#pragma region Bones
+	//			std::stack<aiNode*> Nodes{};
+	//			Nodes.push(pAIScene->mRootNode);
+	//			unsigned int iNumBones{};
+	//			while (!Nodes.empty())
+	//			{
+	//				aiNode* pCurrNode = Nodes.top();
+	//				Nodes.pop();
+	//				iNumBones++;
 
-					for (size_t i = 0; i < pCurrNode->mNumChildren; i++)
-					{
-						Nodes.push(pCurrNode->mChildren[i]);
-					}
-				}
-				OutputFile.write(reinterpret_cast<const char*>(&iNumBones), sizeof(unsigned int));
+	//				for (size_t i = 0; i < pCurrNode->mNumChildren; i++)
+	//				{
+	//					Nodes.push(pCurrNode->mChildren[i]);
+	//				}
+	//			}
+	//			OutputFile.write(reinterpret_cast<const char*>(&iNumBones), sizeof(unsigned int));
 
-				std::list<std::pair<aiNode*, int>> Bones{};
-				int iMyIndex{ -1 };
-				Bones.push_front({ pAIScene->mRootNode, -1 });
+	//			std::list<std::pair<aiNode*, int>> Bones{};
+	//			int iMyIndex{ -1 };
+	//			Bones.push_front({ pAIScene->mRootNode, -1 });
 
-				while (!Bones.empty())
-				{
-					aiNode* pCurrentBone = Bones.front().first;
-					int iParentIndex = Bones.front().second;
-					Bones.pop_front();
+	//			while (!Bones.empty())
+	//			{
+	//				aiNode* pCurrentBone = Bones.front().first;
+	//				int iParentIndex = Bones.front().second;
+	//				Bones.pop_front();
 
-					// 필요한 뼈 정보를 출력.
-					char szName[_MAX_PATH]{};
-					aiString BoneName = pCurrentBone->mName;
-					BoneNames.push_back(BoneName);
+	//				// 필요한 뼈 정보를 출력.
+	//				char szName[_MAX_PATH]{};
+	//				aiString BoneName = pCurrentBone->mName;
+	//				BoneNames.push_back(BoneName);
 
-					strcpy_s(szName, BoneName.C_Str());
-					unsigned int iNameSize = static_cast<unsigned int>(strlen(szName)) + 1;
-					OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
-					OutputFile.write(BoneName.C_Str(), iNameSize);
-					OutputFile.write(reinterpret_cast<const char*>(&pCurrentBone->mTransformation.Transpose()), sizeof(aiMatrix4x4));
-					OutputFile.write(reinterpret_cast<const char*>(&iParentIndex), sizeof(int));
+	//				strcpy_s(szName, BoneName.C_Str());
+	//				unsigned int iNameSize = static_cast<unsigned int>(strlen(szName)) + 1;
+	//				OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
+	//				OutputFile.write(BoneName.C_Str(), iNameSize);
+	//				OutputFile.write(reinterpret_cast<const char*>(&pCurrentBone->mTransformation.Transpose()), sizeof(aiMatrix4x4));
+	//				OutputFile.write(reinterpret_cast<const char*>(&iParentIndex), sizeof(int));
 
-					iMyIndex++;
+	//				iMyIndex++;
 
-					for (size_t i = 0; i < pCurrentBone->mNumChildren; i++)
-					{
-						Bones.push_back({ pCurrentBone->mChildren[i], iMyIndex });
-					}
-				}
-			#pragma endregion
+	//				for (size_t i = 0; i < pCurrentBone->mNumChildren; i++)
+	//				{
+	//					Bones.push_back({ pCurrentBone->mChildren[i], iMyIndex });
+	//				}
+	//			}
+	//		#pragma endregion
 
-				Write_AnimMeshes(OutputFile, pAIScene, BoneNames);
-				Write_Materials(OutputFile, pAIScene);
+	//			Write_AnimMeshes(OutputFile, pAIScene, BoneNames);
+	//			Write_Materials(OutputFile, pAIScene);
 
-			#pragma region Animations
-				unsigned int iNumAnimations = pAIScene->mNumAnimations;
-				OutputFile.write(reinterpret_cast<const char*>(&iNumAnimations), sizeof(unsigned int));
-				std::cout << "Animation name list: " << std::endl;
-				for (size_t i = 0; i < iNumAnimations; i++)
-				{
-					aiAnimation* pAnimation = pAIScene->mAnimations[i];
+	//		#pragma region Animations
+	//			unsigned int iNumAnimations = pAIScene->mNumAnimations;
+	//			OutputFile.write(reinterpret_cast<const char*>(&iNumAnimations), sizeof(unsigned int));
+	//			std::cout << "Animation name list: " << std::endl;
+	//			for (size_t i = 0; i < iNumAnimations; i++)
+	//			{
+	//				aiAnimation* pAnimation = pAIScene->mAnimations[i];
 
-					unsigned int iNameSize = pAnimation->mName.length + 1;
-					OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
-					OutputFile.write(pAnimation->mName.C_Str(), iNameSize);
-					std::cout << pAnimation->mName.C_Str() << std::endl;
+	//				unsigned int iNameSize = pAnimation->mName.length + 1;
+	//				OutputFile.write(reinterpret_cast<const char*>(&iNameSize), sizeof(unsigned int));
+	//				OutputFile.write(pAnimation->mName.C_Str(), iNameSize);
+	//				std::cout << pAnimation->mName.C_Str() << std::endl;
 
-					float fDuration{ static_cast<float>(pAnimation->mDuration) };
-					float fTickPerSec{ static_cast<float>(pAnimation->mTicksPerSecond) };
-					OutputFile.write(reinterpret_cast<const char*>(&fDuration), sizeof(float));
-					OutputFile.write(reinterpret_cast<const char*>(&fTickPerSec), sizeof(float));
+	//				float fDuration{ static_cast<float>(pAnimation->mDuration) };
+	//				float fTickPerSec{ static_cast<float>(pAnimation->mTicksPerSecond) };
+	//				OutputFile.write(reinterpret_cast<const char*>(&fDuration), sizeof(float));
+	//				OutputFile.write(reinterpret_cast<const char*>(&fTickPerSec), sizeof(float));
 
-					unsigned int iNumChannels = pAnimation->mNumChannels;
-					OutputFile.write(reinterpret_cast<const char*>(&iNumChannels), sizeof(unsigned int));
+	//				unsigned int iNumChannels = pAnimation->mNumChannels;
+	//				OutputFile.write(reinterpret_cast<const char*>(&iNumChannels), sizeof(unsigned int));
 
-					for (size_t j = 0; j < iNumChannels; j++)
-					{
-						aiNodeAnim* pChannel = pAnimation->mChannels[j];
+	//				for (size_t j = 0; j < iNumChannels; j++)
+	//				{
+	//					aiNodeAnim* pChannel = pAnimation->mChannels[j];
 
-						unsigned int iChannelNameSize = pChannel->mNodeName.length + 1;
-						OutputFile.write(reinterpret_cast<const char*>(&iChannelNameSize), sizeof(unsigned int));
-						OutputFile.write(pChannel->mNodeName.C_Str(), iChannelNameSize);
+	//					unsigned int iChannelNameSize = pChannel->mNodeName.length + 1;
+	//					OutputFile.write(reinterpret_cast<const char*>(&iChannelNameSize), sizeof(unsigned int));
+	//					OutputFile.write(pChannel->mNodeName.C_Str(), iChannelNameSize);
 
-						unsigned int iBoneIndex{};
-						auto iter = std::find_if(BoneNames.begin(), BoneNames.end(), [&pChannel, &iBoneIndex](aiString strBoneName)
-						{
-							if (pChannel->mNodeName == strBoneName)
-							{
-								return true;
-							}
-							iBoneIndex++;
-							return false;
-						});
-						if (iter == BoneNames.end())
-						{
-							std::cout << "Failed to Find matching name" << std::endl;
-						}
+	//					unsigned int iBoneIndex{};
+	//					auto iter = std::find_if(BoneNames.begin(), BoneNames.end(), [&pChannel, &iBoneIndex](aiString strBoneName)
+	//					{
+	//						if (pChannel->mNodeName == strBoneName)
+	//						{
+	//							return true;
+	//						}
+	//						iBoneIndex++;
+	//						return false;
+	//					});
+	//					if (iter == BoneNames.end())
+	//					{
+	//						std::cout << "Failed to Find matching name" << std::endl;
+	//					}
 
-						OutputFile.write(reinterpret_cast<const char*>(&iBoneIndex), sizeof(unsigned int));
+	//					OutputFile.write(reinterpret_cast<const char*>(&iBoneIndex), sizeof(unsigned int));
 
-						unsigned int iNumKeyFrame = max(pChannel->mNumScalingKeys, pChannel->mNumRotationKeys);
-						iNumKeyFrame = max(iNumKeyFrame, pChannel->mNumPositionKeys);
-						OutputFile.write(reinterpret_cast<const char*>(&iNumKeyFrame), sizeof(unsigned int));
+	//					unsigned int iNumKeyFrame = max(pChannel->mNumScalingKeys, pChannel->mNumRotationKeys);
+	//					iNumKeyFrame = max(iNumKeyFrame, pChannel->mNumPositionKeys);
+	//					OutputFile.write(reinterpret_cast<const char*>(&iNumKeyFrame), sizeof(unsigned int));
 
-						float fTime{};
-						float fScaleW{ 0.f };
-						float fPositionW{ 1.f };
+	//					float fTime{};
+	//					float fScaleW{ 0.f };
+	//					float fPositionW{ 1.f };
 
-						for (size_t k = 0; k < iNumKeyFrame; k++)
-						{
-							if (k < pChannel->mNumScalingKeys)
-							{
-								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mScalingKeys[k].mValue), sizeof(aiVector3D));
-								OutputFile.write(reinterpret_cast<const char*>(&fScaleW), sizeof(float));
+	//					for (size_t k = 0; k < iNumKeyFrame; k++)
+	//					{
+	//						if (k < pChannel->mNumScalingKeys)
+	//						{
+	//							OutputFile.write(reinterpret_cast<const char*>(&pChannel->mScalingKeys[k].mValue), sizeof(aiVector3D));
+	//							OutputFile.write(reinterpret_cast<const char*>(&fScaleW), sizeof(float));
 
-								fTime = static_cast<float>(pChannel->mScalingKeys[k].mTime);
-							}
-							if (k < pChannel->mNumRotationKeys)
-							{
-								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.x), sizeof(float));
-								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.y), sizeof(float));
-								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.z), sizeof(float));
-								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.w), sizeof(float));
+	//							fTime = static_cast<float>(pChannel->mScalingKeys[k].mTime);
+	//						}
+	//						if (k < pChannel->mNumRotationKeys)
+	//						{
+	//							OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.x), sizeof(float));
+	//							OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.y), sizeof(float));
+	//							OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.z), sizeof(float));
+	//							OutputFile.write(reinterpret_cast<const char*>(&pChannel->mRotationKeys[k].mValue.w), sizeof(float));
 
-								fTime = static_cast<float>(pChannel->mRotationKeys[k].mTime);
-							}
-							if (k < pChannel->mNumPositionKeys)
-							{
-								OutputFile.write(reinterpret_cast<const char*>(&pChannel->mPositionKeys[k].mValue), sizeof(aiVector3D));
-								OutputFile.write(reinterpret_cast<const char*>(&fPositionW), sizeof(float));
+	//							fTime = static_cast<float>(pChannel->mRotationKeys[k].mTime);
+	//						}
+	//						if (k < pChannel->mNumPositionKeys)
+	//						{
+	//							OutputFile.write(reinterpret_cast<const char*>(&pChannel->mPositionKeys[k].mValue), sizeof(aiVector3D));
+	//							OutputFile.write(reinterpret_cast<const char*>(&fPositionW), sizeof(float));
 
-								fTime = static_cast<float>(pChannel->mPositionKeys[k].mTime);
-							}
+	//							fTime = static_cast<float>(pChannel->mPositionKeys[k].mTime);
+	//						}
 
-							OutputFile.write(reinterpret_cast<const char*>(&fTime), sizeof(float));
-						}
-					}
-				}
-			#pragma endregion
+	//						OutputFile.write(reinterpret_cast<const char*>(&fTime), sizeof(float));
+	//					}
+	//				}
+	//			}
+	//		#pragma endregion
 
-				iNumAnimFiles++;
-				OutputFile.close();
-			}
-		}
-	}
+	//			iNumAnimFiles++;
+	//			OutputFile.close();
+	//		}
+	//	}
+	//}
 #pragma endregion
 
 	std::cout << "Animation Models : Convert Success!\n" << std::endl;
@@ -481,21 +493,17 @@ int main()
 			{
 				continue;
 			}
-			std::cout << "Converting... " << entry.path().filename().string() << std::endl;
+			std::cout << "Reading... " << entry.path().filename().string() << std::endl;
 
-			// InputFilePath를 기준으로한 상대경로를 구한다.
 			std::filesystem::path relative_path = std::filesystem::relative(entry.path().parent_path(), InputFilePath);
 
-			// 연산자(/)로 Output경로와 위에서 구한 경로를 합친다.
 			std::filesystem::path OutputFilePath = std::filesystem::path("../Output/Player/") / relative_path;
 
-			// 폴더가 없을때 생성한다.
 			if (!std::filesystem::exists(OutputFilePath))
 			{
 				std::filesystem::create_directories(OutputFilePath);
 			}
 
-			// 최종 파일 경로를 생성
 			OutputFilePath /= entry.path().stem().string() + ".hyuntraplayer";
 			std::ofstream OutputFile(OutputFilePath.c_str(), std::ios::binary);
 
@@ -505,6 +513,12 @@ int main()
 				if (pAIScene)
 				{
 					std::cout << "Read File Succssefully" << std::endl;
+				}
+				else
+				{
+					std::cout << "Read Fail!!!!!!!!!!!!" << std::endl;
+					std::cout << std::endl;
+					std::cout << std::endl;
 				}
 				std::vector<aiString> BoneNames{};
 			#pragma region Bones

@@ -7,6 +7,7 @@
 #include "VIBuffer_Terrain.h"
 #include "Transform.h"
 #include "Model.h"
+#include "Custom_Model.h"
 
 BEGIN(Engine)
 
