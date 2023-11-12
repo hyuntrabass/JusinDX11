@@ -19,7 +19,7 @@ public:
 
 private:
 	_bool m_isMoveMode{ true };
-	_float m_fMouseSensor{ 0.05f };
+	_float m_fMouseSensor{ 0.1f };
 	_float m_fSpeed{ 10.f };
 
 public:

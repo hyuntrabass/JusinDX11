@@ -190,10 +190,11 @@
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\SlotBase_Skill.h" />
     <ClInclude Include="..\Public\SlotBase_Tool.h" />
-    <ClInclude Include="..\public\Start_Btn.h" />
+    <ClInclude Include="..\public\Button_Common.h" />
     <ClInclude Include="..\public\SubTitle.h" />
     <ClInclude Include="..\public\Terrain.h" />
     <ClInclude Include="..\public\Title_Custom.h" />
+    <ClInclude Include="..\Public\UI_Manager.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -224,10 +225,11 @@
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\SlotBase_Skill.cpp" />
     <ClCompile Include="..\Private\SlotBase_Tool.cpp" />
-    <ClCompile Include="..\private\Start_Btn.cpp" />
+    <ClCompile Include="..\private\Button_Common.cpp" />
     <ClCompile Include="..\private\SubTitle.cpp" />
     <ClCompile Include="..\private\Terrain.cpp" />
     <ClCompile Include="..\private\Title_Custom.cpp" />
+    <ClCompile Include="..\Private\UI_Manager.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>

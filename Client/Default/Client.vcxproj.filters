@@ -153,9 +153,6 @@
     <ClInclude Include="..\public\Logo.h">
       <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Start_Btn.h">
-      <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Loading_Screen.h">
       <Filter>02.GameObjects\99.LoadingObjects</Filter>
     </ClInclude>
@@ -213,6 +210,12 @@
     <ClInclude Include="..\public\MapCollider.h">
       <Filter>02.GameObjects\02.Terrain\Collider</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_Manager.h">
+      <Filter>02.GameObjects\00.GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Button_Common.h">
+      <Filter>02.GameObjects\00.GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -256,9 +259,6 @@
       <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Logo.cpp">
-      <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Start_Btn.cpp">
       <Filter>02.GameObjects\00.GUI\00.MainTitle</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Loading_Screen.cpp">
@@ -314,6 +314,12 @@
     </ClCompile>
     <ClCompile Include="..\private\MapCollider.cpp">
       <Filter>02.GameObjects\02.Terrain\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Manager.cpp">
+      <Filter>02.GameObjects\00.GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Button_Common.cpp">
+      <Filter>02.GameObjects\00.GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

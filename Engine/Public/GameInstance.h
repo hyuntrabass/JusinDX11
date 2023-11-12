@@ -66,12 +66,6 @@ public: // Light Manager
 	HRESULT Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc);
 	const LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, _uint iIndex) const;
 
-public: // Button Manager
-	void Register_Button(_uint iLevelIndex, const wstring& strButtonTag);
-
-	void Set_ButtonState(_uint iLevelIndex, const wstring& strButtonTag, const _bool& bState);
-	const _bool Get_ButtonState(_uint iLevelIndex, const wstring& strButtonTag) const;
-
 public: // PipeLine
 	_float4 Get_CameraPos() const;
 	_float4 Get_CameraLook() const;
@@ -122,11 +116,10 @@ private:
 	class CInput_Device* m_pInput_Manager{ nullptr };
 	class CLight_Manager* m_pLight_Manager{ nullptr };
 	class CFont_Manager* m_pFont_Manager{ nullptr };
-	class CButton_Manager* m_pButton_Manager{ nullptr };
 
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };
-	class CPhysX_Manager* m_pPhysX{ nullptr };
+	class CPhysX_Manager* m_pPhysX_Manager{ nullptr };
 
 private:
 	_uint m_iCameraModeIndex{};

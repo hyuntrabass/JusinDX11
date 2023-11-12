@@ -1,5 +1,6 @@
 #include "Level_Logo.h"
 #include "Level_Loading.h"
+#include "UI_Manager.h"
 
 CLevel_Logo::CLevel_Logo(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -10,19 +11,9 @@ HRESULT CLevel_Logo::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_LOGO);
 
-	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
+	if (FAILED(CUI_Manager::Get_Instance()->Ready_UI_Logo()))
 	{
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_Layer_Logo(TEXT("Layer_Logo"))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(Ready_Layer_Buttons(TEXT("Layer_MainTitle_Buttons"))))
-	{
-		return E_FAIL;
+		MSG_BOX("Failed to Ready UI_Logo");
 	}
 
 	return S_OK;
@@ -45,85 +36,6 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 
 HRESULT CLevel_Logo::Render()
 {
-	return S_OK;
-}
-
-HRESULT CLevel_Logo::Ready_Layer_BackGround(const wstring& strLayerTag)
-{
-	if (!m_pGameInstance)
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_BackGround"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_Logo::Ready_Layer_Logo(const wstring& strLayerTag)
-{
-	if (!m_pGameInstance)
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_Logo"))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_SubTitle"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_Logo::Ready_Layer_Buttons(const wstring& strLayerTag)
-{
-	if (!m_pGameInstance)
-	{
-		return E_FAIL;
-	}
-
-	ButtonInfo Info{};
-
-	Info.strText = TEXT("새 게임");
-	Info.vPos = _float2(g_iWinSizeX >> 1, g_iWinSizeY >> 1);
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_StartBtn"), &Info)))
-	{
-		return E_FAIL;
-	}
-
-	Info.strText = TEXT("불러오기");
-	Info.vPos = _float2(g_iWinSizeX >> 1, (g_iWinSizeY >> 1) + 100.f);
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_StartBtn"), &Info)))
-	{
-		return E_FAIL;
-	}
-
-	Info.strText = TEXT("설정");
-	Info.vPos = _float2(g_iWinSizeX >> 1, (g_iWinSizeY >> 1) + 200.f);
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_StartBtn"), &Info)))
-	{
-		return E_FAIL;
-	}
-
-	Info.strText = TEXT("게임 종료");
-	Info.vPos = _float2(g_iWinSizeX >> 1, (g_iWinSizeY >> 1) + 300.f);
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, strLayerTag, TEXT("Prototype_GameObject_StartBtn"), &Info)))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 

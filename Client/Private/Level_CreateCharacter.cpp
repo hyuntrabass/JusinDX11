@@ -1,6 +1,7 @@
 #include "Level_CreateCharacter.h"
 #include "Level_Loading.h"
 #include "Camera.h"
+#include "UI_Manager.h"
 
 CLevel_CreateCharacter::CLevel_CreateCharacter(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -26,9 +27,9 @@ HRESULT CLevel_CreateCharacter::Init()
 		MSG_BOX("Failed to Ready Camera");
 	}
 
-	if (FAILED(Ready_UIs()))
+	if (FAILED(CUI_Manager::Get_Instance()->Ready_UI_Tuto()))
 	{
-		MSG_BOX("Failed to Ready UIs");
+		MSG_BOX("Failed to Ready UI_Tuto");
 	}
 
 	return S_OK;
@@ -100,26 +101,6 @@ HRESULT CLevel_CreateCharacter::Ready_Light()
 HRESULT CLevel_CreateCharacter::Ready_Player()
 {
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Prototype_GameObject_Player"))))
-	{
-		return E_FAIL;
-	}
-
-	return S_OK;
-}
-
-HRESULT CLevel_CreateCharacter::Ready_UIs()
-{
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_PartsWindow"), TEXT("Prototype_GameObject_PartsWindow"))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_BackGroundCC"))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_Title"), TEXT("Prototype_GameObject_Title_Custom"))))
 	{
 		return E_FAIL;
 	}

@@ -42,8 +42,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CREATECHARACTER)
 	{
-		if (m_pModelCom->IsAnimationFinished(0))
-		//if (m_pModelCom->IsAnimationFinished(etc_Exit))
+		if (m_pModelCom->IsAnimationFinished(etc_Hand_Spray))
 		{
 			m_pModelCom->Set_Animation(Idle_Loop, true);
 		}
@@ -55,24 +54,24 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 	else
 	{
-		m_pModelCom->Set_Animation(CharaSelect_Idle, true);
+		//m_pModelCom->Set_Animation(CharaSelect_Idle, true);
 		Customize(fTimeDelta);
 		if (m_pGameInstance->Key_Down(DIK_J))
 		{
-			m_iPartNum--;
+			m_iPartNum[PT_HEAD]--;
 		}
 		if (m_pGameInstance->Key_Down(DIK_K))
 		{
-			m_iPartNum++;
+			m_iPartNum[PT_HEAD]++;
 		}
-		m_pModelCom->Select_Part(PT_UPPER_BODY, m_iPartNum);
-		m_pModelCom->Select_Part(PT_HEAD, m_iPartNum);
-		m_pModelCom->Select_Part(PT_FACE, m_iPartNum);
-		m_pModelCom->Select_Part(PT_LOWER_BODY, m_iPartNum);
-		//if (m_pModelCom->IsAnimationFinished(etc_Appearance))
-		//{
-		//	m_pModelCom->Set_Animation(Idle_Loop, true);
-		//}
+		m_pModelCom->Select_Part(PT_UPPER_BODY, m_iPartNum[PT_UPPER_BODY]);
+		m_pModelCom->Select_Part(PT_HEAD, m_iPartNum[PT_HEAD]);
+		m_pModelCom->Select_Part(PT_FACE, m_iPartNum[PT_FACE]);
+		m_pModelCom->Select_Part(PT_LOWER_BODY, m_iPartNum[PT_LOWER_BODY]);
+		if (m_pModelCom->IsAnimationFinished(etc_Appearance))
+		{
+			m_pModelCom->Set_Animation(CharaSelect_Idle, true);
+		}
 	}
 
 	m_pModelCom->Play_Animation(fTimeDelta);
@@ -353,8 +352,7 @@ void CPlayer::Customize(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_RETURN))
 	{
-		m_pModelCom->Set_Animation(0);
-		//m_pModelCom->Set_Animation(etc_Exit);
+		m_pModelCom->Set_Animation(etc_Hand_Spray);
 	}
 }
 

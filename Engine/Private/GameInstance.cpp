@@ -6,7 +6,6 @@
 #include "Picking.h"
 #include "Light_Manager.h"
 #include "Font_Manager.h"
-#include "Button_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -64,12 +63,6 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
-	m_pButton_Manager = CButton_Manager::Create(iNumLevels);
-	if (!m_pButton_Manager)
-	{
-		return E_FAIL;
-	}
-
 	m_pPipeLine = CPipeLine::Create();
 	if (!m_pPipeLine)
 	{
@@ -82,8 +75,8 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
-	m_pPhysX = CPhysX_Manager::Create(*ppDevice, *ppContext, this);
-	if (!m_pPhysX)
+	m_pPhysX_Manager = CPhysX_Manager::Create(*ppDevice, *ppContext, this);
+	if (!m_pPhysX_Manager)
 	{
 		return E_FAIL;
 	}
@@ -110,7 +103,7 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	m_pPicking->Tick();
 	if (m_iLevelIndex != 1)
 	{
-		m_pPhysX->Tick(fTimeDelta);
+		m_pPhysX_Manager->Tick(fTimeDelta);
 	}
 
 	m_pObject_Manager->Release_DeadObjects();
@@ -423,37 +416,6 @@ const LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iLevelIndex, _uint iIndex) 
 	return m_pLight_Manager->Get_LightDesc(iLevelIndex, iIndex);
 }
 
-void CGameInstance::Register_Button(_uint iLevelIndex, const wstring& strButtonTag)
-{
-	if (!m_pButton_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pButton_Manager is NULL");
-	}
-
-	return m_pButton_Manager->Register_Button(iLevelIndex, strButtonTag);
-}
-
-void CGameInstance::Set_ButtonState(_uint iLevelIndex, const wstring& strButtonTag, const _bool& bState)
-{
-	if (!m_pButton_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pButton_Manager is NULL");
-	}
-
-	return m_pButton_Manager->Set_ButtonState(iLevelIndex, strButtonTag, bState);
-}
-
-const _bool CGameInstance::Get_ButtonState(_uint iLevelIndex, const wstring& strButtonTag) const
-{
-	if (!m_pButton_Manager)
-	{
-		MSG_BOX("FATAL ERROR : m_pButton_Manager is NULL");
-	}
-
-	return m_pButton_Manager->Get_ButtonState(iLevelIndex, strButtonTag);
-
-}
-
 _float4 CGameInstance::Get_CameraPos() const
 {
 	if (!m_pPipeLine)
@@ -596,58 +558,58 @@ HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& str
 
 void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup)
 {
-	if (!m_pPhysX)
+	if (!m_pPhysX_Manager)
 	{
-		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
+		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
 	}
 
-	m_pPhysX->Init_PhysX_Character(pTransform, eGroup);
+	m_pPhysX_Manager->Init_PhysX_Character(pTransform, eGroup);
 }
 
 void CGameInstance::Init_PhysX_MoveableObject(CTransform* pTransform)
 {
-	if (!m_pPhysX)
+	if (!m_pPhysX_Manager)
 	{
-		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
+		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
 	}
 
-	m_pPhysX->Init_PhysX_MoveableObject(pTransform);
+	m_pPhysX_Manager->Init_PhysX_MoveableObject(pTransform);
 }
 
 void CGameInstance::Apply_PhysX(CTransform* pTransform)
 {
-	if (!m_pPhysX)
+	if (!m_pPhysX_Manager)
 	{
-		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
+		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
 	}
 
-	m_pPhysX->Apply_PhysX(pTransform);
+	m_pPhysX_Manager->Apply_PhysX(pTransform);
 }
 
 void CGameInstance::Update_PhysX(CTransform* pTransform)
 {
-	if (!m_pPhysX)
+	if (!m_pPhysX_Manager)
 	{
-		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
+		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
 	}
 
-	m_pPhysX->Update_PhysX(pTransform);
+	m_pPhysX_Manager->Update_PhysX(pTransform);
 }
 
 PxRigidStatic* CGameInstance::Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices)
 {
-	if (!m_pPhysX)
+	if (!m_pPhysX_Manager)
 	{
-		MSG_BOX("FATAL ERROR : m_pPhysX is NULL");
+		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
 	}
 
-	return m_pPhysX->Cook_StaticMesh(iNumVertices, pVertices, iNumIndices, pIndices);
+	return m_pPhysX_Manager->Cook_StaticMesh(iNumVertices, pVertices, iNumIndices, pIndices);
 }
 
 #ifdef _DEBUG
 HRESULT CGameInstance::Render_PhysX()
 {
-	if (FAILED(m_pPhysX->Render()))
+	if (FAILED(m_pPhysX_Manager->Render()))
 	{
 		MSG_BOX("Failed to Render PhysX");
 		return E_FAIL;
@@ -687,8 +649,7 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pFont_Manager);
-	Safe_Release(m_pButton_Manager);
-	Safe_Release(m_pPhysX);
+	Safe_Release(m_pPhysX_Manager);
 }
 
 void CGameInstance::Release_Engine()

@@ -142,7 +142,7 @@ private:
 private:
 	_bool m_isRunning{};
 	_float m_fSliding{ 1.f };
-	_uint m_iPartNum{};
+	_uint m_iPartNum[PT_END]{};
 
 private:
 	void Move(_float fTimeDelta);

@@ -163,7 +163,7 @@ HRESULT CLoader::Load_Logo()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_StartBtn"), CStart_Btn::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Button_Common"), CButton_Common::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -202,7 +202,7 @@ HRESULT CLoader::Load_CreateCharacter()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Custom_W"), CCustom_Model::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Custom_w/Mesh/Bone.hyuntraplayer"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Custom_W"), CCustom_Model::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Custom_w/Mesh/SK_CHR_Face.ao.hyuntraplayer"))))
 	{
 		return E_FAIL;
 	}

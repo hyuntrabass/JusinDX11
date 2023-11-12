@@ -1,23 +1,24 @@
-#include "Start_Btn.h"
+#include "Button_Common.h"
+#include "UI_Manager.h"
 
-CStart_Btn::CStart_Btn(_dev pDevice, _context pContext)
+CButton_Common::CButton_Common(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
 {
 }
 
-CStart_Btn::CStart_Btn(const CStart_Btn& rhs)
+CButton_Common::CButton_Common(const CButton_Common& rhs)
 	: COrthographicObject(rhs)
 {
 }
 
-HRESULT CStart_Btn::Init_Prototype()
+HRESULT CButton_Common::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CStart_Btn::Init(void* pArg)
+HRESULT CButton_Common::Init(void* pArg)
 {
-	if (FAILED(Add_Components()))
+	if (!pArg)
 	{
 		return E_FAIL;
 	}
@@ -27,32 +28,27 @@ HRESULT CStart_Btn::Init(void* pArg)
 	m_fSizeX = 740 * 0.75f;
 	m_fSizeY = 90 * 0.75f;
 
-	//m_fX = g_iWinSizeX >> 1;
-	//m_fY = g_iWinSizeY >> 1;
 	m_fX = Info.vPos.x;
 	m_fY = Info.vPos.y;
-
-	m_fDepth = 0.9f;
-
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
-	
+	m_fDepth = Info.fDepth;
+	m_iButtonType = Info.iButtonType;
 	m_strButtonTag = Info.strText;
 
-	m_pGameInstance->Register_Button(LEVEL_LOGO, m_strButtonTag);
+	if (FAILED(Add_Components()))
+	{
+		return E_FAIL;
+	}
 
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+
+	m_pGameInstance->Register_Button(m_pGameInstance->Get_CurrentLevelIndex(), m_strButtonTag);
+	
 	return S_OK;
 }
 
-void CStart_Btn::Tick(_float fTimeDelta)
+void CButton_Common::Tick(_float fTimeDelta)
 {
-	GET_CURSOR_POINT(pt);
-	RECT rc = { 
-		static_cast<_long>(m_fX - m_fSizeX * 0.5f), 
-		static_cast<_long>(m_fY - 43.f), 
-		static_cast<_long>(m_fX + m_fSizeX * 0.5f), 
-		static_cast<_long>(m_fY) };
-
-	if (PtInRect(&rc, pt))
+	if (m_pUI_Manager->is_Activated())
 	{
 		m_iIndex = 1;
 		m_Color = Colors::Gold;
@@ -68,12 +64,12 @@ void CStart_Btn::Tick(_float fTimeDelta)
 	}
 }
 
-void CStart_Btn::Late_Tick(_float fTimeDelta)
+void CButton_Common::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
 }
 
-HRESULT CStart_Btn::Render()
+HRESULT CButton_Common::Render()
 {
 	if (FAILED(Bind_ShaderResources()))
 	{
@@ -108,7 +104,7 @@ HRESULT CStart_Btn::Render()
 	return S_OK;
 }
 
-HRESULT CStart_Btn::Add_Components()
+HRESULT CButton_Common::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
@@ -133,7 +129,7 @@ HRESULT CStart_Btn::Add_Components()
 	return S_OK;
 }
 
-HRESULT CStart_Btn::Bind_ShaderResources()
+HRESULT CButton_Common::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_ViewMatrix))
 		|| FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
@@ -159,33 +155,33 @@ HRESULT CStart_Btn::Bind_ShaderResources()
 	return S_OK;
 }
 
-CStart_Btn* CStart_Btn::Create(_dev pDevice, _context pContext)
+CButton_Common* CButton_Common::Create(_dev pDevice, _context pContext)
 {
-	CStart_Btn* pInstance = new CStart_Btn(pDevice, pContext);
+	CButton_Common* pInstance = new CButton_Common(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CStart_Btn");
+		MSG_BOX("Failed to Create : CButton_Common");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CStart_Btn::Clone(void* pArg)
+CGameObject* CButton_Common::Clone(void* pArg)
 {
-	CStart_Btn* pInstance = new CStart_Btn(*this);
+	CButton_Common* pInstance = new CButton_Common(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CStart_Btn");
+		MSG_BOX("Failed to Clone : CButton_Common");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CStart_Btn::Free()
+void CButton_Common::Free()
 {
 	__super::Free();
 

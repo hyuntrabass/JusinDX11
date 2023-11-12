@@ -43,6 +43,9 @@ namespace Client
 	{
 		wstring strText{};
 		_float2 vPos{};
+		_uint iButtonType{};
+		_float fDepth{};
+		_uint iButtonID{};
 	};
 }
 

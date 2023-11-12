@@ -15,11 +15,6 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-private:
-	HRESULT Ready_Layer_BackGround(const wstring& strLayerTag);
-	HRESULT Ready_Layer_Logo(const wstring& strLayerTag);
-	HRESULT Ready_Layer_Buttons(const wstring& strLayerTag);
-
 public:
 	static CLevel_Logo* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;

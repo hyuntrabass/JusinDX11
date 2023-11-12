@@ -3,6 +3,7 @@
 #include "Level_Loading.h"
 #include "Loading_Screen.h"
 #include "Loading_Icon.h"
+#include "UI_Manager.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -35,6 +36,11 @@ HRESULT CMainApp::Init()
 	GraphicDesc.isWindowed = TRUE;
 
 	m_pGameInstance->Init_Engine(LEVEL_END, GraphicDesc, &m_pDevice, &m_pContext);
+
+	if (FAILED(CUI_Manager::Get_Instance()->Init(m_pGameInstance)))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(Ready_Prototype_Component_For_Static()))
 	{

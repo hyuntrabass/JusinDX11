@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CStart_Btn final : public COrthographicObject
+class CButton_Common final : public COrthographicObject
 {
-	CStart_Btn(_dev pDevice, _context pContext);
-	CStart_Btn(const CStart_Btn& rhs);
-	virtual ~CStart_Btn() = default;
+	CButton_Common(_dev pDevice, _context pContext);
+	CButton_Common(const CButton_Common& rhs);
+	virtual ~CButton_Common() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -22,8 +22,10 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
+	class CUI_Manager* m_pUI_Manager{ nullptr };
 
 private:
+	_uint m_iButtonType{};
 	wstring m_strButtonTag{};
 	_uint m_iIndex{};
 	_vector m_Color{};
@@ -33,7 +35,7 @@ private:
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CStart_Btn* Create(_dev pDevice, _context pContext);
+	static CButton_Common* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
