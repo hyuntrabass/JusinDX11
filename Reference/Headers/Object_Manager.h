@@ -13,6 +13,7 @@ public:
 	HRESULT Init(_uint iNumLevels);
 	HRESULT Add_Prototype(const wstring& strPrototypeTag, class CGameObject* pPrototype);
 	HRESULT Add_Layer(_uint iLevelIndex, const wstring strLayerTag, const wstring& strPrototypeTag, void* pArg);
+	CGameObject* Clone_Object(const wstring& strPrototypeTag, void* pArg);
 	void Tick(_float fTimeDelta);
 	void Late_Tick(_float fTimeDelta);
 	void Release_DeadObjects();

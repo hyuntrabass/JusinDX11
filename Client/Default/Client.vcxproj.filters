@@ -109,6 +109,9 @@
     <Filter Include="02.GameObjects\02.Terrain\Collider">
       <UniqueIdentifier>{cb5d90e4-68f2-4033-b4d9-22fc6efdfc8b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player\Parts">
+      <UniqueIdentifier>{caf63f51-0e3f-4b19-8fe7-1a72f98d5ce3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -216,6 +219,9 @@
     <ClInclude Include="..\public\Button_Common.h">
       <Filter>02.GameObjects\00.GUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\BodyPart.h">
+      <Filter>02.GameObjects\03.Player\Parts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -320,6 +326,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Button_Common.cpp">
       <Filter>02.GameObjects\00.GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BodyPart.cpp">
+      <Filter>02.GameObjects\03.Player\Parts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

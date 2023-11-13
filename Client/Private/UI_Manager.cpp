@@ -7,33 +7,34 @@ _uint CUI_Manager::m_iButtonIDs[LEVEL_END]{};
 
 void CUI_Manager::Register_Button(_uint iLevelIndex, const wstring& strButtonTag)
 {
-    m_pButtons[iLevelIndex].emplace(strButtonTag, false);
+    //m_pButtons[iLevelIndex].emplace(strButtonTag, false);
 }
 
 void CUI_Manager::Set_ButtonState(_uint iLevelIndex, const wstring& strButtonTag, const _bool& bState)
 {
-    auto iter = m_pButtons[iLevelIndex].find(strButtonTag);
+    //auto iter = m_pButtons[iLevelIndex].find(strButtonTag);
 
-    if (iter == m_pButtons[iLevelIndex].end())
-    {
-        MSG_BOX("No such Button!");
-        return;
-    }
+    //if (iter == m_pButtons[iLevelIndex].end())
+    //{
+    //    MSG_BOX("No such Button!");
+    //    return;
+    //}
 
-    iter->second = bState;
+    //iter->second = bState;
 }
 
 const _bool CUI_Manager::Get_ButtonState(_uint iLevelIndex, const wstring& strButtonTag) const
 {
-    auto iter = m_pButtons[iLevelIndex].find(strButtonTag);
+    //auto iter = m_pButtons[iLevelIndex].find(strButtonTag);
 
-    if (iter == m_pButtons[iLevelIndex].end())
-    {
-        MSG_BOX("No such Button!");
-        return false;
-    }
+    //if (iter == m_pButtons[iLevelIndex].end())
+    //{
+    //    MSG_BOX("No such Button!");
+    //    return false;
+    //}
 
-    return iter->second;
+    //return iter->second;
+    return false;
 }
 
 const _bool CUI_Manager::is_Activated() const
@@ -135,5 +136,4 @@ HRESULT CUI_Manager::Ready_UI_Tuto()
 
 void CUI_Manager::Free()
 {
-    Safe_Delete_Array(m_pButtons);
 }

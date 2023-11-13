@@ -1,6 +1,6 @@
 #pragma once
 #include "Client_Define.h"
-#include "GameObject.h"
+#include "BodyPart.h"
 
 BEGIN(Client)
 
@@ -135,13 +135,11 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	CRenderer* m_pRendererCom{ nullptr };
-	CShader* m_pShaderCom{ nullptr };
-	CCustom_Model* m_pModelCom{ nullptr };
-
-private:
 	_bool m_isRunning{};
 	_float m_fSliding{ 1.f };
+	pair<_uint, _bool> m_Animation{};
+
+	CBodyPart* m_pBodyParts[PT_END]{};
 	_uint m_iPartNum[PT_END]{};
 
 private:
@@ -149,8 +147,7 @@ private:
 	void Customize(_float fTimeDelta);
 
 private:
-	HRESULT Add_Components();
-	HRESULT Bind_ShaderResources();
+	HRESULT Ready_Parts();
 
 public:
 	static CPlayer* Create(_dev pDevice, _context pContext);

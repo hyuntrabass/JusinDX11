@@ -2,7 +2,7 @@
 
 #include "BackGround.h"
 #include "Logo.h"
-#include "Start_Btn.h"
+#include "Button_Common.h"
 #include "Camera_Debug.h"
 #include "Camera_Main.h"
 #include "Terrain.h"
@@ -18,3 +18,4 @@
 #include "Title_Custom.h"
 #include "Sandman.h"
 #include "MapCollider.h"
+#include "BodyPart.h"

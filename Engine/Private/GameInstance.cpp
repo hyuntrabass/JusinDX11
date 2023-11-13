@@ -216,6 +216,16 @@ HRESULT CGameInstance::Add_Layer(_uint iLevelIndex, const wstring strLayerTag, c
 	return m_pObject_Manager->Add_Layer(iLevelIndex, strLayerTag, strPrototypeTag, pArg);
 }
 
+CGameObject* CGameInstance::Clone_Object(const wstring& strPrototypeTag, void* pArg)
+{
+	if (!m_pObject_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pObject_Manager is NULL");
+	}
+
+	return m_pObject_Manager->Clone_Object(strPrototypeTag, pArg);
+}
+
 CComponent* CGameInstance::Get_Component(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex)
 {
 	if (!m_pObject_Manager)

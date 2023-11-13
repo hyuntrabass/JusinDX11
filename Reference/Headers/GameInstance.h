@@ -35,6 +35,7 @@ public: // Level Manager
 public: // Object Manager
 	HRESULT Add_Prototype_GameObejct(const wstring& strPrototypeTag, class CGameObject* pPrototype);
 	HRESULT Add_Layer(_uint iLevelIndex, const wstring strLayerTag, const wstring& strPrototypeTag, void* pArg = nullptr);
+	CGameObject* Clone_Object(const wstring& strPrototypeTag, void* pArg = nullptr);
 	class CComponent* Get_Component(_uint iLevelIndex, const wstring& strLayerTag, const wstring& strComponentTag, _uint iIndex = 0);
 
 public: // Component Manager
@@ -65,12 +66,6 @@ public: // Input Manager
 public: // Light Manager
 	HRESULT Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc);
 	const LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, _uint iIndex) const;
-
-public: // Button Manager
-	void Register_Button(_uint iLevelIndex, const wstring& strButtonTag);
-
-	void Set_ButtonState(_uint iLevelIndex, const wstring& strButtonTag, const _bool& bState);
-	const _bool Get_ButtonState(_uint iLevelIndex, const wstring& strButtonTag) const;
 
 public: // PipeLine
 	_float4 Get_CameraPos() const;
@@ -122,11 +117,10 @@ private:
 	class CInput_Device* m_pInput_Manager{ nullptr };
 	class CLight_Manager* m_pLight_Manager{ nullptr };
 	class CFont_Manager* m_pFont_Manager{ nullptr };
-	class CButton_Manager* m_pButton_Manager{ nullptr };
 
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };
-	class CPhysX_Manager* m_pPhysX{ nullptr };
+	class CPhysX_Manager* m_pPhysX_Manager{ nullptr };
 
 private:
 	_uint m_iCameraModeIndex{};

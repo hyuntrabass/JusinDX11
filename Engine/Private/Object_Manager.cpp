@@ -72,6 +72,23 @@ HRESULT CObject_Manager::Add_Layer(_uint iLevelIndex, const wstring strLayerTag,
 	return S_OK;
 }
 
+CGameObject* CObject_Manager::Clone_Object(const wstring& strPrototypeTag, void* pArg)
+{
+	CGameObject* pPrototype = Find_Prototype(strPrototypeTag);
+	if (!pPrototype)
+	{
+		return nullptr;
+	}
+
+	CGameObject* pGameObject = pPrototype->Clone(pArg);
+	if (!pGameObject)
+	{
+		return nullptr;
+	}
+
+	return pGameObject;
+}
+
 void CObject_Manager::Tick(_float fTimeDelta)
 {
 	for (size_t i = 0; i < m_iNumLevels; i++)

@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "PhysX_Manager.h"
+#include "PartObject.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -18,17 +19,17 @@ HRESULT CPlayer::Init_Prototype()
 
 HRESULT CPlayer::Init(void* pArg)
 {
-	if (FAILED(Add_Components()))
+	if (FAILED(Ready_Parts()))
 	{
+		MSG_BOX("Failed to Add Parts");
 		return E_FAIL;
 	}
 
-	m_pModelCom->Set_Animation(etc_Appearance);
+	m_Animation = { etc_Appearance, false };
 
 	m_pTransformCom->Set_Speed(5.f);
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
-	//m_pGameInstance->Init_PhysX_MoveableObject(m_pTransformCom);
 
 	return S_OK;
 }
@@ -42,9 +43,9 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CREATECHARACTER)
 	{
-		if (m_pModelCom->IsAnimationFinished(etc_Hand_Spray))
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(etc_Hand_Spray))
 		{
-			m_pModelCom->Set_Animation(Idle_Loop, true);
+			m_Animation = { Idle_Loop, true };
 		}
 		//m_pGameInstance->Apply_PhysX(m_pTransformCom);
 
@@ -54,7 +55,6 @@ void CPlayer::Tick(_float fTimeDelta)
 	}
 	else
 	{
-		//m_pModelCom->Set_Animation(CharaSelect_Idle, true);
 		Customize(fTimeDelta);
 		if (m_pGameInstance->Key_Down(DIK_J))
 		{
@@ -64,23 +64,28 @@ void CPlayer::Tick(_float fTimeDelta)
 		{
 			m_iPartNum[PT_HEAD]++;
 		}
-		m_pModelCom->Select_Part(PT_UPPER_BODY, m_iPartNum[PT_UPPER_BODY]);
-		m_pModelCom->Select_Part(PT_HEAD, m_iPartNum[PT_HEAD]);
-		m_pModelCom->Select_Part(PT_FACE, m_iPartNum[PT_FACE]);
-		m_pModelCom->Select_Part(PT_LOWER_BODY, m_iPartNum[PT_LOWER_BODY]);
-		if (m_pModelCom->IsAnimationFinished(etc_Appearance))
+		//m_pModelCom->Select_Part(PT_UPPER_BODY, m_iPartNum[PT_UPPER_BODY]);
+		//m_pModelCom->Select_Part(PT_HEAD, m_iPartNum[PT_HEAD]);
+		//m_pModelCom->Select_Part(PT_FACE, m_iPartNum[PT_FACE]);
+		//m_pModelCom->Select_Part(PT_LOWER_BODY, m_iPartNum[PT_LOWER_BODY]);
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(etc_Appearance))
 		{
-			m_pModelCom->Set_Animation(CharaSelect_Idle, true);
+			m_Animation = { CharaSelect_Idle, true };
 		}
 	}
 
-	m_pModelCom->Play_Animation(fTimeDelta);
-
+	for (size_t i = 0; i < PT_END; i++)
+	{
+		m_pBodyParts[i]->Tick(fTimeDelta);
+	}
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	for (size_t i = 0; i < PT_END; i++)
+	{
+		m_pBodyParts[i]->Late_Tick(fTimeDelta);
+	}
 }
 
 HRESULT CPlayer::Render()
@@ -98,60 +103,14 @@ HRESULT CPlayer::Render()
 	cout << endl;
 #endif // _DEBUG
 
-	if (FAILED(Bind_ShaderResources()))
+	for (size_t i = 0; i < PT_END; i++)
 	{
-		return E_FAIL;
-	}
-
-	for (_uint i = 0; i < PT_END; i++)
-	{
-		for (_uint j = 0; j < m_pModelCom->Get_NumMeshes(i); j++)
+		if (FAILED(m_pBodyParts[i]->Render()))
 		{
-			m_pModelCom->Bind_Material(i, m_pShaderCom, "g_DiffuseTexture", j, TextureType::Diffuse);
-			m_pModelCom->Bind_BoneMatrices(i, j, m_pShaderCom, "g_BoneMatrices");
-			m_pShaderCom->Begin(0);
-			m_pModelCom->Render(i, j);
+			return E_FAIL;
 		}
 	}
 
-	//_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-	//for (_uint i = 0; i < iNumMeshes; i++)
-	//{
-	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
-	//	{
-	//	}
-
-	//	_float fNorTex = 0.f;
-	//	if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
-	//	{
-	//		fNorTex = 0.f;
-	//	}
-	//	else
-	//	{
-	//		fNorTex = 1.f;
-	//	}
-
-	//	if (FAILED(m_pShaderCom->Bind_RawValue("g_fNorTex", &fNorTex, sizeof _float)))
-	//	{
-	//		return E_FAIL;
-	//	}
-
-	//	if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
-	//	{
-	//		return E_FAIL;
-	//	}
-
-	//	if (FAILED(m_pShaderCom->Begin(0)))
-	//	{
-	//		return E_FAIL;
-	//	}
-
-	//	if (FAILED(m_pModelCom->Render(i)))
-	//	{
-	//		return E_FAIL;
-	//	}
-	//}
 	return S_OK;
 }
 
@@ -200,15 +159,15 @@ void CPlayer::Move(_float fTimeDelta)
 		m_pTransformCom->Jump(10.f);
 		if (hasMoved)
 		{
-			m_pModelCom->Set_Animation(Jump_Front);
+			m_Animation = { Jump_Front, false };
 		}
 		else
 		{
-			m_pModelCom->Set_Animation(Jump_Vertical);
+			m_Animation = { Jump_Vertical, false };
 		}
 	}
 
-	_uint iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
+	_uint iCurrentAnimIndex = m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex();
 
 	if (hasMoved /*&& iCurrentAnimIndex != Land*/)
 	{
@@ -224,29 +183,29 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				if (m_isRunning)
 				{
-					m_pModelCom->Set_Animation(Run_Loop, true);
+					m_Animation = { Run_Loop, true };
 					m_fSliding = 1.f;
 				}
 				else
 				{
-					m_pModelCom->Set_Animation(Walk_Loop, true);
+					m_Animation = { Walk_Loop, true };
 				}
 			}
 		}
 	}
 	else if (!m_pTransformCom->Is_Jumping())
 	{
-		iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
+		iCurrentAnimIndex = m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex();
 
 		if (iCurrentAnimIndex == Run_Loop || iCurrentAnimIndex == Run_End)
 		{
-			if (m_pModelCom->IsAnimationFinished(Run_End))
+			if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Run_End))
 			{
-				m_pModelCom->Set_Animation(Idle_Loop, true);
+				m_Animation = { Idle_Loop, true };
 			}
 			else
 			{
-				m_pModelCom->Set_Animation(Run_End);
+				m_Animation = { Run_End, false };
 				m_pTransformCom->Set_Speed(15.f);
 				if (m_fSliding > 0.f)
 				{
@@ -258,58 +217,59 @@ void CPlayer::Move(_float fTimeDelta)
 
 		if (iCurrentAnimIndex == Walk_Loop || iCurrentAnimIndex == Walk_End)
 		{
-			if (m_pModelCom->IsAnimationFinished(Walk_End))
+			if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Walk_End))
 			{
-				m_pModelCom->Set_Animation(Idle_Loop, true);
+				//m_pModelCom->Set_Animation(Idle_Loop, true);
+				m_Animation = { Idle_Loop, true };
 			}
 			else
 			{
-				m_pModelCom->Set_Animation(Walk_End);
+				//m_pModelCom->Set_Animation(Walk_End);
+				m_Animation = { Walk_End, true };
 			}
 		}
 	}
 
-	iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
+	iCurrentAnimIndex = m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex();
 
 	if (iCurrentAnimIndex == Jump_Vertical || iCurrentAnimIndex == Fall_Vertical_Loop)
 	{
-		if (m_pModelCom->IsAnimationFinished(Jump_Vertical))
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Vertical))
 		{
-			m_pModelCom->Set_Animation(Fall_Vertical_Loop, true);
+			m_Animation = { Fall_Vertical_Loop, true };
 		}
 		if (!m_pTransformCom->Is_Jumping())
 		{
-			m_pModelCom->Set_Animation(Land);
+			m_Animation = { Land, false };
 		}
 	}
 	else if (iCurrentAnimIndex == Jump_Front || iCurrentAnimIndex == Fall_Front_Loop)
 	{
-		if (m_pModelCom->IsAnimationFinished(Jump_Front))
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Front))
 		{
-			m_pModelCom->Set_Animation(Fall_Front_Loop, true);
+			m_Animation = { Fall_Front_Loop, true };
 		}
 		if (!m_pTransformCom->Is_Jumping())
 		{
-			m_pModelCom->Set_Animation(Land);
+			m_Animation = { Land, false };
 		}
 	}
 	else if (iCurrentAnimIndex == Land)
 	{
-		if (m_pModelCom->IsAnimationFinished(Land))
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Land))
 		{
-			m_pModelCom->Set_Animation(Idle_Loop, true);
+			m_Animation = { Idle_Loop, true };
 		}
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
 	{
-		m_pModelCom->Set_Animation(0);
-		//m_pModelCom->Set_Animation(Attack_Aerial_DownStrike);
+		m_Animation = { Sasuke_Attack_TurnKick_Right, false };
 	}
-	if (m_pModelCom->IsAnimationFinished(0))
-	//if (m_pModelCom->IsAnimationFinished(Attack_Aerial_DownStrike))
+
+	if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Sasuke_Attack_TurnKick_Right))
 	{
-		m_pModelCom->Set_Animation(Land);
+		m_Animation = { Idle_Loop, true };
 	}
 
 	m_pTransformCom->Gravity(fTimeDelta);
@@ -352,79 +312,45 @@ void CPlayer::Customize(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_RETURN))
 	{
-		m_pModelCom->Set_Animation(etc_Hand_Spray);
+
 	}
 }
 
-HRESULT CPlayer::Add_Components()
+HRESULT CPlayer::Ready_Parts()
 {
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
+	BODYPART_DESC Desc;
+
+	Desc.pParentTransform = m_pTransformCom;
+	Desc.Animation = &m_Animation;
+
+	Desc.eType = PT_FACE;
+	Desc.iNumVariations = 2;
+	m_pBodyParts[PT_FACE] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
+	if (!m_pBodyParts[PT_FACE])
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	Desc.eType = PT_HEAD;
+	Desc.iNumVariations = 2;
+	m_pBodyParts[PT_HEAD] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
+	if (!m_pBodyParts[PT_HEAD])
 	{
 		return E_FAIL;
 	}
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Custom_W"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	
+	Desc.eType = PT_UPPER_BODY;
+	Desc.iNumVariations = 2;
+	m_pBodyParts[PT_UPPER_BODY] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
+	if (!m_pBodyParts[PT_UPPER_BODY])
 	{
 		return E_FAIL;
 	}
-
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Pain"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-	//{
-	//	return E_FAIL;
-	//}
-
-	return S_OK;
-}
-
-HRESULT CPlayer::Bind_ShaderResources()
-{
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::View))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::Proj))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_CREATECHARACTER, 0);
-	if (!pLightDesc)
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof _float4)))
+	
+	Desc.eType = PT_LOWER_BODY;
+	Desc.iNumVariations = 2;
+	m_pBodyParts[PT_LOWER_BODY] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
+	if (!m_pBodyParts[PT_LOWER_BODY])
 	{
 		return E_FAIL;
 	}
@@ -462,7 +388,8 @@ void CPlayer::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pShaderCom);
+	for (size_t i = 0; i < PT_END; i++)
+	{
+		Safe_Release(m_pBodyParts[i]);
+	}
 }

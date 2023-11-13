@@ -41,7 +41,7 @@ HRESULT CButton_Common::Init(void* pArg)
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
-	m_pGameInstance->Register_Button(m_pGameInstance->Get_CurrentLevelIndex(), m_strButtonTag);
+	m_pUI_Manager->Register_Button(m_pGameInstance->Get_CurrentLevelIndex(), m_strButtonTag);
 	
 	return S_OK;
 }
@@ -54,7 +54,7 @@ void CButton_Common::Tick(_float fTimeDelta)
 		m_Color = Colors::Gold;
 		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
 		{
-			m_pGameInstance->Set_ButtonState(LEVEL_LOGO, m_strButtonTag, true);
+			m_pUI_Manager->Set_ButtonState(LEVEL_LOGO, m_strButtonTag, true);
 		}
 	}
 	else

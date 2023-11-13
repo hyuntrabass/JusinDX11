@@ -166,6 +166,7 @@
   <ItemGroup>
     <ClInclude Include="..\public\BackGround.h" />
     <ClInclude Include="..\public\BackGround_CreateCharacter.h" />
+    <ClInclude Include="..\public\BodyPart.h" />
     <ClInclude Include="..\public\Camera_Debug.h" />
     <ClInclude Include="..\public\Camera_Main.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
@@ -203,6 +204,7 @@
   <ItemGroup>
     <ClCompile Include="..\private\BackGround.cpp" />
     <ClCompile Include="..\private\BackGround_CreateCharacter.cpp" />
+    <ClCompile Include="..\private\BodyPart.cpp" />
     <ClCompile Include="..\private\Camera_Debug.cpp" />
     <ClCompile Include="..\private\Camera_Main.cpp" />
     <ClCompile Include="..\private\HpBar_Player.cpp" />

@@ -198,14 +198,75 @@ HRESULT CLoader::Load_CreateCharacter()
 
 	m_strLoadingText = L"CreateCharacter : Loading Model";
 #pragma region Model
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Pain"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Pain/Mesh/Pain.hyuntraanimmesh"))))
+	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Pain"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Pain/Mesh/Pain.hyuntraanimmesh"))))
+	//{
+	//	return E_FAIL;
+	//}
+
+	_uint iIndex{};
+	string strInputFilePath = "../Bin/Resources/AnimMesh/Custom_w/Head/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
-		return E_FAIL;
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_HEAD) + L"_" + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+		}
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Custom_W"), CCustom_Model::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Custom_w/Mesh/SK_CHR_Face.ao.hyuntraplayer"))))
+
+	iIndex = {0};
+	strInputFilePath = "../Bin/Resources/AnimMesh/Custom_w/Face/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
-		return E_FAIL;
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_FACE) + L"_" + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+		}
 	}
+
+	iIndex = {0};
+	strInputFilePath = "../Bin/Resources/AnimMesh/Custom_w/Lower_Body/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_LOWER_BODY) + L"_" + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
+	iIndex = {0};
+	strInputFilePath = "../Bin/Resources/AnimMesh/Custom_w/Upper_Body/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Model_") + to_wstring(PT_UPPER_BODY) + L"_" + to_wstring(iIndex++);
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"CreateCharacter : Loading Shader";
@@ -234,6 +295,11 @@ HRESULT CLoader::Load_CreateCharacter()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Player"), CPlayer::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_BodyPart"), CBodyPart::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
