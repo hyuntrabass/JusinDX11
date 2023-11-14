@@ -1,4 +1,5 @@
 #include "Camera_Main.h"
+#include "UI_Manager.h"
 
 CCamera_Main::CCamera_Main(_dev pDevice, _context pContext)
 	: CCamera(pDevice, pContext)
@@ -51,8 +52,28 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CREATECHARACTER)
 	{
-		m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.f, 1.5f, 2.5f, 1.f));
-		m_pTransformCom->Look_At(XMVectorSet(1.f, 1.f, 0.f, 1.f));
+		_uint iPageIndex = CUI_Manager::Get_Instance()->Get_PageIndex();
+		switch (iPageIndex)
+		{
+		case 1: // 머리, 얼굴
+		case 2:
+			m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.042009832f, 1.62391f, 0.535985f, 1.f));
+			m_pTransformCom->Look_At_Dir(XMVectorSet(0.332016f, -0.050258351f, -0.941938f, 0.f));
+			break;
+		case 3: // 상의
+			m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.108874832f, 1.32057f, 1.113212f, 1.f));
+			m_pTransformCom->Look_At_Dir(XMVectorSet(0.306376f, -0.095230853f, -0.947139f, 0.f));
+			break;
+		case 4: // 하의
+			m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.416429432f, 0.817432f, 1.532582f, 1.f));
+			m_pTransformCom->Look_At_Dir(XMVectorSet(0.2184516f, -0.155187153f, -0.963422f, 0.f));
+			break;
+		default:
+			m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.f, 1.5f, 2.5f, 1.f));
+			m_pTransformCom->Look_At_Dir(XMVectorSet(0.365148, -0.182574, -0.912871, 0.f));
+			break;
+		}
+
 		__super::Tick(fTimeDelta);
 		return;
 	}

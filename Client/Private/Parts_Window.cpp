@@ -22,13 +22,13 @@ HRESULT CParts_Window::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_fSizeX = 1072.f * 0.5f;
-	m_fSizeY = 732.f * 0.6f;
+	m_fSizeX = 642.f * 0.8f;
+	m_fSizeY = 596.f * 0.8f;
 
 	m_fX = 400.f;
 	m_fY = g_iWinSizeY * 0.5f;
 
-	m_fDepth = 1.f;
+	m_fDepth = 0.8f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 

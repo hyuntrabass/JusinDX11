@@ -91,16 +91,19 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 HRESULT CPlayer::Render()
 {
 #ifdef _DEBUG
-	GET_CURSOR_POINT(pt);
-	_vector Pos = m_pTransformCom->Get_State(State::Pos);
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD());
-	cout << "Cursor X : " << pt.x << endl;
-	cout << "Cursor Y : " << pt.y << endl;
-	cout << endl;
-	cout << "PlayerPos X :" << Pos.m128_f32[0] << endl;
-	cout << "PlayerPos Y :" << Pos.m128_f32[1] << endl;
-	cout << "PlayerPos Z :" << Pos.m128_f32[2] << endl;
-	cout << endl;
+	if (m_pGameInstance->Get_CameraModeIndex() == CM_MAIN)
+	{
+		GET_CURSOR_POINT(pt);
+		_vector Pos = m_pTransformCom->Get_State(State::Pos);
+		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), COORD());
+		cout << "Cursor X : " << pt.x << endl;
+		cout << "Cursor Y : " << pt.y << endl;
+		cout << endl;
+		cout << "PlayerPos X :" << Pos.m128_f32[0] << endl;
+		cout << "PlayerPos Y :" << Pos.m128_f32[1] << endl;
+		cout << "PlayerPos Z :" << Pos.m128_f32[2] << endl;
+		cout << endl;
+	}
 #endif // _DEBUG
 
 	for (size_t i = 0; i < PT_END; i++)
@@ -310,10 +313,6 @@ void CPlayer::Customize(_float fTimeDelta)
 		m_pTransformCom->Set_Scale(fScale);
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_RETURN))
-	{
-
-	}
 }
 
 HRESULT CPlayer::Ready_Parts()
@@ -323,32 +322,32 @@ HRESULT CPlayer::Ready_Parts()
 	Desc.pParentTransform = m_pTransformCom;
 	Desc.Animation = &m_Animation;
 
+	Desc.eType = PT_HEAD;
+	Desc.iNumVariations = 11;
+	m_pBodyParts[PT_HEAD] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
+	if (!m_pBodyParts[PT_HEAD])
+	{
+		return E_FAIL;
+	}
+
 	Desc.eType = PT_FACE;
-	Desc.iNumVariations = 2;
+	Desc.iNumVariations = 4;
 	m_pBodyParts[PT_FACE] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
 	if (!m_pBodyParts[PT_FACE])
 	{
 		return E_FAIL;
 	}
 
-	Desc.eType = PT_HEAD;
-	Desc.iNumVariations = 2;
-	m_pBodyParts[PT_HEAD] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
-	if (!m_pBodyParts[PT_HEAD])
-	{
-		return E_FAIL;
-	}
-	
 	Desc.eType = PT_UPPER_BODY;
-	Desc.iNumVariations = 2;
+	Desc.iNumVariations = 16;
 	m_pBodyParts[PT_UPPER_BODY] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
 	if (!m_pBodyParts[PT_UPPER_BODY])
 	{
 		return E_FAIL;
 	}
-	
+
 	Desc.eType = PT_LOWER_BODY;
-	Desc.iNumVariations = 2;
+	Desc.iNumVariations = 11;
 	m_pBodyParts[PT_LOWER_BODY] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
 	if (!m_pBodyParts[PT_LOWER_BODY])
 	{

@@ -179,7 +179,7 @@ HRESULT CLoader::Load_CreateCharacter()
 {
 	m_strLoadingText = L"CreateCharacter : Loading Texture";
 #pragma region Texture
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_CREATECHARACTER, TEXT("Prototype_Component_Texture_PartsWindow"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/CreateCharacter/T_UI_Roll_Parts_Window_02_BC.dds")))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_CREATECHARACTER, TEXT("Prototype_Component_Texture_PartsWindow"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/CreateCharacter/customMenu.png")))))
 	{
 		return E_FAIL;
 	}
@@ -190,6 +190,11 @@ HRESULT CLoader::Load_CreateCharacter()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_CREATECHARACTER, TEXT("Prototype_Component_Texture_Title_Custom"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/CreateCharacter/Title_Custom.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_CREATECHARACTER, TEXT("Prototype_Component_Texture_CustomBtn"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/CreateCharacter/CustomButton%d.png"), 2))))
 	{
 		return E_FAIL;
 	}

@@ -45,7 +45,7 @@ namespace Client
 		_float2 vPos{};
 		_uint iButtonType{};
 		_float fDepth{};
-		_uint iButtonID{};
+		class CButton_Common** ppButton{ nullptr };
 	};
 }
 

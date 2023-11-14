@@ -1,6 +1,6 @@
 #pragma once
 #include "Client_Define.h"
-#include "Base.h"
+#include "BodyPart.h"
 
 BEGIN(Engine)
 class CGameInstance;
@@ -16,25 +16,37 @@ private:
 	virtual ~CUI_Manager() = default;
 
 public:
-	void Register_Button(_uint iLevelIndex, const wstring& strButtonTag);
+	void Set_ButtonState(const wstring& strButtonTag, const _bool& bState);
 
-	void Set_ButtonState(_uint iLevelIndex, const wstring& strButtonTag, const _bool& bState);
-
-	const _bool Get_ButtonState(_uint iLevelIndex, const wstring& strButtonTag) const;
+	const _bool Is_ButtonPushed(_uint iIndex) const;
 	const _bool is_Activated() const;
+	const _uint& Get_PartIndex(PART_TYPE eType);
+	const _uint& Get_PageIndex();
 
 public:
 	HRESULT Init(CGameInstance* pGameInstance);
+	void Tick(_float fTimeDelta);
+	void Late_Tick(_float fTimeDelta);
+	HRESULT Render();
 
 public:
 	HRESULT Ready_UI_Logo();
-	HRESULT Ready_UI_Tuto();
+	HRESULT Ready_UI_Custom();
 
 private:
 	CGameInstance* m_pGameInstance{ nullptr };
 
-	map<const wstring, _bool> m_pButtons[LEVEL_END]{};
-	static _uint m_iButtonIDs[LEVEL_END];
+	vector<class CButton_Common*> m_Buttons{};
+	_uint m_iButtonIndex{};
+	_uint m_iPageIndex{};
+	_uint m_iScroll{};
+	_uint m_iNumButtons{};
+
+	_uint m_iPartIndex[PT_END]{};
+
+private:
+	void Customization();
+	void Clear_Buttons();
 
 public:
 	virtual void Free() override;

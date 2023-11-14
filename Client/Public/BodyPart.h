@@ -40,6 +40,8 @@ public:
 	_bool IsAnimationFinished(_uint iAnimIndex);
 	_uint Get_CurrentAnimationIndex();
 
+	void Set_ModelIndex(_uint iIndex);
+
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
@@ -48,7 +50,7 @@ private:
 private:
 	PART_TYPE m_eType{};
 	_uint m_iNumVariations{};
-	_uint m_iSelectedModelIndex{};
+	_uint m_iSelectedModelIndex{2};
 	pair<_uint, _bool>* m_Animation{};
 
 private:

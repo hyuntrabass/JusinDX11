@@ -11,6 +11,31 @@ CButton_Common::CButton_Common(const CButton_Common& rhs)
 {
 }
 
+const _bool& CButton_Common::Is_Pushed() const
+{
+	return m_isPushed;
+}
+
+const _bool& CButton_Common::Is_Empty() const
+{
+	return m_strButtonTag.empty();
+}
+
+void CButton_Common::Push(_bool isPushed)
+{
+	m_isPushed = isPushed;
+}
+
+void CButton_Common::Activate_Button(_bool isActivate)
+{
+	m_isActivated = isActivate;
+}
+
+void CButton_Common::Set_ButtonText(const wstring& strText)
+{
+	m_strButtonTag = strText;
+}
+
 HRESULT CButton_Common::Init_Prototype()
 {
 	return S_OK;
@@ -25,8 +50,7 @@ HRESULT CButton_Common::Init(void* pArg)
 
 	ButtonInfo Info = *reinterpret_cast<ButtonInfo*>(pArg);
 
-	m_fSizeX = 740 * 0.75f;
-	m_fSizeY = 90 * 0.75f;
+	*Info.ppButton = this;
 
 	m_fX = Info.vPos.x;
 	m_fY = Info.vPos.y;
@@ -34,58 +58,102 @@ HRESULT CButton_Common::Init(void* pArg)
 	m_iButtonType = Info.iButtonType;
 	m_strButtonTag = Info.strText;
 
+	switch (m_iButtonType)
+	{
+	case 0:
+		m_fSizeX = 740 * 0.75f;
+		m_fSizeY = 90 * 0.75f;
+		m_fTextScale = 0.7f;
+		break;
+	case 1:
+		m_fSizeX = 740 * 0.65f;
+		m_fSizeY = 90 * 0.65f;
+		m_fTextScale = 0.65f;
+		break;
+	}
+
 	if (FAILED(Add_Components()))
 	{
+		*Info.ppButton = nullptr;
 		return E_FAIL;
 	}
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
-	m_pUI_Manager->Register_Button(m_pGameInstance->Get_CurrentLevelIndex(), m_strButtonTag);
-	
 	return S_OK;
 }
 
 void CButton_Common::Tick(_float fTimeDelta)
 {
-	if (m_pUI_Manager->is_Activated())
+	if (m_isActivated)
 	{
 		m_iIndex = 1;
-		m_Color = Colors::Gold;
-		if (m_pGameInstance->Mouse_Down(DIM_LBUTTON))
+
+		switch (m_iButtonType)
 		{
-			m_pUI_Manager->Set_ButtonState(LEVEL_LOGO, m_strButtonTag, true);
+		case 0:
+			m_Color = Colors::Gold;
+			break;
+		case 1:
+			m_Color = Colors::Black;
+			break;
 		}
 	}
 	else
 	{
-		m_Color = Colors::White;
+		switch (m_iButtonType)
+		{
+		case 0:
+			m_Color = Colors::White;
+			break;
+		case 1:
+			m_Color = Colors::Black;
+			break;
+		}
 		m_iIndex = 0;
 	}
 }
 
 void CButton_Common::Late_Tick(_float fTimeDelta)
 {
+	m_isPushed = false;
 	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
 }
 
 HRESULT CButton_Common::Render()
 {
+	if (m_strButtonTag.size() == 0)
+	{
+		return S_OK;
+	}
+
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(1)))
+	switch (m_iButtonType)
 	{
-		return E_FAIL;
+	case 0:
+		if (FAILED(m_pShaderCom->Begin(1)))
+		{
+			return E_FAIL;
+		}
+		break;
+	case 1:
+		if (FAILED(m_pShaderCom->Begin(0)))
+		{
+			return E_FAIL;
+		}
+		break;
 	}
 
 	if (FAILED(m_pVIBufferCom->Render()))
 	{
 		return E_FAIL;
 	}
-	m_pGameInstance->Render_Text(TEXT("Font_Malang"), m_strButtonTag, _float2(m_fX, m_fY), 0.7f, m_Color);
+	m_pGameInstance->Render_Text(TEXT("Font_Malang"), m_strButtonTag, _float2(m_fX, m_fY), m_fTextScale, m_Color);
+
 	//if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", 1)))
 	//{
 	//	return E_FAIL;
@@ -121,9 +189,20 @@ HRESULT CButton_Common::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_StartBtn"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	switch (m_iButtonType)
 	{
-		return E_FAIL;
+	case 0:
+		if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_StartBtn"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+		{
+			return E_FAIL;
+		}
+		break;
+	case 1:
+		if (FAILED(__super::Add_Component(LEVEL_CREATECHARACTER, TEXT("Prototype_Component_Texture_CustomBtn"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+		{
+			return E_FAIL;
+		}
+		break;
 	}
 
 	return S_OK;
@@ -142,14 +221,25 @@ HRESULT CButton_Common::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResourceArray(m_pShaderCom, "g_TextureArray")))
+	switch (m_iButtonType)
 	{
-		return E_FAIL;
-	}
+	case 0:
+		if (FAILED(m_pTextureCom->Bind_ShaderResourceArray(m_pShaderCom, "g_TextureArray")))
+		{
+			return E_FAIL;
+		}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_TexIndex", &m_iIndex, sizeof m_iIndex)))
-	{
-		return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_TexIndex", &m_iIndex, sizeof m_iIndex)))
+		{
+			return E_FAIL;
+		}
+		break;
+	case 1:
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iIndex)))
+		{
+			return E_FAIL;
+		}
+		break;
 	}
 
 	return S_OK;

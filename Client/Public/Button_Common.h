@@ -11,6 +11,14 @@ class CButton_Common final : public COrthographicObject
 	virtual ~CButton_Common() = default;
 
 public:
+	const _bool& Is_Pushed() const;
+	const _bool& Is_Empty() const;
+
+	void Push(_bool isPushed);
+	void Activate_Button(_bool isActivate);
+	void Set_ButtonText(const wstring& strText);
+
+public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
@@ -29,6 +37,9 @@ private:
 	wstring m_strButtonTag{};
 	_uint m_iIndex{};
 	_vector m_Color{};
+	_bool m_isActivated{};
+	_bool m_isPushed{};
+	_float m_fTextScale{};
 
 private:
 	HRESULT Add_Components();

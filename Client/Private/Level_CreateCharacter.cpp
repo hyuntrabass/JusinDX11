@@ -27,7 +27,7 @@ HRESULT CLevel_CreateCharacter::Init()
 		MSG_BOX("Failed to Ready Camera");
 	}
 
-	if (FAILED(CUI_Manager::Get_Instance()->Ready_UI_Tuto()))
+	if (FAILED(CUI_Manager::Get_Instance()->Ready_UI_Custom()))
 	{
 		MSG_BOX("Failed to Ready UI_Tuto");
 	}

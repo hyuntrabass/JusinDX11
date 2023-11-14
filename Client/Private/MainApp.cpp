@@ -46,12 +46,12 @@ HRESULT CMainApp::Init()
 	{
 		return E_FAIL;
 	}
-	
+
 	if (FAILED(Ready_Prototype_For_Loading()))
 	{
 		return E_FAIL;
 	}
-	
+
 	if (FAILED(Open_Level(LEVEL_LOGO)))
 	{
 		return E_FAIL;
@@ -69,7 +69,9 @@ void CMainApp::Tick(_float fTimeDelta)
 
 	m_fTimeAcc += fTimeDelta;
 
+	CUI_Manager::Get_Instance()->Tick(fTimeDelta);
 	m_pGameInstance->Tick_Engine(fTimeDelta);
+	CUI_Manager::Get_Instance()->Late_Tick(fTimeDelta);
 }
 
 HRESULT CMainApp::Render()
@@ -86,14 +88,32 @@ HRESULT CMainApp::Render()
 		m_iFrameCount = 0;
 	}
 
-	m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 1.f, 0.f, 1.f));
-	m_pGameInstance->Clear_DepthStencil_View();
+	if (FAILED(m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 1.f, 0.f, 1.f))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Clear_DepthStencil_View()))
+	{
+		return E_FAIL;
+	}
 
-	m_pRenderer->Draw_RenderGroup();
+	if (FAILED(m_pRenderer->Draw_RenderGroup()))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(CUI_Manager::Get_Instance()->Render()))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Render_PhysX()))
+	{
+		return E_FAIL;
+	}
 
-	m_pGameInstance->Render_PhysX();
-	
-	m_pGameInstance->Present();
+	if (FAILED(m_pGameInstance->Present()))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }

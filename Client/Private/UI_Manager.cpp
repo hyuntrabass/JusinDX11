@@ -1,139 +1,622 @@
 #include "UI_Manager.h"
 #include "GameInstance.h"
+#include "Button_Common.h"
 
 IMPLEMENT_SINGLETON(CUI_Manager)
 
-_uint CUI_Manager::m_iButtonIDs[LEVEL_END]{};
-
-void CUI_Manager::Register_Button(_uint iLevelIndex, const wstring& strButtonTag)
+void CUI_Manager::Set_ButtonState(const wstring& strButtonTag, const _bool& bState)
 {
-    //m_pButtons[iLevelIndex].emplace(strButtonTag, false);
+	//auto iter = m_Buttons[iLevelIndex].find(strButtonTag);
+
+	//if (iter == m_Buttons[iLevelIndex].end())
+	//{
+	//    MSG_BOX("No such Button!");
+	//    return;
+	//}
+
+	//iter->second = bState;
 }
 
-void CUI_Manager::Set_ButtonState(_uint iLevelIndex, const wstring& strButtonTag, const _bool& bState)
+const _bool CUI_Manager::Is_ButtonPushed(_uint iIndex) const
 {
-    //auto iter = m_pButtons[iLevelIndex].find(strButtonTag);
-
-    //if (iter == m_pButtons[iLevelIndex].end())
-    //{
-    //    MSG_BOX("No such Button!");
-    //    return;
-    //}
-
-    //iter->second = bState;
-}
-
-const _bool CUI_Manager::Get_ButtonState(_uint iLevelIndex, const wstring& strButtonTag) const
-{
-    //auto iter = m_pButtons[iLevelIndex].find(strButtonTag);
-
-    //if (iter == m_pButtons[iLevelIndex].end())
-    //{
-    //    MSG_BOX("No such Button!");
-    //    return false;
-    //}
-
-    //return iter->second;
-    return false;
+	return m_Buttons[iIndex]->Is_Pushed();
 }
 
 const _bool CUI_Manager::is_Activated() const
 {
-    return _bool();
+	return _bool();
+}
+
+const _uint& CUI_Manager::Get_PartIndex(PART_TYPE eType)
+{
+	return m_iPartIndex[eType];
+}
+
+const _uint& CUI_Manager::Get_PageIndex()
+{
+	return m_iPageIndex;
 }
 
 HRESULT CUI_Manager::Init(CGameInstance* pGameInstance)
 {
-    if (!pGameInstance)
-    {
-        return E_FAIL;
-    }
+	if (!pGameInstance)
+	{
+		return E_FAIL;
+	}
 
-    m_pGameInstance = pGameInstance;
+	m_pGameInstance = pGameInstance;
 
-    return S_OK;
+	return S_OK;
+}
+
+void CUI_Manager::Tick(_float fTimeDelta)
+{
+	if (m_Buttons.empty())
+	{
+		return;
+	}
+
+	m_Buttons[m_iButtonIndex]->Activate_Button(false);
+
+	if (m_pGameInstance->Key_Down(DIK_DOWN))
+	{
+		m_iButtonIndex++;
+
+		if (m_iButtonIndex >= m_Buttons.size())
+		{
+			if (m_iNumButtons > m_Buttons.size() && m_iButtonIndex + m_iScroll < m_iNumButtons)
+			{
+				m_iScroll++;
+				m_iButtonIndex--;
+			}
+			else
+			{
+				m_iScroll = 0;
+				m_iButtonIndex = 0;
+			}
+		}
+
+		while (m_Buttons[m_iButtonIndex]->Is_Empty())
+		{
+			m_iButtonIndex++;
+
+			if (m_iButtonIndex >= m_Buttons.size())
+			{
+				m_iButtonIndex = 0;
+			}
+		}
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_UP))
+	{
+		if (m_iButtonIndex == 0)
+		{
+			if (m_iScroll)
+			{
+				m_iScroll--;
+			}
+			else
+			{
+				m_iButtonIndex = m_Buttons.size() - 1;
+				if (m_iNumButtons > m_Buttons.size())
+				{
+					m_iScroll = m_iNumButtons - m_Buttons.size();
+				}
+			}
+		}
+		else
+		{
+			m_iButtonIndex--;
+		}
+
+		while (m_Buttons[m_iButtonIndex]->Is_Empty())
+		{
+			if (m_iButtonIndex == 0)
+			{
+				m_iScroll = m_iNumButtons - m_Buttons.size();
+				m_iButtonIndex = m_Buttons.size() - 1;
+			}
+			else
+			{
+				m_iButtonIndex--;
+			}
+		}
+	}
+
+	m_Buttons[m_iButtonIndex]->Activate_Button(true);
+
+	if (m_pGameInstance->Key_Down(DIK_RETURN))
+	{
+		m_Buttons[m_iButtonIndex]->Push(true);
+	}
+
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CREATECHARACTER)
+	{
+		Customization();
+	}
+}
+
+void CUI_Manager::Late_Tick(_float fTimeDelta)
+{
+}
+
+HRESULT CUI_Manager::Render()
+{
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CREATECHARACTER)
+	{
+		m_pGameInstance->Render_Text(TEXT("Font_Malang"), TEXT("부위 선택"), _float2(400.f, 155.f), 0.6f, Colors::Gold);
+	}
+
+	return S_OK;
 }
 
 HRESULT CUI_Manager::Ready_UI_Logo()
 {
-    if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_BackGround"))))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_BackGround"))))
+	{
+		return E_FAIL;
+	}
 
-    if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_Logo"), TEXT("Prototype_GameObject_Logo"))))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_Logo"), TEXT("Prototype_GameObject_Logo"))))
+	{
+		return E_FAIL;
+	}
 
-    if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_Logo"), TEXT("Prototype_GameObject_SubTitle"))))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_Logo"), TEXT("Prototype_GameObject_SubTitle"))))
+	{
+		return E_FAIL;
+	}
 
-    ButtonInfo Info{};
+	ButtonInfo Info{};
+	CButton_Common* pButton{ nullptr };
+	Info.fDepth = 0.9f;
+	Info.iButtonType = 0;
+	Info.ppButton = &pButton;
 
-    Info.strText = TEXT("새 게임");
-    Info.vPos = _float2(g_iWinSizeX >> 1, g_iWinSizeY >> 1);
-    Info.fDepth = 0.9f;
-    Info.iButtonType = 0;
-    Info.iButtonID = m_iButtonIDs[LEVEL_LOGO]++;
+	Info.strText = TEXT("새 게임");
+	Info.vPos = _float2(g_iWinSizeX >> 1, g_iWinSizeY >> 1);
 
-    if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_MainTitle_Buttons"), TEXT("Prototype_GameObject_Button_Common"), &Info)))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_MainTitle_Buttons"), TEXT("Prototype_GameObject_Button_Common"), &Info)))
+	{
+		return E_FAIL;
+	}
+	m_Buttons.emplace_back(pButton);
 
-    Info.strText = TEXT("불러오기");
-    Info.vPos = _float2(g_iWinSizeX >> 1, (g_iWinSizeY >> 1) + 100.f);
-    Info.iButtonID = m_iButtonIDs[LEVEL_LOGO]++;
+	Info.strText = TEXT("불러오기");
+	Info.vPos = _float2(g_iWinSizeX >> 1, (g_iWinSizeY >> 1) + 100.f);
 
-    if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_MainTitle_Buttons"), TEXT("Prototype_GameObject_Button_Common"), &Info)))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_MainTitle_Buttons"), TEXT("Prototype_GameObject_Button_Common"), &Info)))
+	{
+		return E_FAIL;
+	}
+	m_Buttons.emplace_back(pButton);
 
-    Info.strText = TEXT("설정");
-    Info.vPos = _float2(g_iWinSizeX >> 1, (g_iWinSizeY >> 1) + 200.f);
-    Info.iButtonID = m_iButtonIDs[LEVEL_LOGO]++;
+	Info.strText = TEXT("설정");
+	Info.vPos = _float2(g_iWinSizeX >> 1, (g_iWinSizeY >> 1) + 200.f);
 
-    if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_MainTitle_Buttons"), TEXT("Prototype_GameObject_Button_Common"), &Info)))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_MainTitle_Buttons"), TEXT("Prototype_GameObject_Button_Common"), &Info)))
+	{
+		return E_FAIL;
+	}
+	m_Buttons.emplace_back(pButton);
 
-    Info.strText = TEXT("게임 종료");
-    Info.vPos = _float2(g_iWinSizeX >> 1, (g_iWinSizeY >> 1) + 300.f);
-    Info.iButtonID = m_iButtonIDs[LEVEL_LOGO]++;
+	Info.strText = TEXT("게임 종료");
+	Info.vPos = _float2(g_iWinSizeX >> 1, (g_iWinSizeY >> 1) + 300.f);
 
-    if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_MainTitle_Buttons"), TEXT("Prototype_GameObject_Button_Common"), &Info)))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_LOGO, TEXT("Layer_MainTitle_Buttons"), TEXT("Prototype_GameObject_Button_Common"), &Info)))
+	{
+		return E_FAIL;
+	}
+	m_Buttons.emplace_back(pButton);
 
-    return S_OK;
+	m_iNumButtons = 4;
+
+	return S_OK;
 }
 
-HRESULT CUI_Manager::Ready_UI_Tuto()
+HRESULT CUI_Manager::Ready_UI_Custom()
 {
-    if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_PartsWindow"), TEXT("Prototype_GameObject_PartsWindow"))))
-    {
-        return E_FAIL;
-    }
+	m_Buttons.clear();
 
-    if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_BackGroundCC"))))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_PartsWindow"), TEXT("Prototype_GameObject_PartsWindow"))))
+	{
+		return E_FAIL;
+	}
 
-    if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_Title"), TEXT("Prototype_GameObject_Title_Custom"))))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_BackGround"), TEXT("Prototype_GameObject_BackGroundCC"))))
+	{
+		return E_FAIL;
+	}
 
-    return S_OK;
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_Title"), TEXT("Prototype_GameObject_Title_Custom"))))
+	{
+		return E_FAIL;
+	}
+
+	ButtonInfo Info{};
+	CButton_Common* pButton{ nullptr };
+	Info.fDepth = 0.5f;
+	Info.iButtonType = 1;
+	Info.ppButton = &pButton;
+
+	Info.vPos = _float2(400.f, 220.f);
+
+	for (size_t i = 0; i < 7; i++)
+	{
+		switch (i)
+		{
+		case 0:
+			Info.strText = TEXT("머리");
+			break;
+		case 1:
+			Info.strText = TEXT("얼굴");
+			break;
+		case 2:
+			Info.strText = TEXT("상의");
+			break;
+		case 3:
+			Info.strText = TEXT("하의");
+			break;
+		case 4:
+			Info.strText = TEXT("한벌 옷");
+			break;
+		case 5:
+		case 6:
+			Info.strText = TEXT("");
+			break;
+		}
+
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_Buttons"), TEXT("Prototype_GameObject_Button_Common"), &Info)))
+		{
+			return E_FAIL;
+		}
+		m_Buttons.emplace_back(pButton);
+
+		Info.vPos.y += 50.f;
+	}
+
+	return S_OK;
+}
+
+void CUI_Manager::Customization()
+{
+	switch (m_iPageIndex)
+	{
+	case 0: // 부위 고르기
+		m_iNumButtons = 7;
+		for (size_t i = 0; i < m_Buttons.size(); i++)
+		{
+			switch (i)
+			{
+			case 0:
+				m_Buttons[i]->Set_ButtonText(TEXT("머리"));
+				break;
+			case 1:
+				m_Buttons[i]->Set_ButtonText(TEXT("얼굴"));
+				break;
+			case 2:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의"));
+				break;
+			case 3:
+				m_Buttons[i]->Set_ButtonText(TEXT("하의"));
+				break;
+			case 4:
+				m_Buttons[i]->Set_ButtonText(TEXT("한벌 옷"));
+				break;
+			case 5:
+			case 6:
+				m_Buttons[i]->Set_ButtonText(TEXT(""));
+				break;
+			}
+		}
+
+		if (m_Buttons[0]->Is_Pushed())
+		{
+			m_Buttons[m_iButtonIndex]->Activate_Button(false);
+			m_iScroll = 0;
+			m_iButtonIndex = 0;
+			m_iPageIndex = 1;
+		}
+		else if (m_Buttons[1]->Is_Pushed())
+		{
+			m_Buttons[m_iButtonIndex]->Activate_Button(false);
+			m_iScroll = 0;
+			m_iButtonIndex = 0;
+			m_iPageIndex = 2;
+		}
+		else if (m_Buttons[2]->Is_Pushed())
+		{
+			m_Buttons[m_iButtonIndex]->Activate_Button(false);
+			m_iScroll = 0;
+			m_iButtonIndex = 0;
+			m_iPageIndex = 3;
+		}
+		else if (m_Buttons[3]->Is_Pushed())
+		{
+			m_Buttons[m_iButtonIndex]->Activate_Button(false);
+			m_iScroll = 0;
+			m_iButtonIndex = 0;
+			m_iPageIndex = 4;
+		}
+		else if (m_Buttons[4]->Is_Pushed())
+		{
+			m_Buttons[m_iButtonIndex]->Activate_Button(false);
+			m_iScroll = 0;
+			m_iButtonIndex = 0;
+			m_iPageIndex = 5;
+		}
+		break;
+	case 1: // 머리
+		m_iNumButtons = 11;
+		for (size_t i = 0; i < m_Buttons.size(); i++)
+		{
+			switch (i + m_iScroll)
+			{
+			case 0:
+				m_Buttons[i]->Set_ButtonText(TEXT("머리1"));
+				break;
+			case 1:
+				m_Buttons[i]->Set_ButtonText(TEXT("머리2"));
+				break;
+			case 2:
+				m_Buttons[i]->Set_ButtonText(TEXT("머리3"));
+				break;
+			case 3:
+				m_Buttons[i]->Set_ButtonText(TEXT("머리4"));
+				break;
+			case 4:
+				m_Buttons[i]->Set_ButtonText(TEXT("머리5"));
+				break;
+			case 5:
+				m_Buttons[i]->Set_ButtonText(TEXT("머리6"));
+				break;
+			case 6:
+				m_Buttons[i]->Set_ButtonText(TEXT("머리7"));
+				break;
+			case 7:
+				m_Buttons[i]->Set_ButtonText(TEXT("머리8"));
+				break;
+			case 8:
+				m_Buttons[i]->Set_ButtonText(TEXT("머리9"));
+				break;
+			case 9:
+				m_Buttons[i]->Set_ButtonText(TEXT("머리10"));
+				break;
+			case 10:
+				m_Buttons[i]->Set_ButtonText(TEXT("머리11"));
+				break;
+			default:
+				m_Buttons[i]->Set_ButtonText(TEXT(""));
+				break;
+			}
+		}
+
+		m_iPartIndex[PT_HEAD] = m_iButtonIndex + m_iScroll;
+
+		for (auto& pButton : m_Buttons)
+		{
+			if (pButton->Is_Pushed())
+			{
+				m_Buttons[m_iButtonIndex]->Activate_Button(false);
+				m_iPageIndex = 0;
+				m_iScroll = 0;
+				m_iButtonIndex = 0;
+				break;
+			}
+		}
+		break;
+	case 2: // 얼굴
+		m_iNumButtons = 4;
+		for (size_t i = 0; i < m_Buttons.size(); i++)
+		{
+			switch (i + m_iScroll)
+			{
+			case 0:
+				m_Buttons[i]->Set_ButtonText(TEXT("맨얼굴"));
+				break;
+			case 1:
+				m_Buttons[i]->Set_ButtonText(TEXT("붕대"));
+				break;
+			case 2:
+				m_Buttons[i]->Set_ButtonText(TEXT("마스크1"));
+				break;
+			case 3:
+				m_Buttons[i]->Set_ButtonText(TEXT("마스크2"));
+				break;
+			default:
+				m_Buttons[i]->Set_ButtonText(TEXT(""));
+				break;
+			}
+		}
+
+		m_iPartIndex[PT_FACE] = m_iButtonIndex + m_iScroll;
+
+		for (auto& pButton : m_Buttons)
+		{
+			if (pButton->Is_Pushed())
+			{
+				m_Buttons[m_iButtonIndex]->Activate_Button(false);
+				m_iPageIndex = 0;
+				m_iScroll = 0;
+				m_iButtonIndex = 0;
+				break;
+			}
+		}
+		break;
+	case 3: // 상의
+		m_iNumButtons = 14;
+		for (size_t i = 0; i < m_Buttons.size(); i++)
+		{
+			switch (i + m_iScroll)
+			{
+			case 0:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의1"));
+				break;
+			case 1:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의2"));
+				break;
+			case 2:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의3"));
+				break;
+			case 3:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의4"));
+				break;
+			case 4:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의5"));
+				break;
+			case 5:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의6"));
+				break;
+			case 6:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의7"));
+				break;
+			case 7:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의8"));
+				break;
+			case 8:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의9"));
+				break;
+			case 9:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의10"));
+				break;
+			case 10:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의11"));
+				break;
+			case 11:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의12"));
+				break;
+			case 12:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의13"));
+				break;
+			case 13:
+				m_Buttons[i]->Set_ButtonText(TEXT("상의14"));
+				break;
+			default:
+				m_Buttons[i]->Set_ButtonText(TEXT(""));
+				break;
+			}
+		}
+
+		m_iPartIndex[PT_UPPER_BODY] = m_iButtonIndex + m_iScroll;
+
+		for (auto& pButton : m_Buttons)
+		{
+			if (pButton->Is_Pushed())
+			{
+				m_Buttons[m_iButtonIndex]->Activate_Button(false);
+				m_iPageIndex = 0;
+				m_iScroll = 0;
+				m_iButtonIndex = 0;
+				break;
+			}
+		}
+		break;
+	case 4: // 하의
+		m_iNumButtons = 11;
+		for (size_t i = 0; i < m_Buttons.size(); i++)
+		{
+			switch (i + m_iScroll)
+			{
+			case 0:
+				m_Buttons[i]->Set_ButtonText(TEXT("하의1"));
+				break;
+			case 1:
+				m_Buttons[i]->Set_ButtonText(TEXT("하의2"));
+				break;
+			case 2:
+				m_Buttons[i]->Set_ButtonText(TEXT("하의3"));
+				break;
+			case 3:
+				m_Buttons[i]->Set_ButtonText(TEXT("하의4"));
+				break;
+			case 4:
+				m_Buttons[i]->Set_ButtonText(TEXT("하의5"));
+				break;
+			case 5:
+				m_Buttons[i]->Set_ButtonText(TEXT("하의6"));
+				break;
+			case 6:
+				m_Buttons[i]->Set_ButtonText(TEXT("하의7"));
+				break;
+			case 7:
+				m_Buttons[i]->Set_ButtonText(TEXT("하의8"));
+				break;
+			case 8:
+				m_Buttons[i]->Set_ButtonText(TEXT("하의9"));
+				break;
+			case 9:
+				m_Buttons[i]->Set_ButtonText(TEXT("하의10"));
+				break;
+			case 10:
+				m_Buttons[i]->Set_ButtonText(TEXT("하의11"));
+				break;
+			default:
+				m_Buttons[i]->Set_ButtonText(TEXT(""));
+				break;
+			}
+		}
+
+		m_iPartIndex[PT_LOWER_BODY] = m_iButtonIndex + m_iScroll;
+
+		for (auto& pButton : m_Buttons)
+		{
+			if (pButton->Is_Pushed())
+			{
+				m_Buttons[m_iButtonIndex]->Activate_Button(false);
+				m_iPageIndex = 0;
+				m_iScroll = 0;
+				m_iButtonIndex = 0;
+				break;
+			}
+		}
+		break;
+	case 5: // 한벌 옷
+		m_iNumButtons = 2;
+		for (size_t i = 0; i < m_Buttons.size(); i++)
+		{
+			switch (i + m_iScroll)
+			{
+			case 0:
+				m_Buttons[i]->Set_ButtonText(TEXT("루돌프"));
+				break;
+			case 1:
+				m_Buttons[i]->Set_ButtonText(TEXT("산타걸"));
+				break;
+			default:
+				m_Buttons[i]->Set_ButtonText(TEXT(""));
+				break;
+			}
+		}
+
+		m_iPartIndex[PT_UPPER_BODY] = m_iButtonIndex + m_iScroll + 14;
+		m_iPartIndex[PT_LOWER_BODY] = 100;
+
+		for (auto& pButton : m_Buttons)
+		{
+			if (pButton->Is_Pushed())
+			{
+				m_Buttons[m_iButtonIndex]->Activate_Button(false);
+				m_iPageIndex = 0;
+				m_iScroll = 0;
+				m_iButtonIndex = 0;
+				break;
+			}
+		}
+		break;
+	}
+
+}
+
+void CUI_Manager::Clear_Buttons()
+{
+	for (auto& pButton : m_Buttons)
+	{
+		Safe_Release(pButton);
+	}
+	m_Buttons.clear();
 }
 
 void CUI_Manager::Free()
 {
+	Clear_Buttons();
 }

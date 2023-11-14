@@ -22,11 +22,11 @@ HRESULT CTitle_Custom::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_fSizeX = 1000.f * 0.7f;
-	m_fSizeY = 100.f * 0.7f;
+	m_fSizeX = 1024.f * 0.5f;
+	m_fSizeY = 256.f * 0.5f;
 
 	m_fX = m_fSizeX * 0.5f;
-	m_fY = m_fSizeY * 1.f;
+	m_fY = 60.f;
 
 	m_fDepth = 1.f;
 

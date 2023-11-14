@@ -1,4 +1,5 @@
 #include "BodyPart.h"
+#include "UI_Manager.h"
 
 CBodyPart::CBodyPart(_dev pDevice, _context pContext)
 	: CPartObject(pDevice, pContext)
@@ -20,7 +21,8 @@ HRESULT CBodyPart::Init(void* pArg)
 	BODYPART_DESC Desc = *reinterpret_cast<BODYPART_DESC*>(pArg);
 
 	m_eType = Desc.eType;
-	m_Models.resize(Desc.iNumVariations, nullptr);
+	m_iNumVariations = Desc.iNumVariations;
+	m_Models.resize(m_iNumVariations, nullptr);
 
 	if (FAILED(__super::Init(Desc.pParentTransform)))
 	{
@@ -37,6 +39,13 @@ HRESULT CBodyPart::Init(void* pArg)
 
 void CBodyPart::Tick(_float fTimeDelta)
 {
+	m_iSelectedModelIndex = CUI_Manager::Get_Instance()->Get_PartIndex(m_eType);
+
+	if (m_iSelectedModelIndex > m_iNumVariations)
+	{
+		return;
+	}
+
 	m_Models[m_iSelectedModelIndex]->Set_Animation(0, true);
 
 	m_Models[m_iSelectedModelIndex]->Play_Animation(fTimeDelta);
@@ -44,6 +53,11 @@ void CBodyPart::Tick(_float fTimeDelta)
 
 void CBodyPart::Late_Tick(_float fTimeDelta)
 {
+	if (m_iSelectedModelIndex > m_iNumVariations)
+	{
+		return;
+	}
+
 	m_Worldmatrix = m_pParentTransform->Get_World_float4x4();
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
@@ -51,6 +65,11 @@ void CBodyPart::Late_Tick(_float fTimeDelta)
 
 HRESULT CBodyPart::Render()
 {
+	if (m_iSelectedModelIndex > m_iNumVariations)
+	{
+		return S_OK;
+	}
+
 	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
@@ -105,6 +124,18 @@ _bool CBodyPart::IsAnimationFinished(_uint iAnimIndex)
 _uint CBodyPart::Get_CurrentAnimationIndex()
 {
 	return m_Models[m_iSelectedModelIndex]->Get_CurrentAnimationIndex();
+}
+
+void CBodyPart::Set_ModelIndex(_uint iIndex)
+{
+	if (iIndex > m_iNumVariations)
+	{
+		m_iSelectedModelIndex = m_iNumVariations - 1;
+	}
+	else
+	{
+		m_iSelectedModelIndex = iIndex;
+	}
 }
 
 HRESULT CBodyPart::Add_Components()
