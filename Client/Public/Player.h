@@ -1,8 +1,37 @@
 #pragma once
 #include "Client_Define.h"
-#include "BodyPart.h"
+#include "GameObject.h"
 
 BEGIN(Client)
+
+enum PART_TYPE
+{
+	PT_HEAD,
+	PT_FACE,
+	PT_UPPER_BODY,
+	PT_LOWER_BODY,
+	PT_END
+};
+
+struct BODYPART_DESC
+{
+	PART_TYPE eType{};
+	_uint iNumVariations{};
+	pair<_uint, _bool>* Animation{};
+
+	CTransform* pParentTransform{ nullptr };
+};
+
+enum class Player_State
+{
+	Idle,
+	Walk,
+	Run,
+	Jump,
+	DoubleJump,
+	Beaten,
+	Attack,
+};
 
 class CPlayer final : public CGameObject
 {
@@ -12,10 +41,17 @@ private:
 		Aerial_Dash_End,
 		Aerial_Dash_Loop,
 		Aerial_Dash_Start,
-		Attack_Aerial_BigSword_DownStrike,
-		Attack_BigSword_BothHands_DoubleSlashing_Horizontally,
-		Attack_BigSword_BothHandsSlashingHorizontally,
+		Aerial_RecoveryChakra_End,
+		Aerial_RecoveryChakra_Loop,
+		Aerial_RecoveryChakra_Start,
+		Aerial_TakeMedicine,
+		Beaten_BellyDown_Small_End,
+		Beaten_BellyDown_Small_Loop,
+		Beaten_BellyDown_Small_Start,
+		Beaten_Burn_Type01,
+		Beaten_Kunai,
 		Beaten_Left,
+		Beaten_Paralysis,
 		Beaten_Right,
 		BigSword_DashStep_Behind,
 		BigSword_DashStep_Front,
@@ -26,6 +62,9 @@ private:
 		BigSword_Land,
 		BigSword_Run_End,
 		BigSword_Walk_End,
+		Boruto_etc_Win_Type01_End,
+		Boruto_etc_Win_Type01_Loop,
+		Boruto_etc_Win_Type01_Start,
 		ChakraJump_Charge_End,
 		ChakraJump_Charge_Loop,
 		ChakraJump_Charge_Start,
@@ -50,34 +89,39 @@ private:
 		Fall_Vertical_Loop,
 		GetUp,
 		GetUp_Type01,
-		Guard_Aerial_GuardHit_Front,
-		Guard_Aerial_GuardReverse,
-		Guard_Aerial_Loop,
-		Guard_BigSword_GuardReverse,
-		Guard_GuardBreak_End,
-		Guard_GuardBreak_Loop,
-		Guard_GuardBreak_Start,
-		Guard_GuardHit_Front,
-		Guard_GuardHit_Large_Left,
-		Guard_GuardHit_Large_Right,
-		Guard_GuardHit_UpFront,
-		Guard_GuardReverse,
-		Guard_Hand_GuardReverse,
-		Guard_Loop,
 		Hand_DashStep_Front,
 		Hand_HeightLand,
 		Hand_Idle_Loop,
 		Hand_Land,
 		Hand_Run_End,
 		Hand_Walk_End,
-		HandSeal_WoodenDragon_Loop,
-		HandSeal_WoodenDragon_Start,
 		HeightLand,
 		Idle_Loop,
 		Jump_Front,
 		Jump_Vertical,
 		Kunai_DashStep_Front,
+		Kunai_HeightLand,
+		Kunai_Idle_Loop,
+		Kunai_Land,
+		Kunai_Run_End,
+		Kunai_Walk_End,
 		Land,
+		Land_toChidoriCharge,
+		Land_toD23NJ4Charge,
+		Land_toRasengunCharge,
+		Land_toRecoveryChakra,
+		Ninjutsu_Aerial_LaughingMonk,
+		Ninjutsu_Aerial_LightningBlade_Charge_Loop,
+		Ninjutsu_Aerial_LightningBlade_Charge_Start,
+		Ninjutsu_Aerial_LightningBlade_End,
+		Ninjutsu_Aerial_LightningBlade_Loop,
+		Ninjutsu_Aerial_LightningBlade_Start,
+		Ninjutsu_LightningBlade_Attack_End,
+		Ninjutsu_LightningBlade_Charge_Lv2toLv3,
+		Ninjutsu_LightningBlade_Charge_Lv2toLv3_Conect_toRun,
+		Ninjutsu_LightningBlade_Charge_Lv2toLv3_Loop,
+		Ninjutsu_LightningBlade_Run_Loop,
+		Ninjutsu_TrueRasenShuriken,
 		PaperBomb_Put,
 		RecoveryChakra_End,
 		RecoveryChakra_Loop,
@@ -135,12 +179,17 @@ public:
 	virtual HRESULT Render() override;
 
 private:
+	Player_State m_eState{};
 	_bool m_isRunning{};
 	_float m_fSliding{ 1.f };
 	pair<_uint, _bool> m_Animation{};
 
 	CBodyPart* m_pBodyParts[PT_END]{};
 	_uint m_iPartNum[PT_END]{};
+
+	_float m_fInterpolationRatio{};
+	_bool m_isInterpolating{};
+	_float3 m_vOriginalLook{};
 
 private:
 	void Move(_float fTimeDelta);

@@ -144,7 +144,7 @@ HRESULT CTerrain::Bind_ShaderResources()
 	}
 
 	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_TUTORIAL, 0);
-	if (!pLightDesc)
+	if (not pLightDesc)
 	{
 		return E_FAIL;
 	}

@@ -1,26 +1,9 @@
 #pragma once
 #include "Client_Define.h"
 #include "PartObject.h"
+#include "Player.h"
 
 BEGIN(Client)
-
-enum PART_TYPE
-{
-	PT_HEAD,
-	PT_FACE,
-	PT_UPPER_BODY,
-	PT_LOWER_BODY,
-	PT_END
-};
-
-struct BODYPART_DESC
-{
-	PART_TYPE eType{};
-	_uint iNumVariations{};
-	pair<_uint, _bool>* Animation{};
-
-	CTransform* pParentTransform{ nullptr };
-};
 
 class CBodyPart final : public CPartObject
 {

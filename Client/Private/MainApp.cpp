@@ -13,7 +13,7 @@ CMainApp::CMainApp()
 
 HRESULT CMainApp::Init()
 {
-	if (!m_pGameInstance)
+	if (not m_pGameInstance)
 	{
 		return E_FAIL;
 	}
@@ -62,7 +62,7 @@ HRESULT CMainApp::Init()
 
 void CMainApp::Tick(_float fTimeDelta)
 {
-	if (!m_pGameInstance)
+	if (not m_pGameInstance)
 	{
 		return;
 	}
@@ -126,7 +126,7 @@ HRESULT CMainApp::Open_Level(LEVEL_ID eLevelID)
 	}
 
 	CLevel* pLevel = CLevel_Loading::Create(m_pDevice, m_pContext, eLevelID);
-	if (!pLevel)
+	if (not pLevel)
 	{
 		return E_FAIL;
 	}
@@ -136,7 +136,7 @@ HRESULT CMainApp::Open_Level(LEVEL_ID eLevelID)
 
 HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 {
-	if (!m_pGameInstance)
+	if (not m_pGameInstance)
 	{
 		return E_FAIL;
 	}

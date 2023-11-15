@@ -23,6 +23,7 @@ HRESULT CBodyPart::Init(void* pArg)
 	m_eType = Desc.eType;
 	m_iNumVariations = Desc.iNumVariations;
 	m_Models.resize(m_iNumVariations, nullptr);
+	m_Animation = Desc.Animation;
 
 	if (FAILED(__super::Init(Desc.pParentTransform)))
 	{
@@ -46,9 +47,20 @@ void CBodyPart::Tick(_float fTimeDelta)
 		return;
 	}
 
-	m_Models[m_iSelectedModelIndex]->Set_Animation(0, true);
 
-	m_Models[m_iSelectedModelIndex]->Play_Animation(fTimeDelta);
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CREATECHARACTER)
+	{
+		for (size_t i = 0; i < m_iNumVariations; i++)
+		{
+			m_Models[i]->Set_Animation(m_Animation->first, m_Animation->second);
+			m_Models[i]->Play_Animation(fTimeDelta);
+		}
+	}
+	else
+	{
+		m_Models[m_iSelectedModelIndex]->Set_Animation(m_Animation->first, m_Animation->second);
+		m_Models[m_iSelectedModelIndex]->Play_Animation(fTimeDelta);
+	}
 }
 
 void CBodyPart::Late_Tick(_float fTimeDelta)
@@ -118,7 +130,7 @@ HRESULT CBodyPart::Render()
 
 _bool CBodyPart::IsAnimationFinished(_uint iAnimIndex)
 {
-	return m_Models[m_iSelectedModelIndex]->IsAnimationFinished(0);
+	return m_Models[m_iSelectedModelIndex]->IsAnimationFinished(m_Animation->first);
 }
 
 _uint CBodyPart::Get_CurrentAnimationIndex()
@@ -188,7 +200,7 @@ HRESULT CBodyPart::Bind_ShaderResources()
 	}
 
 	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_CREATECHARACTER, 0);
-	if (!pLightDesc)
+	if (not pLightDesc)
 	{
 		return E_FAIL;
 	}

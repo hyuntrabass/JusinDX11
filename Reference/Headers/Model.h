@@ -23,7 +23,7 @@ public:
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
 	
-	void Set_Animation(_uint iAnimIndex, const _bool& isLoop = false);
+	void Set_Animation(_uint iAnimIndex, const _bool& isLoop);
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);

@@ -17,7 +17,7 @@ HRESULT CCamera_Debug::Init_Prototype()
 
 HRESULT CCamera_Debug::Init(void* pArg)
 {
-	if (!pArg)
+	if (not pArg)
 	{
 		MSG_BOX("null Arg : CCamera_Debug");
 		return E_FAIL;

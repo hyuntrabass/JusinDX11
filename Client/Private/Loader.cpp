@@ -47,7 +47,7 @@ HRESULT CLoader::Init(LEVEL_ID eNextLevel)
 
 	m_hThread = reinterpret_cast<HANDLE>(_beginthreadex(0, 0, ThreadEntry, this, 0, nullptr));
 
-	if (!m_hThread)
+	if (not m_hThread)
 	{
 		return E_FAIL;
 	}

@@ -42,13 +42,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MyRegisterClass(hInstance);
 
     // 애플리케이션 초기화를 수행합니다:
-    if (!InitInstance (hInstance, nCmdShow))
+    if (not InitInstance (hInstance, nCmdShow))
     {
         return FALSE;
     }
 
     pMainApp = CMainApp::Create();
-    if (!pMainApp)
+    if (not pMainApp)
     {
         return FALSE;
     }
@@ -83,7 +83,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             {
                 break;
             }
-            if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+            if (not TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
             {
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);
@@ -160,7 +160,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 
-   if (!hWnd)
+   if (not hWnd)
    {
       return FALSE;
    }

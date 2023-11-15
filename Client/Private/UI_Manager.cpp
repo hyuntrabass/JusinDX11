@@ -39,7 +39,7 @@ const _uint& CUI_Manager::Get_PageIndex()
 
 HRESULT CUI_Manager::Init(CGameInstance* pGameInstance)
 {
-	if (!pGameInstance)
+	if (not pGameInstance)
 	{
 		return E_FAIL;
 	}
@@ -271,6 +271,7 @@ HRESULT CUI_Manager::Ready_UI_Custom()
 			return E_FAIL;
 		}
 		m_Buttons.emplace_back(pButton);
+		Safe_AddRef(pButton);
 
 		Info.vPos.y += 50.f;
 	}
@@ -289,7 +290,7 @@ void CUI_Manager::Customization()
 			switch (i)
 			{
 			case 0:
-				m_Buttons[i]->Set_ButtonText(TEXT("머리"));
+				m_Buttons[i]->Set_ButtonText(TEXT("헤어 스타일"));
 				break;
 			case 1:
 				m_Buttons[i]->Set_ButtonText(TEXT("얼굴"));
@@ -301,7 +302,7 @@ void CUI_Manager::Customization()
 				m_Buttons[i]->Set_ButtonText(TEXT("하의"));
 				break;
 			case 4:
-				m_Buttons[i]->Set_ButtonText(TEXT("한벌 옷"));
+				m_Buttons[i]->Set_ButtonText(TEXT("특별 코스튬"));
 				break;
 			case 5:
 			case 6:
@@ -353,37 +354,37 @@ void CUI_Manager::Customization()
 			switch (i + m_iScroll)
 			{
 			case 0:
-				m_Buttons[i]->Set_ButtonText(TEXT("머리1"));
+				m_Buttons[i]->Set_ButtonText(TEXT("히맨 스타일"));
 				break;
 			case 1:
-				m_Buttons[i]->Set_ButtonText(TEXT("머리2"));
+				m_Buttons[i]->Set_ButtonText(TEXT("보라 단발"));
 				break;
 			case 2:
-				m_Buttons[i]->Set_ButtonText(TEXT("머리3"));
+				m_Buttons[i]->Set_ButtonText(TEXT("초코송이 스타일"));
 				break;
 			case 3:
-				m_Buttons[i]->Set_ButtonText(TEXT("머리4"));
+				m_Buttons[i]->Set_ButtonText(TEXT("빨강 단발"));
 				break;
 			case 4:
-				m_Buttons[i]->Set_ButtonText(TEXT("머리5"));
+				m_Buttons[i]->Set_ButtonText(TEXT("깨구리"));
 				break;
 			case 5:
-				m_Buttons[i]->Set_ButtonText(TEXT("머리6"));
+				m_Buttons[i]->Set_ButtonText(TEXT("제빵왕 김탁구"));
 				break;
 			case 6:
-				m_Buttons[i]->Set_ButtonText(TEXT("머리7"));
+				m_Buttons[i]->Set_ButtonText(TEXT("사쿠라 스타일"));
 				break;
 			case 7:
-				m_Buttons[i]->Set_ButtonText(TEXT("머리8"));
+				m_Buttons[i]->Set_ButtonText(TEXT("자다 깬 스타일"));
 				break;
 			case 8:
-				m_Buttons[i]->Set_ButtonText(TEXT("머리9"));
+				m_Buttons[i]->Set_ButtonText(TEXT("긴 생머리 닌자"));
 				break;
 			case 9:
-				m_Buttons[i]->Set_ButtonText(TEXT("머리10"));
+				m_Buttons[i]->Set_ButtonText(TEXT("단정한 스타일"));
 				break;
 			case 10:
-				m_Buttons[i]->Set_ButtonText(TEXT("머리11"));
+				m_Buttons[i]->Set_ButtonText(TEXT("대륙 스타일"));
 				break;
 			default:
 				m_Buttons[i]->Set_ButtonText(TEXT(""));
@@ -406,7 +407,7 @@ void CUI_Manager::Customization()
 		}
 		break;
 	case 2: // 얼굴
-		m_iNumButtons = 4;
+		m_iNumButtons = 3;
 		for (size_t i = 0; i < m_Buttons.size(); i++)
 		{
 			switch (i + m_iScroll)
@@ -418,10 +419,7 @@ void CUI_Manager::Customization()
 				m_Buttons[i]->Set_ButtonText(TEXT("붕대"));
 				break;
 			case 2:
-				m_Buttons[i]->Set_ButtonText(TEXT("마스크1"));
-				break;
-			case 3:
-				m_Buttons[i]->Set_ButtonText(TEXT("마스크2"));
+				m_Buttons[i]->Set_ButtonText(TEXT("카카시 마스크"));
 				break;
 			default:
 				m_Buttons[i]->Set_ButtonText(TEXT(""));
@@ -438,7 +436,7 @@ void CUI_Manager::Customization()
 				m_Buttons[m_iButtonIndex]->Activate_Button(false);
 				m_iPageIndex = 0;
 				m_iScroll = 0;
-				m_iButtonIndex = 0;
+				m_iButtonIndex = 1;
 				break;
 			}
 		}
@@ -450,46 +448,46 @@ void CUI_Manager::Customization()
 			switch (i + m_iScroll)
 			{
 			case 0:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의1"));
+				m_Buttons[i]->Set_ButtonText(TEXT("나뭇잎 의상"));
 				break;
 			case 1:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의2"));
+				m_Buttons[i]->Set_ButtonText(TEXT("수영장룩"));
 				break;
 			case 2:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의3"));
+				m_Buttons[i]->Set_ButtonText(TEXT("후드티"));
 				break;
 			case 3:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의4"));
+				m_Buttons[i]->Set_ButtonText(TEXT("긴팔티"));
 				break;
 			case 4:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의5"));
+				m_Buttons[i]->Set_ButtonText(TEXT("쥬신 티셔츠"));
 				break;
 			case 5:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의6"));
+				m_Buttons[i]->Set_ButtonText(TEXT("검은 닌자"));
 				break;
 			case 6:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의7"));
+				m_Buttons[i]->Set_ButtonText(TEXT("보라 탱크탑1"));
 				break;
 			case 7:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의8"));
+				m_Buttons[i]->Set_ButtonText(TEXT("다크 히어로"));
 				break;
 			case 8:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의9"));
+				m_Buttons[i]->Set_ButtonText(TEXT("비키니"));
 				break;
 			case 9:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의10"));
+				m_Buttons[i]->Set_ButtonText(TEXT("보라 탱크탑2"));
 				break;
 			case 10:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의11"));
+				m_Buttons[i]->Set_ButtonText(TEXT("나루토 의상"));
 				break;
 			case 11:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의12"));
+				m_Buttons[i]->Set_ButtonText(TEXT("네지 의상"));
 				break;
 			case 12:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의13"));
+				m_Buttons[i]->Set_ButtonText(TEXT("모래닌자 상의"));
 				break;
 			case 13:
-				m_Buttons[i]->Set_ButtonText(TEXT("상의14"));
+				m_Buttons[i]->Set_ButtonText(TEXT("카카시 의상"));
 				break;
 			default:
 				m_Buttons[i]->Set_ButtonText(TEXT(""));
@@ -497,6 +495,10 @@ void CUI_Manager::Customization()
 			}
 		}
 
+		if (m_iPartIndex[PT_UPPER_BODY] >= 14)
+		{
+			m_iPartIndex[PT_LOWER_BODY] = 0;
+		}
 		m_iPartIndex[PT_UPPER_BODY] = m_iButtonIndex + m_iScroll;
 
 		for (auto& pButton : m_Buttons)
@@ -506,7 +508,7 @@ void CUI_Manager::Customization()
 				m_Buttons[m_iButtonIndex]->Activate_Button(false);
 				m_iPageIndex = 0;
 				m_iScroll = 0;
-				m_iButtonIndex = 0;
+				m_iButtonIndex = 2;
 				break;
 			}
 		}
@@ -518,44 +520,47 @@ void CUI_Manager::Customization()
 			switch (i + m_iScroll)
 			{
 			case 0:
-				m_Buttons[i]->Set_ButtonText(TEXT("하의1"));
+				m_Buttons[i]->Set_ButtonText(TEXT("트임 치마"));
 				break;
 			case 1:
-				m_Buttons[i]->Set_ButtonText(TEXT("하의2"));
+				m_Buttons[i]->Set_ButtonText(TEXT("대륙 바지1"));
 				break;
 			case 2:
-				m_Buttons[i]->Set_ButtonText(TEXT("하의3"));
+				m_Buttons[i]->Set_ButtonText(TEXT("대륙 바지2"));
 				break;
 			case 3:
-				m_Buttons[i]->Set_ButtonText(TEXT("하의4"));
+				m_Buttons[i]->Set_ButtonText(TEXT("대륙 바지3"));
 				break;
 			case 4:
-				m_Buttons[i]->Set_ButtonText(TEXT("하의5"));
+				m_Buttons[i]->Set_ButtonText(TEXT("반바지1"));
 				break;
 			case 5:
-				m_Buttons[i]->Set_ButtonText(TEXT("하의6"));
+				m_Buttons[i]->Set_ButtonText(TEXT("반바지2"));
 				break;
 			case 6:
-				m_Buttons[i]->Set_ButtonText(TEXT("하의7"));
+				m_Buttons[i]->Set_ButtonText(TEXT("보라 치마"));
 				break;
 			case 7:
-				m_Buttons[i]->Set_ButtonText(TEXT("하의8"));
+				m_Buttons[i]->Set_ButtonText(TEXT("모래닌자 하의"));
 				break;
 			case 8:
-				m_Buttons[i]->Set_ButtonText(TEXT("하의9"));
+				m_Buttons[i]->Set_ButtonText(TEXT("파란 치마"));
 				break;
 			case 9:
-				m_Buttons[i]->Set_ButtonText(TEXT("하의10"));
+				m_Buttons[i]->Set_ButtonText(TEXT("청록 치마"));
 				break;
 			case 10:
-				m_Buttons[i]->Set_ButtonText(TEXT("하의11"));
+				m_Buttons[i]->Set_ButtonText(TEXT("파란 치마 + 슬리퍼"));
 				break;
 			default:
 				m_Buttons[i]->Set_ButtonText(TEXT(""));
 				break;
 			}
 		}
-
+		if (m_iPartIndex[PT_UPPER_BODY] >= 14)
+		{
+			m_iPartIndex[PT_UPPER_BODY] = 0;
+		}
 		m_iPartIndex[PT_LOWER_BODY] = m_iButtonIndex + m_iScroll;
 
 		for (auto& pButton : m_Buttons)
@@ -565,7 +570,7 @@ void CUI_Manager::Customization()
 				m_Buttons[m_iButtonIndex]->Activate_Button(false);
 				m_iPageIndex = 0;
 				m_iScroll = 0;
-				m_iButtonIndex = 0;
+				m_iButtonIndex = 3;
 				break;
 			}
 		}
@@ -598,7 +603,7 @@ void CUI_Manager::Customization()
 				m_Buttons[m_iButtonIndex]->Activate_Button(false);
 				m_iPageIndex = 0;
 				m_iScroll = 0;
-				m_iButtonIndex = 0;
+				m_iButtonIndex = 4;
 				break;
 			}
 		}

@@ -57,7 +57,7 @@ HRESULT CLevel_CreateCharacter::Render()
 
 HRESULT CLevel_CreateCharacter::Ready_Layer_Camera(const wstring& strLayerTag)
 {
-	if (!m_pGameInstance)
+	if (not m_pGameInstance)
 	{
 		return E_FAIL;
 	}

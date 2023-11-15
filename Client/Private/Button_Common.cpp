@@ -43,7 +43,7 @@ HRESULT CButton_Common::Init_Prototype()
 
 HRESULT CButton_Common::Init(void* pArg)
 {
-	if (!pArg)
+	if (not pArg)
 	{
 		return E_FAIL;
 	}

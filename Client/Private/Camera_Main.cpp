@@ -19,12 +19,12 @@ HRESULT CCamera_Main::Init_Prototype()
 HRESULT CCamera_Main::Init(void* pArg)
 {
 	m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
-	if (!m_pTransformCom)
+	if (not m_pTransformCom)
 	{
 		MSG_BOX("Can't Find Player!! : Camera Main");
 	}
 
-	if (!pArg)
+	if (not pArg)
 	{
 		MSG_BOX("null Arg : CCamera_Debug");
 		return E_FAIL;
@@ -70,7 +70,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 			break;
 		default:
 			m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.f, 1.5f, 2.5f, 1.f));
-			m_pTransformCom->Look_At_Dir(XMVectorSet(0.365148, -0.182574, -0.912871, 0.f));
+			m_pTransformCom->Look_At_Dir(XMVectorSet(0.365148f, -0.182574f, -0.912871f, 0.f));
 			break;
 		}
 

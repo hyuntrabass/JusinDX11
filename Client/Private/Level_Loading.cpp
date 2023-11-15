@@ -34,7 +34,7 @@ HRESULT CLevel_Loading::Init(LEVEL_ID eNextLevel)
 	m_eNextLevel = eNextLevel;
 
 	m_pLoader = CLoader::Create(m_pDevice, m_pContext, eNextLevel);
-	if (!m_pLoader)
+	if (not m_pLoader)
 	{
 		return E_FAIL;
 	}
@@ -69,7 +69,7 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 			break;
 		}
 		
-		if (!pLevel)
+		if (not pLevel)
 		{
 			return;
 		}
@@ -92,7 +92,7 @@ HRESULT CLevel_Loading::Render()
 
 HRESULT CLevel_Loading::Ready_Layer_BackGround(const wstring& strLayerTag)
 {
-	if (!m_pGameInstance)
+	if (not m_pGameInstance)
 	{
 		return E_FAIL;
 	}
@@ -107,7 +107,7 @@ HRESULT CLevel_Loading::Ready_Layer_BackGround(const wstring& strLayerTag)
 
 HRESULT CLevel_Loading::Ready_Layer_LoadingBar(const wstring& strLayerTag)
 {
-	if (!m_pGameInstance)
+	if (not m_pGameInstance)
 	{
 		return E_FAIL;
 	}
@@ -122,7 +122,7 @@ HRESULT CLevel_Loading::Ready_Layer_LoadingBar(const wstring& strLayerTag)
 
 HRESULT CLevel_Loading::Ready_Layer_Icon(const wstring& strLayerTag)
 {
-	if (!m_pGameInstance)
+	if (not m_pGameInstance)
 	{
 		return E_FAIL;
 	}

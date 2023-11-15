@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "PhysX_Manager.h"
-#include "PartObject.h"
+#include "BodyPart.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -43,10 +43,10 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CREATECHARACTER)
 	{
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(etc_Hand_Spray))
-		{
-			m_Animation = { Idle_Loop, true };
-		}
+		//if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(etc_Hand_Spray))
+		//{
+		//	m_Animation = { Idle_Loop, true };
+		//}
 		//m_pGameInstance->Apply_PhysX(m_pTransformCom);
 
 		Move(fTimeDelta);
@@ -56,18 +56,6 @@ void CPlayer::Tick(_float fTimeDelta)
 	else
 	{
 		Customize(fTimeDelta);
-		if (m_pGameInstance->Key_Down(DIK_J))
-		{
-			m_iPartNum[PT_HEAD]--;
-		}
-		if (m_pGameInstance->Key_Down(DIK_K))
-		{
-			m_iPartNum[PT_HEAD]++;
-		}
-		//m_pModelCom->Select_Part(PT_UPPER_BODY, m_iPartNum[PT_UPPER_BODY]);
-		//m_pModelCom->Select_Part(PT_HEAD, m_iPartNum[PT_HEAD]);
-		//m_pModelCom->Select_Part(PT_FACE, m_iPartNum[PT_FACE]);
-		//m_pModelCom->Select_Part(PT_LOWER_BODY, m_iPartNum[PT_LOWER_BODY]);
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(etc_Appearance))
 		{
 			m_Animation = { CharaSelect_Idle, true };
@@ -135,6 +123,7 @@ void CPlayer::Move(_float fTimeDelta)
 		vDirection -= vCamLook;
 		hasMoved = true;
 	}
+
 	if (m_pGameInstance->Key_Pressing(DIK_D))
 	{
 		vDirection += vCamRight;
@@ -145,6 +134,7 @@ void CPlayer::Move(_float fTimeDelta)
 		vDirection -= vCamRight;
 		hasMoved = true;
 	}
+
 
 	if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 	{
@@ -157,10 +147,15 @@ void CPlayer::Move(_float fTimeDelta)
 		m_isRunning = false;
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_SPACE))
+	_uint iCurrentAnimIndex = m_Animation.first;
+
+	if (m_pGameInstance->Key_Down(DIK_SPACE) && iCurrentAnimIndex != DoubleJump)
 	{
-		m_pTransformCom->Jump(10.f);
-		if (hasMoved)
+		if (m_pTransformCom->Is_Jumping())
+		{
+			m_Animation = { DoubleJump, false };
+		}
+		else if (hasMoved)
 		{
 			m_Animation = { Jump_Front, false };
 		}
@@ -168,19 +163,50 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			m_Animation = { Jump_Vertical, false };
 		}
+		m_pTransformCom->Jump(15.f);
 	}
-
-	_uint iCurrentAnimIndex = m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex();
 
 	if (hasMoved /*&& iCurrentAnimIndex != Land*/)
 	{
+		_vector vLook = m_pTransformCom->Get_State(State::Look);
+		_vector vTest = vLook - vDirection;
+		_float fInterpolTime = 0.4f;
+		if (fabs((vTest).m128_f32[0]) > 0.05f or fabs((vTest).m128_f32[2]) > 0.05f)
+		{
+			if (not m_isInterpolating)
+			{
+				XMStoreFloat3(&m_vOriginalLook, vLook);
+				m_isInterpolating = true;
+			}
+
+			if (m_fInterpolationRatio < fInterpolTime)
+			{
+				m_fInterpolationRatio += fTimeDelta;
+			}
+			else
+			{
+				m_fInterpolationRatio = fInterpolTime;
+				m_isInterpolating = false;
+			}
+
+			_float fRatio = m_fInterpolationRatio / fInterpolTime;
+
+			vDirection = XMVectorLerp(XMLoadFloat3(&m_vOriginalLook), vDirection, fRatio);
+		}
+		else
+		{
+			m_isInterpolating = false;
+			m_fInterpolationRatio = 0.f;
+		}
+
 		m_pTransformCom->Look_At_Dir(vDirection);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
-		if (!m_pTransformCom->Is_Jumping())
+		if (not m_pTransformCom->Is_Jumping())
 		{
 			if (iCurrentAnimIndex != Jump_Front &&
 				iCurrentAnimIndex != Jump_Vertical &&
+				iCurrentAnimIndex != DoubleJump &&
 				iCurrentAnimIndex != Fall_Vertical_Loop &&
 				iCurrentAnimIndex != Fall_Front_Loop)
 			{
@@ -196,7 +222,7 @@ void CPlayer::Move(_float fTimeDelta)
 			}
 		}
 	}
-	else if (!m_pTransformCom->Is_Jumping())
+	else if (not m_pTransformCom->Is_Jumping())
 	{
 		iCurrentAnimIndex = m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex();
 
@@ -228,12 +254,13 @@ void CPlayer::Move(_float fTimeDelta)
 			else
 			{
 				//m_pModelCom->Set_Animation(Walk_End);
-				m_Animation = { Walk_End, true };
+				m_Animation = { Walk_End, false };
 			}
 		}
 	}
 
-	iCurrentAnimIndex = m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex();
+	iCurrentAnimIndex = m_Animation.first;
+	//iCurrentAnimIndex = m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex();
 
 	if (iCurrentAnimIndex == Jump_Vertical || iCurrentAnimIndex == Fall_Vertical_Loop)
 	{
@@ -241,18 +268,20 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			m_Animation = { Fall_Vertical_Loop, true };
 		}
-		if (!m_pTransformCom->Is_Jumping())
+		if (not m_pTransformCom->Is_Jumping())
 		{
 			m_Animation = { Land, false };
 		}
 	}
-	else if (iCurrentAnimIndex == Jump_Front || iCurrentAnimIndex == Fall_Front_Loop)
+	else if (iCurrentAnimIndex == Jump_Front || iCurrentAnimIndex == Fall_Front_Loop || iCurrentAnimIndex == DoubleJump)
 	{
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Front))
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Front) &&
+			m_pBodyParts[PT_HEAD]->IsAnimationFinished(DoubleJump) &&
+			iCurrentAnimIndex == m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex())
 		{
 			m_Animation = { Fall_Front_Loop, true };
 		}
-		if (!m_pTransformCom->Is_Jumping())
+		if (not m_pTransformCom->Is_Jumping())
 		{
 			m_Animation = { Land, false };
 		}
@@ -302,15 +331,17 @@ void CPlayer::Customize(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 	{
-		_float3 fScale = m_pTransformCom->Get_Scale();
-		XMStoreFloat3(&fScale, XMLoadFloat3(&fScale) * 1.25f);
-		m_pTransformCom->Set_Scale(fScale);
+		if (m_Animation.first < Animation::End - 1)
+		{
+			m_Animation.first += 1;
+		}
 	}
 	else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 	{
-		_float3 fScale = m_pTransformCom->Get_Scale();
-		XMStoreFloat3(&fScale, XMLoadFloat3(&fScale) * 0.8f);
-		m_pTransformCom->Set_Scale(fScale);
+		if (m_Animation.first > 0)
+		{
+			m_Animation.first -= 1;
+		}
 	}
 
 }
@@ -325,15 +356,15 @@ HRESULT CPlayer::Ready_Parts()
 	Desc.eType = PT_HEAD;
 	Desc.iNumVariations = 11;
 	m_pBodyParts[PT_HEAD] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
-	if (!m_pBodyParts[PT_HEAD])
+	if (not m_pBodyParts[PT_HEAD])
 	{
 		return E_FAIL;
 	}
 
 	Desc.eType = PT_FACE;
-	Desc.iNumVariations = 4;
+	Desc.iNumVariations = 3;
 	m_pBodyParts[PT_FACE] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
-	if (!m_pBodyParts[PT_FACE])
+	if (not m_pBodyParts[PT_FACE])
 	{
 		return E_FAIL;
 	}
@@ -341,7 +372,7 @@ HRESULT CPlayer::Ready_Parts()
 	Desc.eType = PT_UPPER_BODY;
 	Desc.iNumVariations = 16;
 	m_pBodyParts[PT_UPPER_BODY] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
-	if (!m_pBodyParts[PT_UPPER_BODY])
+	if (not m_pBodyParts[PT_UPPER_BODY])
 	{
 		return E_FAIL;
 	}
@@ -349,7 +380,7 @@ HRESULT CPlayer::Ready_Parts()
 	Desc.eType = PT_LOWER_BODY;
 	Desc.iNumVariations = 11;
 	m_pBodyParts[PT_LOWER_BODY] = dynamic_cast<CBodyPart*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_BodyPart"), &Desc));
-	if (!m_pBodyParts[PT_LOWER_BODY])
+	if (not m_pBodyParts[PT_LOWER_BODY])
 	{
 		return E_FAIL;
 	}

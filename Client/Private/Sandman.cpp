@@ -24,11 +24,11 @@ HRESULT CSandman::Init(void* pArg)
 
 	if(rand() & 2)
 	{
-		m_pModelCom->Set_Animation(etc_Appearance_Type01);
+		m_pModelCom->Set_Animation(etc_Appearance_Type01, false);
 	}
 	else
 	{
-		m_pModelCom->Set_Animation(etc_Appearance_Type02);
+		m_pModelCom->Set_Animation(etc_Appearance_Type02, false);
 	}
 
 	if (pArg)
@@ -49,7 +49,7 @@ void CSandman::Tick(_float fTimeDelta)
 {
 	if (m_pModelCom->IsAnimationFinished(m_pModelCom->Get_CurrentAnimationIndex()))
 	{
-		m_pModelCom->Set_Animation(rand() % 144);
+		m_pModelCom->Set_Animation(rand() % 144, false);
 		Move(fTimeDelta);
 	}
 
@@ -158,7 +158,7 @@ HRESULT CSandman::Bind_ShaderResources()
 	}
 
 	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_CREATECHARACTER, 0);
-	if (!pLightDesc)
+	if (not pLightDesc)
 	{
 		return E_FAIL;
 	}
