@@ -101,4 +101,12 @@ namespace Engine
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	};
 
+	using VTXINSTANCING = struct ENGINE_DLL tagVertex_Instancing
+	{
+		XMFLOAT4 vRight{};
+		XMFLOAT4 vUp{};
+		XMFLOAT4 vLook{};
+		XMFLOAT4 vPos{};
+	};
+
 }

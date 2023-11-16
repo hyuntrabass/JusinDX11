@@ -98,8 +98,10 @@
     <ClCompile Include="..\private\Bone.cpp" />
     <ClCompile Include="..\private\Camera.cpp" />
     <ClCompile Include="..\private\Channel.cpp" />
+    <ClCompile Include="..\private\Collision_Manager.cpp" />
     <ClCompile Include="..\private\Component.cpp" />
     <ClCompile Include="..\private\Component_Manager.cpp" />
+    <ClCompile Include="..\Private\Engine_Struct.cpp" />
     <ClCompile Include="..\private\Font_Manager.cpp" />
     <ClCompile Include="..\private\GameInstance.cpp" />
     <ClCompile Include="..\private\GameObject.cpp" />
@@ -127,10 +129,11 @@
     <ClCompile Include="..\private\Transform.cpp" />
     <ClCompile Include="..\private\VIBuffer.cpp" />
     <ClCompile Include="..\private\VIBuffer_Cube.cpp" />
+    <ClCompile Include="..\private\VIBuffer_Instancing.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Instancing_Rect.cpp" />
     <ClCompile Include="..\private\VIBuffer_PhysX.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\private\VIBuffer_Terrain.cpp" />
-    <ClCompile Include="Engine_Struct.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Animation.h" />
@@ -139,6 +142,7 @@
     <ClInclude Include="..\public\Bone.h" />
     <ClInclude Include="..\public\Camera.h" />
     <ClInclude Include="..\public\Channel.h" />
+    <ClInclude Include="..\public\Collision_Manager.h" />
     <ClInclude Include="..\public\Component.h" />
     <ClInclude Include="..\public\Component_Manager.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
@@ -173,6 +177,8 @@
     <ClInclude Include="..\public\Transform.h" />
     <ClInclude Include="..\public\VIBuffer.h" />
     <ClInclude Include="..\public\VIBuffer_Cube.h" />
+    <ClInclude Include="..\public\VIBuffer_Instancing.h" />
+    <ClInclude Include="..\Public\VIBuffer_Instancing_Rect.h" />
     <ClInclude Include="..\public\VIBuffer_PhysX.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
     <ClInclude Include="..\public\VIBuffer_Terrain.h" />

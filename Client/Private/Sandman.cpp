@@ -22,36 +22,56 @@ HRESULT CSandman::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	if(rand() & 2)
+	if (rand() & 2)
 	{
-		m_pModelCom->Set_Animation(etc_Appearance_Type01, false);
+		m_pModelCom->Set_Animation(Anim_etc_Appearance_Type01, false);
 	}
 	else
 	{
-		m_pModelCom->Set_Animation(etc_Appearance_Type02, false);
+		m_pModelCom->Set_Animation(Anim_etc_Appearance_Type02, false);
 	}
 
 	if (pArg)
 	{
-		_float4 vPos = *reinterpret_cast<_float4*>(pArg);
+		m_vOriginPos = *reinterpret_cast<_float4*>(pArg);
 
-		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&vPos));
+		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_vOriginPos));
 	}
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
 
-	m_pTransformCom->Set_Speed(5.f);
+	m_fWalkSpeed = 2.f;
+	m_fRunSpeed = 5.f;
+	m_fAttackRange = 2.f;
+	m_fSearchRange = 20.f;
 
 	return S_OK;
 }
 
 void CSandman::Tick(_float fTimeDelta)
 {
-	if (m_pModelCom->IsAnimationFinished(m_pModelCom->Get_CurrentAnimationIndex()))
+	//if (m_pGameInstance->Get_CameraModeIndex() == CM_DEBUG)
+	//{
+	//	return;
+	//}
+	
+	//if (m_pModelCom->IsAnimationFinished(m_pModelCom->Get_CurrentAnimationIndex()))
+	//{
+	//	m_pModelCom->Set_Animation(rand() % 144, false);
+	//	Move(fTimeDelta);
+	//}
+
+	if (m_pModelCom->IsAnimationFinished(Anim_etc_Appearance_Type01) or m_pModelCom->IsAnimationFinished(Anim_etc_Appearance_Type02))
 	{
-		m_pModelCom->Set_Animation(rand() % 144, false);
-		Move(fTimeDelta);
+		m_pModelCom->Set_Animation(Anim_Idle_Type02_Loop, true);
 	}
+
+	Artificial_Intelligence(fTimeDelta);
+
+	Change_State();
+
+	Idle(fTimeDelta);
+	Move(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
@@ -109,10 +129,6 @@ HRESULT CSandman::Render()
 		}
 	}
 	return S_OK;
-}
-
-void CSandman::Move(_float fTimeDelta)
-{
 }
 
 HRESULT CSandman::Add_Components()
@@ -184,6 +200,121 @@ HRESULT CSandman::Bind_ShaderResources()
 	}
 
 	return S_OK;
+}
+
+void CSandman::Artificial_Intelligence(_float fTimeDelta)
+{
+	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+
+	_vector vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+	_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
+	m_vOriginPos.y = vMyPos.m128_f32[1];
+	_vector vDirToPlayer = vPlayerPos - vMyPos;
+	_float fDist = XMVectorGetX(XMVector3Length(vDirToPlayer));
+	_uint iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
+
+	if (fDist < m_fAttackRange)
+	{
+		XMStoreFloat4(&m_vTargetDir, vDirToPlayer);
+		m_vTargetDir.y = 0.f;
+
+		m_eCurrState = State_Attack;
+	}
+	else if (fDist > m_fSearchRange)
+	{
+		fDist = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_vOriginPos) - vMyPos));
+		if (fDist > 1.f)
+		{
+			XMStoreFloat4(&m_vTargetDir, XMLoadFloat4(&m_vOriginPos) - vMyPos);
+			m_vTargetDir.y = 0.f;
+			m_eCurrState = State_Walk;
+		}
+		else
+		{
+			m_eCurrState = State_Idle;
+
+			if (iCurrentAnimIndex == Anim_Run_Loop)
+			{
+				m_pModelCom->Set_Animation(Anim_Run_End, false);
+			}
+			else if (iCurrentAnimIndex == Anim_Walk_Loop)
+			{
+				m_pModelCom->Set_Animation(Anim_Walk_End, false);
+			}
+
+			if (m_pModelCom->IsAnimationFinished(Anim_Run_End) or m_pModelCom->IsAnimationFinished(Anim_Walk_End))
+			{
+				m_pModelCom->Set_Animation(Anim_Idle_Type02_Loop, true);
+			}
+		}
+	}
+	else
+	{
+		XMStoreFloat4(&m_vTargetDir, vDirToPlayer);
+		m_vTargetDir.y = 0.f;
+		m_eCurrState = State_Run;
+	}
+
+	m_fAttTime += fTimeDelta;
+
+	if (m_eCurrState == State_Attack)
+	{
+		m_pTransformCom->Look_At_Dir(XMLoadFloat4(&m_vTargetDir));
+
+		if (m_fAttTime > 2.f)
+		{
+			m_pModelCom->Set_Animation(Anim_Attack_StepSlashingHorizontally, false);
+			m_fAttTime = 0.f;
+		}
+		else if (m_pModelCom->IsAnimationFinished(Anim_Attack_StepSlashingHorizontally))
+		{
+			m_pModelCom->Set_Animation(Anim_Idle_Type02_Loop, true);
+		}
+	}
+}
+
+void CSandman::Idle(_float fTimeDelta)
+{
+}
+
+void CSandman::Move(_float fTimeDelta)
+{
+	if (m_eCurrState == State_Run)
+	{
+		m_pTransformCom->Look_At_Dir(XMLoadFloat4(&m_vTargetDir));
+		m_pTransformCom->Go_Straight(fTimeDelta);
+	}
+	else if (m_eCurrState == State_Walk)
+	{
+		m_pTransformCom->Look_At_Dir(XMLoadFloat4(&m_vTargetDir));
+		m_pTransformCom->Go_Straight(fTimeDelta);
+	}
+}
+
+void CSandman::Change_State()
+{
+	if (m_eCurrState not_eq m_ePrevState)
+	{
+		switch (m_eCurrState)
+		{
+		case Client::CSandman::State_Idle:
+			break;
+		case Client::CSandman::State_Run:
+			m_pTransformCom->Set_Speed(m_fRunSpeed);
+			m_pModelCom->Set_Animation(Anim_Run_Loop, true);
+			break;
+		case Client::CSandman::State_Walk:
+			m_pTransformCom->Set_Speed(m_fWalkSpeed);
+			m_pModelCom->Set_Animation(Anim_Walk_Loop, true);
+			break;
+		case Client::CSandman::State_Attack:
+			break;
+		case Client::CSandman::State_Die:
+			break;
+		}
+
+		m_ePrevState = m_eCurrState;
+	}
 }
 
 CSandman* CSandman::Create(_dev pDevice, _context pContext)

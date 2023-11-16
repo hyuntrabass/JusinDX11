@@ -11,10 +11,8 @@ protected:
 	virtual ~CVIBuffer() = default;
 
 public:
-	HRESULT Init_Prototype() override;
-	HRESULT Init(void* pArg) override;
-
-public:
+	virtual HRESULT Init_Prototype() override;
+	virtual HRESULT Init(void* pArg) override;
 	virtual HRESULT Render();
 
 protected:

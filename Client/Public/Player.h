@@ -184,7 +184,7 @@ private:
 	_float m_fSliding{ 1.f };
 	pair<_uint, _bool> m_Animation{};
 
-	CBodyPart* m_pBodyParts[PT_END]{};
+	class CBodyPart* m_pBodyParts[PT_END]{};
 	_uint m_iPartNum[PT_END]{};
 
 	_float m_fInterpolationRatio{};

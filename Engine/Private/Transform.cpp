@@ -45,6 +45,11 @@ const _bool& CTransform::Is_Jumping() const
 	return m_isJumping;
 }
 
+PxController* CTransform::Get_Controller() const
+{
+	return m_pController;
+}
+
 _matrix CTransform::Get_World_Matrix() const
 {
 	return XMLoadFloat4x4(&m_WorldMatrix);
