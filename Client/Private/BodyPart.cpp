@@ -52,13 +52,13 @@ void CBodyPart::Tick(_float fTimeDelta)
 	{
 		for (size_t i = 0; i < m_iNumVariations; i++)
 		{
-			m_Models[i]->Set_Animation(m_Animation->first, m_Animation->second);
+			m_Models[i]->Set_Animation(m_Animation->iAnimIndex, m_Animation->isLoop, m_Animation->bSkipInterpolation);
 			m_Models[i]->Play_Animation(fTimeDelta);
 		}
 	}
 	else
 	{
-		m_Models[m_iSelectedModelIndex]->Set_Animation(m_Animation->first, m_Animation->second);
+		m_Models[m_iSelectedModelIndex]->Set_Animation(m_Animation->iAnimIndex, m_Animation->isLoop, m_Animation->bSkipInterpolation);
 		m_Models[m_iSelectedModelIndex]->Play_Animation(fTimeDelta);
 	}
 }
@@ -130,7 +130,7 @@ HRESULT CBodyPart::Render()
 
 _bool CBodyPart::IsAnimationFinished(_uint iAnimIndex)
 {
-	return m_Models[m_iSelectedModelIndex]->IsAnimationFinished(m_Animation->first);
+	return m_Models[m_iSelectedModelIndex]->IsAnimationFinished(m_Animation->iAnimIndex);
 }
 
 _uint CBodyPart::Get_CurrentAnimationIndex()

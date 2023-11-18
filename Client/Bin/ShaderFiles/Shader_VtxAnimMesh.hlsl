@@ -87,8 +87,8 @@ PS_OUT PS_Main(PS_IN Input)
     
     vector vReflect = reflect(normalize(g_vLightDir), vNormal);
     vector vLook = Input.vWorldPos - g_vCamPos;
-    float fSpecular = 0.f;
-    //float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
+    //float fSpecular = 0.f;
+    float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
 
     Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
     

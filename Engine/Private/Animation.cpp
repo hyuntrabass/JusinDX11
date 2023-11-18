@@ -67,7 +67,12 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 {
 	if (isAnimChanged)
 	{
-		if (!m_isInterpolating or bSkipInterpolation)
+		if (bSkipInterpolation)
+		{
+			m_fCurrentAnimPos = 0.f;
+			isAnimChanged = false;
+		}
+		else if (!m_isInterpolating)
 		{
 			m_fCurrentAnimPos = 0.f;
 			m_isInterpolating = true;

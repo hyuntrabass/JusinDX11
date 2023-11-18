@@ -17,7 +17,7 @@ struct BODYPART_DESC
 {
 	PART_TYPE eType{};
 	_uint iNumVariations{};
-	pair<_uint, _bool>* Animation{};
+	ANIM_DESC* Animation{};
 
 	CTransform* pParentTransform{ nullptr };
 };
@@ -182,7 +182,7 @@ private:
 	Player_State m_eState{};
 	_bool m_isRunning{};
 	_float m_fSliding{ 1.f };
-	pair<_uint, _bool> m_Animation{};
+	ANIM_DESC m_Animation{};
 
 	class CBodyPart* m_pBodyParts[PT_END]{};
 	_uint m_iPartNum[PT_END]{};

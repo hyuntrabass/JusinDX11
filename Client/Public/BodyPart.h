@@ -34,7 +34,7 @@ private:
 	PART_TYPE m_eType{};
 	_uint m_iNumVariations{};
 	_uint m_iSelectedModelIndex{2};
-	pair<_uint, _bool>* m_Animation{};
+	ANIM_DESC* m_Animation{};
 
 private:
 	HRESULT Add_Components();

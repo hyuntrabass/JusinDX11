@@ -34,6 +34,7 @@ public:
 	_float3 Get_Scale() const;
 	const _float& Get_Speed() const;
 	const _bool& Is_Jumping() const;
+	PxController* Get_Controller() const;
 
 	void Set_Position(_float3 vPosition);
 	void Set_State(State eState, _fvector vState);

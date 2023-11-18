@@ -36,7 +36,7 @@ HRESULT CCollision_Manager::Attach_Trigger(CTransform* pTransform, _float3 Trigg
 	//PxShape* shape = actor->createShape(PxBoxGeometry(attackWidth, attackHeight, attackDepth), *material);
 	//shape->setLocalPose(shapeTransform);
 
-
+	return S_OK;
 }
 
 HRESULT CCollision_Manager::Detach_Trigger(CTransform* pTransform)

@@ -47,6 +47,13 @@ namespace Client
 		_float fDepth{};
 		class CButton_Common** ppButton{ nullptr };
 	};
+
+	struct ANIM_DESC
+	{
+		_uint iAnimIndex{};
+		_bool isLoop{};
+		_bool bSkipInterpolation{};
+	};
 }
 
 extern HWND g_hWnd;

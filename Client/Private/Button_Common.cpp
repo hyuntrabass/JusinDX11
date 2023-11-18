@@ -16,9 +16,14 @@ const _bool& CButton_Common::Is_Pushed() const
 	return m_isPushed;
 }
 
-const _bool& CButton_Common::Is_Empty() const
+const _bool CButton_Common::Is_Empty() const
 {
-	return m_strButtonTag.empty();
+	return m_strButtonText.empty();
+}
+
+const _bool& CButton_Common::Is_Activated() const
+{
+	return m_isActivated;
 }
 
 void CButton_Common::Push(_bool isPushed)
@@ -33,7 +38,7 @@ void CButton_Common::Activate_Button(_bool isActivate)
 
 void CButton_Common::Set_ButtonText(const wstring& strText)
 {
-	m_strButtonTag = strText;
+	m_strButtonText = strText;
 }
 
 HRESULT CButton_Common::Init_Prototype()
@@ -56,7 +61,7 @@ HRESULT CButton_Common::Init(void* pArg)
 	m_fY = Info.vPos.y;
 	m_fDepth = Info.fDepth;
 	m_iButtonType = Info.iButtonType;
-	m_strButtonTag = Info.strText;
+	m_strButtonText = Info.strText;
 
 	switch (m_iButtonType)
 	{
@@ -122,7 +127,7 @@ void CButton_Common::Late_Tick(_float fTimeDelta)
 
 HRESULT CButton_Common::Render()
 {
-	if (m_strButtonTag.size() == 0)
+	if (m_strButtonText.size() == 0)
 	{
 		return S_OK;
 	}
@@ -152,7 +157,7 @@ HRESULT CButton_Common::Render()
 	{
 		return E_FAIL;
 	}
-	m_pGameInstance->Render_Text(TEXT("Font_Malang"), m_strButtonTag, _float2(m_fX, m_fY), m_fTextScale, m_Color);
+	m_pGameInstance->Render_Text(TEXT("Font_Malang"), m_strButtonText, _float2(m_fX, m_fY), m_fTextScale, m_Color);
 
 	//if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", 1)))
 	//{
@@ -192,7 +197,7 @@ HRESULT CButton_Common::Add_Components()
 	switch (m_iButtonType)
 	{
 	case 0:
-		if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_StartBtn"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_StartBtn"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 		{
 			return E_FAIL;
 		}

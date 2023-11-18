@@ -12,7 +12,8 @@ class CButton_Common final : public COrthographicObject
 
 public:
 	const _bool& Is_Pushed() const;
-	const _bool& Is_Empty() const;
+	const _bool Is_Empty() const;
+	const _bool& Is_Activated() const;
 
 	void Push(_bool isPushed);
 	void Activate_Button(_bool isActivate);
@@ -34,7 +35,7 @@ private:
 
 private:
 	_uint m_iButtonType{};
-	wstring m_strButtonTag{};
+	wstring m_strButtonText{};
 	_uint m_iIndex{};
 	_vector m_Color{};
 	_bool m_isActivated{};

@@ -208,9 +208,9 @@ void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup
 		Mask = MASK_TERRAIN;
 		break;
 	}
-	PxShape* pShape{ nullptr };
-	pShape = m_pPhysics->createShape(PxBoxGeometry(PxVec3(2.f, 2.f, 2.f)), *m_pMaterial, false, PxShapeFlag::eTRIGGER_SHAPE);
-	pController->getActor()->attachShape(*pShape);
+	//PxShape* pShape{ nullptr };
+	//pShape = m_pPhysics->createShape(PxBoxGeometry(PxVec3(2.f, 2.f, 2.f)), *m_pMaterial, false, PxShapeFlag::eTRIGGER_SHAPE);
+	//pController->getActor()->attachShape(*pShape);
 
 	pTransform->Set_Controller(pController);
 	//m_Characters.emplace(pTransform, pController);

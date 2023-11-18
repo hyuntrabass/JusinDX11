@@ -54,7 +54,7 @@ void CSandman::Tick(_float fTimeDelta)
 	//{
 	//	return;
 	//}
-	
+
 	//if (m_pModelCom->IsAnimationFinished(m_pModelCom->Get_CurrentAnimationIndex()))
 	//{
 	//	m_pModelCom->Set_Animation(rand() % 144, false);
@@ -204,6 +204,11 @@ HRESULT CSandman::Bind_ShaderResources()
 
 void CSandman::Artificial_Intelligence(_float fTimeDelta)
 {
+	if (m_pModelCom->Get_CurrentAnimationIndex() == Anim_Attack_SideDoubleSlashing and
+		not m_pModelCom->IsAnimationFinished(Anim_Attack_SideDoubleSlashing))
+	{
+		return;
+	}
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 
 	_vector vPlayerPos = pPlayerTransform->Get_State(State::Pos);
@@ -263,10 +268,10 @@ void CSandman::Artificial_Intelligence(_float fTimeDelta)
 
 		if (m_fAttTime > 2.f)
 		{
-			m_pModelCom->Set_Animation(Anim_Attack_StepSlashingHorizontally, false);
+			m_pModelCom->Set_Animation(Anim_Attack_SideDoubleSlashing, false);
 			m_fAttTime = 0.f;
 		}
-		else if (m_pModelCom->IsAnimationFinished(Anim_Attack_StepSlashingHorizontally))
+		else if (m_pModelCom->IsAnimationFinished(Anim_Attack_SideDoubleSlashing))
 		{
 			m_pModelCom->Set_Animation(Anim_Idle_Type02_Loop, true);
 		}

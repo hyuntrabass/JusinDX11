@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "PhysX_Manager.h"
 #include "BodyPart.h"
+#include "UI_Manager.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -56,10 +57,6 @@ void CPlayer::Tick(_float fTimeDelta)
 	else
 	{
 		Customize(fTimeDelta);
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(etc_Appearance))
-		{
-			m_Animation = { CharaSelect_Idle, true };
-		}
 	}
 
 	for (size_t i = 0; i < PT_END; i++)
@@ -147,13 +144,13 @@ void CPlayer::Move(_float fTimeDelta)
 		m_isRunning = false;
 	}
 
-	_uint iCurrentAnimIndex = m_Animation.first;
+	_uint iCurrentAnimIndex = m_Animation.iAnimIndex;
 
 	if (m_pGameInstance->Key_Down(DIK_SPACE) && iCurrentAnimIndex != DoubleJump)
 	{
 		if (m_pTransformCom->Is_Jumping())
 		{
-			m_Animation = { DoubleJump, false };
+			m_Animation = { DoubleJump, false, true };
 		}
 		else if (hasMoved)
 		{
@@ -259,7 +256,7 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 	}
 
-	iCurrentAnimIndex = m_Animation.first;
+	iCurrentAnimIndex = m_Animation.iAnimIndex;
 	//iCurrentAnimIndex = m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex();
 
 	if (iCurrentAnimIndex == Jump_Vertical || iCurrentAnimIndex == Fall_Vertical_Loop)
@@ -270,7 +267,7 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 		if (not m_pTransformCom->Is_Jumping())
 		{
-			m_Animation = { Land, false };
+ 			m_Animation = { Land, false , true };
 		}
 	}
 	else if (iCurrentAnimIndex == Jump_Front || iCurrentAnimIndex == Fall_Front_Loop || iCurrentAnimIndex == DoubleJump)
@@ -283,7 +280,7 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 		if (not m_pTransformCom->Is_Jumping())
 		{
-			m_Animation = { Land, false };
+			m_Animation = { Land, false, true };
 		}
 	}
 	else if (iCurrentAnimIndex == Land)
@@ -331,16 +328,40 @@ void CPlayer::Customize(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
 	{
-		if (m_Animation.first < Animation::End - 1)
+		if (m_Animation.iAnimIndex < Animation::End - 1)
 		{
-			m_Animation.first += 1;
+			m_Animation.iAnimIndex += 1;
 		}
 	}
 	else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
 	{
-		if (m_Animation.first > 0)
+		if (m_Animation.iAnimIndex > 0)
 		{
-			m_Animation.first -= 1;
+			m_Animation.iAnimIndex -= 1;
+		}
+	}
+
+	_uint LastBtnIndex = CUI_Manager::Get_Instance()->Get_sizeofButtons() - 1;
+	if (CUI_Manager::Get_Instance()->is_Activated(LastBtnIndex))
+	{
+		if (m_Animation.iAnimIndex != Boruto_etc_Win_Type01_Loop)
+		{
+			m_Animation = { Boruto_etc_Win_Type01_Start, false };
+			if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Boruto_etc_Win_Type01_Start))
+			{
+				m_Animation = { Boruto_etc_Win_Type01_Loop, true, true };
+			}
+		}
+	}
+	else
+	{
+		if (m_Animation.iAnimIndex == Boruto_etc_Win_Type01_Loop)
+		{
+			m_Animation = { Boruto_etc_Win_Type01_End, false, true };
+		}
+		if (m_Animation.iAnimIndex == Boruto_etc_Win_Type01_Start or m_pBodyParts[PT_HEAD]->IsAnimationFinished(Boruto_etc_Win_Type01_End) or m_pBodyParts[PT_HEAD]->IsAnimationFinished(etc_Appearance))
+		{
+			m_Animation = { CharaSelect_Idle, true };
 		}
 	}
 

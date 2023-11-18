@@ -19,9 +19,10 @@ public:
 	void Set_ButtonState(const wstring& strButtonTag, const _bool& bState);
 
 	const _bool Is_ButtonPushed(_uint iIndex) const;
-	const _bool is_Activated() const;
-	const _uint& Get_PartIndex(PART_TYPE eType);
-	const _uint& Get_PageIndex();
+	const _bool is_Activated(_uint iIndex) const;
+	const _uint& Get_PartIndex(PART_TYPE eType) const;
+	const _uint& Get_PageIndex() const;
+	const _uint Get_sizeofButtons() const;
 
 public:
 	HRESULT Init(CGameInstance* pGameInstance);

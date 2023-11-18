@@ -22,19 +22,24 @@ const _bool CUI_Manager::Is_ButtonPushed(_uint iIndex) const
 	return m_Buttons[iIndex]->Is_Pushed();
 }
 
-const _bool CUI_Manager::is_Activated() const
+const _bool CUI_Manager::is_Activated(_uint iIndex) const
 {
-	return _bool();
+	return m_Buttons[iIndex]->Is_Activated();
 }
 
-const _uint& CUI_Manager::Get_PartIndex(PART_TYPE eType)
+const _uint& CUI_Manager::Get_PartIndex(PART_TYPE eType) const
 {
 	return m_iPartIndex[eType];
 }
 
-const _uint& CUI_Manager::Get_PageIndex()
+const _uint& CUI_Manager::Get_PageIndex() const
 {
 	return m_iPageIndex;
+}
+
+const _uint CUI_Manager::Get_sizeofButtons() const
+{
+	return m_Buttons.size();
 }
 
 HRESULT CUI_Manager::Init(CGameInstance* pGameInstance)
@@ -58,13 +63,19 @@ void CUI_Manager::Tick(_float fTimeDelta)
 
 	m_Buttons[m_iButtonIndex]->Activate_Button(false);
 
+	_uint iButtons_size = m_Buttons.size();
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CREATECHARACTER and m_iPageIndex != 0)
+	{
+		iButtons_size--;
+	}
+
 	if (m_pGameInstance->Key_Down(DIK_DOWN))
 	{
 		m_iButtonIndex++;
 
-		if (m_iButtonIndex >= m_Buttons.size())
+		if (m_iButtonIndex >= iButtons_size)
 		{
-			if (m_iNumButtons > m_Buttons.size() && m_iButtonIndex + m_iScroll < m_iNumButtons)
+			if (m_iNumButtons > iButtons_size && m_iButtonIndex + m_iScroll < m_iNumButtons)
 			{
 				m_iScroll++;
 				m_iButtonIndex--;
@@ -80,7 +91,7 @@ void CUI_Manager::Tick(_float fTimeDelta)
 		{
 			m_iButtonIndex++;
 
-			if (m_iButtonIndex >= m_Buttons.size())
+			if (m_iButtonIndex >= iButtons_size)
 			{
 				m_iButtonIndex = 0;
 			}
@@ -97,10 +108,10 @@ void CUI_Manager::Tick(_float fTimeDelta)
 			}
 			else
 			{
-				m_iButtonIndex = m_Buttons.size() - 1;
-				if (m_iNumButtons > m_Buttons.size())
+				m_iButtonIndex = iButtons_size - 1;
+				if (m_iNumButtons > iButtons_size)
 				{
-					m_iScroll = m_iNumButtons - m_Buttons.size();
+					m_iScroll = m_iNumButtons - iButtons_size;
 				}
 			}
 		}
@@ -114,7 +125,7 @@ void CUI_Manager::Tick(_float fTimeDelta)
 			if (m_iButtonIndex == 0)
 			{
 				m_iScroll = m_iNumButtons - m_Buttons.size();
-				m_iButtonIndex = m_Buttons.size() - 1;
+				m_iButtonIndex = iButtons_size - 1;
 			}
 			else
 			{
@@ -276,6 +287,16 @@ HRESULT CUI_Manager::Ready_UI_Custom()
 		Info.vPos.y += 50.f;
 	}
 
+	Info.vPos = _float2(g_iWinSizeX * 0.5f, 650.f);
+	Info.iButtonType = 0;
+	Info.strText = TEXT("결정");
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CREATECHARACTER, TEXT("Layer_Buttons"), TEXT("Prototype_GameObject_Button_Common"), &Info)))
+	{
+		return E_FAIL;
+	}
+	m_Buttons.emplace_back(pButton);
+	Safe_AddRef(pButton);
+
 	return S_OK;
 }
 
@@ -310,6 +331,8 @@ void CUI_Manager::Customization()
 				break;
 			}
 		}
+
+		m_Buttons.back()->Set_ButtonText(TEXT("결정"));
 
 		if (m_Buttons[0]->Is_Pushed())
 		{
@@ -381,7 +404,7 @@ void CUI_Manager::Customization()
 				m_Buttons[i]->Set_ButtonText(TEXT("긴 생머리 닌자"));
 				break;
 			case 9:
-				m_Buttons[i]->Set_ButtonText(TEXT("단정한 스타일"));
+				m_Buttons[i]->Set_ButtonText(TEXT("밋밋한 스타일"));
 				break;
 			case 10:
 				m_Buttons[i]->Set_ButtonText(TEXT("대륙 스타일"));
@@ -391,6 +414,8 @@ void CUI_Manager::Customization()
 				break;
 			}
 		}
+
+		m_Buttons.back()->Set_ButtonText(TEXT(""));
 
 		m_iPartIndex[PT_HEAD] = m_iButtonIndex + m_iScroll;
 
@@ -426,6 +451,8 @@ void CUI_Manager::Customization()
 				break;
 			}
 		}
+
+		m_Buttons.back()->Set_ButtonText(TEXT(""));
 
 		m_iPartIndex[PT_FACE] = m_iButtonIndex + m_iScroll;
 
@@ -495,6 +522,8 @@ void CUI_Manager::Customization()
 			}
 		}
 
+		m_Buttons.back()->Set_ButtonText(TEXT(""));
+
 		if (m_iPartIndex[PT_UPPER_BODY] >= 14)
 		{
 			m_iPartIndex[PT_LOWER_BODY] = 0;
@@ -557,6 +586,9 @@ void CUI_Manager::Customization()
 				break;
 			}
 		}
+
+		m_Buttons.back()->Set_ButtonText(TEXT(""));
+
 		if (m_iPartIndex[PT_UPPER_BODY] >= 14)
 		{
 			m_iPartIndex[PT_UPPER_BODY] = 0;
@@ -592,6 +624,8 @@ void CUI_Manager::Customization()
 				break;
 			}
 		}
+
+		m_Buttons.back()->Set_ButtonText(TEXT(""));
 
 		m_iPartIndex[PT_UPPER_BODY] = m_iButtonIndex + m_iScroll + 14;
 		m_iPartIndex[PT_LOWER_BODY] = 100;

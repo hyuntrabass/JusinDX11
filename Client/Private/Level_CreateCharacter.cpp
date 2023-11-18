@@ -37,7 +37,8 @@ HRESULT CLevel_CreateCharacter::Init()
 
 void CLevel_CreateCharacter::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_PRIOR) || m_pGameInstance->Key_Down(DIK_NUMPAD9))
+	_uint LastBtnIndex = CUI_Manager::Get_Instance()->Get_sizeofButtons() - 1;
+	if (CUI_Manager::Get_Instance()->Is_ButtonPushed(LastBtnIndex))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_TUTORIAL))))
 		{
