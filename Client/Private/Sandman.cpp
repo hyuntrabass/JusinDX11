@@ -42,7 +42,7 @@ HRESULT CSandman::Init(void* pArg)
 
 	m_fWalkSpeed = 2.f;
 	m_fRunSpeed = 5.f;
-	m_fAttackRange = 2.f;
+	m_fAttackRange = 3.f;
 	m_fSearchRange = 20.f;
 
 	return S_OK;
@@ -55,11 +55,27 @@ void CSandman::Tick(_float fTimeDelta)
 	//	return;
 	//}
 
-	//if (m_pModelCom->IsAnimationFinished(m_pModelCom->Get_CurrentAnimationIndex()))
-	//{
-	//	m_pModelCom->Set_Animation(rand() % 144, false);
-	//	Move(fTimeDelta);
-	//}
+#ifdef _DEBUG
+	if (m_pGameInstance->Key_Down(DIK_U))
+	{
+		_float3 vNewPos{};
+		XMStoreFloat3(&vNewPos, m_pTransformCom->Get_State(State::Pos) + XMVectorSet(0.f, 10.f, 0.f, 0.f));
+		m_pTransformCom->Set_Position(vNewPos);
+	}
+#endif // DEBUG
+
+	if (m_pTransformCom->Get_State(State::Pos).m128_f32[1] < 20.f)
+	{
+		m_iHP = 0.f;
+		m_pModelCom->Set_Animation(Anim_Dying_Aerial_Fall_Behind_Loop, false);
+		m_pTransformCom->Gravity(fTimeDelta);
+		m_pModelCom->Play_Animation(fTimeDelta);
+		if (m_pModelCom->IsAnimationFinished(Anim_Dying_Aerial_Fall_Behind_Loop))
+		{
+			m_isDead = true;
+		}
+		return;
+	}
 
 	if (m_pModelCom->IsAnimationFinished(Anim_etc_Appearance_Type01) or m_pModelCom->IsAnimationFinished(Anim_etc_Appearance_Type02))
 	{
@@ -90,9 +106,7 @@ HRESULT CSandman::Render()
 		return E_FAIL;
 	}
 
-	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-	for (_uint i = 0; i < iNumMeshes; i++)
+	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 	{
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
@@ -128,6 +142,7 @@ HRESULT CSandman::Render()
 			return E_FAIL;
 		}
 	}
+
 	return S_OK;
 }
 
@@ -173,7 +188,7 @@ HRESULT CSandman::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_CREATECHARACTER, 0);
+	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_TUTORIAL, 0);
 	if (not pLightDesc)
 	{
 		return E_FAIL;

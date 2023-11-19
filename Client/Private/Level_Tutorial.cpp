@@ -29,6 +29,11 @@ HRESULT CLevel_Tutorial::Init()
 		MSG_BOX("Failed to Ready UIs");
 	}
 
+	if (FAILED(Ready_People()))
+	{
+		MSG_BOX("Failed to Ready People");
+	}
+
 	return S_OK;
 }
 
@@ -93,19 +98,6 @@ HRESULT CLevel_Tutorial::Ready_Map()
 		return E_FAIL;
 	}
 
-	for (size_t i = 0; i < 10; i++)
-	{
-		_float4 vPos{};
-		vPos.x = -11 + (2.f * (rand() % 7));
-		vPos.y = 50.f;
-		vPos.z = 85.f + (2.f * (rand() % 10));
-		vPos.w = 1.f;
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Sandman", L"Prototype_GameObject_Sandman", &vPos)))
-		{
-			return E_FAIL;
-		}
-	}
-
 	return S_OK;
 }
 
@@ -114,9 +106,9 @@ HRESULT CLevel_Tutorial::Ready_Lights()
 	LIGHT_DESC LightDesc{};
 
 	LightDesc.eType = LIGHT_DESC::Directional;
-	LightDesc.vDirection = _float4(-1.f, -1.f, 0.f, 0.f);
+	LightDesc.vDirection = _float4(0.f, -1.f, 0.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.8f, 0.8f, 0.8f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	return m_pGameInstance->Add_Light(LEVEL_TUTORIAL, LightDesc);
@@ -140,6 +132,29 @@ HRESULT CLevel_Tutorial::Ready_UIs()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_HpBar_SlotBase_Tool"))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Tutorial::Ready_People()
+{
+	for (size_t i = 0; i < 10; i++)
+	{
+		_float4 vPos{};
+		vPos.x = -11 + (2.f * (rand() % 7));
+		vPos.y = 50.f;
+		vPos.z = 85.f + (2.f * (rand() % 10));
+		vPos.w = 1.f;
+		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Sandman", L"Prototype_GameObject_Sandman", &vPos)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Kakashi", L"Prototype_GameObject_Kakashi")))
 	{
 		return E_FAIL;
 	}

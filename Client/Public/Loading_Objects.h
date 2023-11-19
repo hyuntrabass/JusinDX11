@@ -19,3 +19,5 @@
 #include "Sandman.h"
 #include "MapCollider.h"
 #include "BodyPart.h"
+#include "Kurama.h"
+#include "Kakashi.h"

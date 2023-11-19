@@ -67,14 +67,6 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
-	for (size_t i = 0; i < PT_END; i++)
-	{
-		m_pBodyParts[i]->Late_Tick(fTimeDelta);
-	}
-}
-
-HRESULT CPlayer::Render()
-{
 #ifdef _DEBUG
 	if (m_pGameInstance->Get_CameraModeIndex() == CM_MAIN)
 	{
@@ -91,6 +83,14 @@ HRESULT CPlayer::Render()
 	}
 #endif // _DEBUG
 
+	for (size_t i = 0; i < PT_END; i++)
+	{
+		m_pBodyParts[i]->Late_Tick(fTimeDelta);
+	}
+}
+
+HRESULT CPlayer::Render()
+{
 	for (size_t i = 0; i < PT_END; i++)
 	{
 		if (FAILED(m_pBodyParts[i]->Render()))
@@ -231,13 +231,13 @@ void CPlayer::Move(_float fTimeDelta)
 			}
 			else
 			{
-				m_Animation = { Run_End, false };
-				m_pTransformCom->Set_Speed(15.f);
-				if (m_fSliding > 0.f)
-				{
-					m_fSliding -= 0.02f;
-				}
-				m_pTransformCom->Go_Straight(fTimeDelta * m_fSliding);
+				m_Animation = { Run_End, false, true };
+				//m_pTransformCom->Set_Speed(15.f);
+				//if (m_fSliding > 0.f)
+				//{
+				//	m_fSliding -= 0.02f;
+				//}
+				//m_pTransformCom->Go_Straight(fTimeDelta * m_fSliding);
 			}
 		}
 

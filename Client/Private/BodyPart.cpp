@@ -87,9 +87,7 @@ HRESULT CBodyPart::Render()
 		return E_FAIL;
 	}
 
-	_uint iNumMeshes = m_Models[m_iSelectedModelIndex]->Get_NumMeshes();
-
-	for (_uint i = 0; i < iNumMeshes; i++)
+	for (_uint i = 0; i < m_Models[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
 	{
 		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{

@@ -172,6 +172,8 @@
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\public\HpBar_Player.h" />
     <ClInclude Include="..\Public\HpBar_Player_Base.h" />
+    <ClInclude Include="..\public\Kakashi.h" />
+    <ClInclude Include="..\public\Kurama.h" />
     <ClInclude Include="..\public\Level_CreateCharacter.h" />
     <ClInclude Include="..\public\Level_Loading.h" />
     <ClInclude Include="..\public\Level_Logo.h" />
@@ -209,6 +211,8 @@
     <ClCompile Include="..\private\Camera_Main.cpp" />
     <ClCompile Include="..\private\HpBar_Player.cpp" />
     <ClCompile Include="..\Private\HpBar_Player_Base.cpp" />
+    <ClCompile Include="..\private\Kakashi.cpp" />
+    <ClCompile Include="..\private\Kurama.cpp" />
     <ClCompile Include="..\private\Level_CreateCharacter.cpp" />
     <ClCompile Include="..\private\Level_Loading.cpp" />
     <ClCompile Include="..\private\Level_Logo.cpp" />

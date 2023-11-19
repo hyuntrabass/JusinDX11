@@ -422,6 +422,11 @@ HRESULT CLoader::Load_Tutorial()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Kakashi"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/NPC/Kakashi/Mesh/Kakashi.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Tutorial : Loading Shader";
@@ -466,6 +471,11 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Sandman"), CSandman::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Kakashi"), CKakashi::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -582,6 +592,11 @@ HRESULT CLoader::Load_Stage2()
 		}
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STAGE2, TEXT("Prototype_Model_Kurama"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Kurama/Mesh/Kurama.hyuntraanimmesh", false, XMMatrixScaling(0.5f, 0.5f, 0.5f)))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Stage2 : Loading Shader";
@@ -591,6 +606,10 @@ HRESULT CLoader::Load_Stage2()
 
 	m_strLoadingText = L"Stage2 : Loading Prototype";
 #pragma region Prototype
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Kurama"), CKurama::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 #pragma endregion
 

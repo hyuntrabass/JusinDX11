@@ -70,6 +70,11 @@ HRESULT CLevel_Stage2::Ready_Map()
 		}
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STAGE2, L"Layer_Boss", L"Prototype_GameObject_Kurama")))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
