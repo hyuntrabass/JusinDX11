@@ -64,7 +64,7 @@ void CKakashi::Tick(_float fTimeDelta)
 		m_pTransformCom->Look_At_Dir(XMVectorSet(-0.56f, 0.f, 0.82357f, 0.f));
 	}
 
-	m_pModelCom->Play_Animation(fTimeDelta);
+	m_pModelCom->Play_Animation(fTimeDelta); 
 }
 
 void CKakashi::Late_Tick(_float fTimeDelta)
