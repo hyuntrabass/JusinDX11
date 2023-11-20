@@ -16,6 +16,8 @@ void CCollision_Manager::Register_Actor(CTransform* pTransform, CGameObject* pOb
 
 HRESULT CCollision_Manager::Attach_Trigger(CTransform* pTransform, _float3 TriggerSize, _float44 OffsetMatrix, _int iDamage)
 {
+	// #TODO 치고 맞는 충돌
+	
 	//// 컨트롤러의 위치 정보를 얻습니다.
 	//PxExtendedVec3 controllerPosition = controller->getFootPosition();
 

@@ -24,7 +24,7 @@ HRESULT CTerrain::Init(void* pArg)
 		m_strPrototypeTag = Info.strPrototypeTag;
 
 		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&Info.vPos));
-		m_pTransformCom->Look_At_Dir(XMLoadFloat4(&Info.vLook));
+		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&Info.vLook));
 	}
 
 	if (FAILED(Add_Components()))

@@ -5,6 +5,15 @@ BEGIN(Engine)
 
 class ENGINE_DLL CVIBuffer_Instancing abstract : public CVIBuffer
 {
+public:
+	struct ParticleDesc
+	{
+		_float3 vMinPos{}, vMaxPos;
+		_float2 vSpeedRange{};
+		_float2 vLifeTime{};
+		_float2 vScaleRange{};
+		//_float3 vDir{};
+	};
 protected:
 	CVIBuffer_Instancing(_dev pDevice, _context pContext);
 	CVIBuffer_Instancing(const CVIBuffer_Instancing& rhs);
@@ -13,6 +22,7 @@ protected:
 public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
+	virtual void Update(_float fTimeDelta);
 	virtual HRESULT Render() override;
 
 protected:

@@ -58,8 +58,8 @@ public:
 	void Go_Down(_float fTimeDelta);
 	void Jump(_float fJumpForce = 10.f);
 
-	void Look_At(_fvector vTargetPos);
-	void Look_At_Dir(_fvector vDir);
+	void LookAt(_fvector vTargetPos);
+	void LookAt_Dir(_fvector vDir);
 	void Move_to(_fvector vTargetPos, _float fTimeDelta, _float fMargin = 0.1f);
 	void Turn(_fvector vAxis, _float fTimeDelta);
 	void Rotation(_fvector vAxis, _float fAngle);

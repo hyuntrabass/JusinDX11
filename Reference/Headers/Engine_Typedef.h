@@ -40,4 +40,7 @@ namespace Engine
 
 	using _dev = ID3D11Device*;
 	using _context = ID3D11DeviceContext*;
+
+	using _randNum = std::mt19937_64;
+	using _randFloat = std::uniform_real_distribution<float>;
 }

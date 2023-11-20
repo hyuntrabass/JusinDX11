@@ -196,7 +196,7 @@ void CPlayer::Move(_float fTimeDelta)
 			m_fInterpolationRatio = 0.f;
 		}
 
-		m_pTransformCom->Look_At_Dir(vDirection);
+		m_pTransformCom->LookAt_Dir(vDirection);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 
 		if (not m_pTransformCom->Is_Jumping())

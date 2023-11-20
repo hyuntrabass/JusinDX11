@@ -51,6 +51,7 @@ using namespace physx;
 #include <ctime>
 #include <fstream>
 #include <filesystem>
+#include <random>
 
 #include "Engine_Macro.h"
 #include "Engine_Struct.h"

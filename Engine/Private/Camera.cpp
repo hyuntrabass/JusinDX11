@@ -30,7 +30,7 @@ HRESULT CCamera::Init(void* pArg)
 	m_fFar = pCameraDesc->fFar;
 
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&pCameraDesc->vCameraPos));
-	m_pTransformCom->Look_At(XMLoadFloat4(&pCameraDesc->vFocusPos));
+	m_pTransformCom->LookAt(XMLoadFloat4(&pCameraDesc->vFocusPos));
 
 	return S_OK;
 }

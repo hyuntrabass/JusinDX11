@@ -18,7 +18,7 @@ void CDummy::Select(const _bool& isSelected)
 void CDummy::Modify(_fvector vPos, _fvector vLook)
 {
 	m_pTransformCom->Set_State(State::Pos, vPos);
-	m_pTransformCom->Look_At_Dir(vLook);
+	m_pTransformCom->LookAt_Dir(vLook);
 }
 
 HRESULT CDummy::Init_Prototype()
@@ -48,7 +48,7 @@ HRESULT CDummy::Init(void* pArg)
 	}
 
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
-	m_pTransformCom->Look_At_Dir(XMLoadFloat4(&m_Info.vLook));
+	m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_Info.vLook));
 
 	return S_OK;
 }

@@ -118,6 +118,9 @@
     <Filter Include="02.GameObjects\06.Kakashi">
       <UniqueIdentifier>{881dd4f4-7486-41f7-aec4-d0ce64430e97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07.Effects">
+      <UniqueIdentifier>{640e04b0-e4fe-46a5-ac69-0f034b206a0c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -234,6 +237,9 @@
     <ClInclude Include="..\public\Kakashi.h">
       <Filter>02.GameObjects\06.Kakashi</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Effect.h">
+      <Filter>02.GameObjects\07.Effects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -348,6 +354,9 @@
     <ClCompile Include="..\private\Kakashi.cpp">
       <Filter>02.GameObjects\06.Kakashi</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Effect.cpp">
+      <Filter>02.GameObjects\07.Effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex.hlsl">
@@ -363,6 +372,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimMesh.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Instancing.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

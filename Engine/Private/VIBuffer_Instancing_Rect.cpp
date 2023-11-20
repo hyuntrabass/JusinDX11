@@ -83,7 +83,7 @@ HRESULT CVIBuffer_Instancing_Rect::Init_Prototype(_uint iNumInstances)
 		pIndices[iIndex++] = 0;
 		pIndices[iIndex++] = 1;
 		pIndices[iIndex++] = 2;
-				 
+
 		pIndices[iIndex++] = 0;
 		pIndices[iIndex++] = 2;
 		pIndices[iIndex++] = 3;
@@ -102,10 +102,12 @@ HRESULT CVIBuffer_Instancing_Rect::Init_Prototype(_uint iNumInstances)
 #pragma region Instance
 	m_InstancingBufferDesc.ByteWidth = m_iInstanceStride * m_iNumInstances;
 	m_InstancingBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	m_InstancingBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	m_InstancingBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	m_InstancingBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	m_InstancingBufferDesc.MiscFlags = 0;
 	m_InstancingBufferDesc.StructureByteStride = m_iInstanceStride;
+
+	m_InstancingInitialData = {};
 
 	VTXINSTANCING* pVertexInstance = new VTXINSTANCING[m_iNumInstances]{};
 
@@ -126,7 +128,50 @@ HRESULT CVIBuffer_Instancing_Rect::Init_Prototype(_uint iNumInstances)
 
 HRESULT CVIBuffer_Instancing_Rect::Init(void* pArg)
 {
-	return m_pDevice->CreateBuffer(&m_InstancingBufferDesc, &m_InstancingInitialData, &m_pVBInstance);
+	random_device rand;
+	_randNum RandomNumber(rand());
+
+	VTXINSTANCING* pVertexInstance = reinterpret_cast<VTXINSTANCING*>(const_cast<void*>(m_InstancingInitialData.pSysMem));
+
+	if (pArg)
+	{
+		ParticleDesc Desc = *reinterpret_cast<ParticleDesc*>(pArg);
+
+		_randFloat RandomX = _randFloat(Desc.vMinPos.x, Desc.vMaxPos.x);
+		_randFloat RandomY = _randFloat(Desc.vMinPos.y, Desc.vMaxPos.y);
+		_randFloat RandomZ = _randFloat(Desc.vMinPos.z, Desc.vMaxPos.z);
+
+		_randFloat RandomScale = _randFloat(Desc.vScaleRange.x, Desc.vScaleRange.y);
+		_randFloat RandomSpeed = _randFloat(Desc.vSpeedRange.x, Desc.vSpeedRange.y);
+		_randFloat RandomLifeTime = _randFloat(Desc.vLifeTime.x, Desc.vLifeTime.y);
+
+		_randFloat RandomRadian = _randFloat(0.f, XMVectorGetX(g_XMPi) * 2.f);
+
+		for (size_t i = 0; i < m_iNumInstances; i++)
+		{
+			_float fScale = RandomScale(RandomNumber);
+			_float fCeta = RandomRadian(RandomNumber);
+
+			pVertexInstance[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
+			pVertexInstance[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
+			pVertexInstance[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
+			pVertexInstance[i].vPos = _float4(RandomX(RandomNumber), RandomY(RandomNumber), RandomZ(RandomNumber), 1.f);
+			pVertexInstance[i].vOriginPos = pVertexInstance[i].vPos;
+			pVertexInstance[i].fSpeed = RandomSpeed(RandomNumber);
+			pVertexInstance[i].vLifeTime.y = RandomLifeTime(RandomNumber);
+			XMStoreFloat4(&pVertexInstance[i].vDirection, XMVector3Normalize(XMVectorSet(cos(fCeta), sin(fCeta), 0.f, 0.f)));
+		}
+	}
+
+	if (FAILED(m_pDevice->CreateBuffer(&m_InstancingBufferDesc, &m_InstancingInitialData, &m_pVBInstance)))
+	{
+		Safe_Delete_Array(pVertexInstance);
+		return E_FAIL;
+	}
+
+	Safe_Delete_Array(pVertexInstance);
+
+	return S_OK;
 }
 
 CVIBuffer_Instancing_Rect* CVIBuffer_Instancing_Rect::Create(_dev pDevice, _context pContext, _uint iNumInstances)

@@ -23,7 +23,7 @@ HRESULT CKakashi::Init(void* pArg)
 	}
 
 	m_pTransformCom->Set_State(State::Pos, XMVectorSet(11.4f, 31.f, 118.8f, 1.f));
-	m_pTransformCom->Look_At_Dir(XMVectorSet(0.96f, 0.f, 0.27785f, 0.f));
+	m_pTransformCom->LookAt_Dir(XMVectorSet(0.96f, 0.f, 0.27785f, 0.f));
 
 	m_pModelCom->Set_Animation(Kakashi_etc_Tutorial_Loop, true);
 
@@ -36,32 +36,32 @@ void CKakashi::Tick(_float fTimeDelta)
 	{
 		m_pModelCom->Set_Animation(RecordedSequence_NN_Pawn_Player_Kakashi, false);
 		m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-		m_pTransformCom->Look_At_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
+		m_pTransformCom->LookAt_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
 	}
 	if (m_pGameInstance->Key_Down(DIK_2))
 	{
 		m_pModelCom->Set_Animation(RecordedSequence_NN_Pawn_Player_Kakashi_1, false);
 		m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-		m_pTransformCom->Look_At_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
+		m_pTransformCom->LookAt_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
 	}
 	if (m_pGameInstance->Key_Down(DIK_3))
 	{
 		m_pModelCom->Set_Animation(RecordedSequence_NN_Pawn_Player_Kakashi_7, false);
 		m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-		m_pTransformCom->Look_At_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
+		m_pTransformCom->LookAt_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
 	}
 
 	if (m_pModelCom->IsAnimationFinished(RecordedSequence_NN_Pawn_Player_Kakashi))
 	{
 		m_pModelCom->Set_Animation(Kakashi_etc_Tutorial_Loop, true);
 		m_pTransformCom->Set_State(State::Pos, XMVectorSet(-15.8f, 51.6f, 102.0f, 1.f));
-		m_pTransformCom->Look_At_Dir(XMVectorSet(0.96f, 0.f, 0.27785f, 0.f));
+		m_pTransformCom->LookAt_Dir(XMVectorSet(0.96f, 0.f, 0.27785f, 0.f));
 	}
 	if (m_pModelCom->IsAnimationFinished(RecordedSequence_NN_Pawn_Player_Kakashi_1))
 	{
 		m_pModelCom->Set_Animation(Kakashi_etc_Tutorial_Loop, true);
 		m_pTransformCom->Set_State(State::Pos, XMVectorSet(11.56f, 40.282f, -65.7948f, 1.f));
-		m_pTransformCom->Look_At_Dir(XMVectorSet(-0.56f, 0.f, 0.82357f, 0.f));
+		m_pTransformCom->LookAt_Dir(XMVectorSet(-0.56f, 0.f, 0.82357f, 0.f));
 	}
 
 	m_pModelCom->Play_Animation(fTimeDelta); 

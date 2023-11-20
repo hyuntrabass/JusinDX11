@@ -279,7 +279,7 @@ void CSandman::Artificial_Intelligence(_float fTimeDelta)
 
 	if (m_eCurrState == State_Attack)
 	{
-		m_pTransformCom->Look_At_Dir(XMLoadFloat4(&m_vTargetDir));
+		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vTargetDir));
 
 		if (m_fAttTime > 2.f)
 		{
@@ -301,12 +301,12 @@ void CSandman::Move(_float fTimeDelta)
 {
 	if (m_eCurrState == State_Run)
 	{
-		m_pTransformCom->Look_At_Dir(XMLoadFloat4(&m_vTargetDir));
+		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vTargetDir));
 		m_pTransformCom->Go_Straight(fTimeDelta);
 	}
 	else if (m_eCurrState == State_Walk)
 	{
-		m_pTransformCom->Look_At_Dir(XMLoadFloat4(&m_vTargetDir));
+		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vTargetDir));
 		m_pTransformCom->Go_Straight(fTimeDelta);
 	}
 }

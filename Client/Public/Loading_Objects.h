@@ -21,3 +21,4 @@
 #include "BodyPart.h"
 #include "Kurama.h"
 #include "Kakashi.h"
+#include "Effect.h"
