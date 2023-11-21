@@ -114,7 +114,13 @@ namespace Engine
 		XMFLOAT4 vDirection{};
 	};
 
-	using VTXRECT_INSTANCING = struct ENGINE_DLL tagVertex_Rect_Instancing
+	using VTXPOINT = struct tagVertex_Point
+	{
+		XMFLOAT3 vPosition{};
+		XMFLOAT2 vPSize{};
+	};
+
+	using VTXPOINT_INSTANCING = struct ENGINE_DLL tagVertex_Point_Instancing
 	{
 		static const unsigned int iNumElements{ 6 };
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];

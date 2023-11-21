@@ -80,7 +80,7 @@ PS_OUT PS_Main(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 1.f * g_bSelected;
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + vector(0.5f, 0.f, 0.f, 0.f) * g_bSelected;
     vector vNormal = (g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex + Input.vNor;
     
     float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
@@ -122,6 +122,9 @@ technique11 DefaultTechniqueShader_VtxNorTex
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
     }
 
@@ -132,6 +135,9 @@ technique11 DefaultTechniqueShader_VtxNorTex
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Test();
     }
 };

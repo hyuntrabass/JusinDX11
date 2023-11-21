@@ -1,80 +1,66 @@
 #include "Collision_Manager.h"
 #include "GameObject.h"
 
-void CCollision_Manager::Register_Actor(CTransform* pTransform, CGameObject* pObject, _bool isPlayer)
+IMPLEMENT_SINGLETON(CCollision_Manager)
+
+void CCollision_Manager::RegisterTrigger(TriggerDesc Desc)
 {
-	if (isPlayer)
-	{
-		m_pPlayer = pObject;
-		m_pPlayerActor = pTransform->Get_Controller()->getActor();
-	}
-	else
-	{
-		m_Monsters.emplace(pTransform->Get_Controller()->getActor(), pObject);
-	}
+	m_Triggers.emplace(Desc.pActor, Desc);
 }
 
-HRESULT CCollision_Manager::Attach_Trigger(CTransform* pTransform, _float3 TriggerSize, _float44 OffsetMatrix, _int iDamage)
+void CCollision_Manager::EnterTrigger(PxTriggerPair* pPair)
 {
-	// #TODO 치고 맞는 충돌
-	
-	//// 컨트롤러의 위치 정보를 얻습니다.
-	//PxExtendedVec3 controllerPosition = controller->getFootPosition();
-
-	//// 캐릭터가 바라보는 방향을 결정합니다.
-	//// 이 예에서는 카메라의 방향을 사용하였습니다.
-	//PxQuat characterRotation = camera->getRotation();
-
-	//// 캐릭터가 바라보는 방향으로 일정 거리를 계산합니다.
-	//PxVec3 offset = characterRotation.rotate(PxVec3(0, 0, -1)) * attackDistance;
-
-	//// 충돌체의 위치를 설정합니다.
-	//PxVec3 shapePosition = PxVec3(controllerPosition.x, controllerPosition.y, controllerPosition.z) + offset;
-
-	//// 충돌체의 위치와 방향을 설정합니다.
-	//PxTransform shapeTransform(shapePosition, characterRotation);
-
-	//// 충돌체를 생성합니다.
-	//PxShape* shape = actor->createShape(PxBoxGeometry(attackWidth, attackHeight, attackDepth), *material);
-	//shape->setLocalPose(shapeTransform);
-
-	return S_OK;
-}
-
-HRESULT CCollision_Manager::Detach_Trigger(CTransform* pTransform)
-{
-	auto iter = m_Triggers.find(pTransform);
-	if (iter == m_Triggers.end())
+	auto Trigger = m_Triggers.find(pPair->triggerActor);
+	if (Trigger == m_Triggers.end())
 	{
-		return E_FAIL;;
+		return;
 	}
 
-	pTransform->Get_Controller()->getActor()->detachShape(*iter->second);
-
-	return S_OK;
-}
-
-void CCollision_Manager::Intersect(PxActor* pActor)
-{
-	if (pActor == m_pPlayerActor)
+	for (auto iter = Trigger->second.CollidedActors.begin(); iter != Trigger->second.CollidedActors.end(); ++iter)
 	{
-		m_pPlayer->Set_Damage(10);
-	}
-	else
-	{
-		auto iter = m_Monsters.find(pActor);
-		if (iter == m_Monsters.end())
+		if (*iter == pPair->otherActor)
 		{
-			MSG_BOX("말도 안돼");
+			return;
 		}
+	}
 
-		iter->second->Set_Damage(10);
+	Trigger->second.CollidedActors.push_back(pPair->otherActor);
+}
+
+void CCollision_Manager::LeaveTrigger(PxTriggerPair* pPair)
+{
+	auto Trigger = m_Triggers.find(pPair->triggerActor);
+	if (Trigger == m_Triggers.end())
+	{
+		return;
+	}
+
+	for (auto iter = Trigger->second.CollidedActors.begin(); iter != Trigger->second.CollidedActors.end(); ++iter)
+	{
+		if (*iter == pPair->otherActor)
+		{
+			Trigger->second.CollidedActors.erase(iter);
+			return;
+		}
 	}
 }
 
-CCollision_Manager* CCollision_Manager::Create()
+_bool CCollision_Manager::IsCollided(CTransform* pTransform)
 {
-	return new CCollision_Manager();
+	PxActor* pActor{ pTransform->Get_Controller()->getActor() };
+
+	for (auto& pair : m_Triggers)
+	{
+		for (auto& pOtherActor : pair.second.CollidedActors)
+		{
+			if (pActor == pOtherActor)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 void CCollision_Manager::Free()

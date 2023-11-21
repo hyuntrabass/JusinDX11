@@ -4,6 +4,7 @@
 #include "PipeLine.h"
 #include "Input_Device.h"
 #include "PhysX_Manager.h"
+#include "Collision_Manager.h"
 
 BEGIN(Engine)
 
@@ -95,6 +96,7 @@ public: // PhysX
 	void Apply_PhysX(class CTransform* pTransform);
 	void Update_PhysX(class CTransform* pTransform);
 	PxRigidStatic* Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
+	void PhysXTick(_float fTimeDelta);
 #ifdef _DEBUG
 	HRESULT Render_PhysX();
 #endif // _DEBUG

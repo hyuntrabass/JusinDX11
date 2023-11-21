@@ -64,9 +64,18 @@ void CSandman::Tick(_float fTimeDelta)
 	}
 #endif // DEBUG
 
+	if (CCollision_Manager::Get_Instance()->IsCollided(m_pTransformCom))
+	{
+		m_Hit = true;
+	}
+	else
+	{
+		m_Hit = false;
+	}
+
 	if (m_pTransformCom->Get_State(State::Pos).m128_f32[1] < 20.f)
 	{
-		m_iHP = 0.f;
+		m_iHP = 0;
 		m_pModelCom->Set_Animation(Anim_Dying_Aerial_Fall_Behind_Loop, false);
 		m_pTransformCom->Gravity(fTimeDelta);
 		m_pModelCom->Play_Animation(fTimeDelta);
@@ -168,6 +177,11 @@ HRESULT CSandman::Add_Components()
 
 HRESULT CSandman::Bind_ShaderResources()
 {
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_bSelected", &m_Hit, sizeof _bool)))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
 		return E_FAIL;

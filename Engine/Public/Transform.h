@@ -70,6 +70,8 @@ public:
 
 private:
 	_float44 m_WorldMatrix{};
+
+	PxScene* m_pScene{ nullptr };
 	PxController* m_pController{ nullptr };
 	PxControllerCollisionFlags m_CollisionFlags{};
 

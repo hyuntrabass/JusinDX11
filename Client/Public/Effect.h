@@ -22,7 +22,7 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
-	CVIBuffer_Instancing_Rect* m_pVIBufferCom{ nullptr };
+	CVIBuffer_Instancing_Point* m_pVIBufferCom{ nullptr };
 
 private:
 	HRESULT Add_Components();

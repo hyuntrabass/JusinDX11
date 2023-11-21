@@ -97,14 +97,10 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pInput_Manager->Update_InputDev();
 
-	m_pLevel_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Tick(fTimeDelta);
 	m_pPipeLine->Tick();
 	m_pPicking->Tick();
-	if (m_iLevelIndex != 1)
-	{
-		m_pPhysX_Manager->Tick(fTimeDelta);
-	}
+	m_pLevel_Manager->Tick(fTimeDelta);
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
@@ -614,6 +610,16 @@ PxRigidStatic* CGameInstance::Cook_StaticMesh(_uint iNumVertices, void* pVertice
 	}
 
 	return m_pPhysX_Manager->Cook_StaticMesh(iNumVertices, pVertices, iNumIndices, pIndices);
+}
+
+void CGameInstance::PhysXTick(_float fTimeDelta)
+{
+	if (!m_pPhysX_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
+	}
+
+	m_pPhysX_Manager->Tick(fTimeDelta);
 }
 
 #ifdef _DEBUG

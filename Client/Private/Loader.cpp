@@ -436,7 +436,7 @@ HRESULT CLoader::Load_Tutorial()
 
 	m_strLoadingText = L"Tutorial : Loading Shader";
 #pragma region Shader
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Instancing"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxTex_Instancing.hlsl"), VTXRECT_INSTANCING::Elements, VTXRECT_INSTANCING::iNumElements))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Instancing"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxTex_Instancing.hlsl"), VTXPOINT_INSTANCING::Elements, VTXPOINT_INSTANCING::iNumElements))))
 	{
 		return E_FAIL;
 	}

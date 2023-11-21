@@ -1,30 +1,30 @@
-#include "VIBuffer_Instancing_Rect.h"
+#include "VIBuffer_Instancing_Point.h"
 
-CVIBuffer_Instancing_Rect::CVIBuffer_Instancing_Rect(_dev pDevice, _context pContext)
+CVIBuffer_Instancing_Point::CVIBuffer_Instancing_Point(_dev pDevice, _context pContext)
 	: CVIBuffer_Instancing(pDevice, pContext)
 {
 }
 
-CVIBuffer_Instancing_Rect::CVIBuffer_Instancing_Rect(const CVIBuffer_Instancing_Rect& rhs)
+CVIBuffer_Instancing_Point::CVIBuffer_Instancing_Point(const CVIBuffer_Instancing_Point& rhs)
 	: CVIBuffer_Instancing(rhs)
 {
 }
 
-HRESULT CVIBuffer_Instancing_Rect::Init_Prototype(_uint iNumInstances)
+HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 {
 	m_iNumVertexBuffers = 2;
 	m_iVertexStride = sizeof VTXPOSTEX;
-	m_iNumVertices = 4;
+	m_iNumVertices = 1;
 
 	m_iNumInstances = iNumInstances;
-	m_iIndexCountPerInstance = 6;
+	m_iIndexCountPerInstance = 1;
 	m_iInstanceStride = sizeof VTXINSTANCING;
 
 	m_iIndexStride = 2;
 	m_iNumIndices = m_iIndexCountPerInstance * m_iNumInstances;
 
 	m_eIndexFormat = DXGI_FORMAT_R16_UINT;
-	m_ePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	m_ePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
 
 #pragma region Vertex
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
@@ -37,29 +37,20 @@ HRESULT CVIBuffer_Instancing_Rect::Init_Prototype(_uint iNumInstances)
 
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
 
-	VTXPOSTEX* pVertices = new VTXPOSTEX[m_iNumVertices];
-	ZeroMemory(pVertices, sizeof(VTXPOSTEX) * m_iNumVertices);
+	VTXPOSTEX* pVertex = new VTXPOSTEX;
+	ZeroMemory(pVertex, sizeof(VTXPOSTEX) * m_iNumVertices);
 
-	pVertices[0].vPosition = _float3(-0.5f, 0.5f, 0.f);
-	pVertices[0].vTexcoord = _float2(0.f, 0.f);
+	pVertex->vPosition = _float3(0.f, 0.f, 0.f);
+	pVertex->vTexcoord = _float2(1.f, 1.f);
 
-	pVertices[1].vPosition = _float3(0.5f, 0.5f, 0.f);
-	pVertices[1].vTexcoord = _float2(1.f, 0.f);
-
-	pVertices[2].vPosition = _float3(0.5f, -0.5f, 0.f);
-	pVertices[2].vTexcoord = _float2(1.f, 1.f);
-
-	pVertices[3].vPosition = _float3(-0.5f, -0.5f, 0.f);
-	pVertices[3].vTexcoord = _float2(0.f, 1.f);
-
-	m_InitialData.pSysMem = pVertices;
+	m_InitialData.pSysMem = pVertex;
 
 	if (FAILED(__super::Create_Buffer(&m_pVB)))
 	{
 		return E_FAIL;
 	}
 
-	Safe_Delete_Array(pVertices);
+	Safe_Delete(pVertex);
 #pragma endregion
 
 #pragma region Index
@@ -73,21 +64,7 @@ HRESULT CVIBuffer_Instancing_Rect::Init_Prototype(_uint iNumInstances)
 
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
 
-	_ushort* pIndices = new _ushort[m_iNumIndices];
-	ZeroMemory(pIndices, sizeof(_ushort) * m_iNumIndices);
-
-	_uint iIndex{};
-
-	for (size_t i = 0; i < m_iNumInstances; i++)
-	{
-		pIndices[iIndex++] = 0;
-		pIndices[iIndex++] = 1;
-		pIndices[iIndex++] = 2;
-
-		pIndices[iIndex++] = 0;
-		pIndices[iIndex++] = 2;
-		pIndices[iIndex++] = 3;
-	}
+	_ushort* pIndices = new _ushort[m_iNumIndices]{};
 
 	m_InitialData.pSysMem = pIndices;
 
@@ -126,7 +103,7 @@ HRESULT CVIBuffer_Instancing_Rect::Init_Prototype(_uint iNumInstances)
 	return S_OK;
 }
 
-HRESULT CVIBuffer_Instancing_Rect::Init(void* pArg)
+HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 {
 	random_device rand;
 	_randNum RandomNumber(rand());
@@ -174,33 +151,33 @@ HRESULT CVIBuffer_Instancing_Rect::Init(void* pArg)
 	return S_OK;
 }
 
-CVIBuffer_Instancing_Rect* CVIBuffer_Instancing_Rect::Create(_dev pDevice, _context pContext, _uint iNumInstances)
+CVIBuffer_Instancing_Point* CVIBuffer_Instancing_Point::Create(_dev pDevice, _context pContext, _uint iNumInstances)
 {
-	CVIBuffer_Instancing_Rect* pInstance = new CVIBuffer_Instancing_Rect(pDevice, pContext);
+	CVIBuffer_Instancing_Point* pInstance = new CVIBuffer_Instancing_Point(pDevice, pContext);
 
 	if (FAILED(pInstance->Init_Prototype(iNumInstances)))
 	{
-		MSG_BOX("Failed to Create : CVIBuffer_Instancing_Rect");
+		MSG_BOX("Failed to Create : CVIBuffer_Instancing_Point");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CComponent* CVIBuffer_Instancing_Rect::Clone(void* pArg)
+CComponent* CVIBuffer_Instancing_Point::Clone(void* pArg)
 {
-	CVIBuffer_Instancing_Rect* pInstance = new CVIBuffer_Instancing_Rect(*this);
+	CVIBuffer_Instancing_Point* pInstance = new CVIBuffer_Instancing_Point(*this);
 
 	if (FAILED(pInstance->Init(pArg)))
 	{
-		MSG_BOX("Failed to Clone : CVIBuffer_Instancing_Rect");
+		MSG_BOX("Failed to Clone : CVIBuffer_Instancing_Point");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CVIBuffer_Instancing_Rect::Free()
+void CVIBuffer_Instancing_Point::Free()
 {
 	__super::Free();
 }

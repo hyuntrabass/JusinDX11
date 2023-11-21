@@ -7,7 +7,7 @@
 #include "VIBuffer_Terrain.h"
 #include "Transform.h"
 #include "Model.h"
-#include "VIBuffer_Instancing_Rect.h"
+#include "VIBuffer_Instancing_Point.h"
 
 BEGIN(Engine)
 

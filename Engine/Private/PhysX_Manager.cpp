@@ -3,6 +3,7 @@
 #include "VIBuffer_PhysX.h"
 #include "Shader.h"
 #include "GameInstance.h"
+#include "Collision_Manager.h"
 
 CPhysX_Manager::CPhysX_Manager(_dev pDevice, _context pContext)
 	: m_pDevice(pDevice)
@@ -36,9 +37,15 @@ class TriggerCallback : public PxSimulationEventCallback
 		{
 			const PxTriggerPair& current = *pairs++;
 			if (current.status & PxPairFlag::eNOTIFY_TOUCH_FOUND)
+			{
+				CCollision_Manager::Get_Instance()->EnterTrigger(pairs);
 				printf("Shape is entering trigger volume\n");
+			}
 			if (current.status & PxPairFlag::eNOTIFY_TOUCH_LOST)
+			{
+				CCollision_Manager::Get_Instance()->LeaveTrigger(pairs);
 				printf("Shape is leaving trigger volume\n");
+			}
 		}
 	}
 
@@ -114,8 +121,9 @@ HRESULT CPhysX_Manager::Init(CGameInstance* pGameInstance)
 	//PxShape* shape = m_pPhysics->createShape(PxPlaneGeometry(), *m_pMaterial);
 	//pGround->attachShape(*shape);
 	//shape->release();
-	PxRigidStatic* pGround = PxCreatePlane(*m_pPhysics, PxPlane(0.f, 1.f, 0.f, 0.f), *m_pMaterial);
-	m_pScene->addActor(*pGround);
+
+	//PxRigidStatic* pGround = PxCreatePlane(*m_pPhysics, PxPlane(0.f, 1.f, 0.f, 0.f), *m_pMaterial);
+	//m_pScene->addActor(*pGround);
 
 #ifdef _DEBUG
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 1.0);
@@ -126,6 +134,7 @@ HRESULT CPhysX_Manager::Init(CGameInstance* pGameInstance)
 	{
 		return E_FAIL;
 	}
+
 #endif // _DEBUG
 
 	m_pGameInstance = pGameInstance;
@@ -143,33 +152,40 @@ void CPhysX_Manager::Tick(_float fTimeDelta)
 #ifdef _DEBUG
 HRESULT CPhysX_Manager::Render()
 {
-	//if (!m_pVIBufferCom)
-	//{
-	//	return S_OK;
-	//}
-	//else
-	//{
-	//	const PxRenderBuffer& rb = m_pScene->getRenderBuffer();
-	//	m_pVIBufferCom->Update_Buffer(rb);
-	//}
+	if (!m_pVIBufferCom)
+	{
+		if (m_pScene->getRenderBuffer().getNbLines())
+		{
+			m_pVIBufferCom = CVIBuffer_PhysX::Create(m_pDevice, m_pContext, m_pScene->getRenderBuffer());
+		}
+		else
+		{
+			return S_OK;
+		}
+	}
+	else
+	{
+		const PxRenderBuffer& rb = m_pScene->getRenderBuffer();
+		m_pVIBufferCom->Update_Buffer(rb);
+	}
 
-	//if (FAILED(m_pDebugShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::View))))
-	//{
-	//	return E_FAIL;
-	//}
-	//if (FAILED(m_pDebugShader->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::Proj))))
-	//{
-	//	return E_FAIL;
-	//}
-	//if (FAILED(m_pDebugShader->Begin(0)))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pDebugShader->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::View))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pDebugShader->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::Proj))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pDebugShader->Begin(0)))
+	{
+		return E_FAIL;
+	}
 
-	//if (FAILED(m_pVIBufferCom->Render()))
-	//{
-	//	return E_FAIL;
-	//}
+	if (FAILED(m_pVIBufferCom->Render()))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -209,7 +225,8 @@ void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup
 		break;
 	}
 	//PxShape* pShape{ nullptr };
-	//pShape = m_pPhysics->createShape(PxBoxGeometry(PxVec3(2.f, 2.f, 2.f)), *m_pMaterial, false, PxShapeFlag::eTRIGGER_SHAPE);
+	//pShape = m_pPhysics->createShape(PxBoxGeometry(PxVec3(2.f, 1.5f, 0.7f)), *m_pMaterial, false, PxShapeFlag::eTRIGGER_SHAPE);
+	//pShape->setLocalPose(PxTransform(PxVec3(0.f, 0.f, 0.7f)));
 	//pController->getActor()->attachShape(*pShape);
 
 	pTransform->Set_Controller(pController);

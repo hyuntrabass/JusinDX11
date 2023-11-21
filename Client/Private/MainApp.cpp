@@ -105,7 +105,8 @@ HRESULT CMainApp::Render()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Render_PhysX()))
+
+	if (FAILED(m_pGameInstance->Render()))
 	{
 		return E_FAIL;
 	}
@@ -158,7 +159,7 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Instancing_Rect"), CVIBuffer_Instancing_Rect::Create(m_pDevice, m_pContext, 300))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Instancing_Point"), CVIBuffer_Instancing_Point::Create(m_pDevice, m_pContext, 300))))
 
 	{
 		return E_FAIL;
@@ -240,6 +241,7 @@ void CMainApp::Free()
 	Safe_Release(m_pContext);
 
 	CUI_Manager::Get_Instance()->Destroy_Instance();
+	CCollision_Manager::Get_Instance()->Destroy_Instance();
 
 	CGameInstance::Release_Engine();
 }

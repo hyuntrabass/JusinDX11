@@ -119,6 +119,9 @@ technique11 DefaultTechniqueShader_VtxNorTex
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
     }
 
@@ -129,6 +132,9 @@ technique11 DefaultTechniqueShader_VtxNorTex
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
     }
 
@@ -139,6 +145,9 @@ technique11 DefaultTechniqueShader_VtxNorTex
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Sky();
     }
 
@@ -149,6 +158,9 @@ technique11 DefaultTechniqueShader_VtxNorTex
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_COL();
     }
 };

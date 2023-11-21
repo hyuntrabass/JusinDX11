@@ -71,9 +71,8 @@ void CTransform::Set_Position(_float3 vPosition)
 {
 	if (m_pController)
 	{
-
-	PxExtendedVec3 NewPos{ static_cast<_double>(vPosition.x), static_cast<_double>(vPosition.y), static_cast<_double>(vPosition.z) };
-	m_pController->setPosition(NewPos);
+		PxExtendedVec3 NewPos{ static_cast<_double>(vPosition.x), static_cast<_double>(vPosition.y), static_cast<_double>(vPosition.z) };
+		m_pController->setPosition(NewPos);
 	}
 	else
 	{
@@ -112,6 +111,7 @@ void CTransform::Set_RotationPerSec(_float fAngle)
 void CTransform::Set_Controller(PxController* pController)
 {
 	m_pController = pController;
+	m_pScene = m_pController->getScene();
 }
 
 HRESULT CTransform::Init_Prototype()
@@ -366,4 +366,5 @@ void CTransform::Free()
 	{
 		m_pController->release();
 	}
+
 }

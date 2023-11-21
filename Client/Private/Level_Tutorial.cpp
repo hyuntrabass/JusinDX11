@@ -46,10 +46,17 @@ void CLevel_Tutorial::Tick(_float fTimeDelta)
 			return;
 		}
 	}
+
+	m_pGameInstance->PhysXTick(fTimeDelta);
 }
 
 HRESULT CLevel_Tutorial::Render()
 {
+	if (FAILED(m_pGameInstance->Render_PhysX()))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 

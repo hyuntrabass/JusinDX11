@@ -121,19 +121,19 @@
     <Filter Include="01.Utility\03.Components\VIBuffer\PhysX">
       <UniqueIdentifier>{07fea700-ead9-4eda-989d-3efa01e4d881}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\09.PhysX">
-      <UniqueIdentifier>{5494524b-a225-41eb-992f-3eadd560bc05}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\02.GameObjects\PartObject">
       <UniqueIdentifier>{8fe67927-b577-4f22-8b4e-b07545967978}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utility\03.Components\VIBuffer\Instancing">
       <UniqueIdentifier>{c73b9380-6a6a-4e15-9e78-54e27d9f473e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Components\VIBuffer\Instancing\Rect">
+    <Filter Include="01.Utility\03.Components\VIBuffer\Instancing\Point">
       <UniqueIdentifier>{5ebdebd4-0b3f-4dc7-8d3c-a3571975a126}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\09.PhysX\Collision_Manager">
+    <Filter Include="01.Utility\09.Physics">
+      <UniqueIdentifier>{5494524b-a225-41eb-992f-3eadd560bc05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\09.Physics\Collision_Manager">
       <UniqueIdentifier>{5c201deb-e8f2-4c4c-9af0-2dc3dffe596e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -244,7 +244,7 @@
       <Filter>01.Utility\03.Components\Model\Animation\Channel</Filter>
     </ClCompile>
     <ClCompile Include="..\private\PhysX_Manager.cpp">
-      <Filter>01.Utility\09.PhysX</Filter>
+      <Filter>01.Utility\09.Physics</Filter>
     </ClCompile>
     <ClCompile Include="..\private\VIBuffer_PhysX.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\PhysX</Filter>
@@ -258,11 +258,11 @@
     <ClCompile Include="..\Private\Engine_Struct.cpp">
       <Filter>99,Headers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\VIBuffer_Instancing_Rect.cpp">
-      <Filter>01.Utility\03.Components\VIBuffer\Instancing\Rect</Filter>
+    <ClCompile Include="..\Private\VIBuffer_Instancing_Point.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer\Instancing\Point</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Collision_Manager.cpp">
-      <Filter>01.Utility\09.PhysX\Collision_Manager</Filter>
+      <Filter>01.Utility\09.Physics\Collision_Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -387,7 +387,7 @@
       <Filter>01.Utility\03.Components\Model\Animation\Channel</Filter>
     </ClInclude>
     <ClInclude Include="..\public\PhysX_Manager.h">
-      <Filter>01.Utility\09.PhysX</Filter>
+      <Filter>01.Utility\09.Physics</Filter>
     </ClInclude>
     <ClInclude Include="..\public\VIBuffer_PhysX.h">
       <Filter>01.Utility\03.Components\VIBuffer\PhysX</Filter>
@@ -398,11 +398,11 @@
     <ClInclude Include="..\public\VIBuffer_Instancing.h">
       <Filter>01.Utility\03.Components\VIBuffer\Instancing</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\VIBuffer_Instancing_Rect.h">
-      <Filter>01.Utility\03.Components\VIBuffer\Instancing\Rect</Filter>
+    <ClInclude Include="..\Public\VIBuffer_Instancing_Point.h">
+      <Filter>01.Utility\03.Components\VIBuffer\Instancing\Point</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Collision_Manager.h">
-      <Filter>01.Utility\09.PhysX\Collision_Manager</Filter>
+      <Filter>01.Utility\09.Physics\Collision_Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

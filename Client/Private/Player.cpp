@@ -25,12 +25,31 @@ HRESULT CPlayer::Init(void* pArg)
 		MSG_BOX("Failed to Add Parts");
 		return E_FAIL;
 	}
-
 	m_Animation = { etc_Appearance, false };
 
 	m_pTransformCom->Set_Speed(5.f);
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
+
+	PxShape* pShape{ nullptr };
+	PxController* pController{ m_pTransformCom->Get_Controller() };
+	PxPhysics* pPhysics{ &(pController->getScene())->getPhysics() };
+	pShape = pPhysics->createShape(PxBoxGeometry(PxVec3(2.f, 0.35f, 0.7f)), *pPhysics->createMaterial(0.5f, 0.5f, 0.f), false, PxShapeFlag::eTRIGGER_SHAPE);
+	pShape->setLocalPose(PxTransform(PxVec3(0.f, 0.f, 0.7f)));
+	
+	PxFilterData Data;
+	Data.word0 = COLGROUP_PLAYER;
+	Data.word1 = COLGROUP_TERRAIN;
+
+	pShape->setSimulationFilterData(Data);
+	pController->getActor()->attachShape(*pShape);
+
+	TriggerDesc TriggerInfo{};
+	TriggerInfo.eType = TriggerType::Player;
+	TriggerInfo.iDamage = 10;
+	TriggerInfo.pActor = pController->getActor();
+
+	CCollision_Manager::Get_Instance()->RegisterTrigger(TriggerInfo);
 
 	return S_OK;
 }

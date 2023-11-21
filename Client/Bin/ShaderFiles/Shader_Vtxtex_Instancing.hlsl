@@ -2,41 +2,84 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_Texture;
+vector g_CamPos;
 
 struct VS_IN
 {
     float3 vPos : Position;
-    float2 vTex : Texcoord0;
+    float2 vPSize : PSize;
     
-    float4 vRight : Texcoord1;
-    float4 vUp : Texcoord2;
-    float4 vLook : Texcoord3;
-    float4 vTranslation : Texcoord4;
+    row_major matrix TransformMatrix : World;
 };
 
 struct VS_OUT
 {
-    vector vPos : SV_Position; // == float4
-    float2 vTex : Texcoord0;
+    vector vPos : Position;
+    float2 vPSize : PSize;
 };
 
 VS_OUT VS_Main(VS_IN Input)
 {
     VS_OUT Output = (VS_OUT) 0;
     
-    matrix Transform = matrix(Input.vRight, Input.vUp, Input.vLook, Input.vTranslation);
     matrix matWV, matWVP;
     
-    vector vPosition = mul(float4(Input.vPos, 1.f), Transform);
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
+    vector vPosition = mul(float4(Input.vPos, 1.f), Input.TransformMatrix);
     
-    vPosition = mul(vPosition, matWVP);
+    Output.vPos = mul(vPosition, g_WorldMatrix);
+    Output.vPSize = float2(Input.vPSize.x * Input.TransformMatrix._11, Input.vPSize.y * Input.TransformMatrix._22);
     
-    Output.vPos = vPosition;
-    Output.vTex = Input.vTex;
-	
     return Output;
+}
+
+struct GS_IN
+{
+    vector vPos : Position;
+    float2 vPSize : PSize;
+};
+
+struct GS_OUT
+{
+    vector vPos : SV_Position;
+    float2 vTex : Texcoord0;
+};
+
+[maxvertexcount(6)]
+void GS_MAIN(point GS_IN Input[1], inout TriangleStream<GS_OUT> Triangles)
+{
+    GS_OUT Output[4];
+    
+    float3 vLook = (g_CamPos - Input[0].vPos).xyz;
+    float3 vRight = normalize(cross(float3(0.f, 1.f, 0.f), vLook)) * Input[0].vPSize.x * 0.5f;
+    float3 vUp = normalize(cross(vLook, vRight)) * Input[0].vPSize.y * 0.5f;
+    
+    Output[0].vPos = vector(Input[0].vPos.xyz + vRight + vUp, 1.f);
+    Output[0].vTex = float2(0.f, 0.f);
+
+    Output[1].vPos = vector(Input[0].vPos.xyz - vRight + vUp, 1.f);
+    Output[1].vTex = float2(1.f, 0.f);
+
+    Output[2].vPos = vector(Input[0].vPos.xyz - vRight - vUp, 1.f);
+    Output[2].vTex = float2(1.f, 1.f);
+
+    Output[3].vPos = vector(Input[0].vPos.xyz + vRight - vUp, 1.f);
+    Output[3].vTex = float2(0.f, 1.f);
+    
+    matrix matVP = mul(g_ViewMatrix, g_ProjMatrix);
+    
+    Output[0].vPos = mul(Output[0].vPos, matVP);
+    Output[1].vPos = mul(Output[1].vPos, matVP);
+    Output[2].vPos = mul(Output[2].vPos, matVP);
+    Output[3].vPos = mul(Output[3].vPos, matVP);
+
+    Triangles.Append(Output[0]);
+    Triangles.Append(Output[1]);
+    Triangles.Append(Output[2]);
+    Triangles.RestartStrip();
+    
+    Triangles.Append(Output[0]);
+    Triangles.Append(Output[2]);
+    Triangles.Append(Output[3]);
 }
 
 struct PS_IN
@@ -63,11 +106,14 @@ technique11 DefaultTechnique
 {
     pass Particle
     {
-        SetRasterizerState(RS_CCW);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = compile gs_5_0 GS_MAIN();
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
     }
 };

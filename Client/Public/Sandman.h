@@ -187,6 +187,8 @@ private:
 	_bool m_isRunning{};
 	_float m_fSliding{ 1.f };
 
+	_bool m_Hit{};
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
