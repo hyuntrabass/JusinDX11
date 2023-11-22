@@ -80,7 +80,7 @@ class TriggerCallback : public PxSimulationEventCallback
 	}
 }g_callback;
 
-HRESULT CPhysX_Manager::Init(CGameInstance* pGameInstance)
+HRESULT CPhysX_Manager::Init()
 {
 	static PxDefaultErrorCallback gDefaultErrorCallback;
 	static PxDefaultAllocator gDefaultAllocatorCallback;
@@ -137,7 +137,7 @@ HRESULT CPhysX_Manager::Init(CGameInstance* pGameInstance)
 
 #endif // _DEBUG
 
-	m_pGameInstance = pGameInstance;
+	m_pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(m_pGameInstance);
 
 	return S_OK;
@@ -334,11 +334,11 @@ PxRigidStatic* CPhysX_Manager::Cook_StaticMesh(_uint iNumVertices, void* pVertic
 	return pActor;
 }
 
-CPhysX_Manager* CPhysX_Manager::Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance)
+CPhysX_Manager* CPhysX_Manager::Create(_dev pDevice, _context pContext)
 {
 	CPhysX_Manager* pInstance = new CPhysX_Manager(pDevice, pContext);
 
-	if (FAILED(pInstance->Init(pGameInstance)))
+	if (FAILED(pInstance->Init()))
 	{
 		MSG_BOX("Failed to Create : CPhysX_Manager");
 		Safe_Release(pInstance);

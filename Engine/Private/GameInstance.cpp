@@ -6,6 +6,7 @@
 #include "Picking.h"
 #include "Light_Manager.h"
 #include "Font_Manager.h"
+#include "Frustum.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -63,19 +64,25 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 		return E_FAIL;
 	}
 
+	m_pFrustum = CFrustum::Create();
+	if (!m_pFrustum)
+	{
+		return E_FAIL;
+	}
+
 	m_pPipeLine = CPipeLine::Create();
 	if (!m_pPipeLine)
 	{
 		return E_FAIL;
 	}
 
-	m_pPicking = CPicking::Create(GraphicDesc.hWnd, GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY, this);
+	m_pPicking = CPicking::Create(GraphicDesc.hWnd, GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY);
 	if (!m_pPicking)
 	{
 		return E_FAIL;
 	}
 
-	m_pPhysX_Manager = CPhysX_Manager::Create(*ppDevice, *ppContext, this);
+	m_pPhysX_Manager = CPhysX_Manager::Create(*ppDevice, *ppContext);
 	if (!m_pPhysX_Manager)
 	{
 		return E_FAIL;
@@ -101,6 +108,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	m_pPipeLine->Tick();
 	m_pPicking->Tick();
 	m_pLevel_Manager->Tick(fTimeDelta);
+
+	m_pFrustum->Tick();
 
 	m_pObject_Manager->Release_DeadObjects();
 	m_pObject_Manager->Late_Tick(fTimeDelta);
@@ -562,6 +571,36 @@ HRESULT CGameInstance::Render_Text(const wstring& strFontTag, const wstring& str
 	return m_pFont_Manager->Render(strFontTag, strText, vPosition, fScale, vColor, fRotation);
 }
 
+_bool CGameInstance::IsIn_Fov_World(_fvector vPos, _float fRange)
+{
+	if (!m_pFrustum)
+	{
+		MSG_BOX("FATAL ERROR : m_pFrustum is NULL");
+	}
+
+	return m_pFrustum->IsIn_Fov_World(vPos, fRange);
+}
+
+void CGameInstance::Transform_ToLocalSpace(_fmatrix vWorldInversed)
+{
+	if (!m_pFrustum)
+	{
+		MSG_BOX("FATAL ERROR : m_pFrustum is NULL");
+	}
+
+	m_pFrustum->Transform_ToLocalSpace(vWorldInversed);
+}
+
+_bool CGameInstance::IsIn_Fov_Local(_fvector vPos, _float fRange)
+{
+	if (!m_pFrustum)
+	{
+		MSG_BOX("FATAL ERROR : m_pFrustum is NULL");
+	}
+
+	return m_pFrustum->IsIn_Fov_Local(vPos, fRange);
+}
+
 void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup)
 {
 	if (!m_pPhysX_Manager)
@@ -666,6 +705,8 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pPhysX_Manager);
+
+	Safe_Release(m_pFrustum);
 }
 
 void CGameInstance::Release_Engine()

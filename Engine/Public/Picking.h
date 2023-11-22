@@ -6,7 +6,7 @@ BEGIN(Engine);
 class CPicking final : public CBase
 {
 private:
-	CPicking(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY, class CGameInstance* pGameInstance);
+	CPicking(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY);
 	virtual ~CPicking() = default;
 
 public:
@@ -31,7 +31,7 @@ private:
 	_float4 m_vRayDir_Local{};
 
 public:
-	static CPicking* Create(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY, class CGameInstance* pGameInstance);
+	static CPicking* Create(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY);
 	virtual void Free() override;
 };
 

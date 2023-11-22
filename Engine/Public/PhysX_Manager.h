@@ -25,7 +25,7 @@ private:
 	virtual ~CPhysX_Manager() = default;
 
 public:
-	HRESULT Init(class CGameInstance* pGameInstance);
+	HRESULT Init();
 	void Tick(_float fTimeDelta);
 #ifdef _DEBUG
 	HRESULT Render();
@@ -62,7 +62,7 @@ private:
 #endif // _DEBUG
 
 public:
-	static CPhysX_Manager* Create(_dev pDevice, _context pContext, class CGameInstance* pGameInstance);
+	static CPhysX_Manager* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;
 };
 

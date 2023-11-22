@@ -16,7 +16,8 @@ GetCursorPos(&ptName);\
 ScreenToClient(g_hWnd, &ptName)
 
 #define MSG_BOX(message)								\
-::MessageBox(nullptr, TEXT(message), L"error", MB_OK)
+::MessageBox(nullptr, TEXT(message), L"error", MB_OK);	\
+DebugBreak()
 
 #define NO_COPY(ClassName)								\
 ClassName(const ClassName&) = delete;					\

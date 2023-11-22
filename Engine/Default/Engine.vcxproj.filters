@@ -136,6 +136,18 @@
     <Filter Include="01.Utility\09.Physics\Collision_Manager">
       <UniqueIdentifier>{5c201deb-e8f2-4c4c-9af0-2dc3dffe596e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\10.Frustum">
+      <UniqueIdentifier>{fb7d2a88-ea39-4904-be19-6d080ccd31fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\09.Physics\PhysX">
+      <UniqueIdentifier>{8375f2dd-ecb7-465f-8fdf-1e08604ff7be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Components\Collider">
+      <UniqueIdentifier>{2978153f-5503-401c-8dfa-9319313535a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Components\Collider\DebugDraw">
+      <UniqueIdentifier>{65484b13-7850-4cc4-8327-112d52bd90cb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -243,9 +255,6 @@
     <ClCompile Include="..\private\Channel.cpp">
       <Filter>01.Utility\03.Components\Model\Animation\Channel</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\PhysX_Manager.cpp">
-      <Filter>01.Utility\09.Physics</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\VIBuffer_PhysX.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\PhysX</Filter>
     </ClCompile>
@@ -263,6 +272,18 @@
     </ClCompile>
     <ClCompile Include="..\private\Collision_Manager.cpp">
       <Filter>01.Utility\09.Physics\Collision_Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Frustum.cpp">
+      <Filter>01.Utility\10.Frustum</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DebugDraw.cpp">
+      <Filter>01.Utility\03.Components\Collider\DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\PhysX_Manager.cpp">
+      <Filter>01.Utility\09.Physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Collider.cpp">
+      <Filter>01.Utility\03.Components\Collider</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -386,9 +407,6 @@
     <ClInclude Include="..\public\Channel.h">
       <Filter>01.Utility\03.Components\Model\Animation\Channel</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\PhysX_Manager.h">
-      <Filter>01.Utility\09.Physics</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\VIBuffer_PhysX.h">
       <Filter>01.Utility\03.Components\VIBuffer\PhysX</Filter>
     </ClInclude>
@@ -403,6 +421,18 @@
     </ClInclude>
     <ClInclude Include="..\public\Collision_Manager.h">
       <Filter>01.Utility\09.Physics\Collision_Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Frustum.h">
+      <Filter>01.Utility\10.Frustum</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DebugDraw.h">
+      <Filter>01.Utility\03.Components\Collider\DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\PhysX_Manager.h">
+      <Filter>01.Utility\09.Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Collider.h">
+      <Filter>01.Utility\03.Components\Collider</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

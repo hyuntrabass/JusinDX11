@@ -80,6 +80,11 @@ HRESULT CMapCollider::Render()
 #ifdef _DEBUG
 HRESULT CMapCollider::Bind_ShaderResources()
 {
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof(_float4))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
 		return E_FAIL;

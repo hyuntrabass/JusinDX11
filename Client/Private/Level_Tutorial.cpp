@@ -45,6 +45,7 @@ void CLevel_Tutorial::Tick(_float fTimeDelta)
 		{
 			return;
 		}
+		return;
 	}
 
 	m_pGameInstance->PhysXTick(fTimeDelta);

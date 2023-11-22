@@ -78,7 +78,6 @@ void CSandman::Tick(_float fTimeDelta)
 		m_iHP = 0;
 		m_pModelCom->Set_Animation(Anim_Dying_Aerial_Fall_Behind_Loop, false);
 		m_pTransformCom->Gravity(fTimeDelta);
-		m_pModelCom->Play_Animation(fTimeDelta);
 		if (m_pModelCom->IsAnimationFinished(Anim_Dying_Aerial_Fall_Behind_Loop))
 		{
 			m_isDead = true;
@@ -99,13 +98,15 @@ void CSandman::Tick(_float fTimeDelta)
 	Move(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
-
-	m_pModelCom->Play_Animation(fTimeDelta);
 }
 
 void CSandman::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+	{
+		m_pModelCom->Play_Animation(fTimeDelta);
+		m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	}
 }
 
 HRESULT CSandman::Render()

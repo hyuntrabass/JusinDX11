@@ -1,11 +1,11 @@
 #include "Picking.h"
 #include "GameInstance.h"
 
-CPicking::CPicking(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY, CGameInstance* pGameInstance)
+CPicking::CPicking(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
 	: m_hWnd(hWnd)
 	, m_iWinSizeX(iWinSizeX)
 	, m_iWinSizeY(iWinSizeY)
-	, m_pGameInstance(pGameInstance)
+	, m_pGameInstance(CGameInstance::Get_Instance())
 {
 	Safe_AddRef(m_pGameInstance);
 }
@@ -104,9 +104,9 @@ _bool CPicking::Picking_InLocal(_fvector vPoint1, _fvector vPoint2, _fvector vPo
 	}
 }
 
-CPicking* CPicking::Create(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY, CGameInstance* pGameInstance)
+CPicking* CPicking::Create(HWND hWnd, _uint iWinSizeX, _uint iWinSizeY)
 {
-	return new CPicking(hWnd, iWinSizeX, iWinSizeY, pGameInstance);
+	return new CPicking(hWnd, iWinSizeX, iWinSizeY);
 }
 
 void CPicking::Free()

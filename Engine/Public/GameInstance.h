@@ -90,6 +90,11 @@ public: // Font
 	HRESULT Add_Font(const wstring& strFontTag, const wstring& strFilePath);
 	HRESULT Render_Text(const wstring& strFontTag, const wstring& strText, const _float2& vPosition, _float fScale = 1.f, _fvector vColor = Colors::White, _float fRotation = 0.f);
 
+public: // Frustum
+	_bool IsIn_Fov_World(_fvector vPos, _float fRange = 0.f);
+	void Transform_ToLocalSpace(_fmatrix vWorldInversed);
+	_bool IsIn_Fov_Local(_fvector vPos, _float fRange = 0.f);
+
 public: // PhysX
 	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup);
 	void Init_PhysX_MoveableObject(class CTransform* pTransform);
@@ -119,6 +124,7 @@ private:
 	class CInput_Device* m_pInput_Manager{ nullptr };
 	class CLight_Manager* m_pLight_Manager{ nullptr };
 	class CFont_Manager* m_pFont_Manager{ nullptr };
+	class CFrustum* m_pFrustum{ nullptr };
 
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };
