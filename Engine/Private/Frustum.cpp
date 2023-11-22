@@ -38,11 +38,11 @@ void CFrustum::Tick()
 
 _bool CFrustum::IsIn_Fov_World(_fvector vPos, _float fRange)
 {
-	_float DotProduct{};
+	//_float DotProduct{};
 	for (size_t i = 0; i < 6; i++)
 	{
-		DotProduct = XMVectorGetX(XMPlaneDotCoord(XMLoadFloat4(&m_pPlanes_World[i]), vPos));
-		if (DotProduct > fRange)
+		//DotProduct = XMVectorGetX(XMPlaneDotCoord(XMLoadFloat4(&m_pPlanes_World[i]), vPos));
+		if (XMVectorGetX(XMPlaneDotCoord(XMLoadFloat4(&m_pPlanes_World[i]), vPos)) > fRange)
 		{
 			return false;
 		}

@@ -133,9 +133,6 @@
     <Filter Include="01.Utility\09.Physics">
       <UniqueIdentifier>{5494524b-a225-41eb-992f-3eadd560bc05}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\09.Physics\Collision_Manager">
-      <UniqueIdentifier>{5c201deb-e8f2-4c4c-9af0-2dc3dffe596e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\10.Frustum">
       <UniqueIdentifier>{fb7d2a88-ea39-4904-be19-6d080ccd31fe}</UniqueIdentifier>
     </Filter>
@@ -147,6 +144,9 @@
     </Filter>
     <Filter Include="01.Utility\03.Components\Collider\DebugDraw">
       <UniqueIdentifier>{65484b13-7850-4cc4-8327-112d52bd90cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\03.Components\Collider\Collision_Manager">
+      <UniqueIdentifier>{5c201deb-e8f2-4c4c-9af0-2dc3dffe596e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -271,7 +271,7 @@
       <Filter>01.Utility\03.Components\VIBuffer\Instancing\Point</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Collision_Manager.cpp">
-      <Filter>01.Utility\09.Physics\Collision_Manager</Filter>
+      <Filter>01.Utility\03.Components\Collider\Collision_Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Frustum.cpp">
       <Filter>01.Utility\10.Frustum</Filter>
@@ -420,7 +420,7 @@
       <Filter>01.Utility\03.Components\VIBuffer\Instancing\Point</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Collision_Manager.h">
-      <Filter>01.Utility\09.Physics\Collision_Manager</Filter>
+      <Filter>01.Utility\03.Components\Collider\Collision_Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Frustum.h">
       <Filter>01.Utility\10.Frustum</Filter>

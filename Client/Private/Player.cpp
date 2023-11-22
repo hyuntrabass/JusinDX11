@@ -36,7 +36,7 @@ HRESULT CPlayer::Init(void* pArg)
 	PxPhysics* pPhysics{ &(pController->getScene())->getPhysics() };
 	pShape = pPhysics->createShape(PxBoxGeometry(PxVec3(2.f, 0.35f, 0.7f)), *pPhysics->createMaterial(0.5f, 0.5f, 0.f), false, PxShapeFlag::eTRIGGER_SHAPE);
 	pShape->setLocalPose(PxTransform(PxVec3(0.f, 0.f, 0.7f)));
-	
+
 	PxFilterData Data;
 	Data.word0 = COLGROUP_PLAYER;
 	Data.word1 = COLGROUP_TERRAIN;
@@ -50,6 +50,11 @@ HRESULT CPlayer::Init(void* pArg)
 	TriggerInfo.pActor = pController->getActor();
 
 	CCollision_Manager::Get_Instance()->RegisterTrigger(TriggerInfo);
+
+	if (FAILED(Add_Components()))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -82,6 +87,9 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		m_pBodyParts[i]->Tick(fTimeDelta);
 	}
+
+	_matrix ColliderOffset = XMMatrixTranslation(0.f, 0.8f, 0.f);
+	m_pColliderCom->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -100,6 +108,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		cout << "PlayerPos Z :" << Pos.m128_f32[2] << endl;
 		cout << endl;
 	}
+	m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
 #endif // _DEBUG
 
 	for (size_t i = 0; i < PT_END; i++)
@@ -117,6 +126,11 @@ HRESULT CPlayer::Render()
 			return E_FAIL;
 		}
 	}
+
+#ifdef _DEBUG
+	m_pColliderCom->Render();
+#endif // _DEBUG
+
 
 	return S_OK;
 }
@@ -286,7 +300,7 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 		if (not m_pTransformCom->Is_Jumping())
 		{
- 			m_Animation = { Land, false , true };
+			m_Animation = { Land, false , true };
 		}
 	}
 	else if (iCurrentAnimIndex == Jump_Front || iCurrentAnimIndex == Fall_Front_Loop || iCurrentAnimIndex == DoubleJump)
@@ -428,6 +442,28 @@ HRESULT CPlayer::Ready_Parts()
 	return S_OK;
 }
 
+HRESULT CPlayer::Add_Components()
+{
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
+	{
+		return E_FAIL;
+	}
+
+	Collider_Desc ColDesc{};
+	ColDesc.eType = ColliderType::Frustum;
+	_vector vPos = m_pTransformCom->Get_State(State::Pos);
+	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), 2.f, 0.01f, 1.f);
+	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Melee"), reinterpret_cast<CComponent**>(&m_pColliderCom), &ColDesc)))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 CPlayer* CPlayer::Create(_dev pDevice, _context pContext)
 {
 	CPlayer* pInstance = new CPlayer(pDevice, pContext);
@@ -462,4 +498,9 @@ void CPlayer::Free()
 	{
 		Safe_Release(m_pBodyParts[i]);
 	}
+#ifdef _DEBUG
+	Safe_Release(m_pRendererCom);
+#endif // _DEBUG
+
+	Safe_Release(m_pColliderCom);
 }

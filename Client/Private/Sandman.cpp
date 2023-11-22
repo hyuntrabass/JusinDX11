@@ -98,14 +98,23 @@ void CSandman::Tick(_float fTimeDelta)
 	Move(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
+
+	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
 
 void CSandman::Late_Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos)))
+	m_pColliderCom->Intersect(reinterpret_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Collider_Melee"))));
+
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
 	{
+
 		m_pModelCom->Play_Animation(fTimeDelta);
 		m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	}
+	else
+	{
+		int a = 10;
 	}
 }
 
@@ -153,6 +162,11 @@ HRESULT CSandman::Render()
 		}
 	}
 
+#ifdef _DEBUG
+	m_pColliderCom->Render();
+#endif // _DEBUG
+
+
 	return S_OK;
 }
 
@@ -169,6 +183,16 @@ HRESULT CSandman::Add_Components()
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sandman"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	{
+		return E_FAIL;
+	}
+
+	Collider_Desc ColDesc{};
+	ColDesc.eType = ColliderType::OBB;
+	ColDesc.vExtents = _float3(0.7f, 0.7f, 0.35f);
+	ColDesc.vCenter = _float3(0.f, ColDesc.vExtents.y, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Take"), reinterpret_cast<CComponent**>(&m_pColliderCom), &ColDesc)))
 	{
 		return E_FAIL;
 	}
@@ -385,4 +409,5 @@ void CSandman::Free()
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pColliderCom);
 }

@@ -191,12 +191,19 @@ private:
 	_bool m_isInterpolating{};
 	_float3 m_vOriginalLook{};
 
+	CCollider* m_pColliderCom{ nullptr };
+#ifdef _DEBUG
+	CRenderer* m_pRendererCom{ nullptr };
+#endif // _DEBUG
+
+
 private:
 	void Move(_float fTimeDelta);
 	void Customize(_float fTimeDelta);
 
 private:
 	HRESULT Ready_Parts();
+	HRESULT Add_Components();
 
 public:
 	static CPlayer* Create(_dev pDevice, _context pContext);

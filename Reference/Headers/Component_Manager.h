@@ -8,6 +8,7 @@
 #include "Transform.h"
 #include "Model.h"
 #include "VIBuffer_Instancing_Point.h"
+#include "Collider.h"
 
 BEGIN(Engine)
 

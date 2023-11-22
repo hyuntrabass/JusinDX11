@@ -13,72 +13,72 @@ CPhysX_Manager::CPhysX_Manager(_dev pDevice, _context pContext)
 	Safe_AddRef(m_pContext);
 }
 
-class TriggerCallback : public PxSimulationEventCallback
-{
-	void onConstraintBreak(PxConstraintInfo* /*constraints*/, PxU32 /*count*/)	PX_OVERRIDE
-	{
-		//printf("onConstraintBreak\n");
-	}
-
-	void onWake(PxActor** /*actors*/, PxU32 /*count*/)	PX_OVERRIDE
-	{
-		//printf("onWake\n");
-	}
-
-	void onSleep(PxActor** /*actors*/, PxU32 /*count*/)	PX_OVERRIDE
-	{
-		//printf("onSleep\n");
-	}
-
-	void onTrigger(PxTriggerPair* pairs, PxU32 count)	PX_OVERRIDE
-	{
-		printf("onTrigger: %d trigger pairs\n", count);
-		while (count--)
-		{
-			const PxTriggerPair& current = *pairs++;
-			if (current.status & PxPairFlag::eNOTIFY_TOUCH_FOUND)
-			{
-				CCollision_Manager::Get_Instance()->EnterTrigger(pairs);
-				printf("Shape is entering trigger volume\n");
-			}
-			if (current.status & PxPairFlag::eNOTIFY_TOUCH_LOST)
-			{
-				CCollision_Manager::Get_Instance()->LeaveTrigger(pairs);
-				printf("Shape is leaving trigger volume\n");
-			}
-		}
-	}
-
-	void onAdvance(const PxRigidBody* const*, const PxTransform*, const PxU32)	PX_OVERRIDE
-	{
-		//printf("onAdvance\n");
-	}
-
-	void onContact(const PxContactPairHeader& /*pairHeader*/, const PxContactPair* pairs, PxU32 count)	PX_OVERRIDE
-	{
-		//		printf("onContact: %d pairs\n", count);
-
-		//while (count--)
-		//{
-		//	const PxContactPair& current = *pairs++;
-
-		//	// The reported pairs can be trigger pairs or not. We only enabled contact reports for
-		//	// trigger pairs in the filter shader, so we don't need to do further checks here. In a
-		//	// real-world scenario you would probably need a way to tell whether one of the shapes
-		//	// is a trigger or not. You could e.g. reuse the PxFilterData like we did in the filter
-		//	// shader, or maybe use the shape's userData to identify triggers, or maybe put triggers
-		//	// in a hash-set and test the reported shape pointers against it. Many options here.
-
-		//	if (current.events & (PxPairFlag::eNOTIFY_TOUCH_FOUND | PxPairFlag::eNOTIFY_TOUCH_CCD))
-		//		printf("Shape is entering trigger volume\n");
-		//	if (current.events & PxPairFlag::eNOTIFY_TOUCH_LOST)
-		//		printf("Shape is leaving trigger volume\n");
-
-		//	if (isTriggerShape(current.shapes[0]) && isTriggerShape(current.shapes[1]))
-		//		printf("Trigger-trigger overlap detected\n");
-		//}
-	}
-}g_callback;
+//class TriggerCallback : public PxSimulationEventCallback
+//{
+//	void onConstraintBreak(PxConstraintInfo* /*constraints*/, PxU32 /*count*/)	PX_OVERRIDE
+//	{
+//		//printf("onConstraintBreak\n");
+//	}
+//
+//	void onWake(PxActor** /*actors*/, PxU32 /*count*/)	PX_OVERRIDE
+//	{
+//		//printf("onWake\n");
+//	}
+//
+//	void onSleep(PxActor** /*actors*/, PxU32 /*count*/)	PX_OVERRIDE
+//	{
+//		//printf("onSleep\n");
+//	}
+//
+//	void onTrigger(PxTriggerPair* pairs, PxU32 count)	PX_OVERRIDE
+//	{
+//		printf("onTrigger: %d trigger pairs\n", count);
+//		while (count--)
+//		{
+//			const PxTriggerPair& current = *pairs++;
+//			if (current.status & PxPairFlag::eNOTIFY_TOUCH_FOUND)
+//			{
+//				CCollision_Manager::Get_Instance()->EnterTrigger(pairs);
+//				printf("Shape is entering trigger volume\n");
+//			}
+//			if (current.status & PxPairFlag::eNOTIFY_TOUCH_LOST)
+//			{
+//				CCollision_Manager::Get_Instance()->LeaveTrigger(pairs);
+//				printf("Shape is leaving trigger volume\n");
+//			}
+//		}
+//	}
+//
+//	void onAdvance(const PxRigidBody* const*, const PxTransform*, const PxU32)	PX_OVERRIDE
+//	{
+//		//printf("onAdvance\n");
+//	}
+//
+//	void onContact(const PxContactPairHeader& /*pairHeader*/, const PxContactPair* pairs, PxU32 count)	PX_OVERRIDE
+//	{
+//		//		printf("onContact: %d pairs\n", count);
+//
+//		//while (count--)
+//		//{
+//		//	const PxContactPair& current = *pairs++;
+//
+//		//	// The reported pairs can be trigger pairs or not. We only enabled contact reports for
+//		//	// trigger pairs in the filter shader, so we don't need to do further checks here. In a
+//		//	// real-world scenario you would probably need a way to tell whether one of the shapes
+//		//	// is a trigger or not. You could e.g. reuse the PxFilterData like we did in the filter
+//		//	// shader, or maybe use the shape's userData to identify triggers, or maybe put triggers
+//		//	// in a hash-set and test the reported shape pointers against it. Many options here.
+//
+//		//	if (current.events & (PxPairFlag::eNOTIFY_TOUCH_FOUND | PxPairFlag::eNOTIFY_TOUCH_CCD))
+//		//		printf("Shape is entering trigger volume\n");
+//		//	if (current.events & PxPairFlag::eNOTIFY_TOUCH_LOST)
+//		//		printf("Shape is leaving trigger volume\n");
+//
+//		//	if (isTriggerShape(current.shapes[0]) && isTriggerShape(current.shapes[1]))
+//		//		printf("Trigger-trigger overlap detected\n");
+//		//}
+//	}
+//}g_callback;
 
 HRESULT CPhysX_Manager::Init()
 {
@@ -106,7 +106,7 @@ HRESULT CPhysX_Manager::Init()
 	m_pDispatcher = PxDefaultCpuDispatcherCreate(1);
 	SceneDesc.cpuDispatcher = m_pDispatcher;
 	SceneDesc.filterShader = PxDefaultSimulationFilterShader;
-	SceneDesc.simulationEventCallback = &g_callback;
+	//SceneDesc.simulationEventCallback = &g_callback;
 	m_pScene = m_pPhysics->createScene(SceneDesc);
 	if (!m_pScene)
 	{

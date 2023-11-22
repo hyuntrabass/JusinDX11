@@ -284,6 +284,11 @@ HRESULT CLoader::Load_CreateCharacter()
 
 	m_strLoadingText = L"CreateCharacter : Loading Prototype";
 #pragma region Prototype
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), CCollider::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 300, 300))))
 	{
 		return E_FAIL;
@@ -413,7 +418,7 @@ HRESULT CLoader::Load_Tutorial()
 		}
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sky"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Sky/Mesh/Sky.hyuntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sky"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Sky/Mesh/Sky.hyuntrastatmesh",false, XMMatrixScaling(0.01f, 0.01f, 0.01f)))))
 	{
 		return E_FAIL;
 	}

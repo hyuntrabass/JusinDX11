@@ -169,6 +169,7 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
+	CCollider* m_pColliderCom{ nullptr };
 
 private:
 	State_Char m_eCurrState{};
