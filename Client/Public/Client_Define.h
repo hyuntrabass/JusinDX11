@@ -52,6 +52,7 @@ namespace Client
 	{
 		_uint iAnimIndex{};
 		_bool isLoop{};
+		_float fAnimSpeedRatio{1.f};
 		_bool bSkipInterpolation{};
 	};
 }

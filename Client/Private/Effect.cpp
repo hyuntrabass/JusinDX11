@@ -1,42 +1,55 @@
 #include "Effect.h"
 
 CEffect::CEffect(_dev pDevice, _context pContext)
-    : CGameObject(pDevice, pContext)
+	: CGameObject(pDevice, pContext)
 {
 }
 
 CEffect::CEffect(const CEffect& rhs)
-    : CGameObject(rhs)
+	: CGameObject(rhs)
 {
 }
 
 HRESULT CEffect::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CEffect::Init(void* pArg)
 {
-    if (FAILED(Add_Components()))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(Add_Components()))
+	{
+		return E_FAIL;
+	}
 
-	m_pTransformCom->Set_State(State::Pos, XMVectorSet(17.f, 45.f, 140.f, 1.f));
+	if (pArg)
+	{
+		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(reinterpret_cast<_float4*>(pArg)));
+	}
+	else
+	{
+		m_pTransformCom->Set_State(State::Pos, XMVectorSet(17.f, 45.f, 140.f, 1.f));
+	}
 
-    return S_OK;
+	return S_OK;
 }
 
 void CEffect::Tick(_float fTimeDelta)
 {
 	//m_pTransformCom->LookAt(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
 
+	m_fLifeTime += fTimeDelta;
+	if (m_fLifeTime > 1.f)
+	{
+		m_isDead = true;
+
+	}
 	m_pVIBufferCom->Update(fTimeDelta);
 }
 
 void CEffect::Late_Tick(_float fTimeDelta)
 {
-    m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
 }
 
 HRESULT CEffect::Render()
@@ -145,7 +158,7 @@ CEffect* CEffect::Create(_dev pDevice, _context pContext)
 		Safe_Release(pInstance);
 	}
 
-    return pInstance;
+	return pInstance;
 }
 
 CGameObject* CEffect::Clone(void* pArg)
@@ -158,7 +171,7 @@ CGameObject* CEffect::Clone(void* pArg)
 		Safe_Release(pInstance);
 	}
 
-    return pInstance;
+	return pInstance;
 }
 
 void CEffect::Free()

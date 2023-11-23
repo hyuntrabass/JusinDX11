@@ -148,6 +148,9 @@
     <Filter Include="01.Utility\03.Components\Collider\Collision_Manager">
       <UniqueIdentifier>{5c201deb-e8f2-4c4c-9af0-2dc3dffe596e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\Collider\Manager">
+      <UniqueIdentifier>{cd90110f-585d-4463-b088-c223622db4ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -270,9 +273,6 @@
     <ClCompile Include="..\Private\VIBuffer_Instancing_Point.cpp">
       <Filter>01.Utility\03.Components\VIBuffer\Instancing\Point</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Collision_Manager.cpp">
-      <Filter>01.Utility\03.Components\Collider\Collision_Manager</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\Frustum.cpp">
       <Filter>01.Utility\10.Frustum</Filter>
     </ClCompile>
@@ -284,6 +284,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Collider.cpp">
       <Filter>01.Utility\03.Components\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Collision_Manager.cpp">
+      <Filter>01.Utility\03.Components\Collider\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -419,9 +422,6 @@
     <ClInclude Include="..\Public\VIBuffer_Instancing_Point.h">
       <Filter>01.Utility\03.Components\VIBuffer\Instancing\Point</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Collision_Manager.h">
-      <Filter>01.Utility\03.Components\Collider\Collision_Manager</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Frustum.h">
       <Filter>01.Utility\10.Frustum</Filter>
     </ClInclude>
@@ -433,6 +433,9 @@
     </ClInclude>
     <ClInclude Include="..\public\Collider.h">
       <Filter>01.Utility\03.Components\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Collision_Manager.h">
+      <Filter>01.Utility\03.Components\Collider\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

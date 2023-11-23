@@ -235,7 +235,6 @@ void CMainApp::Free()
 	Safe_Release(m_pContext);
 
 	CUI_Manager::Get_Instance()->Destroy_Instance();
-	CCollision_Manager::Get_Instance()->Destroy_Instance();
 
 	CGameInstance::Release_Engine();
 }

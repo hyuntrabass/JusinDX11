@@ -31,30 +31,13 @@ HRESULT CPlayer::Init(void* pArg)
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
 
-	PxShape* pShape{ nullptr };
-	PxController* pController{ m_pTransformCom->Get_Controller() };
-	PxPhysics* pPhysics{ &(pController->getScene())->getPhysics() };
-	pShape = pPhysics->createShape(PxBoxGeometry(PxVec3(2.f, 0.35f, 0.7f)), *pPhysics->createMaterial(0.5f, 0.5f, 0.f), false, PxShapeFlag::eTRIGGER_SHAPE);
-	pShape->setLocalPose(PxTransform(PxVec3(0.f, 0.f, 0.7f)));
-
-	PxFilterData Data;
-	Data.word0 = COLGROUP_PLAYER;
-	Data.word1 = COLGROUP_TERRAIN;
-
-	pShape->setSimulationFilterData(Data);
-	pController->getActor()->attachShape(*pShape);
-
-	TriggerDesc TriggerInfo{};
-	TriggerInfo.eType = TriggerType::Player;
-	TriggerInfo.iDamage = 10;
-	TriggerInfo.pActor = pController->getActor();
-
-	CCollision_Manager::Get_Instance()->RegisterTrigger(TriggerInfo);
-
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
+
+	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit, true);
+	m_iHP = 300;
 
 	return S_OK;
 }
@@ -66,15 +49,20 @@ void CPlayer::Tick(_float fTimeDelta)
 		return;
 	}
 
+	m_fAttTimer += fTimeDelta;
+
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CREATECHARACTER)
 	{
-		//if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(etc_Hand_Spray))
-		//{
-		//	m_Animation = { Idle_Loop, true };
-		//}
-		//m_pGameInstance->Apply_PhysX(m_pTransformCom);
+		if (not m_isGameStarted)
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Idle_Loop;
+			m_Animation.isLoop = true;
 
+			m_isGameStarted = true;
+		}
 		Move(fTimeDelta);
+		Apply_State(fTimeDelta);
 
 		//m_pGameInstance->Update_PhysX(m_pTransformCom);
 	}
@@ -83,13 +71,19 @@ void CPlayer::Tick(_float fTimeDelta)
 		Customize(fTimeDelta);
 	}
 
+	//if (m_pGameInstance->Key_Down(DIK_L))
+	//{
+	//	m_pTransformCom->WallTest();
+	//}
+
 	for (size_t i = 0; i < PT_END; i++)
 	{
 		m_pBodyParts[i]->Tick(fTimeDelta);
 	}
 
 	_matrix ColliderOffset = XMMatrixTranslation(0.f, 0.8f, 0.f);
-	m_pColliderCom->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
+	m_pCollider_Att->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
+	m_pCollider_Hit->Update(m_pTransformCom->Get_World_Matrix());
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -128,7 +122,8 @@ HRESULT CPlayer::Render()
 	}
 
 #ifdef _DEBUG
-	m_pColliderCom->Render();
+	m_pCollider_Att->Render();
+	m_pCollider_Hit->Render();
 #endif // _DEBUG
 
 
@@ -145,6 +140,7 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Pressing(DIK_W))
 	{
+		//m_pTransformCom->Go_Straight(fTimeDelta);
 		vDirection += vCamLook;
 		hasMoved = true;
 	}
@@ -183,20 +179,30 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		if (m_pTransformCom->Is_Jumping())
 		{
-			m_Animation = { DoubleJump, false, true };
+			m_Animation = {};
+			m_Animation.iAnimIndex = DoubleJump;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 1.8f;
+			m_Animation.bSkipInterpolation = true;
 		}
 		else if (hasMoved)
 		{
-			m_Animation = { Jump_Front, false };
+			m_Animation = {};
+			m_Animation.iAnimIndex = Jump_Front;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 1.8f;
 		}
 		else
 		{
-			m_Animation = { Jump_Vertical, false };
+			m_Animation = {};
+			m_Animation.iAnimIndex = Jump_Vertical;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 1.8f;
 		}
 		m_pTransformCom->Jump(15.f);
 	}
 
-	if (hasMoved /*&& iCurrentAnimIndex != Land*/)
+	if (hasMoved && m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() != m_iAttMotion - 1 /*&& iCurrentAnimIndex != Land*/)
 	{
 		_vector vLook = m_pTransformCom->Get_State(State::Look);
 		_vector vTest = vLook - vDirection;
@@ -242,12 +248,16 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				if (m_isRunning)
 				{
-					m_Animation = { Run_Loop, true };
+					m_Animation = {};
+					m_Animation.iAnimIndex = Run_Loop;
+					m_Animation.isLoop = true;
 					m_fSliding = 1.f;
 				}
 				else
 				{
-					m_Animation = { Walk_Loop, true };
+					m_Animation = {};
+					m_Animation.iAnimIndex = Walk_Loop;
+					m_Animation.isLoop = true;
 				}
 			}
 		}
@@ -260,11 +270,17 @@ void CPlayer::Move(_float fTimeDelta)
 		{
 			if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Run_End))
 			{
-				m_Animation = { Idle_Loop, true };
+				m_Animation = {};
+				m_Animation.iAnimIndex = Idle_Loop;
+				m_Animation.isLoop = true;
 			}
 			else
 			{
-				m_Animation = { Run_End, false, true };
+				m_Animation = {};
+				m_Animation.iAnimIndex = Run_End;
+				m_Animation.isLoop = false;
+				m_Animation.fAnimSpeedRatio = 1.f;
+				m_Animation.bSkipInterpolation = true;
 				//m_pTransformCom->Set_Speed(15.f);
 				//if (m_fSliding > 0.f)
 				//{
@@ -279,12 +295,16 @@ void CPlayer::Move(_float fTimeDelta)
 			if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Walk_End))
 			{
 				//m_pModelCom->Set_Animation(Idle_Loop, true);
-				m_Animation = { Idle_Loop, true };
+				m_Animation = {};
+				m_Animation.iAnimIndex = Idle_Loop;
+				m_Animation.isLoop = true;
 			}
 			else
 			{
 				//m_pModelCom->Set_Animation(Walk_End);
-				m_Animation = { Walk_End, false };
+				m_Animation = {};
+				m_Animation.iAnimIndex = Walk_End;
+				m_Animation.isLoop = false;
 			}
 		}
 	}
@@ -296,11 +316,16 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Vertical))
 		{
-			m_Animation = { Fall_Vertical_Loop, true };
+			m_Animation = {};
+			m_Animation.iAnimIndex = Fall_Vertical_Loop;
+			m_Animation.isLoop = true;
 		}
 		if (not m_pTransformCom->Is_Jumping())
 		{
-			m_Animation = { Land, false , true };
+			m_Animation = {};
+			m_Animation.iAnimIndex = Land;
+			m_Animation.isLoop = false;
+			m_Animation.bSkipInterpolation = true;
 		}
 	}
 	else if (iCurrentAnimIndex == Jump_Front || iCurrentAnimIndex == Fall_Front_Loop || iCurrentAnimIndex == DoubleJump)
@@ -309,29 +334,39 @@ void CPlayer::Move(_float fTimeDelta)
 			m_pBodyParts[PT_HEAD]->IsAnimationFinished(DoubleJump) &&
 			iCurrentAnimIndex == m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex())
 		{
-			m_Animation = { Fall_Front_Loop, true };
+			m_Animation = {};
+			m_Animation.iAnimIndex = Fall_Front_Loop;
+			m_Animation.isLoop = true;
 		}
 		if (not m_pTransformCom->Is_Jumping())
 		{
-			m_Animation = { Land, false, true };
+			m_Animation = {};
+			m_Animation.iAnimIndex = Land;
+			m_Animation.isLoop = false;
+			m_Animation.bSkipInterpolation = true;
 		}
 	}
 	else if (iCurrentAnimIndex == Land)
 	{
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Land))
 		{
-			m_Animation = { Idle_Loop, true };
+			m_Animation = {};
+			m_Animation.iAnimIndex = Idle_Loop;
+			m_Animation.isLoop = true;
 		}
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
 	{
-		m_Animation = { Sasuke_Attack_TurnKick_Right, false };
+		m_eState = Player_State::Attack;
 	}
 
-	if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Sasuke_Attack_TurnKick_Right))
+	if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(m_iAttMotion - 1))
 	{
-		m_Animation = { Idle_Loop, true };
+		m_eState = Player_State::Idle;
+		m_Animation = {};
+		m_Animation.iAnimIndex = Idle_Loop;
+		m_Animation.isLoop = true;
 	}
 
 	m_pTransformCom->Gravity(fTimeDelta);
@@ -379,10 +414,15 @@ void CPlayer::Customize(_float fTimeDelta)
 	{
 		if (m_Animation.iAnimIndex != Boruto_etc_Win_Type01_Loop)
 		{
-			m_Animation = { Boruto_etc_Win_Type01_Start, false };
+			m_Animation = {};
+			m_Animation.iAnimIndex = Boruto_etc_Win_Type01_Start;
+			m_Animation.isLoop = false;
 			if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Boruto_etc_Win_Type01_Start))
 			{
-				m_Animation = { Boruto_etc_Win_Type01_Loop, true, true };
+				m_Animation = {};
+				m_Animation.iAnimIndex = Boruto_etc_Win_Type01_Loop;
+				m_Animation.isLoop = true;
+				m_Animation.bSkipInterpolation = true;
 			}
 		}
 	}
@@ -390,14 +430,63 @@ void CPlayer::Customize(_float fTimeDelta)
 	{
 		if (m_Animation.iAnimIndex == Boruto_etc_Win_Type01_Loop)
 		{
-			m_Animation = { Boruto_etc_Win_Type01_End, false, true };
+			m_Animation = {};
+			m_Animation.iAnimIndex = Boruto_etc_Win_Type01_End;
+			m_Animation.isLoop = false;
+			m_Animation.bSkipInterpolation = true;
 		}
 		if (m_Animation.iAnimIndex == Boruto_etc_Win_Type01_Start or m_pBodyParts[PT_HEAD]->IsAnimationFinished(Boruto_etc_Win_Type01_End) or m_pBodyParts[PT_HEAD]->IsAnimationFinished(etc_Appearance))
 		{
-			m_Animation = { CharaSelect_Idle, true };
+			m_Animation = {};
+			m_Animation.iAnimIndex = CharaSelect_Idle;
+			m_Animation.isLoop = true;
 		}
 	}
 
+}
+
+void CPlayer::Apply_State(_float fTimeDelta)
+{
+	switch (m_eState)
+	{
+	case Client::Player_State::Idle:
+		break;
+	case Client::Player_State::Walk:
+		break;
+	case Client::Player_State::Run:
+		break;
+	case Client::Player_State::Jump:
+		break;
+	case Client::Player_State::DoubleJump:
+		break;
+	case Client::Player_State::Beaten:
+		break;
+	case Client::Player_State::Attack:
+		if (m_fAttTimer > 0.4f)
+		{
+			if (m_iAttMotion > Sasuke_Attack_TurnSlashingShoulder_Right)
+			{
+				m_iAttMotion = Sasuke_Attack_DashSlashing_Right;
+			}
+			m_Animation = {};
+			m_Animation.iAnimIndex = m_iAttMotion++;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 1.3f;
+			m_pGameInstance->Attack_Monster(m_pCollider_Att, 10);
+
+			if (m_hasMoved)
+			{
+				m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vDirection));
+			}
+
+			m_fAttTimer = 0.f;
+		}
+
+		m_pTransformCom->Set_Speed(5.f);
+		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		break;
+	}
 }
 
 HRESULT CPlayer::Ready_Parts()
@@ -444,10 +533,13 @@ HRESULT CPlayer::Ready_Parts()
 
 HRESULT CPlayer::Add_Components()
 {
+#ifdef _DEBUG
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
 		return E_FAIL;
 	}
+#endif // _DEBUG
+
 
 	Collider_Desc ColDesc{};
 	ColDesc.eType = ColliderType::Frustum;
@@ -456,7 +548,16 @@ HRESULT CPlayer::Add_Components()
 	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), 2.f, 0.01f, 1.f);
 	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Melee"), reinterpret_cast<CComponent**>(&m_pColliderCom), &ColDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pCollider_Att), &ColDesc)))
+	{
+		return E_FAIL;
+	}
+
+	ColDesc = {};
+	ColDesc.eType = ColliderType::AABB;
+	ColDesc.vExtents = _float3(0.35f, 0.75f, 0.35f);
+	ColDesc.vCenter = _float3(0.f, ColDesc.vExtents.y, 0.f);
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Take"), reinterpret_cast<CComponent**>(&m_pCollider_Hit), &ColDesc)))
 	{
 		return E_FAIL;
 	}
@@ -502,5 +603,6 @@ void CPlayer::Free()
 	Safe_Release(m_pRendererCom);
 #endif // _DEBUG
 
-	Safe_Release(m_pColliderCom);
+	Safe_Release(m_pCollider_Att);
+	Safe_Release(m_pCollider_Hit);
 }

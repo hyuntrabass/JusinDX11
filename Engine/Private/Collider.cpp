@@ -81,7 +81,11 @@ void CCollider::Update(_fmatrix WorldMatrix)
 	switch (m_eType)
 	{
 	case Engine::ColliderType::AABB:
-		reinterpret_cast<BoundingBox*>(m_pBounder_Origin)->Transform(*reinterpret_cast<BoundingBox*>(m_pBounder), WorldMatrix);
+		_matrix Transform = WorldMatrix;
+		Transform.r[0] = XMVectorSet(1.f, 0.f, 0.f, 0.f) * XMVectorGetX(XMVector3Length(Transform.r[0]));
+		Transform.r[1] = XMVectorSet(0.f, 1.f, 0.f, 0.f) * XMVectorGetX(XMVector3Length(Transform.r[1]));
+		Transform.r[2] = XMVectorSet(0.f, 0.f, 1.f, 0.f) * XMVectorGetX(XMVector3Length(Transform.r[2]));
+		reinterpret_cast<BoundingBox*>(m_pBounder_Origin)->Transform(*reinterpret_cast<BoundingBox*>(m_pBounder), Transform);
 		break;
 	case Engine::ColliderType::OBB:
 		reinterpret_cast<BoundingOrientedBox*>(m_pBounder_Origin)->Transform(*reinterpret_cast<BoundingOrientedBox*>(m_pBounder), WorldMatrix);
@@ -170,7 +174,7 @@ _bool CCollider::Intersect(const CCollider* pTargetCollider)
 		break;
 	}
 
-	return _bool();
+	return m_isCollided;
 }
 
 #ifdef _DEBUG

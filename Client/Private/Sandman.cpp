@@ -45,6 +45,9 @@ HRESULT CSandman::Init(void* pArg)
 	m_fAttackRange = 3.f;
 	m_fSearchRange = 20.f;
 
+	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit);
+	m_iHP = 50;
+
 	return S_OK;
 }
 
@@ -55,6 +58,15 @@ void CSandman::Tick(_float fTimeDelta)
 	//	return;
 	//}
 
+	if (m_iHP < 0)
+	{
+		m_isDead = true;
+		m_pGameInstance->Delete_CollisionObject(this);
+		_float4 vPos{};
+		XMStoreFloat4(&vPos, m_pTransformCom->Get_CenterPos());
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"), &vPos);
+	}
+
 #ifdef _DEBUG
 	if (m_pGameInstance->Key_Down(DIK_U))
 	{
@@ -64,11 +76,7 @@ void CSandman::Tick(_float fTimeDelta)
 	}
 #endif // DEBUG
 
-	if (CCollision_Manager::Get_Instance()->IsCollided(m_pTransformCom))
-	{
-		m_Hit = true;
-	}
-	else
+	if (m_pModelCom->Get_CurrentAnimationIndex() != Anim_Beaten_Left && m_pModelCom->IsAnimationFinished(Anim_Beaten_Left))
 	{
 		m_Hit = false;
 	}
@@ -99,12 +107,12 @@ void CSandman::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
-	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+	m_pCollider_Hit->Update(m_pTransformCom->Get_World_Matrix());
 }
 
 void CSandman::Late_Tick(_float fTimeDelta)
 {
-	m_pColliderCom->Intersect(reinterpret_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Collider_Melee"))));
+	m_pCollider_Hit->Intersect(reinterpret_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Collider_Attack"))));
 
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
 	{
@@ -163,11 +171,20 @@ HRESULT CSandman::Render()
 	}
 
 #ifdef _DEBUG
-	m_pColliderCom->Render();
+	m_pCollider_Hit->Render();
 #endif // _DEBUG
 
 
 	return S_OK;
+}
+
+void CSandman::Set_Damage(_int iDamage)
+{
+	m_iHP -= iDamage;
+
+	m_pModelCom->Set_Animation(Anim_Beaten_Left + 1, false, 1.f, true);
+	m_pModelCom->Set_Animation(Anim_Beaten_Left, false, 1.f, true);
+	m_Hit = true;
 }
 
 HRESULT CSandman::Add_Components()
@@ -192,7 +209,7 @@ HRESULT CSandman::Add_Components()
 	ColDesc.vExtents = _float3(0.7f, 0.7f, 0.35f);
 	ColDesc.vCenter = _float3(0.f, ColDesc.vExtents.y, 0.f);
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Take"), reinterpret_cast<CComponent**>(&m_pColliderCom), &ColDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Take"), reinterpret_cast<CComponent**>(&m_pCollider_Hit), &ColDesc)))
 	{
 		return E_FAIL;
 	}
@@ -202,10 +219,10 @@ HRESULT CSandman::Add_Components()
 
 HRESULT CSandman::Bind_ShaderResources()
 {
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_bSelected", &m_Hit, sizeof _bool)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_bSelected", &m_Hit, sizeof _bool)))
+	//{
+	//	return E_FAIL;
+	//}
 
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
@@ -409,5 +426,5 @@ void CSandman::Free()
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pColliderCom);
+	Safe_Release(m_pCollider_Hit);
 }

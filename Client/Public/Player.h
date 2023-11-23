@@ -190,8 +190,16 @@ private:
 	_float m_fInterpolationRatio{};
 	_bool m_isInterpolating{};
 	_float3 m_vOriginalLook{};
+	_bool m_isGameStarted{};
+	_bool m_hasMoved{};
+	_float4 m_vDirection{};
 
-	CCollider* m_pColliderCom{ nullptr };
+	_uint m_iAttMotion{ Sasuke_Attack_DashSlashing_Right };
+
+	_float m_fAttTimer{};
+
+	CCollider* m_pCollider_Att{ nullptr };
+	CCollider* m_pCollider_Hit{ nullptr };
 #ifdef _DEBUG
 	CRenderer* m_pRendererCom{ nullptr };
 #endif // _DEBUG
@@ -200,6 +208,7 @@ private:
 private:
 	void Move(_float fTimeDelta);
 	void Customize(_float fTimeDelta);
+	void Apply_State(_float fTimeDelta);
 
 private:
 	HRESULT Ready_Parts();

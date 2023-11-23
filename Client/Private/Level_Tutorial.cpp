@@ -167,11 +167,6 @@ HRESULT CLevel_Tutorial::Ready_People()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Effect", L"Prototype_GameObject_Effect")))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 

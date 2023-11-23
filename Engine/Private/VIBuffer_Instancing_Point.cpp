@@ -146,8 +146,6 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	Safe_Delete_Array(pVertexInstance);
-
 	return S_OK;
 }
 
@@ -179,5 +177,9 @@ CComponent* CVIBuffer_Instancing_Point::Clone(void* pArg)
 
 void CVIBuffer_Instancing_Point::Free()
 {
+	if (not m_isCloned)
+	{
+		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
+	}
 	__super::Free();
 }

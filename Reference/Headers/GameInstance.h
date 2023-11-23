@@ -95,6 +95,12 @@ public: // Frustum
 	void Transform_ToLocalSpace(_fmatrix vWorldInversed);
 	_bool IsIn_Fov_Local(_fvector vPos, _float fRange = 0.f);
 
+public: // Collision
+	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false);
+	void Delete_CollisionObject(class CGameObject* pObject, _bool IsPlayer = false);
+	void Attack_Monster(class CCollider* pCollider, _uint iDamage);
+	void Attack_Player(class CCollider* pCollider, _uint iDamage);
+
 public: // PhysX
 	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup);
 	void Init_PhysX_MoveableObject(class CTransform* pTransform);
@@ -125,6 +131,7 @@ private:
 	class CLight_Manager* m_pLight_Manager{ nullptr };
 	class CFont_Manager* m_pFont_Manager{ nullptr };
 	class CFrustum* m_pFrustum{ nullptr };
+	class CCollision_Manager* m_pCollision_Manager{ nullptr };
 
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };

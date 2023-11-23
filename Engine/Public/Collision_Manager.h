@@ -10,11 +10,18 @@ private:
 	virtual ~CCollision_Manager() = default;
 
 public:
-	_bool IsCollided(class CTransform* pTransform);
+	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false);
+	void Delete_CollisionObject(class CGameObject* pObject, _bool IsPlayer);
+	void Attack_Monster(class CCollider* pCollider, _uint iDamage);
+	void Attack_Player(class CCollider* pCollider, _uint iDamage);
 
 private:
+	map<class CGameObject*, class CCollider*> m_Monsters{};
+	class CGameObject* m_pPlayer{ nullptr };
+	class CCollider* m_pPlayerHitCollider{ nullptr };
 
 public:
+	static CCollision_Manager* Create();
 	virtual void Free() override;
 };
 

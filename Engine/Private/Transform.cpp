@@ -7,9 +7,14 @@ const PxVec3 VectorToPxVec3(XMVECTOR vVector)
 	return PxVec3(vVector.m128_f32[0], vVector.m128_f32[1], vVector.m128_f32[2]);
 }
 
-const _vector PxExVec3ToVector(PxExtendedVec3 Src, float w)
+const _vector PxExVec3ToVector(PxExtendedVec3 Src, float w = 0.f)
 {
 	return XMVectorSet(static_cast<float>(Src.x), static_cast<float>(Src.y), static_cast<float>(Src.z), w);
+}
+
+const _vector PxVec3ToVector(PxVec3 Src, float w = 0.f)
+{
+	return XMVectorSet(Src.x, Src.y, Src.z, w);
 }
 
 CTransform::CTransform(_dev pDevice, _context pContext)
@@ -48,6 +53,16 @@ const _bool& CTransform::Is_Jumping() const
 PxController* CTransform::Get_Controller() const
 {
 	return m_pController;
+}
+
+_vector CTransform::Get_CenterPos() const
+{
+	if (not m_pController)
+	{
+		return _vector();
+	}
+
+	return PxExVec3ToVector(m_pController->getPosition());
 }
 
 _matrix CTransform::Get_World_Matrix() const
@@ -137,6 +152,9 @@ HRESULT CTransform::Init(void* pArg)
 void CTransform::Gravity(_float fTimeDelta)
 {
 	_float Gravity{ -19.81f };
+
+	//WallTest();
+
 	if (m_fJumpForce > 0.f)
 	{
 		m_fJumpForce += Gravity * fTimeDelta;
@@ -149,7 +167,8 @@ void CTransform::Gravity(_float fTimeDelta)
 		m_fGravity += Gravity * fTimeDelta;
 	}
 
-	m_CollisionFlags = m_pController->move(PxVec3(0.f, m_fGravity, 0.f) * fTimeDelta, 0.0001f, fTimeDelta, 0);
+	m_CollisionFlags = m_pController->move(m_vUpDir * m_fGravity * fTimeDelta, 0.0001f, fTimeDelta, 0);
+	//m_CollisionFlags = m_pController->move(PxVec3(0.f, m_fGravity, 0.f) * fTimeDelta, 0.0001f, fTimeDelta, 0);
 	if (m_CollisionFlags.isSet(PxControllerCollisionFlag::eCOLLISION_DOWN))
 	{
 		m_fJumpForce = 0.f;
@@ -160,14 +179,34 @@ void CTransform::Gravity(_float fTimeDelta)
 	Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
 }
 
+void CTransform::WallTest()
+{
+	PxRaycastBuffer HitBuffer{};
+	PxVec3 vLook{ Get_State(State::Look).m128_f32[0], Get_State(State::Look).m128_f32[1], Get_State(State::Look).m128_f32[2] };
+	vLook = vLook.getNormalized();
+	PxVec3 vPos{ static_cast<_float>(m_pController->getPosition().x), static_cast<_float>(m_pController->getPosition().y), static_cast<_float>(m_pController->getPosition().z) };
+	vPos += vLook * 0.36f;
+	PxReal Dist = 1.f;
+
+	if (m_pScene->raycast(vPos, vLook, Dist, HitBuffer))
+	{
+		m_vUpDir = HitBuffer.block.normal;
+		m_pController->setUpDirection(m_vUpDir);
+		LookAt_Dir(XMVector3Cross(Get_State(State::Right), PxVec3ToVector(m_vUpDir)));
+	}
+	else
+	{
+		//m_vUpDir = { 0.f, 1.f, 0.f };
+	}
+}
+
 void CTransform::Go_Straight(_float fTimeDelta)
 {
 	if (m_pController)
 	{
-		PxControllerFilters Filters{};
-		Filters.mFilterData = &PxFilterData(0, 0, 0, 0);
-		PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(XMVectorSetY(Get_State(State::Look), 0.f)) * m_fSpeedPerSec * fTimeDelta);
-		m_pController->move(Disp, 0.0001f, fTimeDelta, Filters);
+		PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(Get_State(State::Look)) * m_fSpeedPerSec * fTimeDelta);
+		//PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(XMVectorSetY(Get_State(State::Look), 0.f)) * m_fSpeedPerSec * fTimeDelta);
+		m_pController->move(Disp, 0.0001f, fTimeDelta, 0);
 
 		PxExtendedVec3 MovedPos = m_pController->getFootPosition();
 		Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
@@ -366,5 +405,4 @@ void CTransform::Free()
 	{
 		m_pController->release();
 	}
-
 }

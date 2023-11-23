@@ -32,6 +32,11 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 			return;
 		}
 	}
+	if (CUI_Manager::Get_Instance()->Is_ButtonPushed(3))
+	{
+		//ExitWindows(0, 0); // ÄÄÅÍ°¡ ²¨Áü;;
+		DestroyWindow(g_hWnd);
+	}
 }
 
 HRESULT CLevel_Logo::Render()

@@ -164,12 +164,13 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+	virtual void Set_Damage(_int iDamage) override;
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
-	CCollider* m_pColliderCom{ nullptr };
+	CCollider* m_pCollider_Hit{ nullptr };
 
 private:
 	State_Char m_eCurrState{};

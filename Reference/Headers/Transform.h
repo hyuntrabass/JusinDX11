@@ -35,6 +35,7 @@ public:
 	const _float& Get_Speed() const;
 	const _bool& Is_Jumping() const;
 	PxController* Get_Controller() const;
+	_vector Get_CenterPos() const;
 
 	void Set_Position(_float3 vPosition);
 	void Set_State(State eState, _fvector vState);
@@ -49,6 +50,7 @@ public:
 
 public:
 	void Gravity(_float fTimeDelta);
+	void WallTest();
 
 	void Go_Straight(_float fTimeDelta);
 	void Go_Backward(_float fTimeDelta);
@@ -74,6 +76,7 @@ private:
 	PxScene* m_pScene{ nullptr };
 	PxController* m_pController{ nullptr };
 	PxControllerCollisionFlags m_CollisionFlags{};
+	PxVec3 m_vUpDir{0.f, 1.f, 0.f};
 
 	_float m_fGravity{};
 

@@ -25,6 +25,9 @@ private:
 	CVIBuffer_Instancing_Point* m_pVIBufferCom{ nullptr };
 
 private:
+	_float m_fLifeTime{};
+
+private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 

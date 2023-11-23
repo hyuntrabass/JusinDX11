@@ -7,6 +7,7 @@
 #include "Light_Manager.h"
 #include "Font_Manager.h"
 #include "Frustum.h"
+#include "Collision_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -65,6 +66,12 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 	}
 
 	m_pFrustum = CFrustum::Create();
+	if (!m_pFrustum)
+	{
+		return E_FAIL;
+	}
+
+	m_pCollision_Manager = CCollision_Manager::Create();
 	if (!m_pFrustum)
 	{
 		return E_FAIL;
@@ -601,6 +608,46 @@ _bool CGameInstance::IsIn_Fov_Local(_fvector vPos, _float fRange)
 	return m_pFrustum->IsIn_Fov_Local(vPos, fRange);
 }
 
+HRESULT CGameInstance::Register_CollisionObject(CGameObject* pObject, CCollider* pHitCollider, _bool IsPlayer)
+{
+	if (!m_pCollision_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
+	}
+
+	return m_pCollision_Manager->Register_CollisionObject(pObject, pHitCollider, IsPlayer);
+}
+
+void CGameInstance::Delete_CollisionObject(CGameObject* pObject, _bool IsPlayer)
+{
+	if (!m_pCollision_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
+	}
+
+	m_pCollision_Manager->Delete_CollisionObject(pObject, IsPlayer);
+}
+
+void CGameInstance::Attack_Monster(CCollider* pCollider, _uint iDamage)
+{
+	if (!m_pCollision_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
+	}
+
+	return m_pCollision_Manager->Attack_Monster(pCollider, iDamage);
+}
+
+void CGameInstance::Attack_Player(CCollider* pCollider, _uint iDamage)
+{
+	if (!m_pCollision_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
+	}
+
+	return m_pCollision_Manager->Attack_Player(pCollider, iDamage);
+}
+
 void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup)
 {
 	if (!m_pPhysX_Manager)
@@ -704,8 +751,8 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pFont_Manager);
+	Safe_Release(m_pCollision_Manager);
 	Safe_Release(m_pPhysX_Manager);
-
 	Safe_Release(m_pFrustum);
 }
 
