@@ -23,7 +23,7 @@ public:
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
 	
-	void Set_Animation(_uint iAnimIndex, const _bool& isLoop, _float fAnimSpeedRatio = 1.f, const _bool& bSkipInterpolation = false);
+	void Set_Animation(_uint iAnimIndex, const _bool& isLoop, _float fAnimSpeedRatio = 1.f, const _bool& bSkipInterpolation = false, _float fInterpolationTime = 0.2f);
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
@@ -62,6 +62,7 @@ private:
 	_bool m_isAnimChanged{};
 	_bool m_isLoop{};
 	_bool m_bSkipInterpolation{};
+	_float m_fInterpolationTime{};
 	_float m_fAnimSpeedRatio{};
 
 private:

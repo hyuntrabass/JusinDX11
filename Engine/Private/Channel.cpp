@@ -30,7 +30,7 @@ HRESULT CChannel::Init(ifstream& ModelFile)
 	return S_OK;
 }
 
-void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float& fCurrentAnimPos, _bool& isAnimChanged)
+void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float& fCurrentAnimPos, _bool& isAnimChanged, _float fInterpolationTime)
 {
 	if (fCurrentAnimPos == 0.f && !isAnimChanged)
 	{
@@ -54,7 +54,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 		_vector vSrcScaling{}, vDstScaling{};
 		_vector vSrcRotation{}, vDstRotation{};
 		_vector vSrcPotition{}, vDstPosition{};
-		_float fRatio = fCurrentAnimPos / 0.2f;
+		_float fRatio = fCurrentAnimPos / fInterpolationTime;
 
 		vSrcScaling.m128_f32[0] = XMVector4Length(PrevTransformation.r[0]).m128_f32[0];
 		vSrcScaling.m128_f32[1] = XMVector4Length(PrevTransformation.r[1]).m128_f32[0];
@@ -71,7 +71,7 @@ void CChannel::Update_TransformationMatrix(const vector<class CBone*>& Bones, _f
 		vDstPosition = XMLoadFloat4(&m_KeyFrames[0].vPosition);
 		vPosition = XMVectorLerp(vSrcPotition, vDstPosition, fRatio);
 		
-		if (fCurrentAnimPos >= 0.2f)
+		if (fCurrentAnimPos >= fInterpolationTime)
 		{
 			isAnimChanged = false;
 			fCurrentAnimPos = 0.f;

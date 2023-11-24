@@ -11,7 +11,7 @@ private:
 
 public:
 	HRESULT Init(ifstream& ModelFile);
-	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float& fCurrentAnimPos, _bool& isAnimChanged);
+	void Update_TransformationMatrix(const vector<class CBone*>& Bones, _float& fCurrentAnimPos, _bool& isAnimChanged, _float fInterpolationTime);
 
 private:
 	_char m_szName[MAX_PATH]{};

@@ -62,11 +62,12 @@ const _uint& CModel::Get_CurrentAnimationIndex() const
 	return m_iCurrentAnimIndex;
 }
 
-void CModel::Set_Animation(_uint iAnimIndex, const _bool& isLoop, _float fAnimSpeedRatio, const _bool& bSkipInterpolation)
+void CModel::Set_Animation(_uint iAnimIndex, const _bool& isLoop, _float fAnimSpeedRatio, const _bool& bSkipInterpolation, _float fInterpolationTime)
 {
 	m_isLoop = isLoop;
 	m_bSkipInterpolation = bSkipInterpolation;
 	m_fAnimSpeedRatio = fAnimSpeedRatio;
+	m_fInterpolationTime = fInterpolationTime;
 
 	if (m_iCurrentAnimIndex != iAnimIndex)
 	{
@@ -150,7 +151,7 @@ HRESULT CModel::Init(void* pArg)
 
 void CModel::Play_Animation(_float fTimeDelta)
 {
-	m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_fAnimSpeedRatio, m_isAnimChanged, m_isLoop, m_bSkipInterpolation);
+	m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_fAnimSpeedRatio, m_isAnimChanged, m_isLoop, m_bSkipInterpolation, m_fInterpolationTime);
 
 	for (auto& pBone : m_Bones)
 	{

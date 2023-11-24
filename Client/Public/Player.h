@@ -26,9 +26,13 @@ enum class Player_State
 {
 	Idle,
 	Walk,
+	Walk_End,
 	Run,
+	Run_End,
 	Jump,
+	Jump_Front,
 	DoubleJump,
+	Land,
 	Beaten,
 	Attack,
 };
@@ -180,8 +184,6 @@ public:
 
 private:
 	Player_State m_eState{};
-	_bool m_isRunning{};
-	_float m_fSliding{ 1.f };
 	ANIM_DESC m_Animation{};
 
 	class CBodyPart* m_pBodyParts[PT_END]{};
@@ -190,13 +192,14 @@ private:
 	_float m_fInterpolationRatio{};
 	_bool m_isInterpolating{};
 	_float3 m_vOriginalLook{};
+
 	_bool m_isGameStarted{};
-	_bool m_hasMoved{};
-	_float4 m_vDirection{};
+	_bool m_hasDoubleJumped{};
 
 	_uint m_iAttMotion{ Sasuke_Attack_DashSlashing_Right };
 
 	_float m_fAttTimer{};
+	_bool m_bAttacked{};
 
 	CCollider* m_pCollider_Att{ nullptr };
 	CCollider* m_pCollider_Hit{ nullptr };

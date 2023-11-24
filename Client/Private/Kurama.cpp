@@ -22,9 +22,15 @@ HRESULT CKurama::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pModelCom->Set_Animation(KuraDef_etc_Appearance, true);
+	m_pModelCom->Set_Animation(KuraDef_etc_Appearance, false, 1.f, true);
 
-	m_pTransformCom->Set_State(State::Pos, XMVectorSet(-11.f, 50.f, 85.f, 1.f));
+	m_vAppearPoints[0] = _float4(-6.5f, 47.5f, 111.7f, 1.f);
+	m_vAppearPoints[1] = _float4(11.7f, 31.f, 118.7f, 1.f);
+	m_vAppearPoints[2] = _float4(45.5f, 42.5f, 85.2f, 1.f);
+	m_vAppearPoints[3] = _float4(21.5f, 41.f, 11.1f, 1.f);
+	m_vAppearPoints[4] = _float4(-4.5f, 36.1f, -56.f, 1.f);
+
+	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_vAppearPoints[rand() % 5]));
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
 
@@ -150,6 +156,7 @@ HRESULT CKurama::Bind_ShaderResources()
 
 void CKurama::Artificial_Intelligence(_float fTimeDelta)
 {
+
 }
 
 void CKurama::Change_State()

@@ -95,6 +95,7 @@ private:
 	CModel* m_pModelCom{ nullptr };
 
 private:
+	_float4 m_vAppearPoints[5]{};
 	_bool HasInitiated{};
 	State_Char m_eState{};
 

@@ -25,7 +25,9 @@ HRESULT CPlayer::Init(void* pArg)
 		MSG_BOX("Failed to Add Parts");
 		return E_FAIL;
 	}
-	m_Animation = { etc_Appearance, false };
+	m_Animation = {};
+	m_Animation.iAnimIndex = etc_Appearance;
+	m_Animation.bSkipInterpolation = true;
 
 	m_pTransformCom->Set_Speed(5.f);
 
@@ -55,9 +57,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		if (not m_isGameStarted)
 		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Idle_Loop;
-			m_Animation.isLoop = true;
+			m_eState = Player_State::Idle;
 
 			m_isGameStarted = true;
 		}
@@ -161,49 +161,48 @@ void CPlayer::Move(_float fTimeDelta)
 		hasMoved = true;
 	}
 
-
-	if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
+	if (m_pGameInstance->Key_Down(DIK_SPACE) && m_eState != Player_State::DoubleJump)
 	{
-		m_pTransformCom->Set_Speed(15.f);
-		m_isRunning = true;
-	}
-	else
-	{
-		m_pTransformCom->Set_Speed(5.f);
-		m_isRunning = false;
-	}
-
-	_uint iCurrentAnimIndex = m_Animation.iAnimIndex;
-
-	if (m_pGameInstance->Key_Down(DIK_SPACE) && iCurrentAnimIndex != DoubleJump)
-	{
-		if (m_pTransformCom->Is_Jumping())
+		if (m_eState == Player_State::Jump or
+			m_eState == Player_State::Jump_Front)
 		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = DoubleJump;
-			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 1.8f;
-			m_Animation.bSkipInterpolation = true;
+			m_eState = Player_State::DoubleJump;
 		}
 		else if (hasMoved)
 		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Jump_Front;
-			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 1.8f;
+			m_eState = Player_State::Jump_Front;
 		}
 		else
 		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Jump_Vertical;
-			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 1.8f;
+			m_eState = Player_State::Jump;
 		}
 		m_pTransformCom->Jump(15.f);
 	}
 
-	if (hasMoved && m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() != m_iAttMotion - 1 /*&& iCurrentAnimIndex != Land*/)
+	if (hasMoved)
 	{
+		//if (not m_pTransformCom->Is_Jumping())
+		if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			if (m_eState != Player_State::Jump and
+				m_eState != Player_State::Jump_Front and
+				m_eState != Player_State::DoubleJump)
+			{
+				m_eState = Player_State::Run;
+			}
+			m_pTransformCom->Set_Speed(15.f);
+		}
+		else
+		{
+			if (m_eState != Player_State::Jump and
+				m_eState != Player_State::Jump_Front and
+				m_eState != Player_State::DoubleJump)
+			{
+				m_eState = Player_State::Walk;
+			}
+			m_pTransformCom->Set_Speed(5.f);
+		}
+
 		_vector vLook = m_pTransformCom->Get_State(State::Look);
 		_vector vTest = vLook - vDirection;
 		_float fInterpolTime = 0.4f;
@@ -237,136 +236,20 @@ void CPlayer::Move(_float fTimeDelta)
 
 		m_pTransformCom->LookAt_Dir(vDirection);
 		m_pTransformCom->Go_Straight(fTimeDelta);
-
-		if (not m_pTransformCom->Is_Jumping())
-		{
-			if (iCurrentAnimIndex != Jump_Front &&
-				iCurrentAnimIndex != Jump_Vertical &&
-				iCurrentAnimIndex != DoubleJump &&
-				iCurrentAnimIndex != Fall_Vertical_Loop &&
-				iCurrentAnimIndex != Fall_Front_Loop)
-			{
-				if (m_isRunning)
-				{
-					m_Animation = {};
-					m_Animation.iAnimIndex = Run_Loop;
-					m_Animation.isLoop = true;
-					m_fSliding = 1.f;
-				}
-				else
-				{
-					m_Animation = {};
-					m_Animation.iAnimIndex = Walk_Loop;
-					m_Animation.isLoop = true;
-				}
-			}
-		}
-	}
-	else if (not m_pTransformCom->Is_Jumping())
-	{
-		iCurrentAnimIndex = m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex();
-
-		if (iCurrentAnimIndex == Run_Loop || iCurrentAnimIndex == Run_End)
-		{
-			if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Run_End))
-			{
-				m_Animation = {};
-				m_Animation.iAnimIndex = Idle_Loop;
-				m_Animation.isLoop = true;
-			}
-			else
-			{
-				m_Animation = {};
-				m_Animation.iAnimIndex = Run_End;
-				m_Animation.isLoop = false;
-				m_Animation.fAnimSpeedRatio = 1.f;
-				m_Animation.bSkipInterpolation = true;
-				//m_pTransformCom->Set_Speed(15.f);
-				//if (m_fSliding > 0.f)
-				//{
-				//	m_fSliding -= 0.02f;
-				//}
-				//m_pTransformCom->Go_Straight(fTimeDelta * m_fSliding);
-			}
-		}
-
-		if (iCurrentAnimIndex == Walk_Loop || iCurrentAnimIndex == Walk_End)
-		{
-			if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Walk_End))
-			{
-				//m_pModelCom->Set_Animation(Idle_Loop, true);
-				m_Animation = {};
-				m_Animation.iAnimIndex = Idle_Loop;
-				m_Animation.isLoop = true;
-			}
-			else
-			{
-				//m_pModelCom->Set_Animation(Walk_End);
-				m_Animation = {};
-				m_Animation.iAnimIndex = Walk_End;
-				m_Animation.isLoop = false;
-			}
-		}
 	}
 
-	iCurrentAnimIndex = m_Animation.iAnimIndex;
-	//iCurrentAnimIndex = m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex();
-
-	if (iCurrentAnimIndex == Jump_Vertical || iCurrentAnimIndex == Fall_Vertical_Loop)
-	{
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Vertical))
-		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Fall_Vertical_Loop;
-			m_Animation.isLoop = true;
-		}
-		if (not m_pTransformCom->Is_Jumping())
-		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Land;
-			m_Animation.isLoop = false;
-			m_Animation.bSkipInterpolation = true;
-		}
-	}
-	else if (iCurrentAnimIndex == Jump_Front || iCurrentAnimIndex == Fall_Front_Loop || iCurrentAnimIndex == DoubleJump)
-	{
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Front) &&
-			m_pBodyParts[PT_HEAD]->IsAnimationFinished(DoubleJump) &&
-			iCurrentAnimIndex == m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex())
-		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Fall_Front_Loop;
-			m_Animation.isLoop = true;
-		}
-		if (not m_pTransformCom->Is_Jumping())
-		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Land;
-			m_Animation.isLoop = false;
-			m_Animation.bSkipInterpolation = true;
-		}
-	}
-	else if (iCurrentAnimIndex == Land)
-	{
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Land))
-		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Idle_Loop;
-			m_Animation.isLoop = true;
-		}
-	}
 
 	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
 	{
-		m_eState = Player_State::Attack;
-	}
+		vDirection += vCamLook;
+		m_pTransformCom->LookAt_Dir(vDirection);
 
-	if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(m_iAttMotion - 1))
-	{
-		m_eState = Player_State::Idle;
-		m_Animation = {};
-		m_Animation.iAnimIndex = Idle_Loop;
-		m_Animation.isLoop = true;
+		if (m_fAttTimer > 0.8f)
+		{
+			m_bAttacked = false;
+		}
+
+		m_eState = Player_State::Attack;
 	}
 
 	m_pTransformCom->Gravity(fTimeDelta);
@@ -417,6 +300,7 @@ void CPlayer::Customize(_float fTimeDelta)
 			m_Animation = {};
 			m_Animation.iAnimIndex = Boruto_etc_Win_Type01_Start;
 			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 1.5f;
 			if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Boruto_etc_Win_Type01_Start))
 			{
 				m_Animation = {};
@@ -433,6 +317,7 @@ void CPlayer::Customize(_float fTimeDelta)
 			m_Animation = {};
 			m_Animation.iAnimIndex = Boruto_etc_Win_Type01_End;
 			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 2.f;
 			m_Animation.bSkipInterpolation = true;
 		}
 		if (m_Animation.iAnimIndex == Boruto_etc_Win_Type01_Start or m_pBodyParts[PT_HEAD]->IsAnimationFinished(Boruto_etc_Win_Type01_End) or m_pBodyParts[PT_HEAD]->IsAnimationFinished(etc_Appearance))
@@ -440,6 +325,7 @@ void CPlayer::Customize(_float fTimeDelta)
 			m_Animation = {};
 			m_Animation.iAnimIndex = CharaSelect_Idle;
 			m_Animation.isLoop = true;
+			m_Animation.fInterpolationTime = 0.6f;
 		}
 	}
 
@@ -450,41 +336,151 @@ void CPlayer::Apply_State(_float fTimeDelta)
 	switch (m_eState)
 	{
 	case Client::Player_State::Idle:
+		m_Animation = {};
+		m_Animation.iAnimIndex = Idle_Loop;
+		m_Animation.isLoop = true;
 		break;
 	case Client::Player_State::Walk:
+		m_Animation = {};
+		m_Animation.iAnimIndex = Walk_Loop;
+		m_Animation.isLoop = true;
+
+		m_eState = Player_State::Walk_End;
+		break;
+	case Client::Player_State::Walk_End:
+		m_Animation = {};
+		m_Animation.iAnimIndex = Walk_End;
+		m_Animation.isLoop = false;
+
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Walk_End))
+		{
+			m_eState = Player_State::Idle;
+		}
 		break;
 	case Client::Player_State::Run:
+		m_Animation = {};
+		m_Animation.iAnimIndex = Run_Loop;
+		m_Animation.isLoop = true;
+
+		m_eState = Player_State::Run_End;
+		break;
+	case Client::Player_State::Run_End:
+		m_Animation = {};
+		m_Animation.iAnimIndex = Run_End;
+		m_Animation.isLoop = false;
+		m_Animation.bSkipInterpolation = true;
+
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Run_End))
+		{
+			m_eState = Player_State::Idle;
+		}
 		break;
 	case Client::Player_State::Jump:
+		m_Animation = {};
+		m_Animation.iAnimIndex = Jump_Vertical;
+		m_Animation.isLoop = false;
+		m_Animation.fAnimSpeedRatio = 1.8f;
+
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Vertical) or
+			m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Fall_Vertical_Loop)
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Fall_Vertical_Loop;
+			m_Animation.isLoop = true;
+		}
+		if (not m_pTransformCom->Is_Jumping())
+		{
+			m_eState = Player_State::Land;
+		}
+		break;
+	case Client::Player_State::Jump_Front:
+		m_Animation = {};
+		m_Animation.iAnimIndex = Jump_Front;
+		m_Animation.isLoop = false;
+		m_Animation.fAnimSpeedRatio = 1.8f;
+
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Front) or
+			m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Fall_Front_Loop)
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Fall_Front_Loop;
+			m_Animation.isLoop = true;
+		}
+		if (not m_pTransformCom->Is_Jumping())
+		{
+			m_eState = Player_State::Land;
+		}
 		break;
 	case Client::Player_State::DoubleJump:
+		m_Animation = {};
+		m_Animation.iAnimIndex = DoubleJump;
+		m_Animation.isLoop = false;
+		m_Animation.fAnimSpeedRatio = 1.8f;
+		m_Animation.bSkipInterpolation = true;
+
+		if (not m_hasDoubleJumped)
+		{
+			m_hasDoubleJumped = true;
+		}
+		else if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(DoubleJump) or
+				 m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Fall_Front_Loop)
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Fall_Front_Loop;
+			m_Animation.isLoop = true;
+		}
+
+		if (not m_pTransformCom->Is_Jumping())
+		{
+			m_hasDoubleJumped = false;
+			m_eState = Player_State::Land;
+		}
+		break;
+	case Client::Player_State::Land:
+		m_Animation = {};
+		m_Animation.iAnimIndex = Land;
+		m_Animation.isLoop = false;
+		m_Animation.bSkipInterpolation = true;
+
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Land))
+		{
+			m_eState = Player_State::Idle;
+		}
 		break;
 	case Client::Player_State::Beaten:
 		break;
 	case Client::Player_State::Attack:
-		if (m_fAttTimer > 0.4f)
+		if (not m_bAttacked)
 		{
-			if (m_iAttMotion > Sasuke_Attack_TurnSlashingShoulder_Right)
+			if (m_fAttTimer > 0.8f)
 			{
-				m_iAttMotion = Sasuke_Attack_DashSlashing_Right;
-			}
-			m_Animation = {};
-			m_Animation.iAnimIndex = m_iAttMotion++;
-			m_Animation.isLoop = false;
-			m_Animation.fAnimSpeedRatio = 1.3f;
-			m_pGameInstance->Attack_Monster(m_pCollider_Att, 10);
+				if (m_iAttMotion > Sasuke_Attack_TurnSlashingShoulder_Right)
+				{
+					m_iAttMotion = Sasuke_Attack_DashSlashing_Right;
+				}
+				m_Animation = {};
+				m_Animation.iAnimIndex = m_iAttMotion++;
+				m_Animation.isLoop = false;
+				m_Animation.fAnimSpeedRatio = 1.3f;
 
-			if (m_hasMoved)
+				m_fAttTimer = 0.f;
+			}
+			if (m_fAttTimer > 0.5f)
 			{
-				m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vDirection));
+				m_pGameInstance->Attack_Monster(m_pCollider_Att, 10);
+				m_bAttacked = true;
 			}
-
-			m_fAttTimer = 0.f;
+			else
+			{
+				m_pTransformCom->Set_Speed(0.5f);
+				m_pTransformCom->Go_Straight(fTimeDelta);
+			}
 		}
-
-		m_pTransformCom->Set_Speed(5.f);
-		m_pTransformCom->Go_Straight(fTimeDelta);
-
+		else if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(m_iAttMotion - 1))
+		{
+			m_eState = Player_State::Idle;
+			m_bAttacked = false;
+		}
 		break;
 	}
 }

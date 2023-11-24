@@ -175,6 +175,10 @@ void CTransform::Gravity(_float fTimeDelta)
 		m_fGravity = 0.f;
 		m_isJumping = false;
 	}
+	else
+	{
+		m_isJumping = true;
+	}
 	PxExtendedVec3 MovedPos = m_pController->getFootPosition();
 	Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
 }

@@ -65,7 +65,7 @@ void CCollision_Manager::Attack_Monster(CCollider* pCollider, _uint iDamage)
 {
 	for (auto& Monster : m_Monsters)
 	{
-		if (pCollider->Intersect(Monster.second))
+		if (Monster.second->Intersect(pCollider))
 		{
 			Monster.first->Set_Damage(iDamage);
 		}
