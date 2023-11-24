@@ -33,7 +33,7 @@ public:
 
 
 public:
-	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup);
+	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc);
 	void Init_PhysX_MoveableObject(class CTransform* pTransform);
 	void Apply_PhysX(class CTransform* pTransform);
 	void Update_PhysX(class CTransform* pTransform);

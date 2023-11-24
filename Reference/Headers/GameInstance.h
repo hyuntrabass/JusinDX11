@@ -102,7 +102,7 @@ public: // Collision
 	void Attack_Player(class CCollider* pCollider, _uint iDamage);
 
 public: // PhysX
-	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup);
+	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc = nullptr);
 	void Init_PhysX_MoveableObject(class CTransform* pTransform);
 	void Apply_PhysX(class CTransform* pTransform);
 	void Update_PhysX(class CTransform* pTransform);

@@ -11,7 +11,7 @@ HRESULT CLevel_Stage2::Init()
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 
-	pPlayerTransform->Set_Position(_float3(40.f, 32.f, 126.f));
+	pPlayerTransform->Set_Position(_float3(-4.5f, 36.1f, -56.f));
 
 	if (FAILED(Ready_Map()))
 	{

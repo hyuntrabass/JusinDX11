@@ -648,14 +648,14 @@ void CGameInstance::Attack_Player(CCollider* pCollider, _uint iDamage)
 	return m_pCollision_Manager->Attack_Player(pCollider, iDamage);
 }
 
-void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup)
+void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc)
 {
 	if (!m_pPhysX_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
 	}
 
-	m_pPhysX_Manager->Init_PhysX_Character(pTransform, eGroup);
+	m_pPhysX_Manager->Init_PhysX_Character(pTransform, eGroup, pDesc);
 }
 
 void CGameInstance::Init_PhysX_MoveableObject(CTransform* pTransform)

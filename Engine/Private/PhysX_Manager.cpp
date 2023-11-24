@@ -191,23 +191,30 @@ HRESULT CPhysX_Manager::Render()
 }
 #endif // _DEBUG
 
-void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup)
+void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc)
 {
 	_float3 vPos{};
 	XMStoreFloat3(&vPos, pTransform->Get_State(State::Pos));
 	PxExtendedVec3 Position{ static_cast<_double>(vPos.x), static_cast<_double>(vPos.y), static_cast<_double>(vPos.z) };
 
 	PxCapsuleControllerDesc ControllerDesc{};
-	ControllerDesc.height = 0.8f; // 높이(위 아래의 반구 크기 제외
-	ControllerDesc.radius = 0.35f; // 위아래 반구의 반지름
-	ControllerDesc.position = Position; // 초기 위치
-	ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
-	ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
-	ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
-	ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
-	ControllerDesc.reportCallback = nullptr;
-	ControllerDesc.material = m_pMaterial;
-	ControllerDesc.density = 700.f;
+	if (not pDesc)
+	{
+		ControllerDesc.height = 0.8f; // 높이(위 아래의 반구 크기 제외
+		ControllerDesc.radius = 0.35f; // 위아래 반구의 반지름
+		ControllerDesc.position = Position; // 초기 위치
+		ControllerDesc.upDirection = PxVec3(0.f, 1.f, 0.f); // 업 방향
+		ControllerDesc.slopeLimit = cosf(PxDegToRad(60.f)); // 캐릭터가 오를 수 있는 최대 각도
+		ControllerDesc.contactOffset = 0.1f; // 캐릭터와 다른 물체와의 충돌을 얼마나 먼저 감지할지. 값이 클수록 더 일찍 감지하지만 성능에 영향 있을 수 있음.
+		ControllerDesc.stepOffset = 0.2f; // 캐릭터가 오를 수 있는 계단의 최대 높이
+		ControllerDesc.reportCallback = nullptr;
+		ControllerDesc.material = m_pMaterial;
+		ControllerDesc.density = 700.f;
+	}
+	else
+	{
+		ControllerDesc = *pDesc;
+	}
 
 	PxController* pController = m_pControllerManager->createController(ControllerDesc);
 
@@ -229,7 +236,10 @@ void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup
 	//pShape->setLocalPose(PxTransform(PxVec3(0.f, 0.f, 0.7f)));
 	//pController->getActor()->attachShape(*pShape);
 
-	pTransform->Set_Controller(pController);
+	if (pTransform)
+	{
+		pTransform->Set_Controller(pController);
+	}
 	//m_Characters.emplace(pTransform, pController);
 }
 

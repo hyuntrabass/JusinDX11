@@ -25,14 +25,17 @@ HRESULT CKurama::Init(void* pArg)
 	m_pModelCom->Set_Animation(KuraDef_etc_Appearance, false, 1.f, true);
 
 	m_vAppearPoints[0] = _float4(-6.5f, 47.5f, 111.7f, 1.f);
-	m_vAppearPoints[1] = _float4(11.7f, 31.f, 118.7f, 1.f);
+	m_vAppearPoints[1] = _float4(24.f, 31.f, 121.1f, 1.f);
 	m_vAppearPoints[2] = _float4(45.5f, 42.5f, 85.2f, 1.f);
 	m_vAppearPoints[3] = _float4(21.5f, 41.f, 11.1f, 1.f);
 	m_vAppearPoints[4] = _float4(-4.5f, 36.1f, -56.f, 1.f);
 
-	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_vAppearPoints[rand() % 5]));
+	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_vAppearPoints[1]));
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
+	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit);
+
+	m_iHP = 500;
 
 	return S_OK;
 }
@@ -40,15 +43,23 @@ HRESULT CKurama::Init(void* pArg)
 void CKurama::Tick(_float fTimeDelta)
 {
 	Artificial_Intelligence(fTimeDelta);
+	Apply_State(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
-	m_pModelCom->Play_Animation(fTimeDelta);
+	m_pCollider_Hit->Update(m_pTransformCom->Get_World_Matrix());
 }
 
 void CKurama::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	m_pCollider_Hit->Intersect(reinterpret_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Collider_Attack"))));
+
+	//_vector vPos = ;
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f) and m_hasInitiated)
+	{
+		m_pModelCom->Play_Animation(fTimeDelta);
+		m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	}
 }
 
 HRESULT CKurama::Render()
@@ -80,6 +91,11 @@ HRESULT CKurama::Render()
 		}
 	}
 
+#ifdef _DEBUG
+	m_pCollider_Hit->Render();
+#endif // _DEBUG
+
+
 	return S_OK;
 }
 
@@ -96,6 +112,16 @@ HRESULT CKurama::Add_Components()
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STAGE2, TEXT("Prototype_Model_Kurama"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	{
+		return E_FAIL;
+	}
+
+	Collider_Desc ColDesc{};
+	ColDesc.eType = ColliderType::Sphere;
+	ColDesc.fRadius = 5.f;
+	ColDesc.vCenter = _float3(0.f, ColDesc.fRadius, 0.f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Take"), reinterpret_cast<CComponent**>(&m_pCollider_Hit), &ColDesc)))
 	{
 		return E_FAIL;
 	}
@@ -156,26 +182,64 @@ HRESULT CKurama::Bind_ShaderResources()
 
 void CKurama::Artificial_Intelligence(_float fTimeDelta)
 {
+	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+	_vector vPlayerPos = pPlayerTransform->Get_State(State::Pos);
+	_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
+	_vector vPlayerPosForLookAt = XMVectorSetY(vPlayerPos, vMyPos.m128_f32[1]);
+	m_pTransformCom->LookAt(vPlayerPosForLookAt);
 
+	if (not m_hasInitiated and 
+		XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos)) < 30.f)
+	{
+		m_hasInitiated = true;
+		m_eState = State_Initiation;
+	}
+
+	if (m_hasInitiated)
+	{
+		m_fTimer += fTimeDelta;
+	}
+
+	if (m_fTimer > 10.f)
+	{
+		m_eState = State_Bomb;
+		m_fTimer = {};
+	}
 }
 
-void CKurama::Change_State()
+void CKurama::Apply_State(_float fTimeDelta)
 {
 	switch (m_eState)
 	{
+	case Client::CKurama::State_Initiation:
+		if (m_pModelCom->IsAnimationFinished(KuraDef_etc_Appearance))
+		{
+			m_pModelCom->Set_Animation(KuraDef_Ninjutsu_Roar, false);
+		}
+
+		if (m_pModelCom->IsAnimationFinished(KuraDef_Ninjutsu_Roar))
+		{
+			m_eState = State_Idle;
+		}
+		break;
 	case Client::CKurama::State_Idle:
+		m_pModelCom->Set_Animation(KuraDef_Idle_Loop, true, 1.f, true);
 		break;
 	case Client::CKurama::State_Attack:
 		break;
-	case Client::CKurama::State_Skill:
+	case Client::CKurama::State_Bomb:
+		m_pModelCom->Set_Animation(KuraDef_Ninjutsu_TailedBeastBomb, false);
+
+		if (m_pModelCom->IsAnimationFinished(KuraDef_Ninjutsu_TailedBeastBomb))
+		{
+			m_eState = State_Idle;
+		}
 		break;
 	case Client::CKurama::State_Roar:
 		break;
 	case Client::CKurama::State_Beaten:
 		break;
 	case Client::CKurama::State_Die:
-		break;
-	case Client::CKurama::State_Standby:
 		break;
 	}
 }
@@ -210,6 +274,7 @@ void CKurama::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pCollider_Hit);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);

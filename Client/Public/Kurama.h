@@ -68,13 +68,13 @@ private:
 
 	enum State_Char
 	{
+		State_Initiation,
 		State_Idle,
 		State_Attack,
-		State_Skill,
+		State_Bomb,
 		State_Roar,
 		State_Beaten,
 		State_Die,
-		State_Standby
 	};
 
 private:
@@ -93,11 +93,13 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
+	CCollider* m_pCollider_Hit{ nullptr };
 
 private:
 	_float4 m_vAppearPoints[5]{};
-	_bool HasInitiated{};
+	_bool m_hasInitiated{};
 	State_Char m_eState{};
+	_float m_fTimer{};
 
 private:
 	HRESULT Add_Components();
@@ -106,7 +108,7 @@ private:
 private:
 	void Artificial_Intelligence(_float fTimeDelta);
 
-	void Change_State();
+	void Apply_State(_float fTimeDelta);
 
 public:
 	static CKurama* Create(_dev pDevice, _context pContext);
