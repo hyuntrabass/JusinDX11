@@ -32,19 +32,19 @@ HRESULT CKakashi::Init(void* pArg)
 
 void CKakashi::Tick(_float fTimeDelta)
 {
-	if (m_pGameInstance->Key_Down(DIK_1))
+	if (m_pGameInstance->Key_Down(DIK_F1))
 	{
 		m_pModelCom->Set_Animation(RecordedSequence_NN_Pawn_Player_Kakashi, false);
 		m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 		m_pTransformCom->LookAt_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
 	}
-	if (m_pGameInstance->Key_Down(DIK_2))
+	if (m_pGameInstance->Key_Down(DIK_F2))
 	{
 		m_pModelCom->Set_Animation(RecordedSequence_NN_Pawn_Player_Kakashi_1, false);
 		m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 		m_pTransformCom->LookAt_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
 	}
-	if (m_pGameInstance->Key_Down(DIK_3))
+	if (m_pGameInstance->Key_Down(DIK_F3))
 	{
 		m_pModelCom->Set_Animation(RecordedSequence_NN_Pawn_Player_Kakashi_7, false);
 		m_pTransformCom->Set_State(State::Pos, XMVectorSet(0.f, 0.f, 0.f, 1.f));

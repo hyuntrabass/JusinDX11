@@ -184,9 +184,12 @@ void CPlayer::Move(_float fTimeDelta)
 		//if (not m_pTransformCom->Is_Jumping())
 		if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
-			if (m_eState != Player_State::Jump and
-				m_eState != Player_State::Jump_Front and
-				m_eState != Player_State::DoubleJump)
+			if (m_eState == Player_State::Idle or
+				m_eState == Player_State::Run or
+				m_eState == Player_State::Run_End or
+				m_eState == Player_State::Walk or
+				m_eState == Player_State::Walk_End or
+				m_eState == Player_State::Land)
 			{
 				m_eState = Player_State::Run;
 			}
@@ -194,9 +197,12 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 		else
 		{
-			if (m_eState != Player_State::Jump and
-				m_eState != Player_State::Jump_Front and
-				m_eState != Player_State::DoubleJump)
+			if (m_eState == Player_State::Idle or
+				m_eState == Player_State::Run or
+				m_eState == Player_State::Run_End or
+				m_eState == Player_State::Walk or
+				m_eState == Player_State::Walk_End or
+				m_eState == Player_State::Land)
 			{
 				m_eState = Player_State::Walk;
 			}
@@ -250,6 +256,11 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 
 		m_eState = Player_State::Attack;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_1))
+	{
+		m_eState = Player_State::RasenShuriken;
 	}
 
 	m_pTransformCom->Gravity(fTimeDelta);
@@ -481,6 +492,9 @@ void CPlayer::Apply_State(_float fTimeDelta)
 			m_eState = Player_State::Idle;
 			m_bAttacked = false;
 		}
+		break;
+	case Client::Player_State::RasenShuriken:
+		
 		break;
 	}
 }

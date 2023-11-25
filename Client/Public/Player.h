@@ -35,6 +35,7 @@ enum class Player_State
 	Land,
 	Beaten,
 	Attack,
+	RasenShuriken,
 };
 
 class CPlayer final : public CGameObject
