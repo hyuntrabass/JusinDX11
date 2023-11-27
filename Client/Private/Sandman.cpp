@@ -24,11 +24,15 @@ HRESULT CSandman::Init(void* pArg)
 
 	if (rand() & 2)
 	{
-		m_pModelCom->Set_Animation(Anim_etc_Appearance_Type01, false);
+		ANIM_DESC Anim{};
+		Anim.iAnimIndex = Anim_etc_Appearance_Type01;
+		m_pModelCom->Set_Animation(Anim);
 	}
 	else
 	{
-		m_pModelCom->Set_Animation(Anim_etc_Appearance_Type02, false);
+		ANIM_DESC Anim{};
+		Anim.iAnimIndex = Anim_etc_Appearance_Type02;
+		m_pModelCom->Set_Animation(Anim);
 	}
 
 	if (pArg)
@@ -84,7 +88,10 @@ void CSandman::Tick(_float fTimeDelta)
 	if (m_pTransformCom->Get_State(State::Pos).m128_f32[1] < 20.f)
 	{
 		m_iHP = 0;
-		m_pModelCom->Set_Animation(Anim_Dying_Aerial_Fall_Behind_Loop, false);
+		ANIM_DESC Anim{};
+		Anim.iAnimIndex = Anim_Dying_Aerial_Fall_Behind_Loop;
+		Anim.isLoop = true;
+		m_pModelCom->Set_Animation(Anim);
 		m_pTransformCom->Gravity(fTimeDelta);
 		if (m_pModelCom->IsAnimationFinished(Anim_Dying_Aerial_Fall_Behind_Loop))
 		{
@@ -95,7 +102,10 @@ void CSandman::Tick(_float fTimeDelta)
 
 	if (m_pModelCom->IsAnimationFinished(Anim_etc_Appearance_Type01) or m_pModelCom->IsAnimationFinished(Anim_etc_Appearance_Type02))
 	{
-		m_pModelCom->Set_Animation(Anim_Idle_Type02_Loop, true);
+		ANIM_DESC Anim{};
+		Anim.iAnimIndex = Anim_Idle_Type02_Loop;
+		Anim.isLoop = true;
+		m_pModelCom->Set_Animation(Anim);
 	}
 
 	Artificial_Intelligence(fTimeDelta);
@@ -182,8 +192,11 @@ void CSandman::Set_Damage(_int iDamage)
 {
 	m_iHP -= iDamage;
 
-	m_pModelCom->Set_Animation(Anim_Beaten_Left + 1, false, 1.f, true);
-	m_pModelCom->Set_Animation(Anim_Beaten_Left, false, 1.f, true);
+	ANIM_DESC Anim{};
+	Anim.iAnimIndex = Anim_Beaten_Left;
+	Anim.bSkipInterpolation = true;
+	Anim.bRestartAnimation = true;
+	m_pModelCom->Set_Animation(Anim);
 	m_Hit = true;
 }
 
@@ -311,16 +324,23 @@ void CSandman::Artificial_Intelligence(_float fTimeDelta)
 
 			if (iCurrentAnimIndex == Anim_Run_Loop)
 			{
-				m_pModelCom->Set_Animation(Anim_Run_End, false);
+				ANIM_DESC Anim{};
+				Anim.iAnimIndex = Anim_Run_End;
+				m_pModelCom->Set_Animation(Anim);
 			}
 			else if (iCurrentAnimIndex == Anim_Walk_Loop)
 			{
-				m_pModelCom->Set_Animation(Anim_Walk_End, false);
+				ANIM_DESC Anim{};
+				Anim.iAnimIndex = Anim_Walk_End;
+				m_pModelCom->Set_Animation(Anim);
 			}
 
 			if (m_pModelCom->IsAnimationFinished(Anim_Run_End) or m_pModelCom->IsAnimationFinished(Anim_Walk_End))
 			{
-				m_pModelCom->Set_Animation(Anim_Idle_Type02_Loop, true);
+				ANIM_DESC Anim{};
+				Anim.iAnimIndex = Anim_Idle_Type02_Loop;
+				Anim.isLoop = true;
+				m_pModelCom->Set_Animation(Anim);
 			}
 		}
 	}
@@ -339,12 +359,17 @@ void CSandman::Artificial_Intelligence(_float fTimeDelta)
 
 		if (m_fAttTime > 2.f)
 		{
-			m_pModelCom->Set_Animation(Anim_Attack_SideDoubleSlashing, false);
+			ANIM_DESC Anim{};
+			Anim.iAnimIndex = Anim_Attack_SideDoubleSlashing;
+			m_pModelCom->Set_Animation(Anim);
 			m_fAttTime = 0.f;
 		}
 		else if (m_pModelCom->IsAnimationFinished(Anim_Attack_SideDoubleSlashing))
 		{
-			m_pModelCom->Set_Animation(Anim_Idle_Type02_Loop, true);
+			ANIM_DESC Anim{};
+			Anim.iAnimIndex = Anim_Idle_Type02_Loop;
+			Anim.isLoop = true;
+			m_pModelCom->Set_Animation(Anim);
 		}
 	}
 }
@@ -371,17 +396,22 @@ void CSandman::Change_State()
 {
 	if (m_eCurrState not_eq m_ePrevState)
 	{
+		ANIM_DESC Anim{};
 		switch (m_eCurrState)
 		{
 		case Client::CSandman::State_Idle:
 			break;
 		case Client::CSandman::State_Run:
 			m_pTransformCom->Set_Speed(m_fRunSpeed);
-			m_pModelCom->Set_Animation(Anim_Run_Loop, true);
+			Anim.iAnimIndex = Anim_Run_Loop;
+			Anim.isLoop = true;
+			m_pModelCom->Set_Animation(Anim);
 			break;
 		case Client::CSandman::State_Walk:
 			m_pTransformCom->Set_Speed(m_fWalkSpeed);
-			m_pModelCom->Set_Animation(Anim_Walk_Loop, true);
+			Anim.iAnimIndex = Anim_Walk_Loop;
+			Anim.isLoop = true;
+			m_pModelCom->Set_Animation(Anim);
 			break;
 		case Client::CSandman::State_Attack:
 			break;

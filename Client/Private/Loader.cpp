@@ -585,7 +585,7 @@ HRESULT CLoader::Load_Stage2()
 	m_strLoadingText = L"Stage2 : Loading Model";
 #pragma region Model
 	// Model for Map Assets.
-	string strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Forest/Mesh/";
+	string strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Cloud/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -602,7 +602,7 @@ HRESULT CLoader::Load_Stage2()
 	}
 
 	// Model for Map Collider.
-	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Forest/COL_Mesh/";
+	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Cloud/COL_Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -618,7 +618,7 @@ HRESULT CLoader::Load_Stage2()
 		}
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STAGE2, TEXT("Prototype_Model_Kurama"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Kurama/Mesh/Kurama.hyuntraanimmesh", false, XMMatrixScaling(0.5f, 0.5f, 0.5f)))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STAGE2, TEXT("Prototype_Model_Kurama"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Kurama/Mesh/Kurama.hyuntraanimmesh", false, XMMatrixScaling(0.8f, 0.8f, 0.8f)))))
 	{
 		return E_FAIL;
 	}

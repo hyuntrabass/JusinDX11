@@ -107,7 +107,7 @@ PS_OUT PS_Main_COL(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = vector(0.7f, 0.7f, 0.7f, 1.f);
+    vector vMtrlDiffuse = vector(1.f, 1.f, 1.f, 1.f);
     vector vNormal = Input.vNor;
     
     vector vLook = Input.vWorldPos - g_vCamPos;

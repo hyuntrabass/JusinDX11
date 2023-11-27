@@ -22,15 +22,21 @@ HRESULT CKurama::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pModelCom->Set_Animation(KuraDef_etc_Appearance, false, 1.f, true);
+	ANIM_DESC Anim{};
+	Anim.iAnimIndex = Anim_etc_Appearance;
+	Anim.bSkipInterpolation = true;
+	m_pModelCom->Set_Animation(Anim);
 
-	m_vAppearPoints[0] = _float4(-6.5f, 47.5f, 111.7f, 1.f);
-	m_vAppearPoints[1] = _float4(24.f, 31.f, 121.1f, 1.f);
-	m_vAppearPoints[2] = _float4(45.5f, 42.5f, 85.2f, 1.f);
-	m_vAppearPoints[3] = _float4(21.5f, 41.f, 11.1f, 1.f);
-	m_vAppearPoints[4] = _float4(-4.5f, 36.1f, -56.f, 1.f);
+	m_vAppearPoints[0] = _float3(-25.85f, 33.3f, -48.77f);
+	m_vAppearPoints[1] = _float3(-17.4f, 73.f, -15.f);
+	m_vAppearPoints[2] = _float3(14.8f, 65.f, 29.6f);
+	m_vAppearPoints[3] = _float3(44.f,33.f, 18.5f);
+	m_vAppearPoints[4] = _float3(108.f, 51.f, -9.9f);
 
-	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_vAppearPoints[1]));
+	_vector WarpPos = XMLoadFloat3(&m_vAppearPoints[m_iPosIndex]);
+	WarpPos.m128_f32[3] = 1.f;
+
+	m_pTransformCom->Set_State(State::Pos, WarpPos);
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
 	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit);
@@ -43,7 +49,9 @@ HRESULT CKurama::Init(void* pArg)
 void CKurama::Tick(_float fTimeDelta)
 {
 	Artificial_Intelligence(fTimeDelta);
-	Apply_State(fTimeDelta);
+
+	Init_State();
+	TIck_State(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
@@ -97,6 +105,17 @@ HRESULT CKurama::Render()
 
 
 	return S_OK;
+}
+
+void CKurama::Set_Damage(_int iDamage)
+{
+	m_iHP -= iDamage;
+
+	if (m_iPosIndex < 4)
+	{
+		m_iPosIndex++;
+		m_eState = State_Warp;
+	}
 }
 
 HRESULT CKurama::Add_Components()
@@ -188,7 +207,7 @@ void CKurama::Artificial_Intelligence(_float fTimeDelta)
 	_vector vPlayerPosForLookAt = XMVectorSetY(vPlayerPos, vMyPos.m128_f32[1]);
 	m_pTransformCom->LookAt(vPlayerPosForLookAt);
 
-	if (not m_hasInitiated and 
+	if (not m_hasInitiated and
 		XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos)) < 30.f)
 	{
 		m_hasInitiated = true;
@@ -200,42 +219,136 @@ void CKurama::Artificial_Intelligence(_float fTimeDelta)
 		m_fTimer += fTimeDelta;
 	}
 
-	if (m_fTimer > 10.f)
+	if (m_iPosIndex < 4 and m_fTimer > 5.f and m_eState != State_Warp)
 	{
 		m_eState = State_Bomb;
 		m_fTimer = {};
 	}
 }
 
-void CKurama::Apply_State(_float fTimeDelta)
+void CKurama::Init_State()
 {
+	if (m_eState != m_ePrevState)
+	{
+		ANIM_DESC Anim{};
+		switch (m_eState)
+		{
+		case Client::CKurama::State_Initiation:
+			break;
+		case Client::CKurama::State_Idle:
+			break;
+		case Client::CKurama::State_Attack:
+			break;
+		case Client::CKurama::State_ComboAttack:
+			Anim.iAnimIndex = Anim_Attack_MowDown_Right;
+			Anim.fAnimSpeedRatio = 3.5f;
+			Anim.bSkipInterpolation = true;
+			Anim.fDurationRatio = 0.5f;
+			m_pModelCom->Set_Animation(Anim);
+			break;
+		case Client::CKurama::State_Bomb:
+			break;
+		case Client::CKurama::State_Roar:
+			break;
+		case Client::CKurama::State_Warp:
+			Anim.iAnimIndex = Anim_HandSeal_RecoveryChakra_Start;
+
+			m_pModelCom->Set_Animation(Anim);
+			break;
+		case Client::CKurama::State_Beaten:
+			break;
+		case Client::CKurama::State_Die:
+			break;
+		}
+		m_ePrevState = m_eState;
+	}
+}
+
+void CKurama::TIck_State(_float fTimeDelta)
+{
+	ANIM_DESC Anim{};
+
 	switch (m_eState)
 	{
 	case Client::CKurama::State_Initiation:
-		if (m_pModelCom->IsAnimationFinished(KuraDef_etc_Appearance))
+		if (m_pModelCom->IsAnimationFinished(Anim_etc_Appearance))
 		{
-			m_pModelCom->Set_Animation(KuraDef_Ninjutsu_Roar, false);
+			Anim.iAnimIndex = Anim_Ninjutsu_Roar;
+			m_pModelCom->Set_Animation(Anim);
 		}
 
-		if (m_pModelCom->IsAnimationFinished(KuraDef_Ninjutsu_Roar))
+		if (m_pModelCom->IsAnimationFinished(Anim_Ninjutsu_Roar))
 		{
 			m_eState = State_Idle;
 		}
 		break;
 	case Client::CKurama::State_Idle:
-		m_pModelCom->Set_Animation(KuraDef_Idle_Loop, true, 1.f, true);
+		Anim.iAnimIndex = Anim_Idle_Loop;
+		Anim.isLoop = true;
+		Anim.bSkipInterpolation = true;
+
+		m_pModelCom->Set_Animation(Anim);
 		break;
 	case Client::CKurama::State_Attack:
 		break;
-	case Client::CKurama::State_Bomb:
-		m_pModelCom->Set_Animation(KuraDef_Ninjutsu_TailedBeastBomb, false);
+	case Client::CKurama::State_ComboAttack:
+		Anim.fAnimSpeedRatio = 3.5f;
+		Anim.bSkipInterpolation = true;
+		Anim.fDurationRatio = 0.5f;
 
-		if (m_pModelCom->IsAnimationFinished(KuraDef_Ninjutsu_TailedBeastBomb))
+		if (m_pModelCom->IsAnimationFinished(Anim_Attack_MowDown_Right))
+		{
+			Anim.iAnimIndex = Anim_Attack_MowDown_Left;
+			m_pModelCom->Set_Animation(Anim);
+		}
+		if (m_pModelCom->IsAnimationFinished(Anim_Attack_MowDown_Left))
+		{
+			Anim.iAnimIndex = Anim_Attack_KickUp;
+			m_pModelCom->Set_Animation(Anim);
+		}
+		if (m_pModelCom->IsAnimationFinished(Anim_Attack_KickUp))
+		{
+			Anim.iAnimIndex = Anim_Attack_DoubleSledgehammer;
+			Anim.fDurationRatio = 1.f;
+			m_pModelCom->Set_Animation(Anim);
+		}
+		if (m_pModelCom->IsAnimationFinished(Anim_Attack_DoubleSledgehammer))
+		{
+			m_eState = State_Idle;
+		}
+		m_fTimer = {};
+		break;
+	case Client::CKurama::State_Bomb:
+		Anim.iAnimIndex = Anim_Ninjutsu_TailedBeastBomb;
+		m_pModelCom->Set_Animation(Anim);
+
+		if (m_pModelCom->IsAnimationFinished(Anim_Ninjutsu_TailedBeastBomb))
 		{
 			m_eState = State_Idle;
 		}
 		break;
 	case Client::CKurama::State_Roar:
+		break;
+	case Client::CKurama::State_Warp:
+		if (m_pModelCom->IsAnimationFinished(Anim_HandSeal_RecoveryChakra_Start))
+		{
+			Anim.iAnimIndex = Anim_HandSeal_RecoveryChakra_Loop;
+			Anim.isLoop = true;
+			m_fTimer = {};
+			m_pModelCom->Set_Animation(Anim);
+		}
+		
+		if (m_fTimer > 4.f and m_pModelCom->Get_CurrentAnimationIndex() == Anim_HandSeal_RecoveryChakra_Loop)
+		{ 
+			m_pTransformCom->Set_Position(m_vAppearPoints[m_iPosIndex]);
+			Anim.iAnimIndex = Anim_HandSeal_RecoveryChakra_End;
+			m_pModelCom->Set_Animation(Anim);
+		}
+
+		if (m_pModelCom->IsAnimationFinished(Anim_HandSeal_RecoveryChakra_End))
+		{
+			m_eState = State_Idle;
+		}
 		break;
 	case Client::CKurama::State_Beaten:
 		break;
