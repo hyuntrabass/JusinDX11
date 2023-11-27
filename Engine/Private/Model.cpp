@@ -17,7 +17,6 @@ CModel::CModel(const CModel& rhs)
 	, m_Materials(rhs.m_Materials)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
-	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
 {
 	for (auto& pPrototypeBone : rhs.m_Bones)
 	{
@@ -59,17 +58,13 @@ const _bool& CModel::IsAnimationFinished(_uint iAnimIndex) const
 
 const _uint& CModel::Get_CurrentAnimationIndex() const
 {
-	return m_iCurrentAnimIndex;
+	return m_AnimDesc.iAnimIndex;
 }
 
-void CModel::Set_Animation(_uint iAnimIndex, const _bool& isLoop, _float fAnimSpeedRatio, const _bool& bSkipInterpolation, _float fInterpolationTime)
+void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 {
-	m_isLoop = isLoop;
-	m_bSkipInterpolation = bSkipInterpolation;
-	m_fAnimSpeedRatio = fAnimSpeedRatio;
-	m_fInterpolationTime = fInterpolationTime;
-
-	if (m_iCurrentAnimIndex != iAnimIndex)
+	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or
+		Animation_Desc.bRestartAnimation)
 	{
 		m_isAnimChanged = true;
 
@@ -78,7 +73,8 @@ void CModel::Set_Animation(_uint iAnimIndex, const _bool& isLoop, _float fAnimSp
 			pAnim->ResetFinished();
 		}
 	}
-	m_iCurrentAnimIndex = iAnimIndex;
+	
+	m_AnimDesc = Animation_Desc;
 }
 
 HRESULT CModel::Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix)
@@ -151,7 +147,7 @@ HRESULT CModel::Init(void* pArg)
 
 void CModel::Play_Animation(_float fTimeDelta)
 {
-	m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_fAnimSpeedRatio, m_isAnimChanged, m_isLoop, m_bSkipInterpolation, m_fInterpolationTime);
+	m_Animations[m_AnimDesc.iAnimIndex]->Update_TransformationMatrix(m_Bones, fTimeDelta * m_AnimDesc.fAnimSpeedRatio, m_isAnimChanged, m_AnimDesc.isLoop, m_AnimDesc.bSkipInterpolation, m_AnimDesc.fInterpolationTime, m_AnimDesc.fDurationRatio);
 
 	for (auto& pBone : m_Bones)
 	{

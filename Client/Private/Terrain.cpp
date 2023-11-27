@@ -61,9 +61,11 @@ HRESULT CTerrain::Render()
 
 	for (_uint i = 0; i < iNumMeshes; i++)
 	{
+		_uint iPassIndex{};
+
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
-			return E_FAIL;
+			iPassIndex = 3;
 		}
 
 		_float fNorTex = 0.f;
@@ -80,8 +82,6 @@ HRESULT CTerrain::Render()
 		{
 			return E_FAIL;
 		}
-
-		_uint iPassIndex{};
 
 		if (m_strPrototypeTag == L"Prototype_Model_SM_ENV_KNFRST_WireMesh_B.mo")
 		{

@@ -11,7 +11,7 @@ HRESULT CLevel_Stage2::Init()
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 
-	pPlayerTransform->Set_Position(_float3(-4.5f, 36.1f, -56.f));
+	pPlayerTransform->Set_Position(_float3(-45.3f, 72.6f, 106.3f));
 
 	if (FAILED(Ready_Map()))
 	{
@@ -32,7 +32,7 @@ HRESULT CLevel_Stage2::Render()
 
 HRESULT CLevel_Stage2::Ready_Map()
 {
-	string strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Forest/Mesh/";
+	string strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Cloud/Mesh/";
 	wstring strPrototypeTag = L"Prototype_Model_";
 
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
@@ -51,7 +51,7 @@ HRESULT CLevel_Stage2::Ready_Map()
 		}
 	}
 	
-	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Forest/COL_Mesh/";
+	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Cloud/COL_Mesh/";
 	strPrototypeTag = L"Prototype_Model_COL_";
 
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))

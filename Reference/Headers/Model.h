@@ -11,6 +11,17 @@ enum class ModelType
 	End
 };
 
+struct ANIM_DESC
+{
+	_uint iAnimIndex{};
+	_bool isLoop{};
+	_float fAnimSpeedRatio{ 1.f };
+	_bool bSkipInterpolation{};
+	_float fInterpolationTime{ 0.2f };
+	_float fDurationRatio{ 1.f };
+	_bool bRestartAnimation{ false };
+};
+
 class ENGINE_DLL CModel final : public CComponent
 {
 private:
@@ -23,7 +34,7 @@ public:
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
 	
-	void Set_Animation(_uint iAnimIndex, const _bool& isLoop, _float fAnimSpeedRatio = 1.f, const _bool& bSkipInterpolation = false, _float fInterpolationTime = 0.2f);
+	void Set_Animation(ANIM_DESC Animation_Desc);
 
 public:
 	HRESULT Init_Prototype(const string& strFilePath, const _bool& isCOLMesh, _fmatrix PivotMatrix);
@@ -57,13 +68,10 @@ private:
 	_uint m_iNumLowerMeshes{};
 	_uint m_iNumUpperMeshes{};
 
-	_uint m_iCurrentAnimIndex{};
 	_uint m_iPrevAnimIndex{};
 	_bool m_isAnimChanged{};
-	_bool m_isLoop{};
-	_bool m_bSkipInterpolation{};
-	_float m_fInterpolationTime{};
-	_float m_fAnimSpeedRatio{};
+
+	ANIM_DESC m_AnimDesc{};
 
 private:
 	HRESULT Read_Bones(ifstream& File);

@@ -63,7 +63,7 @@ HRESULT CAnimation::Init(ifstream& ModelFile)
 	return S_OK;
 }
 
-void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime)
+void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, _float fTimeDelta, _bool& isAnimChanged, const _bool& isLoop, const _bool& bSkipInterpolation, _float fInterpolationTime, _float fDurationRatio)
 {
 	if (isAnimChanged)
 	{
@@ -90,7 +90,7 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		}
 		m_fCurrentAnimPos += m_fTickPerSec * fTimeDelta;
 
-		if (m_fCurrentAnimPos >= m_fDuration)
+		if (m_fCurrentAnimPos >= m_fDuration * fDurationRatio)
 		{
 			if (isLoop)
 			{
