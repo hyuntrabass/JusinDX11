@@ -339,7 +339,7 @@ void CKurama::TIck_State(_float fTimeDelta)
 		}
 		
 		if (m_fTimer > 4.f and m_pModelCom->Get_CurrentAnimationIndex() == Anim_HandSeal_RecoveryChakra_Loop)
-		{ 
+		{
 			m_pTransformCom->Set_Position(m_vAppearPoints[m_iPosIndex]);
 			Anim.iAnimIndex = Anim_HandSeal_RecoveryChakra_End;
 			m_pModelCom->Set_Animation(Anim);
