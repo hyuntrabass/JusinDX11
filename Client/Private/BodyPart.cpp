@@ -113,7 +113,7 @@ HRESULT CBodyPart::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(0)))
+		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
 		{
 			return E_FAIL;
 		}

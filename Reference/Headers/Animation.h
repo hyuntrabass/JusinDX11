@@ -11,7 +11,7 @@ private:
 	virtual ~CAnimation() = default;
 	
 public:
-	const _bool& IsFinished();
+	const _bool& IsFinished() const;
 
 	void ResetFinished();
 

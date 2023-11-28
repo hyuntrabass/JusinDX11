@@ -65,11 +65,15 @@ private:
 
 	enum State_Char
 	{
+		State_None,
 		State_Initiation,
 		State_Idle,
 		State_Attack,
 		State_ComboAttack,
 		State_Bomb,
+		State_MiniBomb,
+		State_Blast,
+		State_MiniBlast,
 		State_Roar,
 		State_Warp,
 		State_Beaten,
@@ -106,6 +110,7 @@ private:
 	State_Char m_ePrevState{};
 	
 	_float m_fTimer{};
+	_bool m_hasShot{};
 
 private:
 	HRESULT Add_Components();

@@ -4,6 +4,7 @@
 #include <process.h>
 #include <iostream>
 #include "Engine_Defines.h"
+#include "Transform.h"
 
 #pragma comment(lib, "Engine.lib")
 
@@ -21,7 +22,7 @@ namespace Client
 		LEVEL_CREATECHARACTER,
 		LEVEL_TUTORIAL,
 		LEVEL_STAGE1,
-		LEVEL_STAGE2,
+		LEVEL_BOSSSTAGE,
 		LEVEL_END
 	};
 
@@ -39,6 +40,13 @@ namespace Client
 		_float4 vLook{_float4(0.f, 0.f, 1.f, 0.f)};
 	};
 
+	struct AttachmentInfo
+	{
+		CTransform* pParent{ nullptr };
+		_float44* pSocket{ nullptr };
+		_float44 PivotMatrix{};
+	};
+
 	struct ButtonInfo
 	{
 		wstring strText{};
@@ -46,6 +54,39 @@ namespace Client
 		_uint iButtonType{};
 		_float fDepth{};
 		class CButton_Common** ppButton{ nullptr };
+	};
+
+	enum AnimMeshPass
+	{
+		AnimPass_Default,
+		AnimPass_Test,
+	};
+
+	enum StaticMeshPass
+	{
+		StaticPass_Default,
+		StaticPass_BlendMeshes,
+		StaticPass_Sky,
+		StaticPass_SingleColor,
+		StaticPass_SingleColorFx,
+	};
+
+	enum VNTPass
+	{
+		VNTPass_Terrain,
+		VNTPass_Terrain_Editor,
+	};
+
+	enum VTPass
+	{
+		VTPass_UI,
+		VTPass_Button,
+		VTPass_Background,
+	};
+
+	enum InstancingPass
+	{
+		InstPass_Particle,
 	};
 }
 

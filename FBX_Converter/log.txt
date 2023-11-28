@@ -1,13 +1,17 @@
 1. Static Only   2. Anim Only   3. All
-3
+1
 Static Models : Start Converting...
-Converting... SM_ENV_KMVLLG_Bridge_D_2.mo.fbx
+Converting... SM_EFF_D32_B_01.mo.fbx
+Read File Succssefully
+Converting... SM_EFF_FlyingSphere.fbx
+Read File Succssefully
+Converting... SM_EFF_GroundBreak_A.mo.fbx
+Read File Succssefully
+Converting... SM_EFF_GroundBreak_B.mo.fbx
+Read File Succssefully
+Converting... SM_EFF_Sphere_02.mo.fbx
 Read File Succssefully
 Static Models : Convert Success!
 
-Animation Models : Start Converting...
-Animation Models : Convert Success!
-
-1 Static Models
-0 Animation Models
+5 Static Models
 are Successfully Converted as hyuntramesh!!

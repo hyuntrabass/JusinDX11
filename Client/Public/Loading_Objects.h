@@ -22,3 +22,4 @@
 #include "Kurama.h"
 #include "Kakashi.h"
 #include "Effect.h"
+#include "MiniBomb.h"

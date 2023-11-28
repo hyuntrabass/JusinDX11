@@ -62,7 +62,7 @@ _vector CTransform::Get_CenterPos() const
 		return _vector();
 	}
 
-	return PxExVec3ToVector(m_pController->getPosition());
+	return PxExVec3ToVector(m_pController->getPosition(), 1.f);
 }
 
 _matrix CTransform::Get_World_Matrix() const

@@ -3,6 +3,7 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
+vector g_vColor;
 
 vector g_vLightDir;
 
@@ -103,24 +104,33 @@ PS_OUT PS_Main_Sky(PS_IN Input)
     return Output;
 }
 
-PS_OUT PS_Main_COL(PS_IN Input)
+PS_OUT PS_Main_Single(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
     
-    vector vMtrlDiffuse = vector(1.f, 1.f, 1.f, 1.f);
+    vector vMtrlDiffuse = g_vColor;
     vector vNormal = Input.vNor;
     
     vector vLook = Input.vWorldPos - g_vCamPos;
     
-    float dp = dot(normalize(vLook) * -1.f, normalize(vNormal));
+    //float dp = dot(normalize(vLook) * -1.f, normalize(vNormal));
     
-    vMtrlDiffuse = vMtrlDiffuse * dp;
+    //vMtrlDiffuse = vMtrlDiffuse * dp;
      
     float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
     
     vector vReflect = reflect(normalize(g_vLightDir), vNormal);
 
     Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient));
+        
+    return Output;
+}
+
+PS_OUT PS_Main_Effect(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+
+    Output.vColor = g_vColor;
     
     return Output;
 }
@@ -166,16 +176,29 @@ technique11 DefaultTechniqueShader_VtxNorTex
         PixelShader = compile ps_5_0 PS_Main_Sky();
     }
 
-    pass Collider
+    pass SingleColored
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_COL();
+        PixelShader = compile ps_5_0 PS_Main_Single();
+    }
+
+    pass SingleColoredEffect
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Effect();
     }
 };

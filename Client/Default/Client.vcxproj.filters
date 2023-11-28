@@ -121,6 +121,9 @@
     <Filter Include="02.GameObjects\07.Effects">
       <UniqueIdentifier>{640e04b0-e4fe-46a5-ac69-0f034b206a0c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\05.Kurama\Effects">
+      <UniqueIdentifier>{39896861-6f4c-4b83-b312-248fb9daa6b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -156,7 +159,7 @@
     <ClInclude Include="..\public\Level_Stage1.h">
       <Filter>01.Levels\03.Stage1</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Level_Stage2.h">
+    <ClInclude Include="..\public\Level_BossStage.h">
       <Filter>01.Levels\04.Stage2</Filter>
     </ClInclude>
     <ClInclude Include="..\public\BackGround.h">
@@ -240,6 +243,9 @@
     <ClInclude Include="..\public\Effect.h">
       <Filter>02.GameObjects\07.Effects</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\MiniBomb.h">
+      <Filter>02.GameObjects\05.Kurama\Effects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -276,7 +282,7 @@
     <ClCompile Include="..\private\Level_Stage1.cpp">
       <Filter>01.Levels\03.Stage1</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Level_Stage2.cpp">
+    <ClCompile Include="..\private\Level_BossStage.cpp">
       <Filter>01.Levels\04.Stage2</Filter>
     </ClCompile>
     <ClCompile Include="..\private\BackGround.cpp">
@@ -356,6 +362,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Effect.cpp">
       <Filter>02.GameObjects\07.Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MiniBomb.cpp">
+      <Filter>02.GameObjects\05.Kurama\Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

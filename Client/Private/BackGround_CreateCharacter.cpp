@@ -52,7 +52,7 @@ HRESULT CBackGround_CreateCharacter::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(2)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_Background)))
 	{
 		return E_FAIL;
 	}

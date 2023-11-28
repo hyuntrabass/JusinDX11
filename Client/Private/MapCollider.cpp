@@ -62,7 +62,7 @@ HRESULT CMapCollider::Render()
 
 	for (_uint i = 0; i < iNumMeshes; i++)
 	{
-		if (FAILED(m_pShaderCom->Begin(3)))
+		if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColor)))
 		{
 			return E_FAIL;
 		}
@@ -96,6 +96,12 @@ HRESULT CMapCollider::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::Proj))))
+	{
+		return E_FAIL;
+	}
+
+	_float4 vColor{ 0.3f, 0.8f, 0.3f, 1.f };
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _float4)))
 	{
 		return E_FAIL;
 	}

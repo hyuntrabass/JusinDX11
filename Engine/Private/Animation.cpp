@@ -26,7 +26,7 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	}
 }
 
-const _bool& CAnimation::IsFinished()
+const _bool& CAnimation::IsFinished() const
 {
 	return m_isFinished;
 }

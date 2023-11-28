@@ -56,7 +56,7 @@ HRESULT CSlotBase_Skill::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
 	{
 		return E_FAIL;
 	}
@@ -71,7 +71,7 @@ HRESULT CSlotBase_Skill::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
 	{
 		return E_FAIL;
 	}

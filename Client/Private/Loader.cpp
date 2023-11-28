@@ -99,7 +99,7 @@ HRESULT CLoader::Loading_LevelResources()
 	case Client::LEVEL_STAGE1:
 		hr = Load_Stage1();
 		break;
-	case Client::LEVEL_STAGE2:
+	case Client::LEVEL_BOSSSTAGE:
 		hr = Load_Stage2();
 		break;
 	}
@@ -140,6 +140,27 @@ HRESULT CLoader::Load_Logo()
 
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/SM_EFF_Sphere_02.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroundBreak_A"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/SM_EFF_GroundBreak_A.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroundBreak_B"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/SM_EFF_GroundBreak_B.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+	_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_FlyingSphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/SM_EFF_FlyingSphere.hyuntrastatmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Fireball"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/SM_EFF_D32_B_01.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Shader";
@@ -594,7 +615,7 @@ HRESULT CLoader::Load_Stage2()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STAGE2, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_BOSSSTAGE, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
 			{
 				return E_FAIL;
 			}
@@ -611,14 +632,14 @@ HRESULT CLoader::Load_Stage2()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STAGE2, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_BOSSSTAGE, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
 			{
 				return E_FAIL;
 			}
 		}
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STAGE2, TEXT("Prototype_Model_Kurama"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Kurama/Mesh/Kurama.hyuntraanimmesh", false, XMMatrixScaling(0.8f, 0.8f, 0.8f)))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_BOSSSTAGE, TEXT("Prototype_Model_Kurama"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Kurama/Mesh/Kurama.hyuntraanimmesh", false, XMMatrixScaling(0.8f, 0.8f, 0.8f)))))
 	{
 		return E_FAIL;
 	}
@@ -633,6 +654,11 @@ HRESULT CLoader::Load_Stage2()
 	m_strLoadingText = L"Stage2 : Loading Prototype";
 #pragma region Prototype
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Kurama"), CKurama::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_MiniBomb"), CMiniBomb::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

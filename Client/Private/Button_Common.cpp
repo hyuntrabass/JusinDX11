@@ -140,13 +140,13 @@ HRESULT CButton_Common::Render()
 	switch (m_iButtonType)
 	{
 	case 0:
-		if (FAILED(m_pShaderCom->Begin(1)))
+		if (FAILED(m_pShaderCom->Begin(VTPass_Button)))
 		{
 			return E_FAIL;
 		}
 		break;
 	case 1:
-		if (FAILED(m_pShaderCom->Begin(0)))
+		if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
 		{
 			return E_FAIL;
 		}
@@ -158,21 +158,6 @@ HRESULT CButton_Common::Render()
 		return E_FAIL;
 	}
 	m_pGameInstance->Render_Text(TEXT("Font_Malang"), m_strButtonText, _float2(m_fX, m_fY), m_fTextScale, m_Color);
-
-	//if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", 1)))
-	//{
-	//	return E_FAIL;
-	//}
-
-	//if (FAILED(m_pShaderCom->Begin(0)))
-	//{
-	//	return E_FAIL;
-	//}
-
-	//if (FAILED(m_pVIBufferCom->Render()))
-	//{
-	//	return E_FAIL;
-	//}
 
 	return S_OK;
 }

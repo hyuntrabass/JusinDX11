@@ -65,7 +65,12 @@ HRESULT CTerrain::Render()
 
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
-			iPassIndex = 3;
+			_float4 vFailColor{ 1.f, 0.f, 0.f, 1.f };
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vFailColor, sizeof _float4)))
+			{
+				return E_FAIL;
+			}
+			iPassIndex = StaticPass_SingleColorFx;
 		}
 
 		_float fNorTex = 0.f;
@@ -85,7 +90,7 @@ HRESULT CTerrain::Render()
 
 		if (m_strPrototypeTag == L"Prototype_Model_SM_ENV_KNFRST_WireMesh_B.mo")
 		{
-			iPassIndex = 1;
+			iPassIndex = StaticPass_BlendMeshes;
 		}
 
 		if (FAILED(m_pShaderCom->Begin(iPassIndex)))
@@ -143,7 +148,7 @@ HRESULT CTerrain::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_TUTORIAL, 0);
+	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), 0);
 	if (not pLightDesc)
 	{
 		return E_FAIL;

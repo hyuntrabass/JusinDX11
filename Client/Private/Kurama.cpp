@@ -22,15 +22,10 @@ HRESULT CKurama::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	ANIM_DESC Anim{};
-	Anim.iAnimIndex = Anim_etc_Appearance;
-	Anim.bSkipInterpolation = true;
-	m_pModelCom->Set_Animation(Anim);
-
 	m_vAppearPoints[0] = _float3(-25.85f, 33.3f, -48.77f);
 	m_vAppearPoints[1] = _float3(-17.4f, 73.f, -15.f);
 	m_vAppearPoints[2] = _float3(14.8f, 65.f, 29.6f);
-	m_vAppearPoints[3] = _float3(44.f,33.f, 18.5f);
+	m_vAppearPoints[3] = _float3(44.f, 33.f, 18.5f);
 	m_vAppearPoints[4] = _float3(108.f, 51.f, -9.9f);
 
 	_vector WarpPos = XMLoadFloat3(&m_vAppearPoints[m_iPosIndex]);
@@ -56,16 +51,17 @@ void CKurama::Tick(_float fTimeDelta)
 	m_pTransformCom->Gravity(fTimeDelta);
 
 	m_pCollider_Hit->Update(m_pTransformCom->Get_World_Matrix());
+	m_fTimer += fTimeDelta;
 }
 
 void CKurama::Late_Tick(_float fTimeDelta)
 {
 	m_pCollider_Hit->Intersect(reinterpret_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Collider_Attack"))));
 
-	//_vector vPos = ;
-	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f) and m_hasInitiated)
+	m_pModelCom->Play_Animation(fTimeDelta);
+	
+	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f) and m_eState != State_None)
 	{
-		m_pModelCom->Play_Animation(fTimeDelta);
 		m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
 	}
 }
@@ -88,7 +84,7 @@ HRESULT CKurama::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(0)))
+		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
 		{
 			return E_FAIL;
 		}
@@ -111,6 +107,12 @@ void CKurama::Set_Damage(_int iDamage)
 {
 	m_iHP -= iDamage;
 
+	if (m_eState != State_MiniBomb and
+		m_eState != State_ComboAttack)
+	{
+		m_eState = State_Beaten;
+	}
+
 	if (m_iPosIndex < 4)
 	{
 		m_iPosIndex++;
@@ -130,7 +132,7 @@ HRESULT CKurama::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STAGE2, TEXT("Prototype_Model_Kurama"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_BOSSSTAGE, TEXT("Prototype_Model_Kurama"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}
@@ -170,7 +172,7 @@ HRESULT CKurama::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_TUTORIAL, 0);
+	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_BOSSSTAGE, 0);
 	if (not pLightDesc)
 	{
 		return E_FAIL;
@@ -205,23 +207,38 @@ void CKurama::Artificial_Intelligence(_float fTimeDelta)
 	_vector vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 	_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
 	_vector vPlayerPosForLookAt = XMVectorSetY(vPlayerPos, vMyPos.m128_f32[1]);
+	_float fDistToPlayer = XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos));
+
 	m_pTransformCom->LookAt(vPlayerPosForLookAt);
-
-	if (not m_hasInitiated and
-		XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos)) < 30.f)
+	if (not m_hasInitiated)
 	{
-		m_hasInitiated = true;
-		m_eState = State_Initiation;
-	}
-
-	if (m_hasInitiated)
-	{
-		m_fTimer += fTimeDelta;
+		if (m_fTimer > 3.f)
+		{
+			m_hasInitiated = true;
+			m_eState = State_Initiation;
+			m_fTimer = {};
+		}
+		else
+		{
+			return;
+		}
 	}
 
 	if (m_iPosIndex < 4 and m_fTimer > 5.f and m_eState != State_Warp)
 	{
-		m_eState = State_Bomb;
+		m_eState = State_MiniBomb;
+		m_fTimer = {};
+	}
+	else if (m_fTimer > 5.f)
+	{
+		if (fDistToPlayer < 10.f)
+		{
+			m_eState = State_ComboAttack;
+		}
+		else
+		{
+			m_eState = State_MiniBomb;
+		}
 		m_fTimer = {};
 	}
 }
@@ -234,8 +251,17 @@ void CKurama::Init_State()
 		switch (m_eState)
 		{
 		case Client::CKurama::State_Initiation:
+			Anim.iAnimIndex = Anim_etc_Appearance;
+			Anim.bSkipInterpolation = true;
+
+			m_pModelCom->Set_Animation(Anim);
 			break;
 		case Client::CKurama::State_Idle:
+			Anim.iAnimIndex = Anim_Idle_Loop;
+			Anim.isLoop = true;
+			Anim.bSkipInterpolation = true;
+
+			m_pModelCom->Set_Animation(Anim);
 			break;
 		case Client::CKurama::State_Attack:
 			break;
@@ -246,7 +272,8 @@ void CKurama::Init_State()
 			Anim.fDurationRatio = 0.5f;
 			m_pModelCom->Set_Animation(Anim);
 			break;
-		case Client::CKurama::State_Bomb:
+		case Client::CKurama::State_MiniBomb:
+			m_fTimer = {};
 			break;
 		case Client::CKurama::State_Roar:
 			break;
@@ -279,15 +306,11 @@ void CKurama::TIck_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(Anim_Ninjutsu_Roar))
 		{
+			m_hasInitiated = true;
 			m_eState = State_Idle;
 		}
 		break;
 	case Client::CKurama::State_Idle:
-		Anim.iAnimIndex = Anim_Idle_Loop;
-		Anim.isLoop = true;
-		Anim.bSkipInterpolation = true;
-
-		m_pModelCom->Set_Animation(Anim);
 		break;
 	case Client::CKurama::State_Attack:
 		break;
@@ -316,16 +339,38 @@ void CKurama::TIck_State(_float fTimeDelta)
 		{
 			m_eState = State_Idle;
 		}
+
 		m_fTimer = {};
 		break;
-	case Client::CKurama::State_Bomb:
-		Anim.iAnimIndex = Anim_Ninjutsu_TailedBeastBomb;
+	case Client::CKurama::State_MiniBomb:
+		Anim.iAnimIndex = Anim_Ninjutsu_ConsecutiveTailedBeastBomb;
 		m_pModelCom->Set_Animation(Anim);
 
-		if (m_pModelCom->IsAnimationFinished(Anim_Ninjutsu_TailedBeastBomb))
+		if (m_fTimer * 24.f > 22.f and m_fTimer * 24.f < 23.f or
+			m_fTimer * 24.f > 32.f and m_fTimer * 24.f < 33.f or
+			m_fTimer * 24.f > 42.f and m_fTimer * 24.f < 43.f)
 		{
+			if (not m_hasShot)
+			{
+				ObjectInfo Info{};
+				XMStoreFloat4(&Info.vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_pBoneMatrix("LipMouthDownCenter")).r[3], m_pTransformCom->Get_World_Matrix()));
+				CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+				XMStoreFloat4(&Info.vLook, pPlayerTransform->Get_CenterPos());
+				m_pGameInstance->Add_Layer(LEVEL_BOSSSTAGE, TEXT("Layer_MiniBomb"), TEXT("Prototype_GameObject_MiniBomb"), &Info);
+				m_hasShot = true;
+			}
+		}
+		else
+		{
+			m_hasShot = false;
+		}
+
+		if (m_pModelCom->IsAnimationFinished(Anim_Ninjutsu_ConsecutiveTailedBeastBomb))
+		{
+			m_fTimer = {};
 			m_eState = State_Idle;
 		}
+
 		break;
 	case Client::CKurama::State_Roar:
 		break;
@@ -337,7 +382,7 @@ void CKurama::TIck_State(_float fTimeDelta)
 			m_fTimer = {};
 			m_pModelCom->Set_Animation(Anim);
 		}
-		
+
 		if (m_fTimer > 4.f and m_pModelCom->Get_CurrentAnimationIndex() == Anim_HandSeal_RecoveryChakra_Loop)
 		{
 			m_pTransformCom->Set_Position(m_vAppearPoints[m_iPosIndex]);

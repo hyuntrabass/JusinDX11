@@ -4,7 +4,7 @@
 #include "Level_CreateCharacter.h"
 #include "Level_Tutorial.h"
 #include "Level_Stage1.h"
-#include "Level_Stage2.h"
+#include "Level_BossStage.h"
 
 
 CLevel_Loading::CLevel_Loading(_dev pDevice, _context pContext)
@@ -64,7 +64,7 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 		case Client::LEVEL_STAGE1:
 			pLevel = CLevel_Stage1::Create(m_pDevice, m_pContext);
 			break;
-		case Client::LEVEL_STAGE2:
+		case Client::LEVEL_BOSSSTAGE:
 			pLevel = CLevel_Stage2::Create(m_pDevice, m_pContext);
 			break;
 		}

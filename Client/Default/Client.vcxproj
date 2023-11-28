@@ -179,7 +179,7 @@
     <ClInclude Include="..\public\Level_Loading.h" />
     <ClInclude Include="..\public\Level_Logo.h" />
     <ClInclude Include="..\public\Level_Stage1.h" />
-    <ClInclude Include="..\public\Level_Stage2.h" />
+    <ClInclude Include="..\public\Level_BossStage.h" />
     <ClInclude Include="..\public\Level_Tutorial.h" />
     <ClInclude Include="..\public\Loader.h" />
     <ClInclude Include="..\public\Loading_Icon.h" />
@@ -188,6 +188,7 @@
     <ClInclude Include="..\public\Logo.h" />
     <ClInclude Include="..\public\MainApp.h" />
     <ClInclude Include="..\public\MapCollider.h" />
+    <ClInclude Include="..\public\MiniBomb.h" />
     <ClInclude Include="..\public\Parts_Window.h" />
     <ClInclude Include="..\public\Player.h" />
     <ClInclude Include="..\public\Sandman.h" />
@@ -219,7 +220,7 @@
     <ClCompile Include="..\private\Level_Loading.cpp" />
     <ClCompile Include="..\private\Level_Logo.cpp" />
     <ClCompile Include="..\private\Level_Stage1.cpp" />
-    <ClCompile Include="..\private\Level_Stage2.cpp" />
+    <ClCompile Include="..\private\Level_BossStage.cpp" />
     <ClCompile Include="..\private\Level_Tutorial.cpp" />
     <ClCompile Include="..\private\Loader.cpp" />
     <ClCompile Include="..\private\Loading_Icon.cpp" />
@@ -227,6 +228,7 @@
     <ClCompile Include="..\private\Logo.cpp" />
     <ClCompile Include="..\private\MainApp.cpp" />
     <ClCompile Include="..\private\MapCollider.cpp" />
+    <ClCompile Include="..\private\MiniBomb.cpp" />
     <ClCompile Include="..\private\Parts_Window.cpp" />
     <ClCompile Include="..\private\Player.cpp" />
     <ClCompile Include="..\private\Sandman.cpp" />

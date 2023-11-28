@@ -61,6 +61,20 @@ const _uint& CModel::Get_CurrentAnimationIndex() const
 	return m_AnimDesc.iAnimIndex;
 }
 
+const _float44* CModel::Get_pBoneMatrix(const _char* pBoneName) const
+{
+	auto iter = find_if(m_Bones.begin(), m_Bones.end(), [&pBoneName](CBone* pBone) 
+	{
+		if (!strcmp(pBone->Get_BoneName(), pBoneName))
+		{
+			return true;
+		}
+		return false;
+	});
+
+	return (*iter)->Get_CombinedMatrix();
+}
+
 void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 {
 	if (m_AnimDesc.iAnimIndex != Animation_Desc.iAnimIndex or
