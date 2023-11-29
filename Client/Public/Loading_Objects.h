@@ -23,3 +23,4 @@
 #include "Kakashi.h"
 #include "Effect.h"
 #include "MiniBomb.h"
+#include "Kunai.h"

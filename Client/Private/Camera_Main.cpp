@@ -82,23 +82,23 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 	if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 	{
-		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * m_fMouseSensor);
+		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
 	}
 
 	if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
 	{
-		m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta * dwMouseMove * m_fMouseSensor);
+		m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
 	}
 
 
 	_float fRStickMove{};
 	if (fRStickMove = m_pGameInstance->Gamepad_RStick().x)
 	{
-		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * fRStickMove);
+		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * fRStickMove);
 	}
 	if (fRStickMove = m_pGameInstance->Gamepad_RStick().y)
 	{
-		m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta * -fRStickMove);
+		m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * -fRStickMove);
 	}
 
 	m_pTransformCom->Set_State(State::Pos, m_pPlayerTransform->Get_State(State::Pos) - m_pTransformCom->Get_State(State::Look) * 3.f + XMVectorSet(0.f, 2.f, 0.f, 0.f));

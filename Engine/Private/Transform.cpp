@@ -12,6 +12,11 @@ const _vector PxExVec3ToVector(PxExtendedVec3 Src, float w = 0.f)
 	return XMVectorSet(static_cast<float>(Src.x), static_cast<float>(Src.y), static_cast<float>(Src.z), w);
 }
 
+const PxVec3 PxExVec3ToPxVec3(PxExtendedVec3 Src)
+{
+	return PxVec3(static_cast<float>(Src.x), static_cast<float>(Src.y), static_cast<float>(Src.z));
+}
+
 const _vector PxVec3ToVector(PxVec3 Src, float w = 0.f)
 {
 	return XMVectorSet(Src.x, Src.y, Src.z, w);
@@ -63,6 +68,17 @@ _vector CTransform::Get_CenterPos() const
 	}
 
 	return PxExVec3ToVector(m_pController->getPosition(), 1.f);
+}
+
+const _bool CTransform::Is_OnGround() const
+{
+	if (not m_pScene)
+	{
+		return false;
+	}
+	PxRaycastBuffer HitBuffer{};
+
+	return m_pScene->raycast(PxExVec3ToPxVec3(m_pController->getFootPosition()), PxVec3(0.f, -1.f, 0.f), 0.2f, HitBuffer);
 }
 
 _matrix CTransform::Get_World_Matrix() const
@@ -223,7 +239,56 @@ void CTransform::Go_Straight(_float fTimeDelta)
 		vPos += XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
 		Set_State(State::Pos, vPos);
 	}
+}
 
+const _bool CTransform::Go_To(_fvector vTargetPos, _float fTimeDelta, _float fOffset)
+{
+	if (m_pController)
+	{
+		PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(vTargetPos - Get_State(State::Pos)) * m_fSpeedPerSec * fTimeDelta);
+		m_pController->move(Disp, 0.0001f, fTimeDelta, 0);
+
+		_vector vMovedPos = PxExVec3ToVector(m_pController->getFootPosition(), 1.f);
+		if (XMVectorGetX(XMVector3Length(vMovedPos - vTargetPos)) < fOffset)
+		{
+			return true;
+		}
+		Set_State(State::Pos, vMovedPos);
+	}
+	else
+	{
+		_vector vPos = Get_State(State::Pos);
+		_vector vDisp = vTargetPos - vPos;
+
+		vPos += XMVector3Normalize(vDisp) * m_fSpeedPerSec * fTimeDelta;
+
+		if (XMVectorGetX(XMVector3Length(vPos - vTargetPos)) < fOffset)
+		{
+			return true;
+		}
+		Set_State(State::Pos, vPos);
+	}
+
+	return false;
+}
+
+void CTransform::Go_To_Dir(_fvector vDir, _float fTimeDelta)
+{
+	if (m_pController)
+	{
+		PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(vDir) * m_fSpeedPerSec * fTimeDelta);
+		m_pController->move(Disp, 0.0001f, fTimeDelta, 0);
+
+		PxExtendedVec3 MovedPos = m_pController->getFootPosition();
+		Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
+	}
+	else
+	{
+		_vector vPos = Get_State(State::Pos);
+
+		vPos += XMVector3Normalize(vDir) * m_fSpeedPerSec * fTimeDelta;
+		Set_State(State::Pos, vPos);
+	}
 }
 
 void CTransform::Go_Backward(_float fTimeDelta)

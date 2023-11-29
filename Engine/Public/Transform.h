@@ -36,6 +36,7 @@ public:
 	const _bool& Is_Jumping() const;
 	PxController* Get_Controller() const;
 	_vector Get_CenterPos() const;
+	const _bool Is_OnGround() const;
 
 	void Set_Position(_float3 vPosition);
 	void Set_State(State eState, _fvector vState);
@@ -53,6 +54,8 @@ public:
 	void WallTest();
 
 	void Go_Straight(_float fTimeDelta);
+	const _bool Go_To(_fvector vTargetPos, _float fTimeDelta, _float fOffset = 1.f);
+	void Go_To_Dir(_fvector vDir, _float fTimeDelta);
 	void Go_Backward(_float fTimeDelta);
 	void Go_Left(_float fTimeDelta);
 	void Go_Right(_float fTimeDelta);

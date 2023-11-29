@@ -2,6 +2,7 @@
 #include "PhysX_Manager.h"
 #include "BodyPart.h"
 #include "UI_Manager.h"
+#include "Kunai.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -29,7 +30,7 @@ HRESULT CPlayer::Init(void* pArg)
 	m_Animation.iAnimIndex = etc_Appearance;
 	m_Animation.bSkipInterpolation = true;
 
-	m_pTransformCom->Set_Speed(5.f);
+	m_pTransformCom->Set_Speed(m_fWalkSpeed);
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_PLAYER);
 
@@ -62,9 +63,8 @@ void CPlayer::Tick(_float fTimeDelta)
 			m_isGameStarted = true;
 		}
 		Move(fTimeDelta);
-		Apply_State(fTimeDelta);
-
-		//m_pGameInstance->Update_PhysX(m_pTransformCom);
+		Init_State();
+		Tick_State(fTimeDelta);
 	}
 	else
 	{
@@ -79,6 +79,11 @@ void CPlayer::Tick(_float fTimeDelta)
 	for (size_t i = 0; i < PT_END; i++)
 	{
 		m_pBodyParts[i]->Tick(fTimeDelta);
+	}
+
+	if (m_pKunai)
+	{
+		m_pKunai->Tick(fTimeDelta);
 	}
 
 	_matrix ColliderOffset = XMMatrixTranslation(0.f, 0.8f, 0.f);
@@ -109,6 +114,11 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	{
 		m_pBodyParts[i]->Late_Tick(fTimeDelta);
 	}
+
+	if (m_pKunai)
+	{
+		m_pKunai->Late_Tick(fTimeDelta);
+	}
 }
 
 HRESULT CPlayer::Render()
@@ -119,6 +129,11 @@ HRESULT CPlayer::Render()
 		{
 			return E_FAIL;
 		}
+	}
+
+	if (m_pKunai)
+	{
+		m_pKunai->Render();
 	}
 
 #ifdef _DEBUG
@@ -193,7 +208,7 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				m_eState = Player_State::Run;
 			}
-			m_pTransformCom->Set_Speed(15.f);
+			m_pTransformCom->Set_Speed(m_fRunSpeed);
 		}
 		else
 		{
@@ -206,7 +221,7 @@ void CPlayer::Move(_float fTimeDelta)
 			{
 				m_eState = Player_State::Walk;
 			}
-			m_pTransformCom->Set_Speed(5.f);
+			m_pTransformCom->Set_Speed(m_fWalkSpeed);
 		}
 
 		_vector vLook = m_pTransformCom->Get_State(State::Look);
@@ -247,6 +262,11 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
 	{
+		m_eState = Player_State::Wire;
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_F))
+	{
 		vDirection += vCamLook;
 		m_pTransformCom->LookAt_Dir(vDirection);
 
@@ -263,7 +283,11 @@ void CPlayer::Move(_float fTimeDelta)
 		m_eState = Player_State::RasenShuriken;
 	}
 
-	m_pTransformCom->Gravity(fTimeDelta);
+	if (m_eState != Player_State::Wire and
+		m_eState != Player_State::RasenShuriken)
+	{
+		m_pTransformCom->Gravity(fTimeDelta);
+	}
 }
 
 void CPlayer::Customize(_float fTimeDelta)
@@ -342,58 +366,124 @@ void CPlayer::Customize(_float fTimeDelta)
 
 }
 
-void CPlayer::Apply_State(_float fTimeDelta)
+void CPlayer::Init_State()
+{
+	if (m_eState != m_ePrevState)
+	{
+		m_Animation = {};
+
+		switch (m_eState)
+		{
+		case Client::Player_State::Idle:
+			break;
+		case Client::Player_State::Walk:
+			m_Animation.iAnimIndex = Walk_Loop;
+			m_Animation.isLoop = true;
+			break;
+		case Client::Player_State::Walk_End:
+			m_Animation.iAnimIndex = Walk_End;
+			m_Animation.isLoop = false;
+			break;
+		case Client::Player_State::Run:
+			m_Animation.iAnimIndex = Run_Loop;
+			m_Animation.isLoop = true;
+			break;
+		case Client::Player_State::Run_End:
+			m_Animation.iAnimIndex = Run_End;
+			m_Animation.isLoop = false;
+			m_Animation.bSkipInterpolation = true;
+			break;
+		case Client::Player_State::Jump:
+			m_Animation.iAnimIndex = Jump_Vertical;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 1.8f;
+			break;
+		case Client::Player_State::Jump_Front:
+			m_Animation.iAnimIndex = Jump_Front;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 1.8f;
+			break;
+		case Client::Player_State::DoubleJump:
+			m_Animation.iAnimIndex = DoubleJump;
+			m_Animation.isLoop = false;
+			m_Animation.fAnimSpeedRatio = 1.8f;
+			m_Animation.bSkipInterpolation = true;
+			break;
+		case Client::Player_State::Land:
+			m_Animation.iAnimIndex = Land;
+			m_Animation.isLoop = false;
+			m_Animation.bSkipInterpolation = true;
+			break;
+		case Client::Player_State::Dash:
+			break;
+		case Client::Player_State::Wire:
+			m_Animation.iAnimIndex = WireJump_Ready;
+			m_Animation.fDurationRatio = 0.03f;
+			//m_Animation.fAnimSpeedRatio = 0.2f;
+			m_pGameInstance->Set_TimeRatio(0.1f);
+			break;
+		case Client::Player_State::Beaten:
+			break;
+		case Client::Player_State::Attack:
+			break;
+		case Client::Player_State::RasenShuriken:
+			m_Animation.iAnimIndex = Ninjutsu_TrueRasenShuriken;
+			break;
+		}
+
+		m_ePrevState = m_eState;
+	}
+}
+
+void CPlayer::Tick_State(_float fTimeDelta)
 {
 	switch (m_eState)
 	{
 	case Client::Player_State::Idle:
 		m_Animation = {};
-		m_Animation.iAnimIndex = Idle_Loop;
-		m_Animation.isLoop = true;
+		if (m_pTransformCom->Is_OnGround())
+		{
+			m_Animation.iAnimIndex = Idle_Loop;
+			m_Animation.isLoop = true;
+		}
+		else
+		{
+			m_Animation.iAnimIndex = Fall_Vertical_Loop;
+			m_Animation.isLoop = true;
+		}
 		break;
 	case Client::Player_State::Walk:
-		m_Animation = {};
-		m_Animation.iAnimIndex = Walk_Loop;
-		m_Animation.isLoop = true;
-
 		m_eState = Player_State::Walk_End;
+
+		if (not m_pTransformCom->Is_OnGround())
+		{
+			m_eState = Player_State::Idle;
+		}
 		break;
 	case Client::Player_State::Walk_End:
-		m_Animation = {};
-		m_Animation.iAnimIndex = Walk_End;
-		m_Animation.isLoop = false;
-
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Walk_End))
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Walk_End) or
+			not m_pTransformCom->Is_OnGround())
 		{
 			m_eState = Player_State::Idle;
 		}
 		break;
 	case Client::Player_State::Run:
-		m_Animation = {};
-		m_Animation.iAnimIndex = Run_Loop;
-		m_Animation.isLoop = true;
-
 		m_eState = Player_State::Run_End;
+
+		if (not m_pTransformCom->Is_OnGround())
+		{
+			m_eState = Player_State::Idle;
+		}
 		break;
 	case Client::Player_State::Run_End:
-		m_Animation = {};
-		m_Animation.iAnimIndex = Run_End;
-		m_Animation.isLoop = false;
-		m_Animation.bSkipInterpolation = true;
-
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Run_End))
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Run_End) or
+			not m_pTransformCom->Is_OnGround())
 		{
 			m_eState = Player_State::Idle;
 		}
 		break;
 	case Client::Player_State::Jump:
-		m_Animation = {};
-		m_Animation.iAnimIndex = Jump_Vertical;
-		m_Animation.isLoop = false;
-		m_Animation.fAnimSpeedRatio = 1.8f;
-
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Vertical) or
-			m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Fall_Vertical_Loop)
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Vertical))
 		{
 			m_Animation = {};
 			m_Animation.iAnimIndex = Fall_Vertical_Loop;
@@ -405,36 +495,23 @@ void CPlayer::Apply_State(_float fTimeDelta)
 		}
 		break;
 	case Client::Player_State::Jump_Front:
-		m_Animation = {};
-		m_Animation.iAnimIndex = Jump_Front;
-		m_Animation.isLoop = false;
-		m_Animation.fAnimSpeedRatio = 1.8f;
-
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Front) or
-			m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Fall_Front_Loop)
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Front))
 		{
 			m_Animation = {};
 			m_Animation.iAnimIndex = Fall_Front_Loop;
 			m_Animation.isLoop = true;
 		}
-		if (not m_pTransformCom->Is_Jumping())
+		if (m_pTransformCom->Is_OnGround())
 		{
 			m_eState = Player_State::Land;
 		}
 		break;
 	case Client::Player_State::DoubleJump:
-		m_Animation = {};
-		m_Animation.iAnimIndex = DoubleJump;
-		m_Animation.isLoop = false;
-		m_Animation.fAnimSpeedRatio = 1.8f;
-		m_Animation.bSkipInterpolation = true;
-
 		if (not m_hasDoubleJumped)
 		{
 			m_hasDoubleJumped = true;
 		}
-		else if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(DoubleJump) or
-				 m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Fall_Front_Loop)
+		else if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(DoubleJump))
 		{
 			m_Animation = {};
 			m_Animation.iAnimIndex = Fall_Front_Loop;
@@ -448,15 +525,81 @@ void CPlayer::Apply_State(_float fTimeDelta)
 		}
 		break;
 	case Client::Player_State::Land:
-		m_Animation = {};
-		m_Animation.iAnimIndex = Land;
-		m_Animation.isLoop = false;
-		m_Animation.bSkipInterpolation = true;
-
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Land))
 		{
 			m_eState = Player_State::Idle;
 		}
+		break;
+	case Client::Player_State::Dash:
+		break;
+	case Client::Player_State::Wire:
+		m_hasDoubleJumped = false;
+
+		{
+			ObjectInfo Info{};
+			_float3 vOriginPos{};
+			_float3 vDir{ reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()) };
+			XMStoreFloat3(&vOriginPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
+			Info.vPos = _float4(vOriginPos.x, vOriginPos.y, vOriginPos.z, 1.f);
+
+			m_pTransformCom->LookAt_Dir(XMLoadFloat3(&vDir));
+
+			if (/*m_pBodyParts[PT_HEAD]->IsAnimationFinished(WireJump_Ready) or */(m_pGameInstance->Key_Up(DIK_LCONTROL, InputChannel::GamePlay) and not m_pKunai))
+			{
+				if (m_pGameInstance->Raycast(vOriginPos, vDir, 30.f, &m_vWireTargetPos))
+				{
+					Info.vLook = _float4(m_vWireTargetPos.x, m_vWireTargetPos.y, m_vWireTargetPos.z, 1.f);
+					Info.strPrototypeTag = TEXT("Success!");
+
+					m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&m_vWireTargetPos), 1.f));
+				}
+				else
+				{
+					XMStoreFloat4(&Info.vLook, (XMLoadFloat3(&vOriginPos) + XMLoadFloat3(&vDir)));
+					Info.vLook.w = 1.f;
+				}
+
+				m_pKunai = dynamic_cast<CKunai*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Kunai"), &Info));
+
+				m_Animation.fDurationRatio = 1.f;
+				m_Animation.fAnimSpeedRatio = 1.5f;
+				m_pGameInstance->Set_TimeRatio(1.f);
+			}
+			else if (m_pKunai)
+			{
+				if (m_pKunai->HasStoppe())
+				{
+					if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() != Aerial_Dash_Loop)
+					{
+						m_Animation = {};
+						m_Animation.iAnimIndex = Aerial_Dash_Start;
+						m_Animation.fAnimSpeedRatio = 1.8f;
+					}
+
+					if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Aerial_Dash_Start))
+					{
+						m_Animation = {};
+						m_Animation.iAnimIndex = Aerial_Dash_Loop;
+						m_Animation.isLoop = true;
+					}
+
+					m_pTransformCom->Set_Speed(m_fRunSpeed);
+					_bool hasArrived = m_pTransformCom->Go_To(XMVectorSetW(XMLoadFloat3(&m_vWireTargetPos), 1.f), fTimeDelta, 1.f);
+
+					if (hasArrived)
+					{
+						Safe_Release(m_pKunai);
+						m_eState = Player_State::Idle;
+					}
+				}
+				else if (m_pKunai->isDead())
+				{
+					Safe_Release(m_pKunai);
+					m_eState = Player_State::Idle;
+				}
+			}
+		}
+
 		break;
 	case Client::Player_State::Beaten:
 		break;
@@ -471,7 +614,6 @@ void CPlayer::Apply_State(_float fTimeDelta)
 				}
 				m_Animation = {};
 				m_Animation.iAnimIndex = m_iAttMotion++;
-				m_Animation.isLoop = false;
 				m_Animation.fAnimSpeedRatio = 1.3f;
 
 				m_fAttTimer = 0.f;
@@ -494,7 +636,10 @@ void CPlayer::Apply_State(_float fTimeDelta)
 		}
 		break;
 	case Client::Player_State::RasenShuriken:
-		
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(m_Animation.iAnimIndex))
+		{
+			m_eState = Player_State::Idle;
+		}
 		break;
 	}
 }
@@ -612,6 +757,8 @@ void CPlayer::Free()
 #ifdef _DEBUG
 	Safe_Release(m_pRendererCom);
 #endif // _DEBUG
+
+	Safe_Release(m_pKunai);
 
 	Safe_Release(m_pCollider_Att);
 	Safe_Release(m_pCollider_Hit);

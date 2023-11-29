@@ -33,6 +33,8 @@ enum class Player_State
 	Jump_Front,
 	DoubleJump,
 	Land,
+	Dash,
+	Wire,
 	Beaten,
 	Attack,
 	RasenShuriken,
@@ -185,10 +187,14 @@ public:
 
 private:
 	Player_State m_eState{};
+	Player_State m_ePrevState{};
 	ANIM_DESC m_Animation{};
 
 	class CBodyPart* m_pBodyParts[PT_END]{};
 	_uint m_iPartNum[PT_END]{};
+
+	const _float m_fRunSpeed{15.f};
+	const _float m_fWalkSpeed{5.f};
 
 	_float m_fInterpolationRatio{};
 	_bool m_isInterpolating{};
@@ -202,6 +208,9 @@ private:
 	_float m_fAttTimer{};
 	_bool m_bAttacked{};
 
+	_float3 m_vWireTargetPos{};
+	class CKunai* m_pKunai { nullptr };
+
 	CCollider* m_pCollider_Att{ nullptr };
 	CCollider* m_pCollider_Hit{ nullptr };
 #ifdef _DEBUG
@@ -212,7 +221,8 @@ private:
 private:
 	void Move(_float fTimeDelta);
 	void Customize(_float fTimeDelta);
-	void Apply_State(_float fTimeDelta);
+	void Init_State();
+	void Tick_State(_float fTimeDelta);
 
 private:
 	HRESULT Ready_Parts();

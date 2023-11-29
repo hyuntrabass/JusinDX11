@@ -88,7 +88,11 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		{
 			m_isInterpolating = false;
 		}
-		m_fCurrentAnimPos += m_fTickPerSec * fTimeDelta;
+
+		if (not m_isFinished)
+		{
+			m_fCurrentAnimPos += m_fTickPerSec * fTimeDelta;
+		}
 
 		if (m_fCurrentAnimPos >= m_fDuration * fDurationRatio)
 		{
@@ -107,9 +111,12 @@ void CAnimation::Update_TransformationMatrix(const vector<class CBone*>& Bones, 
 		}
 	}
 
-	for (size_t i = 0; i < m_iNumChannels; i++)
+	if (not m_isFinished)
 	{
-		m_Channels[i]->Update_TransformationMatrix(Bones, m_fCurrentAnimPos, isAnimChanged, fInterpolationTime);
+		for (size_t i = 0; i < m_iNumChannels; i++)
+		{
+			m_Channels[i]->Update_TransformationMatrix(Bones, m_fCurrentAnimPos, isAnimChanged, fInterpolationTime);
+		}
 	}
 }
 

@@ -67,11 +67,13 @@ void CMainApp::Tick(_float fTimeDelta)
 		return;
 	}
 
-	m_fTimeAcc += fTimeDelta;
+	_float fFinalTimeDelta = fTimeDelta * m_pGameInstance->Get_TimeRatio();
 
-	CUI_Manager::Get_Instance()->Tick(fTimeDelta);
-	m_pGameInstance->Tick_Engine(fTimeDelta);
-	CUI_Manager::Get_Instance()->Late_Tick(fTimeDelta);
+	m_fTimeAcc += fFinalTimeDelta;
+
+	CUI_Manager::Get_Instance()->Tick(fFinalTimeDelta);
+	m_pGameInstance->Tick_Engine(fFinalTimeDelta);
+	CUI_Manager::Get_Instance()->Late_Tick(fFinalTimeDelta);
 }
 
 HRESULT CMainApp::Render()

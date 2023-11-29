@@ -38,6 +38,8 @@ public:
 	void Apply_PhysX(class CTransform* pTransform);
 	void Update_PhysX(class CTransform* pTransform);
 	PxRigidStatic* Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
+	_bool Raycast(_float3 vOrigin, _float3 vDir, _float fDist, _float3* pCollidedPos);
+
 private:
 	_dev m_pDevice{ nullptr };
 	_context m_pContext{ nullptr };

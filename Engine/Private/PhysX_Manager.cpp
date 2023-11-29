@@ -344,6 +344,22 @@ PxRigidStatic* CPhysX_Manager::Cook_StaticMesh(_uint iNumVertices, void* pVertic
 	return pActor;
 }
 
+_bool CPhysX_Manager::Raycast(_float3 vOrigin, _float3 vDir, _float fDist, _float3* pCollidedPos)
+{
+	PxRaycastBuffer Buffer{};
+
+	if (m_pScene->raycast(PxVec3(vOrigin.x, vOrigin.y, vOrigin.z), PxVec3(vDir.x, vDir.y, vDir.z), fDist, Buffer))
+	{
+		pCollidedPos->x = Buffer.block.position.x;
+		pCollidedPos->y = Buffer.block.position.y;
+		pCollidedPos->z = Buffer.block.position.z;
+
+		return true;
+	}
+
+	return false;
+}
+
 CPhysX_Manager* CPhysX_Manager::Create(_dev pDevice, _context pContext)
 {
 	CPhysX_Manager* pInstance = new CPhysX_Manager(pDevice, pContext);

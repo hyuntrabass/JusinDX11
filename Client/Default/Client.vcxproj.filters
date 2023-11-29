@@ -124,6 +124,9 @@
     <Filter Include="02.GameObjects\05.Kurama\Effects">
       <UniqueIdentifier>{39896861-6f4c-4b83-b312-248fb9daa6b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player\Projectile">
+      <UniqueIdentifier>{bb8f7c06-5291-49b4-b034-b639d8229b76}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -246,6 +249,9 @@
     <ClInclude Include="..\public\MiniBomb.h">
       <Filter>02.GameObjects\05.Kurama\Effects</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Kunai.h">
+      <Filter>02.GameObjects\03.Player\Projectile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -365,6 +371,9 @@
     </ClCompile>
     <ClCompile Include="..\private\MiniBomb.cpp">
       <Filter>02.GameObjects\05.Kurama\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Kunai.cpp">
+      <Filter>02.GameObjects\03.Player\Projectile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

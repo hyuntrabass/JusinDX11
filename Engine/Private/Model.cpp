@@ -72,6 +72,12 @@ const _float44* CModel::Get_pBoneMatrix(const _char* pBoneName) const
 		return false;
 	});
 
+	if (iter == m_Bones.end())
+	{
+		MSG_BOX("Can't Find Bone");
+		return nullptr;
+	}
+
 	return (*iter)->Get_CombinedMatrix();
 }
 

@@ -140,27 +140,33 @@ HRESULT CLoader::Load_Logo()
 
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/SM_EFF_Sphere_02.mo.hyuntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_Sphere_02.mo.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroundBreak_A"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/SM_EFF_GroundBreak_A.mo.hyuntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroundBreak_A"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_GroundBreak_A.mo.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroundBreak_B"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/SM_EFF_GroundBreak_B.mo.hyuntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_GroundBreak_B"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_GroundBreak_B.mo.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
 	_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.f));
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_FlyingSphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/SM_EFF_FlyingSphere.hyuntrastatmesh", false, Pivot))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_FlyingSphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_FlyingSphere.hyuntrastatmesh", false, Pivot))))
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Fireball"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/SM_EFF_D32_B_01.mo.hyuntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Fireball"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_D32_B_01.mo.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Kunai"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_WEP_Kunai.mo.hyuntrastatmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Shader";
@@ -523,6 +529,11 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Effect"), CEffect::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Kunai"), CKunai::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

@@ -22,6 +22,7 @@ public:
 public:
 	_bool IsAnimationFinished(_uint iAnimIndex);
 	_uint Get_CurrentAnimationIndex();
+	const _float44* Get_BoneMatrix(const _char* pBoneName);
 
 	void Set_ModelIndex(_uint iIndex);
 

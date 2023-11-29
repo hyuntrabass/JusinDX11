@@ -107,6 +107,7 @@ public: // PhysX
 	void Apply_PhysX(class CTransform* pTransform);
 	void Update_PhysX(class CTransform* pTransform);
 	PxRigidStatic* Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
+	_bool Raycast(_float3 vOrigin, _float3 vDir, _float fDist, _float3* pCollidedPos);
 	void PhysXTick(_float fTimeDelta);
 #ifdef _DEBUG
 	HRESULT Render_PhysX();
@@ -115,9 +116,11 @@ public: // PhysX
 public: // Get_Set
 	const _uint& Get_CameraModeIndex() const;
 	const _uint& Get_CurrentLevelIndex() const;
+	const _float& Get_TimeRatio() const;
 
 	void Set_CameraModeIndex(const _uint& iIndex);
 	void Set_CurrentLevelIndex(const _uint& iIndex);
+	void Set_TimeRatio(const _float fRatio);
 
 private:
 	class CGraphic_Device* m_pGraphic_Device{ nullptr };
@@ -140,6 +143,7 @@ private:
 private:
 	_uint m_iCameraModeIndex{};
 	_uint m_iLevelIndex{};
+	_float m_fTimeRatio{ 1.f };
 
 public:
 	static void Release_Engine();

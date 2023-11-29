@@ -698,6 +698,16 @@ PxRigidStatic* CGameInstance::Cook_StaticMesh(_uint iNumVertices, void* pVertice
 	return m_pPhysX_Manager->Cook_StaticMesh(iNumVertices, pVertices, iNumIndices, pIndices);
 }
 
+_bool CGameInstance::Raycast(_float3 vOrigin, _float3 vDir, _float fDist, _float3* pCollidedPos)
+{
+	if (!m_pPhysX_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
+	}
+
+	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, pCollidedPos);
+}
+
 void CGameInstance::PhysXTick(_float fTimeDelta)
 {
 	if (!m_pPhysX_Manager)
@@ -731,6 +741,11 @@ const _uint& CGameInstance::Get_CurrentLevelIndex() const
 	return m_iLevelIndex;
 }
 
+const _float& CGameInstance::Get_TimeRatio() const
+{
+	return m_fTimeRatio;
+}
+
 void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
 {
 	m_iCameraModeIndex = iIndex;
@@ -739,6 +754,11 @@ void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
 void CGameInstance::Set_CurrentLevelIndex(const _uint& iIndex)
 {
 	m_iLevelIndex = iIndex;
+}
+
+void CGameInstance::Set_TimeRatio(const _float fRatio)
+{
+	m_fTimeRatio = fRatio;
 }
 
 void CGameInstance::Clear_Managers()

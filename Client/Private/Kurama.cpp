@@ -113,7 +113,7 @@ void CKurama::Set_Damage(_int iDamage)
 		m_eState = State_Beaten;
 	}
 
-	if (m_iPosIndex < 4)
+	if (m_eState != State_Warp and m_iPosIndex < 4)
 	{
 		m_iPosIndex++;
 		m_eState = State_Warp;

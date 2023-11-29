@@ -2,7 +2,7 @@
 #include "Client_Define.h"
 #include "GameObject.h"
 
-BEGIN(Engine)
+BEGIN(Client)
 
 class CMiniBomb final : public CGameObject
 {
