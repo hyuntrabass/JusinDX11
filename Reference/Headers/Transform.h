@@ -39,6 +39,9 @@ public:
 	const _bool Is_OnGround() const;
 
 	void Set_Position(_float3 vPosition);
+	void Set_FootPosition(_float3 vPosition);
+	void Set_FootPosition(PxVec3 vPosition);
+	void Set_UpDirection(_fvector vUp);
 	void Set_State(State eState, _fvector vState);
 	void Set_Scale(_float3 fScale);
 	void Set_Speed(_float fSpeed);
@@ -51,6 +54,7 @@ public:
 
 public:
 	void Gravity(_float fTimeDelta, _fvector vUpDir = XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	void Reset_Gravity();
 	void WallTest();
 
 	void Go_Straight(_float fTimeDelta);

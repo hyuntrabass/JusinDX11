@@ -139,6 +139,7 @@
     <ClCompile Include="..\private\VIBuffer_PhysX.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\private\VIBuffer_Terrain.cpp" />
+    <ClCompile Include="Engine_Function.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Animation.h" />

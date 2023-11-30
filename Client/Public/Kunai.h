@@ -1,10 +1,10 @@
 #pragma once
 #include "Client_Define.h"
-#include "GameObject.h"
+#include "BlendObject.h"
 
 BEGIN(Client)
 
-class CKunai final : public CGameObject
+class CKunai final : public CBlendObject
 {
 private:
 	CKunai(_dev pDevice, _context pContext);
@@ -25,11 +25,13 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
+	CModel* m_pEffectModelCom{ nullptr };
 	CCollider* m_pColliderCom{ nullptr };
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_Shader_Resources();
+	HRESULT Bind_Effect_Shader_Resources();
 
 private:
 	_float4 m_vTargetPos{};

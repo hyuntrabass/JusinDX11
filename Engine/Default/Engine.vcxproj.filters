@@ -300,6 +300,9 @@
     <ClCompile Include="..\private\RenderTarget_Manager.cpp">
       <Filter>01.Utility\11.RenderTargets\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="Engine_Function.cpp">
+      <Filter>99,Headers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">

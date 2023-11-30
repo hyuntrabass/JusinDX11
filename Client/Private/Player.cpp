@@ -148,48 +148,66 @@ HRESULT CPlayer::Render()
 void CPlayer::Move(_float fTimeDelta)
 {
 	_bool hasMoved{};
-	_vector vCamLook = XMLoadFloat4(&m_pGameInstance->Get_CameraLook());
-	vCamLook.m128_f32[1] = 0.f;
-	_vector vCamRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vCamLook);
+	_vector vForwardDir = XMLoadFloat4(&m_pGameInstance->Get_CameraLook());
+	vForwardDir.m128_f32[1] = 0.f;
+	_vector vRightDir = XMVector3Cross(m_pTransformCom->Get_State(State::Up), vForwardDir);
 	_vector vDirection{};
 
-	_float3 vPos{};
+	_float3 vFootPos{};
+	_float3 vRayOrigin{};
+	_float3 vLookDir{};
 	_float3 vDownDir{};
 
-	XMStoreFloat3(&vPos, m_pTransformCom->Get_State(State::Pos));
-	XMStoreFloat3(&vDownDir, m_pTransformCom->Get_State(State::Look) * -1.f);
+	XMStoreFloat3(&vFootPos, m_pTransformCom->Get_State(State::Pos));
+	XMStoreFloat3(&vRayOrigin, m_pTransformCom->Get_CenterPos() + XMVector3Normalize(m_pTransformCom->Get_State(State::Look)) * 0.36f);
+	XMStoreFloat3(&vLookDir, XMVector3Normalize(m_pTransformCom->Get_State(State::Look)));
+	XMStoreFloat3(&vDownDir, XMVector3Normalize(m_pTransformCom->Get_State(State::Up) * -1.f));
 	PxRaycastBuffer RaycastBuffer{};
 
-	//if (m_pGameInstance->Raycast(vPos, vDownDir, 0.2f, RaycastBuffer))
+	//if (not m_isOnWall and m_pGameInstance->Raycast(vRayOrigin, vLookDir, 1.f, RaycastBuffer))
 	//{
+	//	m_isOnWall = true;
 	//	m_pTransformCom->Get_Controller()->setUpDirection(RaycastBuffer.block.normal);
+	//	m_pTransformCom->Set_FootPosition(RaycastBuffer.block.position);
+	//	m_pTransformCom->LookAt_Dir(XMVector3Cross(m_pTransformCom->Get_State(State::Right), PxVec3ToVector(RaycastBuffer.block.normal)));
+	//}
+
+	//if (m_isOnWall)
+	//{
+	//	if (m_pGameInstance->Raycast(vFootPos, vDownDir, 1.f, RaycastBuffer))
+	//	{
+	//		m_pTransformCom->LookAt_Dir(XMVector3Cross(m_pTransformCom->Get_State(State::Right), PxVec3ToVector(RaycastBuffer.block.normal)));
+	//		m_pTransformCom->Get_Controller()->setUpDirection(RaycastBuffer.block.normal);
+	//	}
 	//}
 
 	if (m_pGameInstance->Key_Pressing(DIK_W))
 	{
-		//m_pTransformCom->Go_Straight(fTimeDelta);
-		vDirection += vCamLook;
+		vDirection += vForwardDir;
 		hasMoved = true;
 	}
 	else if (m_pGameInstance->Key_Pressing(DIK_S))
 	{
-		vDirection -= vCamLook;
+		vDirection -= vForwardDir;
 		hasMoved = true;
 	}
 
 	if (m_pGameInstance->Key_Pressing(DIK_D))
 	{
-		vDirection += vCamRight;
+		vDirection += vRightDir;
 		hasMoved = true;
 	}
 	else if (m_pGameInstance->Key_Pressing(DIK_A))
 	{
-		vDirection -= vCamRight;
+		vDirection -= vRightDir;
 		hasMoved = true;
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_SPACE) && m_eState != Player_State::DoubleJump)
 	{
+		m_isOnWall = false;
+		m_pTransformCom->Get_Controller()->setUpDirection(PxVec3(0.f, 1.f, 0.f));
+
 		if (m_eState == Player_State::Jump or
 			m_eState == Player_State::Jump_Front)
 		{
@@ -267,7 +285,10 @@ void CPlayer::Move(_float fTimeDelta)
 			m_fInterpolationRatio = 0.f;
 		}
 
-		m_pTransformCom->LookAt_Dir(vDirection);
+		//if (not m_isOnWall)
+		{
+			m_pTransformCom->LookAt_Dir(vDirection);
+		}
 	}
 
 
@@ -278,7 +299,7 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_F))
 	{
-		vDirection += vCamLook;
+		vDirection += vForwardDir;
 		m_pTransformCom->LookAt_Dir(vDirection);
 
 		if (m_fAttTimer > 0.8f)
@@ -294,10 +315,14 @@ void CPlayer::Move(_float fTimeDelta)
 		m_eState = Player_State::RasenShuriken;
 	}
 
-	if (m_eState != Player_State::Wire and
+	if (not (m_eState == Player_State::Wire and m_pKunai) and
 		m_eState != Player_State::RasenShuriken)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
+	}
+	else
+	{
+		m_pTransformCom->Reset_Gravity();
 	}
 }
 
@@ -383,6 +408,12 @@ void CPlayer::Init_State()
 	{
 		m_Animation = {};
 
+		if (m_ePrevState == Player_State::Wire)
+		{
+			m_pGameInstance->Set_TimeRatio(1.f);
+			m_pTransformCom->Set_UpDirection(XMVectorSet(0.f, 1.f, 0.f, 0.f));
+		}
+
 		switch (m_eState)
 		{
 		case Client::Player_State::Idle:
@@ -432,6 +463,10 @@ void CPlayer::Init_State()
 			m_Animation.fDurationRatio = 0.03f;
 			//m_Animation.fAnimSpeedRatio = 0.2f;
 			m_pGameInstance->Set_TimeRatio(0.1f);
+			if (m_pKunai)
+			{
+				Safe_Release(m_pKunai);
+			}
 			break;
 		case Client::Player_State::Beaten:
 			break;
@@ -512,7 +547,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			m_Animation.iAnimIndex = Fall_Front_Loop;
 			m_Animation.isLoop = true;
 		}
-		if (m_pTransformCom->Is_OnGround())
+		if (not m_pTransformCom->Is_Jumping())
 		{
 			m_eState = Player_State::Land;
 		}
@@ -553,7 +588,10 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			XMStoreFloat3(&vOriginPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
 			Info.vPos = _float4(vOriginPos.x, vOriginPos.y, vOriginPos.z, 1.f);
 
-			m_pTransformCom->LookAt_Dir(XMLoadFloat3(&vDir));
+			if (not m_isOnWall)
+			{
+				m_pTransformCom->LookAt_Dir(XMLoadFloat3(&vDir));
+			}
 
 			if (/*m_pBodyParts[PT_HEAD]->IsAnimationFinished(WireJump_Ready) or */(m_pGameInstance->Key_Up(DIK_LCONTROL, InputChannel::GamePlay) and not m_pKunai))
 			{

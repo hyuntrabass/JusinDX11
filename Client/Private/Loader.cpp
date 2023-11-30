@@ -22,16 +22,19 @@ _uint APIENTRY ThreadEntry(void* pArg)
 
 	if (FAILED(pLoader->Begin_Thread()))
 	{
+		CoUninitialize();
 		return FALSE;
 	}
 
 	if (FAILED(pLoader->Loading_LevelResources()))
 	{
+		CoUninitialize();
 		return FALSE;
 	}
 
 	if (FAILED(pLoader->End_Thread()))
 	{
+		CoUninitialize();
 		return FALSE;
 	}
 
@@ -141,6 +144,10 @@ HRESULT CLoader::Load_Logo()
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_Sphere_02.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Circle"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_Circle_01.mo.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}

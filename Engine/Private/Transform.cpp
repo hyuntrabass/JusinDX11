@@ -2,25 +2,6 @@
 #include "Shader.h"
 #include "GameInstance.h"
 
-const PxVec3 VectorToPxVec3(XMVECTOR vVector)
-{
-	return PxVec3(vVector.m128_f32[0], vVector.m128_f32[1], vVector.m128_f32[2]);
-}
-
-const _vector PxExVec3ToVector(PxExtendedVec3 Src, float w = 0.f)
-{
-	return XMVectorSet(static_cast<float>(Src.x), static_cast<float>(Src.y), static_cast<float>(Src.z), w);
-}
-
-const PxVec3 PxExVec3ToPxVec3(PxExtendedVec3 Src)
-{
-	return PxVec3(static_cast<float>(Src.x), static_cast<float>(Src.y), static_cast<float>(Src.z));
-}
-
-const _vector PxVec3ToVector(PxVec3 Src, float w = 0.f)
-{
-	return XMVectorSet(Src.x, Src.y, Src.z, w);
-}
 
 CTransform::CTransform(_dev pDevice, _context pContext)
 	: CComponent(pDevice, pContext)
@@ -78,7 +59,7 @@ const _bool CTransform::Is_OnGround() const
 	}
 	PxRaycastBuffer HitBuffer{};
 
-	return m_pScene->raycast(PxExVec3ToPxVec3(m_pController->getFootPosition()), PxVec3(0.f, -1.f, 0.f), 0.2f, HitBuffer);
+	return m_pScene->raycast(PxExVec3ToPxVec3(m_pController->getFootPosition()), PxVec3(0.f, -1.f, 0.f), 0.35f, HitBuffer);
 }
 
 _matrix CTransform::Get_World_Matrix() const
@@ -109,6 +90,39 @@ void CTransform::Set_Position(_float3 vPosition)
 	{
 		return;
 	}
+}
+
+void CTransform::Set_FootPosition(_float3 vPosition)
+{
+	if (m_pController)
+	{
+		PxExtendedVec3 NewPos{ static_cast<_double>(vPosition.x), static_cast<_double>(vPosition.y), static_cast<_double>(vPosition.z) };
+		m_pController->setFootPosition(NewPos);
+	}
+	else
+	{
+		return;
+	}
+}
+
+void CTransform::Set_FootPosition(PxVec3 vPosition)
+{
+	if (m_pController)
+	{
+		m_pController->setFootPosition(PxVec3ToPxExVec3(vPosition));
+	}
+}
+
+void CTransform::Set_UpDirection(_fvector vUp)
+{
+	_float3 vScale = Get_Scale();
+
+	_vector vRight = XMVector3Cross(vUp, Get_State(State::Look));
+	_vector vLook = XMVector3Cross(vRight, vUp);
+
+	Set_State(State::Right, XMVector3Normalize(vRight) * vScale.x);
+	Set_State(State::Up, XMVector3Normalize(vUp) * vScale.y);
+	Set_State(State::Look, XMVector3Normalize(vLook) * vScale.z);
 }
 
 void CTransform::Set_State(State eState, _fvector vState)
@@ -168,7 +182,7 @@ HRESULT CTransform::Init(void* pArg)
 void CTransform::Gravity(_float fTimeDelta, _fvector vUpDir)
 {
 	_float Gravity{ -19.81f };
-	PxVec3 UpDir = VectorToPxVec3(vUpDir);
+	PxVec3 UpDir = VectorToPxVec3(XMVector3Normalize(vUpDir));
 
 	//WallTest();
 
@@ -198,6 +212,11 @@ void CTransform::Gravity(_float fTimeDelta, _fvector vUpDir)
 	}
 	PxExtendedVec3 MovedPos = m_pController->getFootPosition();
 	Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
+}
+
+void CTransform::Reset_Gravity()
+{
+	m_fGravity = {};
 }
 
 void CTransform::WallTest()

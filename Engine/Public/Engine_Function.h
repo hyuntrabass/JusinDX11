@@ -1,6 +1,5 @@
 #pragma once
 
-
 namespace Engine
 {
 	// 이넘 클래스를 인덱스로 쓸 수 있게 uint로 캐스팅 해주는 함수
@@ -58,4 +57,9 @@ namespace Engine
 		}
 	}
 
+	const PxVec3 ENGINE_DLL VectorToPxVec3(FXMVECTOR vVector);
+	const XMVECTOR ENGINE_DLL PxExVec3ToVector(PxExtendedVec3 Src, float w = 0.f);
+	const PxVec3 ENGINE_DLL PxExVec3ToPxVec3(PxExtendedVec3 Src);
+	const XMVECTOR ENGINE_DLL PxVec3ToVector(PxVec3 Src, float w = 0.f);
+	const PxExtendedVec3 ENGINE_DLL PxVec3ToPxExVec3(PxVec3 Src);
 }

@@ -1,12 +1,12 @@
 #include "Kunai.h"
 
 CKunai::CKunai(_dev pDevice, _context pContext)
-	: CGameObject(pDevice, pContext)
+	: CBlendObject(pDevice, pContext)
 {
 }
 
 CKunai::CKunai(const CKunai& rhs)
-	: CGameObject(rhs)
+	: CBlendObject(rhs)
 {
 }
 
@@ -72,11 +72,26 @@ void CKunai::Tick(_float fTimeDelta)
 
 void CKunai::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	__super::Compute_CamDistance();
+
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
 }
 
 HRESULT CKunai::Render()
 {
+	if (FAILED(Bind_Effect_Shader_Resources()))
+	{
+		return E_FAIL;
+	}
+
+	_float4 vColor{ 0.f, 0.f, 1.f, 0.1f };
+	XMStoreFloat4(&vColor, Colors::CornflowerBlue);
+	m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4));
+
+	m_pShaderCom->Begin(StaticPass_SingleColorFx);
+
+	m_pEffectModelCom->Render(0);
+
 	if (FAILED(Bind_Shader_Resources()))
 	{
 		return E_FAIL;
@@ -119,6 +134,11 @@ HRESULT CKunai::Add_Components()
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Kunai"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Circle"), TEXT("Com_EffectModel"), reinterpret_cast<CComponent**>(&m_pEffectModelCom))))
 	{
 		return E_FAIL;
 	}
@@ -193,6 +213,38 @@ HRESULT CKunai::Bind_Shader_Resources()
 	return S_OK;
 }
 
+HRESULT CKunai::Bind_Effect_Shader_Resources()
+{
+
+	_vector vLook = XMVector3Normalize(XMVector3Cross(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()) - m_pTransformCom->Get_State(State::Pos), m_pGameInstance->Get_Transform_Inversed(D3DTS::View).r[0])) * 0.4f;
+	_vector vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook)) * 0.4f;
+	_vector vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight)) * 0.4f;
+	_vector vPos = m_pTransformCom->Get_State(State::Pos) + XMVector3Normalize(m_pTransformCom->Get_State(State::Pos) - XMLoadFloat4(&m_pGameInstance->Get_CameraPos())) * 0.2f;
+
+	_matrix vOffset(vRight, vUp, vLook, vPos);
+
+	_float44 Offset{};
+
+	XMStoreFloat4x4(&Offset, vOffset);
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", Offset)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::View))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::Proj))))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 CKunai* CKunai::Create(_dev pDevice, _context pContext)
 {
 	CKunai* pInstance = new CKunai(pDevice, pContext);
@@ -226,5 +278,6 @@ void CKunai::Free()
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pEffectModelCom);
 	Safe_Release(m_pColliderCom);
 }
