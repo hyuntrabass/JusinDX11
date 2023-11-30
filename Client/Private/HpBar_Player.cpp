@@ -41,7 +41,7 @@ void CHpBar_Player::Tick(_float fTimeDelta)
 
 void CHpBar_Player::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
 HRESULT CHpBar_Player::Render()

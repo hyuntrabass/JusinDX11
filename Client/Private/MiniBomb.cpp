@@ -60,7 +60,7 @@ void CMiniBomb::Tick(_float fTimeDelta)
 
 void CMiniBomb::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 }
 
 HRESULT CMiniBomb::Render()

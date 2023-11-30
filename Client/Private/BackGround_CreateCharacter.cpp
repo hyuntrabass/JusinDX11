@@ -42,7 +42,7 @@ void CBackGround_CreateCharacter::Tick(_float fTimeDelta)
 
 void CBackGround_CreateCharacter::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::Priority, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Priority, this);
 }
 
 HRESULT CBackGround_CreateCharacter::Render()

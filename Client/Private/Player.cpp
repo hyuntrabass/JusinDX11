@@ -107,7 +107,7 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		cout << "PlayerPos Z :" << Pos.m128_f32[2] << endl;
 		cout << endl;
 	}
-	m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 #endif // _DEBUG
 
 	for (size_t i = 0; i < PT_END; i++)
@@ -152,6 +152,18 @@ void CPlayer::Move(_float fTimeDelta)
 	vCamLook.m128_f32[1] = 0.f;
 	_vector vCamRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vCamLook);
 	_vector vDirection{};
+
+	_float3 vPos{};
+	_float3 vDownDir{};
+
+	XMStoreFloat3(&vPos, m_pTransformCom->Get_State(State::Pos));
+	XMStoreFloat3(&vDownDir, m_pTransformCom->Get_State(State::Look) * -1.f);
+	PxRaycastBuffer RaycastBuffer{};
+
+	//if (m_pGameInstance->Raycast(vPos, vDownDir, 0.2f, RaycastBuffer))
+	//{
+	//	m_pTransformCom->Get_Controller()->setUpDirection(RaycastBuffer.block.normal);
+	//}
 
 	if (m_pGameInstance->Key_Pressing(DIK_W))
 	{
@@ -224,10 +236,12 @@ void CPlayer::Move(_float fTimeDelta)
 			m_pTransformCom->Set_Speed(m_fWalkSpeed);
 		}
 
+		m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
+
 		_vector vLook = m_pTransformCom->Get_State(State::Look);
-		_vector vTest = vLook - vDirection;
 		_float fInterpolTime = 0.4f;
-		if (fabs((vTest).m128_f32[0]) > 0.05f or fabs((vTest).m128_f32[2]) > 0.05f)
+		//if (fabs((vLook - vDirection).m128_f32[0]) > 0.05f or fabs((vLook - vDirection).m128_f32[2]) > 0.05f)
+		if (m_fInterpolationRatio < fInterpolTime)
 		{
 			if (not m_isInterpolating)
 			{
@@ -235,15 +249,13 @@ void CPlayer::Move(_float fTimeDelta)
 				m_isInterpolating = true;
 			}
 
-			if (m_fInterpolationRatio < fInterpolTime)
-			{
-				m_fInterpolationRatio += fTimeDelta;
-			}
-			else
-			{
-				m_fInterpolationRatio = fInterpolTime;
-				m_isInterpolating = false;
-			}
+			m_fInterpolationRatio += fTimeDelta;
+
+			//else
+			//{
+			//	m_fInterpolationRatio = fInterpolTime;
+			//	m_isInterpolating = false;
+			//}
 
 			_float fRatio = m_fInterpolationRatio / fInterpolTime;
 
@@ -256,7 +268,6 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 
 		m_pTransformCom->LookAt_Dir(vDirection);
-		m_pTransformCom->Go_Straight(fTimeDelta);
 	}
 
 
@@ -546,8 +557,11 @@ void CPlayer::Tick_State(_float fTimeDelta)
 
 			if (/*m_pBodyParts[PT_HEAD]->IsAnimationFinished(WireJump_Ready) or */(m_pGameInstance->Key_Up(DIK_LCONTROL, InputChannel::GamePlay) and not m_pKunai))
 			{
-				if (m_pGameInstance->Raycast(vOriginPos, vDir, 30.f, &m_vWireTargetPos))
+				PxRaycastBuffer Buffer{};
+				if (m_pGameInstance->Raycast(vOriginPos, vDir, 30.f, Buffer))
 				{
+					m_vWireTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
+
 					Info.vLook = _float4(m_vWireTargetPos.x, m_vWireTargetPos.y, m_vWireTargetPos.z, 1.f);
 					Info.strPrototypeTag = TEXT("Success!");
 
@@ -569,7 +583,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			{
 				if (m_pKunai->HasStoppe())
 				{
-					if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() != Aerial_Dash_Loop)
+					if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == WireJump_Ready)
 					{
 						m_Animation = {};
 						m_Animation.iAnimIndex = Aerial_Dash_Start;

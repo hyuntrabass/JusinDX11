@@ -43,7 +43,7 @@ void CLoading_Screen::Tick(_float fTimeDelta)
 
 void CLoading_Screen::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::Priority, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Priority, this);
 }
 
 HRESULT CLoading_Screen::Render()

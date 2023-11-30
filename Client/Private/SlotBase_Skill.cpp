@@ -41,7 +41,7 @@ void CSlotBase_Skill::Tick(_float fTimeDelta)
 
 void CSlotBase_Skill::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
 HRESULT CSlotBase_Skill::Render()

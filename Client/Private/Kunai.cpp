@@ -72,7 +72,7 @@ void CKunai::Tick(_float fTimeDelta)
 
 void CKunai::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 }
 
 HRESULT CKunai::Render()

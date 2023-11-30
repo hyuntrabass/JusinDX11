@@ -44,7 +44,7 @@ void CLoading_Icon::Tick(_float fTimeDelta)
 
 void CLoading_Icon::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
 HRESULT CLoading_Icon::Render()

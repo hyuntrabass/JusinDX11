@@ -50,7 +50,7 @@ public:
 	HRESULT Init(void* pArg) override;
 
 public:
-	void Gravity(_float fTimeDelta);
+	void Gravity(_float fTimeDelta, _fvector vUpDir = XMVectorSet(0.f, 1.f, 0.f, 0.f));
 	void WallTest();
 
 	void Go_Straight(_float fTimeDelta);
@@ -79,12 +79,13 @@ private:
 	PxScene* m_pScene{ nullptr };
 	PxController* m_pController{ nullptr };
 	PxControllerCollisionFlags m_CollisionFlags{};
-	PxVec3 m_vUpDir{0.f, 1.f, 0.f};
 
 	_float m_fGravity{};
 
 	_bool m_isJumping{};
 	_float m_fJumpForce{};
+
+	_bool m_isOnWall{};
 
 	_float m_fSpeedPerSec{10.f};
 	_float m_fRotationPerSec{XMConvertToRadians(90.f)};

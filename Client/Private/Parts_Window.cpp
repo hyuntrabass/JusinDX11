@@ -41,7 +41,7 @@ void CParts_Window::Tick(_float fTimeDelta)
 
 void CParts_Window::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
 HRESULT CParts_Window::Render()

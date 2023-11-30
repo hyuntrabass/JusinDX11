@@ -65,7 +65,7 @@ void CLogo::Tick(_float fTimeDelta)
 
 void CLogo::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
 HRESULT CLogo::Render()

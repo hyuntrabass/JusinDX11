@@ -32,7 +32,7 @@ void CSky::Tick(_float fTimeDelta)
 void CSky::Late_Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
-	m_pRendererCom->Add_RenderGroup(RenderGroup::Priority, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Priority, this);
 }
 
 HRESULT CSky::Render()

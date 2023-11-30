@@ -208,6 +208,8 @@ private:
 	_float m_fAttTimer{};
 	_bool m_bAttacked{};
 
+	_bool m_isOnWall{};
+
 	_float3 m_vWireTargetPos{};
 	class CKunai* m_pKunai { nullptr };
 

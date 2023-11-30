@@ -128,7 +128,7 @@ void CSandman::Late_Tick(_float fTimeDelta)
 	{
 
 		m_pModelCom->Play_Animation(fTimeDelta);
-		m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 	}
 	else
 	{

@@ -50,7 +50,7 @@ void CSubTitle::Tick(_float fTimeDelta)
 
 void CSubTitle::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
 HRESULT CSubTitle::Render()

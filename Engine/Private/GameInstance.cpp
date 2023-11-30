@@ -8,6 +8,7 @@
 #include "Font_Manager.h"
 #include "Frustum.h"
 #include "Collision_Manager.h"
+#include "RenderTarget_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance);
 
@@ -72,7 +73,13 @@ HRESULT CGameInstance::Init_Engine(_uint iNumLevels, const GRAPHIC_DESC& Graphic
 	}
 
 	m_pCollision_Manager = CCollision_Manager::Create();
-	if (!m_pFrustum)
+	if (!m_pCollision_Manager)
+	{
+		return E_FAIL;
+	}
+
+	m_pRenderTarget_Manager = CRenderTarget_Manager::Create(*ppDevice, *ppContext);
+	if (!m_pRenderTarget_Manager)
 	{
 		return E_FAIL;
 	}
@@ -698,14 +705,14 @@ PxRigidStatic* CGameInstance::Cook_StaticMesh(_uint iNumVertices, void* pVertice
 	return m_pPhysX_Manager->Cook_StaticMesh(iNumVertices, pVertices, iNumIndices, pIndices);
 }
 
-_bool CGameInstance::Raycast(_float3 vOrigin, _float3 vDir, _float fDist, _float3* pCollidedPos)
+_bool CGameInstance::Raycast(_float3 vOrigin, _float3 vDir, _float fDist, PxRaycastBuffer& Buffer)
 {
 	if (!m_pPhysX_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
 	}
 
-	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, pCollidedPos);
+	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, Buffer);
 }
 
 void CGameInstance::PhysXTick(_float fTimeDelta)
@@ -730,6 +737,43 @@ HRESULT CGameInstance::Render_PhysX()
 	return S_OK;
 }
 #endif // _DEBUG
+
+HRESULT CGameInstance::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat)
+{
+	if (!m_pRenderTarget_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
+	}
+
+	return m_pRenderTarget_Manager->Add_RenderTarget(strTargetTag, iWidth, iHeight, ePixelFormat);
+}
+HRESULT CGameInstance::Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag)
+{
+	if (!m_pRenderTarget_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
+	}
+
+	return m_pRenderTarget_Manager->Add_MRT(strMRTTag, strTargetTag);
+}
+HRESULT CGameInstance::Begin_MRT(const wstring& strMRTTag)
+{
+	if (!m_pRenderTarget_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
+	}
+
+	return m_pRenderTarget_Manager->Begin_MRT(strMRTTag);
+}
+HRESULT CGameInstance::End_MRT()
+{
+	if (!m_pRenderTarget_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
+	}
+
+	return m_pRenderTarget_Manager->End_MRT();
+}
 
 const _uint& CGameInstance::Get_CameraModeIndex() const
 {
@@ -774,6 +818,7 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pCollision_Manager);
 	Safe_Release(m_pPhysX_Manager);
 	Safe_Release(m_pFrustum);
+	Safe_Release(m_pRenderTarget_Manager);
 }
 
 void CGameInstance::Release_Engine()

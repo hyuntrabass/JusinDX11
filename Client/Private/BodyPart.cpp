@@ -72,7 +72,7 @@ void CBodyPart::Late_Tick(_float fTimeDelta)
 
 	m_Worldmatrix = m_pParentTransform->Get_World_float4x4();
 
-	//m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+	//m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 }
 
 HRESULT CBodyPart::Render()

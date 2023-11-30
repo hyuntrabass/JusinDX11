@@ -3,15 +3,15 @@
 
 BEGIN(Engine)
 
-enum class RenderGroup
+enum RenderGroup
 {
-	Priority,
-	NonLight,
-	NonBlend,
-	Blend,
-	UI,
-	Cursor,
-	End
+	RG_Priority,
+	RG_NonLight,
+	RG_NonBlend,
+	RG_Blend,
+	RG_UI,
+	RG_Cursor,
+	RG_End
 };
 
 class ENGINE_DLL CRenderer final : public CComponent
@@ -30,7 +30,7 @@ public:
 	HRESULT Draw_RenderGroup();
 
 private:
-	list<class CGameObject*> m_RenderObject[ToIndex(RenderGroup::End)]{};
+	list<class CGameObject*> m_RenderObject[RG_End]{};
 
 public:
 	static CRenderer* Create(_dev pDevice, _context pContext);

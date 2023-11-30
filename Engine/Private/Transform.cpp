@@ -165,9 +165,10 @@ HRESULT CTransform::Init(void* pArg)
 	return S_OK;
 }
 
-void CTransform::Gravity(_float fTimeDelta)
+void CTransform::Gravity(_float fTimeDelta, _fvector vUpDir)
 {
 	_float Gravity{ -19.81f };
+	PxVec3 UpDir = VectorToPxVec3(vUpDir);
 
 	//WallTest();
 
@@ -183,7 +184,7 @@ void CTransform::Gravity(_float fTimeDelta)
 		m_fGravity += Gravity * fTimeDelta;
 	}
 
-	m_CollisionFlags = m_pController->move(m_vUpDir * m_fGravity * fTimeDelta, 0.0001f, fTimeDelta, 0);
+	m_CollisionFlags = m_pController->move(UpDir * m_fGravity * fTimeDelta, 0.0001f, fTimeDelta, 0);
 	//m_CollisionFlags = m_pController->move(PxVec3(0.f, m_fGravity, 0.f) * fTimeDelta, 0.0001f, fTimeDelta, 0);
 	if (m_CollisionFlags.isSet(PxControllerCollisionFlag::eCOLLISION_DOWN))
 	{
@@ -204,15 +205,16 @@ void CTransform::WallTest()
 	PxRaycastBuffer HitBuffer{};
 	PxVec3 vLook{ Get_State(State::Look).m128_f32[0], Get_State(State::Look).m128_f32[1], Get_State(State::Look).m128_f32[2] };
 	vLook = vLook.getNormalized();
-	PxVec3 vPos{ static_cast<_float>(m_pController->getPosition().x), static_cast<_float>(m_pController->getPosition().y), static_cast<_float>(m_pController->getPosition().z) };
+	PxVec3 vPos{ PxExVec3ToPxVec3(m_pController->getPosition()) };
 	vPos += vLook * 0.36f;
 	PxReal Dist = 1.f;
 
 	if (m_pScene->raycast(vPos, vLook, Dist, HitBuffer))
 	{
-		m_vUpDir = HitBuffer.block.normal;
-		m_pController->setUpDirection(m_vUpDir);
-		LookAt_Dir(XMVector3Cross(Get_State(State::Right), PxVec3ToVector(m_vUpDir)));
+		//m_vUpDir = HitBuffer.block.normal;
+		//m_pController->setUpDirection(m_vUpDir);
+		//LookAt_Dir(XMVector3Cross(Get_State(State::Right), PxVec3ToVector(m_vUpDir)));
+		//m_isOnWall = true;
 	}
 	else
 	{

@@ -94,11 +94,11 @@ void CDummy::Late_Tick(_float fTimeDelta)
 	if (m_isBlendObject)
 	{
 		__super::Compute_CamDistance();
-		m_pRendererCom->Add_RenderGroup(RenderGroup::Blend, this);
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
 	}
 	else
 	{
-		m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 	}
 }
 

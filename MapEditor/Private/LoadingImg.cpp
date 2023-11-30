@@ -50,7 +50,7 @@ void CLoadingImg::Tick(_float fTimeDelta)
 
 void CLoadingImg::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::Priority, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Priority, this);
 }
 
 HRESULT CLoadingImg::Render()

@@ -107,11 +107,17 @@ public: // PhysX
 	void Apply_PhysX(class CTransform* pTransform);
 	void Update_PhysX(class CTransform* pTransform);
 	PxRigidStatic* Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
-	_bool Raycast(_float3 vOrigin, _float3 vDir, _float fDist, _float3* pCollidedPos);
+	_bool Raycast(_float3 vOrigin, _float3 vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
 #ifdef _DEBUG
 	HRESULT Render_PhysX();
 #endif // _DEBUG
+
+public: // RenderTarget
+	HRESULT Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat);
+	HRESULT Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag);
+	HRESULT Begin_MRT(const wstring& strMRTTag);
+	HRESULT End_MRT();
 
 public: // Get_Set
 	const _uint& Get_CameraModeIndex() const;
@@ -135,6 +141,7 @@ private:
 	class CFont_Manager* m_pFont_Manager{ nullptr };
 	class CFrustum* m_pFrustum{ nullptr };
 	class CCollision_Manager* m_pCollision_Manager{ nullptr };
+	class CRenderTarget_Manager* m_pRenderTarget_Manager{ nullptr };
 
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };

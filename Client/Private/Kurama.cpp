@@ -62,7 +62,7 @@ void CKurama::Late_Tick(_float fTimeDelta)
 	
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f) and m_eState != State_None)
 	{
-		m_pRendererCom->Add_RenderGroup(RenderGroup::NonBlend, this);
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 	}
 }
 

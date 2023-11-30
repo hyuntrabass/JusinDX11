@@ -122,7 +122,7 @@ void CButton_Common::Tick(_float fTimeDelta)
 void CButton_Common::Late_Tick(_float fTimeDelta)
 {
 	m_isPushed = false;
-	m_pRendererCom->Add_RenderGroup(RenderGroup::UI, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
 HRESULT CButton_Common::Render()
