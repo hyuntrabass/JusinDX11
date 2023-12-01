@@ -5,12 +5,12 @@
 #include "Kunai.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
-	: CGameObject(pDevice, pContext)
+	: CBlendObject(pDevice, pContext)
 {
 }
 
 CPlayer::CPlayer(const CPlayer& rhs)
-	: CGameObject(rhs)
+	: CBlendObject(rhs)
 {
 }
 
@@ -107,8 +107,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		cout << "PlayerPos Z :" << Pos.m128_f32[2] << endl;
 		cout << endl;
 	}
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
 #endif // _DEBUG
+
+	__super::Compute_CamDistance();
 
 	for (size_t i = 0; i < PT_END; i++)
 	{
@@ -123,6 +125,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 HRESULT CPlayer::Render()
 {
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
+	{
+		return S_OK;
+	}
 	for (size_t i = 0; i < PT_END; i++)
 	{
 		if (FAILED(m_pBodyParts[i]->Render()))
@@ -208,8 +214,7 @@ void CPlayer::Move(_float fTimeDelta)
 		m_isOnWall = false;
 		m_pTransformCom->Get_Controller()->setUpDirection(PxVec3(0.f, 1.f, 0.f));
 
-		if (m_eState == Player_State::Jump or
-			m_eState == Player_State::Jump_Front)
+		if (m_hasJumped)
 		{
 			m_eState = Player_State::DoubleJump;
 		}
@@ -229,7 +234,8 @@ void CPlayer::Move(_float fTimeDelta)
 		//if (not m_pTransformCom->Is_Jumping())
 		if (m_pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
-			if (m_eState == Player_State::Idle or
+			if (m_pTransformCom->Is_OnGround() and
+				m_eState == Player_State::Idle or
 				m_eState == Player_State::Run or
 				m_eState == Player_State::Run_End or
 				m_eState == Player_State::Walk or
@@ -242,7 +248,8 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 		else
 		{
-			if (m_eState == Player_State::Idle or
+			if (m_pTransformCom->Is_OnGround() and
+				m_eState == Player_State::Idle or
 				m_eState == Player_State::Run or
 				m_eState == Player_State::Run_End or
 				m_eState == Player_State::Walk or
@@ -412,6 +419,7 @@ void CPlayer::Init_State()
 		{
 			m_pGameInstance->Set_TimeRatio(1.f);
 			m_pTransformCom->Set_UpDirection(XMVectorSet(0.f, 1.f, 0.f, 0.f));
+			Safe_Release(m_pKunai);
 		}
 
 		switch (m_eState)
@@ -421,6 +429,8 @@ void CPlayer::Init_State()
 		case Client::Player_State::Walk:
 			m_Animation.iAnimIndex = Walk_Loop;
 			m_Animation.isLoop = true;
+			
+			m_hasJumped = false;
 			break;
 		case Client::Player_State::Walk_End:
 			m_Animation.iAnimIndex = Walk_End;
@@ -429,6 +439,8 @@ void CPlayer::Init_State()
 		case Client::Player_State::Run:
 			m_Animation.iAnimIndex = Run_Loop;
 			m_Animation.isLoop = true;
+			
+			m_hasJumped = false;
 			break;
 		case Client::Player_State::Run_End:
 			m_Animation.iAnimIndex = Run_End;
@@ -439,11 +451,15 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Jump_Vertical;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.8f;
+			
+			m_hasJumped = true;
 			break;
 		case Client::Player_State::Jump_Front:
 			m_Animation.iAnimIndex = Jump_Front;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.8f;
+			
+			m_hasJumped = true;
 			break;
 		case Client::Player_State::DoubleJump:
 			m_Animation.iAnimIndex = DoubleJump;
@@ -463,10 +479,6 @@ void CPlayer::Init_State()
 			m_Animation.fDurationRatio = 0.03f;
 			//m_Animation.fAnimSpeedRatio = 0.2f;
 			m_pGameInstance->Set_TimeRatio(0.1f);
-			if (m_pKunai)
-			{
-				Safe_Release(m_pKunai);
-			}
 			break;
 		case Client::Player_State::Beaten:
 			break;
@@ -489,13 +501,22 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		m_Animation = {};
 		if (m_pTransformCom->Is_OnGround())
 		{
-			m_Animation.iAnimIndex = Idle_Loop;
-			m_Animation.isLoop = true;
+			if (m_hasJumped)
+			{
+				m_eState = Player_State::Land;
+			}
+			else
+			{
+				m_Animation.iAnimIndex = Idle_Loop;
+				m_Animation.isLoop = true;
+			}
 		}
 		else
 		{
 			m_Animation.iAnimIndex = Fall_Vertical_Loop;
 			m_Animation.isLoop = true;
+
+			m_hasJumped = true;
 		}
 		break;
 	case Client::Player_State::Walk:
@@ -511,6 +532,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			not m_pTransformCom->Is_OnGround())
 		{
 			m_eState = Player_State::Idle;
+			m_hasJumped = false;
 		}
 		break;
 	case Client::Player_State::Run:
@@ -526,6 +548,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			not m_pTransformCom->Is_OnGround())
 		{
 			m_eState = Player_State::Idle;
+			m_hasJumped = false;
 		}
 		break;
 	case Client::Player_State::Jump:
@@ -574,6 +597,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Land))
 		{
 			m_eState = Player_State::Idle;
+			m_hasJumped = false;
 		}
 		break;
 	case Client::Player_State::Dash:
@@ -587,11 +611,6 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			_float3 vDir{ reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()) };
 			XMStoreFloat3(&vOriginPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
 			Info.vPos = _float4(vOriginPos.x, vOriginPos.y, vOriginPos.z, 1.f);
-
-			if (not m_isOnWall)
-			{
-				m_pTransformCom->LookAt_Dir(XMLoadFloat3(&vDir));
-			}
 
 			if (/*m_pBodyParts[PT_HEAD]->IsAnimationFinished(WireJump_Ready) or */(m_pGameInstance->Key_Up(DIK_LCONTROL, InputChannel::GamePlay) and not m_pKunai))
 			{
@@ -650,6 +669,10 @@ void CPlayer::Tick_State(_float fTimeDelta)
 					m_eState = Player_State::Idle;
 				}
 			}
+			else
+			{
+				m_pTransformCom->LookAt_Dir(XMLoadFloat3(&vDir));
+			}
 		}
 
 		break;
@@ -660,12 +683,26 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		{
 			if (m_fAttTimer > 0.8f)
 			{
-				if (m_iAttMotion > Sasuke_Attack_TurnSlashingShoulder_Right)
-				{
-					m_iAttMotion = Sasuke_Attack_DashSlashing_Right;
-				}
 				m_Animation = {};
-				m_Animation.iAnimIndex = m_iAttMotion++;
+
+				if (m_pTransformCom->Is_OnGround())
+				{
+					if (m_iAttMotion > Sasuke_Attack_TurnSlashingShoulder_Right and
+						m_iAttMotion < Sasuke_Attack_DashSlashing_Right)
+					{
+						m_iAttMotion = Sasuke_Attack_DashSlashing_Right;
+					}
+					m_Animation.iAnimIndex = m_iAttMotion++;
+				}
+				else
+				{
+					if (m_iAttMotion > Sasuke_Attack_Aerial_TurnKick_Left)
+					{
+						m_iAttMotion = Sasuke_Attack_Aerial_SlashingHorizontally_Left;
+					}
+					m_Animation.iAnimIndex = m_iAttMotion++;
+				}
+
 				m_Animation.fAnimSpeedRatio = 1.3f;
 
 				m_fAttTimer = 0.f;

@@ -101,7 +101,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * -fRStickMove);
 	}
 
-	m_pTransformCom->Set_State(State::Pos, m_pPlayerTransform->Get_State(State::Pos) - m_pTransformCom->Get_State(State::Look) * 3.f + XMVectorSet(0.f, 2.f, 0.f, 0.f));
+	m_pTransformCom->Set_State(State::Pos, m_pPlayerTransform->Get_CenterPos() - m_pTransformCom->Get_State(State::Look) * 4.f + m_pTransformCom->Get_State(State::Up));
 
 	__super::Tick(fTimeDelta);
 }

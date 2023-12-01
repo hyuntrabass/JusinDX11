@@ -14,6 +14,11 @@ HRESULT CLevel_Stage1::Init()
 
 	pPlayerTransform->Set_Position(_float3(100.f, 45.f, -75.f));
 
+	if (FAILED(Ready_Light()))
+	{
+		MSG_BOX("Failed to Ready Lights");
+	}
+
 	if (FAILED(Ready_Map()))
 	{
 		MSG_BOX("Failed to Ready Map");
@@ -79,6 +84,19 @@ HRESULT CLevel_Stage1::Ready_Map()
 	}
 
 	return S_OK;
+}
+
+HRESULT CLevel_Stage1::Ready_Light()
+{
+	LIGHT_DESC LightDesc{};
+
+	LightDesc.eType = LIGHT_DESC::Directional;
+	LightDesc.vDirection = _float4(0.5f, -1.f, 0.5f, 0.f);
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.8f, 0.8f, 0.8f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+
+	return m_pGameInstance->Add_Light(LEVEL_STAGE1, LightDesc);
 }
 
 CLevel_Stage1* CLevel_Stage1::Create(_dev pDevice, _context pContext)

@@ -157,6 +157,9 @@
     <Filter Include="01.Utility\11.RenderTargets\Manager">
       <UniqueIdentifier>{2c1793a5-729f-4411-b36c-ffd31eeb31c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\03.Components\VIBuffer\Trail">
+      <UniqueIdentifier>{aa9d62f2-554c-4517-839c-3107b89a30e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -302,6 +305,9 @@
     </ClCompile>
     <ClCompile Include="Engine_Function.cpp">
       <Filter>99,Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\VIBuffer_Trail.cpp">
+      <Filter>01.Utility\03.Components\VIBuffer\Trail</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -457,6 +463,9 @@
     </ClInclude>
     <ClInclude Include="..\public\RenderTarget_Manager.h">
       <Filter>01.Utility\11.RenderTargets\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\VIBuffer_Trail.h">
+      <Filter>01.Utility\03.Components\VIBuffer\Trail</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -192,6 +192,7 @@
     <ClInclude Include="..\public\MiniBomb.h" />
     <ClInclude Include="..\public\Parts_Window.h" />
     <ClInclude Include="..\public\Player.h" />
+    <ClInclude Include="..\public\RasenShurikan.h" />
     <ClInclude Include="..\public\Sandman.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\SlotBase_Skill.h" />
@@ -233,6 +234,7 @@
     <ClCompile Include="..\private\MiniBomb.cpp" />
     <ClCompile Include="..\private\Parts_Window.cpp" />
     <ClCompile Include="..\private\Player.cpp" />
+    <ClCompile Include="..\private\RasenShurikan.cpp" />
     <ClCompile Include="..\private\Sandman.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\SlotBase_Skill.cpp" />
@@ -280,6 +282,10 @@
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Instancing.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Trail.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

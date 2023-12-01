@@ -206,10 +206,8 @@ void CKurama::Artificial_Intelligence(_float fTimeDelta)
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	_vector vPlayerPos = pPlayerTransform->Get_State(State::Pos);
 	_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
-	_vector vPlayerPosForLookAt = XMVectorSetY(vPlayerPos, vMyPos.m128_f32[1]);
 	_float fDistToPlayer = XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos));
 
-	m_pTransformCom->LookAt(vPlayerPosForLookAt);
 	if (not m_hasInitiated)
 	{
 		if (m_fTimer > 3.f)
@@ -294,6 +292,7 @@ void CKurama::Init_State()
 void CKurama::TIck_State(_float fTimeDelta)
 {
 	ANIM_DESC Anim{};
+	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 
 	switch (m_eState)
 	{
@@ -311,6 +310,8 @@ void CKurama::TIck_State(_float fTimeDelta)
 		}
 		break;
 	case Client::CKurama::State_Idle:
+		_vector vPlayerPosForLookAt = XMVectorSetY(pPlayerTransform->Get_State(State::Pos), m_pTransformCom->Get_State(State::Pos).m128_f32[1]);
+		m_pTransformCom->LookAt(vPlayerPosForLookAt);
 		break;
 	case Client::CKurama::State_Attack:
 		break;
@@ -352,9 +353,11 @@ void CKurama::TIck_State(_float fTimeDelta)
 		{
 			if (not m_hasShot)
 			{
+				_vector vPlayerPosForLookAt = XMVectorSetY(pPlayerTransform->Get_State(State::Pos), m_pTransformCom->Get_State(State::Pos).m128_f32[1]);
+				m_pTransformCom->LookAt(vPlayerPosForLookAt);
+
 				ObjectInfo Info{};
 				XMStoreFloat4(&Info.vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_pBoneMatrix("LipMouthDownCenter")).r[3], m_pTransformCom->Get_World_Matrix()));
-				CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 				XMStoreFloat4(&Info.vLook, pPlayerTransform->Get_CenterPos());
 				m_pGameInstance->Add_Layer(LEVEL_BOSSSTAGE, TEXT("Layer_MiniBomb"), TEXT("Prototype_GameObject_MiniBomb"), &Info);
 				m_hasShot = true;

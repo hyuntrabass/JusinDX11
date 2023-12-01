@@ -50,10 +50,11 @@ void CKunai::Tick(_float fTimeDelta)
 	if (m_bFail)
 	{
 		m_pTransformCom->Go_Straight(fTimeDelta);
+		//m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 
 		if (m_fLifeTimer > 0.7f)
 		{
-			m_isDead = true;
+			//m_isDead = true;
 		}
 
 		m_fLifeTimer += fTimeDelta;
@@ -72,6 +73,26 @@ void CKunai::Tick(_float fTimeDelta)
 
 void CKunai::Late_Tick(_float fTimeDelta)
 {
+	if (m_TrailPosList.size() >= 50)
+	{
+		m_TrailPosList.pop_back();
+	}
+	_float3 vPos{};
+	XMStoreFloat3(&vPos, m_pTransformCom->Get_State(State::Pos));
+	m_TrailPosList.push_front(vPos);
+	_float3 PosArray[50]{};
+	_uint iIndex{};
+	for (size_t i = 0; i < 50; i++)
+	{
+		PosArray[i] = m_TrailPosList.back();
+	}
+	for (auto& vPos : m_TrailPosList)
+	{
+		PosArray[iIndex++] = vPos;
+	}
+	
+	m_pTrailBufferCom->Update(fTimeDelta, PosArray);
+
 	__super::Compute_CamDistance();
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
@@ -79,18 +100,10 @@ void CKunai::Late_Tick(_float fTimeDelta)
 
 HRESULT CKunai::Render()
 {
-	if (FAILED(Bind_Effect_Shader_Resources()))
+	if (FAILED(Render_Effect()))
 	{
 		return E_FAIL;
 	}
-
-	_float4 vColor{ 0.f, 0.f, 1.f, 0.1f };
-	XMStoreFloat4(&vColor, Colors::CornflowerBlue);
-	m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4));
-
-	m_pShaderCom->Begin(StaticPass_SingleColorFx);
-
-	m_pEffectModelCom->Render(0);
 
 	if (FAILED(Bind_Shader_Resources()))
 	{
@@ -107,6 +120,11 @@ HRESULT CKunai::Render()
 		m_pShaderCom->Begin(StaticPass_Default);
 
 		m_pModelCom->Render(i);
+	}
+
+	if (FAILED(Render_Trail()))
+	{
+		return E_FAIL;
 	}
 
 #ifdef _DEBUG
@@ -139,6 +157,21 @@ HRESULT CKunai::Add_Components()
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Circle"), TEXT("Com_EffectModel"), reinterpret_cast<CComponent**>(&m_pEffectModelCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Sphere07"), TEXT("Com_EffectMask"), reinterpret_cast<CComponent**>(&m_pEffectTexture))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Trail"), TEXT("Com_TrailShader"), reinterpret_cast<CComponent**>(&m_pTrailShaderCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pTrailBufferCom))))
 	{
 		return E_FAIL;
 	}
@@ -213,12 +246,13 @@ HRESULT CKunai::Bind_Shader_Resources()
 	return S_OK;
 }
 
-HRESULT CKunai::Bind_Effect_Shader_Resources()
+HRESULT CKunai::Render_Effect()
 {
+	_float fScale = 0.6f;
 
-	_vector vLook = XMVector3Normalize(XMVector3Cross(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()) - m_pTransformCom->Get_State(State::Pos), m_pGameInstance->Get_Transform_Inversed(D3DTS::View).r[0])) * 0.4f;
-	_vector vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook)) * 0.4f;
-	_vector vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight)) * 0.4f;
+	_vector vLook = XMVector3Normalize(XMVector3Cross(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()) - m_pTransformCom->Get_State(State::Pos), m_pGameInstance->Get_Transform_Inversed(D3DTS::View).r[0])) * fScale;
+	_vector vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook)) * fScale;
+	_vector vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight)) * fScale;
 	_vector vPos = m_pTransformCom->Get_State(State::Pos) + XMVector3Normalize(m_pTransformCom->Get_State(State::Pos) - XMLoadFloat4(&m_pGameInstance->Get_CameraPos())) * 0.2f;
 
 	_matrix vOffset(vRight, vUp, vLook, vPos);
@@ -228,6 +262,11 @@ HRESULT CKunai::Bind_Effect_Shader_Resources()
 	XMStoreFloat4x4(&Offset, vOffset);
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", Offset)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pEffectTexture->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 	{
 		return E_FAIL;
 	}
@@ -242,6 +281,44 @@ HRESULT CKunai::Bind_Effect_Shader_Resources()
 		return E_FAIL;
 	}
 
+	_float4 vColor{ 0.2f, 0.2f, 1.f, 1.f };
+	//XMStoreFloat4(&vColor, Colors::CornflowerBlue);
+	m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4));
+
+	m_pShaderCom->Begin(StaticPass_MaskEffect);
+
+	m_pEffectModelCom->Render(0);
+
+	return S_OK;
+}
+
+HRESULT CKunai::Render_Trail()
+{
+	if (FAILED(m_pTrailShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::View))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTrailShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::Proj))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTrailShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTrailShaderCom->Begin(0)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pTrailBufferCom->Render()))
+	{
+		return E_FAIL;
+	}
+	
 	return S_OK;
 }
 
@@ -280,4 +357,7 @@ void CKunai::Free()
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pEffectModelCom);
 	Safe_Release(m_pColliderCom);
+	Safe_Release(m_pEffectTexture);
+	Safe_Release(m_pTrailShaderCom);
+	Safe_Release(m_pTrailBufferCom);
 }

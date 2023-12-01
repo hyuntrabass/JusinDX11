@@ -13,7 +13,7 @@ CVIBuffer_Instancing_Point::CVIBuffer_Instancing_Point(const CVIBuffer_Instancin
 HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 {
 	m_iNumVertexBuffers = 2;
-	m_iVertexStride = sizeof VTXPOSTEX;
+	m_iVertexStride = sizeof VTXPOINT;
 	m_iNumVertices = 1;
 
 	m_iNumInstances = iNumInstances;
@@ -37,11 +37,11 @@ HRESULT CVIBuffer_Instancing_Point::Init_Prototype(_uint iNumInstances)
 
 	ZeroMemory(&m_InitialData, sizeof m_InitialData);
 
-	VTXPOSTEX* pVertex = new VTXPOSTEX;
-	ZeroMemory(pVertex, sizeof(VTXPOSTEX) * m_iNumVertices);
+	VTXPOINT* pVertex = new VTXPOINT;
+	ZeroMemory(pVertex, sizeof(VTXPOINT) * m_iNumVertices);
 
 	pVertex->vPosition = _float3(0.f, 0.f, 0.f);
-	pVertex->vTexcoord = _float2(1.f, 1.f);
+	pVertex->vPSize = _float2(1.f, 1.f);
 
 	m_InitialData.pSysMem = pVertex;
 

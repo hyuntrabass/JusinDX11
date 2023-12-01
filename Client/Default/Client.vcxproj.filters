@@ -127,6 +127,12 @@
     <Filter Include="02.GameObjects\03.Player\Projectile">
       <UniqueIdentifier>{bb8f7c06-5291-49b4-b034-b639d8229b76}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player\Projectile\Kunai">
+      <UniqueIdentifier>{d9215233-9311-4ad8-93c2-9fc79be2e687}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\03.Player\Projectile\RasenShuri">
+      <UniqueIdentifier>{31093422-0873-4904-8e1b-19eb40beff09}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -250,7 +256,10 @@
       <Filter>02.GameObjects\05.Kurama\Effects</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Kunai.h">
-      <Filter>02.GameObjects\03.Player\Projectile</Filter>
+      <Filter>02.GameObjects\03.Player\Projectile\Kunai</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\RasenShurikan.h">
+      <Filter>02.GameObjects\03.Player\Projectile\RasenShuri</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -373,7 +382,10 @@
       <Filter>02.GameObjects\05.Kurama\Effects</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Kunai.cpp">
-      <Filter>02.GameObjects\03.Player\Projectile</Filter>
+      <Filter>02.GameObjects\03.Player\Projectile\Kunai</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\RasenShurikan.cpp">
+      <Filter>02.GameObjects\03.Player\Projectile\RasenShuri</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -393,6 +405,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Instancing.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Trail.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

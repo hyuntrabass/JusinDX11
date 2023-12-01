@@ -84,6 +84,7 @@ PS_OUT PS_Main(PS_IN Input)
     vector vNormal = (g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex + Input.vNor;
     
     float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
+    fShade = ceil(fShade * 2.f) / 2.f;
     
     vector vReflect = reflect(normalize(g_vLightDir), vNormal);
     vector vLook = Input.vWorldPos - g_vCamPos;

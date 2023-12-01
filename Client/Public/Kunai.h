@@ -27,11 +27,17 @@ private:
 	CModel* m_pModelCom{ nullptr };
 	CModel* m_pEffectModelCom{ nullptr };
 	CCollider* m_pColliderCom{ nullptr };
+	
+	CTexture* m_pEffectTexture{ nullptr };
+	CVIBuffer_Trail* m_pTrailBufferCom{ nullptr };
+	CShader* m_pTrailShaderCom{ nullptr };
+	list<_float3> m_TrailPosList{};
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_Shader_Resources();
-	HRESULT Bind_Effect_Shader_Resources();
+	HRESULT Render_Effect();
+	HRESULT Render_Trail();
 
 private:
 	_float4 m_vTargetPos{};

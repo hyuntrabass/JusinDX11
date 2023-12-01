@@ -14,6 +14,13 @@ sampler LinearSampler = sampler_state
     AddressV = wrap;
 };
 
+sampler LinearClampSampler = sampler_state
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = clamp;
+    AddressV = clamp;
+};
+
 // Rasterizer State
 RasterizerState RS_Default
 {
@@ -27,6 +34,19 @@ RasterizerState RS_CCW
     FillMode = Solid;
     CullMode = Back;
     FrontCounterClockWise = true;
+};
+
+RasterizerState RS_None
+{
+    FillMode = Solid;
+    CullMode = None;
+};
+
+RasterizerState RS_Wire
+{
+    FillMode = Wireframe;
+    CullMode = Back;
+    FrontCounterClockWise = false;
 };
 
 // Depth Stencil State

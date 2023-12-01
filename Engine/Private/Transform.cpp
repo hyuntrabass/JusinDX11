@@ -59,7 +59,7 @@ const _bool CTransform::Is_OnGround() const
 	}
 	PxRaycastBuffer HitBuffer{};
 
-	return m_pScene->raycast(PxExVec3ToPxVec3(m_pController->getFootPosition()), PxVec3(0.f, -1.f, 0.f), 0.35f, HitBuffer);
+	return m_pScene->raycast(PxExVec3ToPxVec3(m_pController->getFootPosition()), PxVec3(0.f, -1.f, 0.f), 0.5f, HitBuffer);
 }
 
 _matrix CTransform::Get_World_Matrix() const

@@ -69,6 +69,8 @@ namespace Client
 		StaticPass_Sky,
 		StaticPass_SingleColor,
 		StaticPass_SingleColorFx,
+		StaticPass_MaskEffect,
+		SingleColoredEffectFrontCull,
 	};
 
 	enum VNTPass

@@ -9,6 +9,7 @@
 #include "Model.h"
 #include "VIBuffer_Instancing_Point.h"
 #include "Collider.h"
+#include "VIBuffer_Trail.h"
 
 BEGIN(Engine)
 

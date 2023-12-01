@@ -48,7 +48,7 @@ void CMiniBomb::Tick(_float fTimeDelta)
 		m_isDead = true;
 	}
 
-	m_pTransformCom->Turn(XMVector3Normalize(m_pTransformCom->Get_State(State::Look)), fTimeDelta);
+	m_pTransformCom->Turn(XMVector3Normalize(m_pTransformCom->Get_State(State::Look) * -1.f), fTimeDelta);
 
 	m_fLifeTimer += fTimeDelta;
 

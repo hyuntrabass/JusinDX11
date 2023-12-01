@@ -3,6 +3,7 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
+texture2D g_MaskTexture;
 vector g_vColor;
 
 vector g_vLightDir;
@@ -73,6 +74,7 @@ PS_OUT PS_Main(PS_IN Input)
     vector vNormal = (g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex + Input.vNor;
     
     float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
+    fShade = ceil(fShade * 2.f) / 2.f;
     
     vector vLook = Input.vWorldPos - g_vCamPos;
     //float dp = dot(normalize(vLook) * -1.f, normalize(vNormal));
@@ -113,11 +115,13 @@ PS_OUT PS_Main_Single(PS_IN Input)
     
     vector vLook = Input.vWorldPos - g_vCamPos;
     
-    //float dp = dot(normalize(vLook) * -1.f, normalize(vNormal));
+    float dp = dot(normalize(vLook) * -1.f, normalize(vNormal));
     
-    //vMtrlDiffuse = vMtrlDiffuse * dp;
+    vMtrlDiffuse = vMtrlDiffuse * dp;
+    vMtrlDiffuse.a = 1.f;
      
     float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
+    //fShade = ceil(fShade * 2.f) / 2.f;
     
     vector vReflect = reflect(normalize(g_vLightDir), vNormal);
 
@@ -131,6 +135,18 @@ PS_OUT PS_Main_Effect(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
 
     Output.vColor = g_vColor;
+    
+    return Output;
+}
+
+PS_OUT PS_Main_MaskEffect(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
+    
+    Output.vColor = g_vColor;
+    Output.vColor.a = Output.vColor.a * vMask.r;
     
     return Output;
 }
@@ -191,7 +207,33 @@ technique11 DefaultTechniqueShader_VtxNorTex
 
     pass SingleColoredEffect
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Effect();
+    }
+
+    pass MaskEffect
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_MaskEffect();
+    }
+
+    pass SingleColoredEffectFrontCull
+    {
+        SetRasterizerState(RS_CCW);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 

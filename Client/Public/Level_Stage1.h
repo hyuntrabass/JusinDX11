@@ -17,6 +17,7 @@ public:
 
 public:
 	HRESULT Ready_Map();
+	HRESULT Ready_Light();
 
 public:
 	static CLevel_Stage1* Create(_dev pDevice, _context pContext);

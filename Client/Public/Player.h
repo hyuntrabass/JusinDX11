@@ -1,6 +1,6 @@
 #pragma once
 #include "Client_Define.h"
-#include "GameObject.h"
+#include "BlendObject.h"
 
 BEGIN(Client)
 
@@ -40,7 +40,7 @@ enum class Player_State
 	RasenShuriken,
 };
 
-class CPlayer final : public CGameObject
+class CPlayer final : public CBlendObject
 {
 private:
 	enum Animation
@@ -208,7 +208,7 @@ private:
 	_float m_fAttTimer{};
 	_bool m_bAttacked{};
 
-	_bool m_hasJumpStarted{};
+	_bool m_hasJumped{};
 	_bool m_isOnWall{};
 
 	_float3 m_vWireTargetPos{};
