@@ -97,9 +97,7 @@ void CVIBuffer_Trail::Update(_float fTimeDelta, _float3* pPositions)
 
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
-		VTXPOINT* pVertex = &reinterpret_cast<VTXPOINT*>(SubResource.pData)[i];
-
-		pVertex->vPosition = pPositions[i];
+		reinterpret_cast<VTXPOINT*>(SubResource.pData)[i].vPosition = pPositions[i];
 	}
 
 	m_pContext->Unmap(m_pVB, 0);

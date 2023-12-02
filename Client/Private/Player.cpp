@@ -137,15 +137,15 @@ HRESULT CPlayer::Render()
 		}
 	}
 
-	if (m_pKunai)
-	{
-		m_pKunai->Render();
-	}
-
 #ifdef _DEBUG
 	m_pCollider_Att->Render();
 	m_pCollider_Hit->Render();
 #endif // _DEBUG
+
+	if (m_pKunai)
+	{
+		m_pKunai->Render();
+	}
 
 
 	return S_OK;
@@ -606,16 +606,15 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		m_hasDoubleJumped = false;
 
 		{
-			ObjectInfo Info{};
-			_float3 vOriginPos{};
+			Kunai_Info Info{};
 			_float3 vDir{ reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()) };
-			XMStoreFloat3(&vOriginPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
-			Info.vPos = _float4(vOriginPos.x, vOriginPos.y, vOriginPos.z, 1.f);
+			XMStoreFloat3(&m_vRightHandPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
+			Info.pRHandPos = &m_vRightHandPos;
 
 			if (/*m_pBodyParts[PT_HEAD]->IsAnimationFinished(WireJump_Ready) or */(m_pGameInstance->Key_Up(DIK_LCONTROL, InputChannel::GamePlay) and not m_pKunai))
 			{
 				PxRaycastBuffer Buffer{};
-				if (m_pGameInstance->Raycast(vOriginPos, vDir, 30.f, Buffer))
+				if (m_pGameInstance->Raycast(m_vRightHandPos, vDir, 30.f, Buffer))
 				{
 					m_vWireTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
 
@@ -626,7 +625,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 				}
 				else
 				{
-					XMStoreFloat4(&Info.vLook, (XMLoadFloat3(&vOriginPos) + XMLoadFloat3(&vDir)));
+					XMStoreFloat4(&Info.vLook, (XMLoadFloat3(&m_vRightHandPos) + XMLoadFloat3(&vDir)));
 					Info.vLook.w = 1.f;
 				}
 
@@ -687,7 +686,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 
 				if (m_pTransformCom->Is_OnGround())
 				{
-					if (m_iAttMotion > Sasuke_Attack_TurnSlashingShoulder_Right and
+					if (m_iAttMotion > Sasuke_Attack_TurnSlashingShoulder_Right or
 						m_iAttMotion < Sasuke_Attack_DashSlashing_Right)
 					{
 						m_iAttMotion = Sasuke_Attack_DashSlashing_Right;

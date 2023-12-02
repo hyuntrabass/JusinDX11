@@ -1,10 +1,10 @@
 #pragma once
 #include "Client_Define.h"
-#include "GameObject.h"
+#include "BlendObject.h"
 
 BEGIN(Client)
 
-class CEffect final : public CGameObject
+class CEffect final : public CBlendObject
 {
 private:
 	CEffect(_dev pDevice, _context pContext);
@@ -22,6 +22,7 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CTexture* m_pTextureCom{ nullptr };
+	CTexture* m_pMaskTextureCom{ nullptr };
 	CVIBuffer_Instancing_Point* m_pVIBufferCom{ nullptr };
 
 private:

@@ -1,12 +1,12 @@
 #include "Effect.h"
 
 CEffect::CEffect(_dev pDevice, _context pContext)
-	: CGameObject(pDevice, pContext)
+	: CBlendObject(pDevice, pContext)
 {
 }
 
 CEffect::CEffect(const CEffect& rhs)
-	: CGameObject(rhs)
+	: CBlendObject(rhs)
 {
 }
 
@@ -49,7 +49,8 @@ void CEffect::Tick(_float fTimeDelta)
 
 void CEffect::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	__super::Compute_CamDistance();
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
 }
 
 HRESULT CEffect::Render()
@@ -119,6 +120,11 @@ HRESULT CEffect::Add_Components()
 		return E_FAIL;
 	}
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Sphere01"), TEXT("Com_MaskTexture"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -136,6 +142,11 @@ HRESULT CEffect::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 	{
 		return E_FAIL;
 	}

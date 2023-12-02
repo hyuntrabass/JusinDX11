@@ -40,6 +40,7 @@ private:
 	HRESULT Render_Trail();
 
 private:
+	_float3* m_pRightHandPos{};
 	_float4 m_vTargetPos{};
 	_float m_fLifeTimer{};
 	_bool m_hasStopped{};

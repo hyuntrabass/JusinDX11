@@ -139,7 +139,7 @@ HRESULT CLoader::Load_Logo()
 		return E_FAIL;
 	}
 
-	// Effects
+	// Effect Textures
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Sphere01"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/T_EFF_Sphere_01_M.dds")))))
 	{
 		return E_FAIL;
@@ -504,7 +504,7 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail"), CVIBuffer_Trail::Create(m_pDevice, m_pContext, 50, _float2(1.f, 1.f)))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_Straight"), CVIBuffer_Trail::Create(m_pDevice, m_pContext, 2, _float2(0.03f, 0.03f)))))
 
 	{
 		return E_FAIL;

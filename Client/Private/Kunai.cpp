@@ -1,4 +1,5 @@
 #include "Kunai.h"
+#include "Player.h"
 
 CKunai::CKunai(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
@@ -28,15 +29,16 @@ HRESULT CKunai::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	ObjectInfo Info = *reinterpret_cast<ObjectInfo*>(pArg);
+	Kunai_Info Info = *reinterpret_cast<Kunai_Info*>(pArg);
 
 	//m_pTransformCom->Set_Scale(_float3(0.5f, 0.5f, 0.5f));
-	Info.vPos.w = 1.f;
 	if (Info.strPrototypeTag.empty())
 	{
 		m_bFail = true;
 	}
-	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&Info.vPos));
+
+	m_pRightHandPos = Info.pRHandPos;
+	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(m_pRightHandPos), 1.f));
 	m_pTransformCom->LookAt(XMLoadFloat4(&Info.vLook));
 	m_vTargetPos = Info.vLook;
 
@@ -54,7 +56,7 @@ void CKunai::Tick(_float fTimeDelta)
 
 		if (m_fLifeTimer > 0.7f)
 		{
-			//m_isDead = true;
+			m_isDead = true;
 		}
 
 		m_fLifeTimer += fTimeDelta;
@@ -73,25 +75,13 @@ void CKunai::Tick(_float fTimeDelta)
 
 void CKunai::Late_Tick(_float fTimeDelta)
 {
-	if (m_TrailPosList.size() >= 50)
-	{
-		m_TrailPosList.pop_back();
-	}
-	_float3 vPos{};
-	XMStoreFloat3(&vPos, m_pTransformCom->Get_State(State::Pos));
-	m_TrailPosList.push_front(vPos);
-	_float3 PosArray[50]{};
-	_uint iIndex{};
-	for (size_t i = 0; i < 50; i++)
-	{
-		PosArray[i] = m_TrailPosList.back();
-	}
-	for (auto& vPos : m_TrailPosList)
-	{
-		PosArray[iIndex++] = vPos;
-	}
-	
-	m_pTrailBufferCom->Update(fTimeDelta, PosArray);
+	//if (m_TrailPosList.size() >= 50)
+	//{
+	//	m_TrailPosList.pop_back();
+	//}
+	//_float3 vPos{};
+	//XMStoreFloat3(&vPos, m_pTransformCom->Get_State(State::Pos));
+	//m_TrailPosList.push_front(vPos);
 
 	__super::Compute_CamDistance();
 
@@ -110,7 +100,7 @@ HRESULT CKunai::Render()
 		return E_FAIL;
 	}
 
-	for (size_t i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
 	{
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
 		{
@@ -171,7 +161,7 @@ HRESULT CKunai::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pTrailBufferCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_Straight"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pTrailBufferCom))))
 	{
 		return E_FAIL;
 	}
@@ -283,7 +273,10 @@ HRESULT CKunai::Render_Effect()
 
 	_float4 vColor{ 0.2f, 0.2f, 1.f, 1.f };
 	//XMStoreFloat4(&vColor, Colors::CornflowerBlue);
-	m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4));
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
+	{
+		return E_FAIL;
+	}
 
 	m_pShaderCom->Begin(StaticPass_MaskEffect);
 
@@ -294,6 +287,23 @@ HRESULT CKunai::Render_Effect()
 
 HRESULT CKunai::Render_Trail()
 {
+	_uint iNumVertices{ 2 };
+	_float3 PosArray[2]{};
+	_uint iIndex{};
+
+	XMStoreFloat3(&PosArray[0], m_pTransformCom->Get_State(State::Pos));
+	PosArray[1] = *m_pRightHandPos;
+	//for (size_t i = 0; i < iNumVertices; i++)
+	//{
+	//	XMStoreFloat3(&PosArray[i], XMVectorLerp(m_pTransformCom->Get_State(State::Pos), XMLoadFloat3(m_pRightHandPos), 1.f / static_cast<_float>(iNumVertices - 1) * i));
+	//}
+	//for (auto& vPos : m_TrailPosList)
+	//{
+	//	PosArray[iIndex++] = vPos;
+	//}
+
+	m_pTrailBufferCom->Update(0.f, PosArray);
+
 	if (FAILED(m_pTrailShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::View))))
 	{
 		return E_FAIL;
@@ -309,6 +319,13 @@ HRESULT CKunai::Render_Trail()
 		return E_FAIL;
 	}
 
+	_float4 vColor{ 0.4f, 0.6f, 0.9f, 1.f };
+	//XMStoreFloat4(&vColor, Colors::CornflowerBlue);
+	if (FAILED(m_pTrailShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
+	{
+		return E_FAIL;
+	}
+	
 	if (FAILED(m_pTrailShaderCom->Begin(0)))
 	{
 		return E_FAIL;

@@ -133,6 +133,9 @@
     <Filter Include="02.GameObjects\03.Player\Projectile\RasenShuri">
       <UniqueIdentifier>{31093422-0873-4904-8e1b-19eb40beff09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player\Effect">
+      <UniqueIdentifier>{aec77e1e-704e-46fa-be1b-a47c79245aaa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -261,6 +264,9 @@
     <ClInclude Include="..\public\RasenShurikan.h">
       <Filter>02.GameObjects\03.Player\Projectile\RasenShuri</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\FootTrail.h">
+      <Filter>02.GameObjects\03.Player\Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -386,6 +392,9 @@
     </ClCompile>
     <ClCompile Include="..\private\RasenShurikan.cpp">
       <Filter>02.GameObjects\03.Player\Projectile\RasenShuri</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\FootTrail.cpp">
+      <Filter>02.GameObjects\03.Player\Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

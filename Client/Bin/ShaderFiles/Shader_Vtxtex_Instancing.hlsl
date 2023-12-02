@@ -1,7 +1,7 @@
 #include "Engine_Shader_Define.hlsli"
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D g_Texture;
+texture2D g_Texture, g_MaskTexture;
 vector g_CamPos;
 
 struct VS_IN
@@ -98,6 +98,9 @@ PS_OUT PS_Main(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
+    
+    Output.vColor.a = vMask.r;
     
     return Output;
 }
@@ -108,7 +111,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = compile gs_5_0 GS_MAIN();
