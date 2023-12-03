@@ -171,7 +171,7 @@
     <ClInclude Include="..\public\Camera_Main.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\public\Effect.h" />
-    <ClInclude Include="..\public\FootTrail.h" />
+    <ClInclude Include="..\public\FootEffect.h" />
     <ClInclude Include="..\public\HpBar_Player.h" />
     <ClInclude Include="..\Public\HpBar_Player_Base.h" />
     <ClInclude Include="..\public\Kakashi.h" />
@@ -215,7 +215,7 @@
     <ClCompile Include="..\private\Camera_Debug.cpp" />
     <ClCompile Include="..\private\Camera_Main.cpp" />
     <ClCompile Include="..\private\Effect.cpp" />
-    <ClCompile Include="..\private\FootTrail.cpp" />
+    <ClCompile Include="..\private\FootEffect.cpp" />
     <ClCompile Include="..\private\HpBar_Player.cpp" />
     <ClCompile Include="..\Private\HpBar_Player_Base.cpp" />
     <ClCompile Include="..\private\Kakashi.cpp" />
@@ -278,9 +278,9 @@
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex.hlsl">
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtxtex_Instancing.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

@@ -4,6 +4,7 @@ matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_Texture;
 texture2D g_TextureArray[12];
 int g_TexIndex;
+vector g_vColor;
 
 struct VS_IN
 {
@@ -63,6 +64,19 @@ PS_OUT PS_Main_Button(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_MasKColor(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vMask = g_Texture.Sample(LinearSampler, Input.vTex) * g_TexIndex;
+    
+    Output.vColor = g_vColor;
+    
+    Output.vColor.a = vMask.r;
+    
+    return Output;
+}
+
 technique11 DefaultTechnique
 {
     pass UI
@@ -102,5 +116,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
+    }
+
+    pass Mask_Color
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MasKColor();
     }
 };

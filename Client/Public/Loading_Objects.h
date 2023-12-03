@@ -24,3 +24,4 @@
 #include "Effect.h"
 #include "MiniBomb.h"
 #include "Kunai.h"
+#include "FootEffect.h"

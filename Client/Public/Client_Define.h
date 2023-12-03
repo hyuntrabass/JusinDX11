@@ -84,6 +84,7 @@ namespace Client
 		VTPass_UI,
 		VTPass_Button,
 		VTPass_Background,
+		VTPass_Mask_Color,
 	};
 
 	enum InstancingPass

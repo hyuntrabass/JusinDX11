@@ -3,6 +3,7 @@
 #include "BodyPart.h"
 #include "UI_Manager.h"
 #include "Kunai.h"
+#include "FootEffect.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
@@ -56,6 +57,11 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() != LEVEL_CREATECHARACTER)
 	{
+		if (not m_pFootEffect[Foot_Left])
+		{
+			m_pFootEffect[Foot_Left] = dynamic_cast<CFootEffect*>(m_pGameInstance->Clone_Object(TEXT("Prototype_Object_FootEffect")));
+			m_pFootEffect[Foot_Right] = dynamic_cast<CFootEffect*>(m_pGameInstance->Clone_Object(TEXT("Prototype_Object_FootEffect")));
+		}
 		if (not m_isGameStarted)
 		{
 			m_eState = Player_State::Idle;
@@ -84,6 +90,17 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (m_pKunai)
 	{
 		m_pKunai->Tick(fTimeDelta);
+	}
+
+	if (m_pFootEffect[Foot_Left])
+	{
+		_float3 vFootPos[Foot_End]{};
+
+		XMStoreFloat3(&vFootPos[Foot_Left], (XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("LeftFoot")) * m_pTransformCom->Get_World_Matrix()).r[3]);
+		XMStoreFloat3(&vFootPos[Foot_Right], (XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("RightFoot")) * m_pTransformCom->Get_World_Matrix()).r[3]);
+
+		m_pFootEffect[Foot_Left]->Tick(vFootPos[Foot_Left], fTimeDelta);
+		m_pFootEffect[Foot_Right]->Tick(vFootPos[Foot_Right], fTimeDelta);
 	}
 
 	_matrix ColliderOffset = XMMatrixTranslation(0.f, 0.8f, 0.f);
@@ -132,6 +149,19 @@ HRESULT CPlayer::Render()
 	for (size_t i = 0; i < PT_END; i++)
 	{
 		if (FAILED(m_pBodyParts[i]->Render()))
+		{
+			return E_FAIL;
+		}
+	}
+
+	if (m_pFootEffect[Foot_Left])
+	{
+		if (FAILED(m_pFootEffect[Foot_Left]->Render()))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pFootEffect[Foot_Right]->Render()))
 		{
 			return E_FAIL;
 		}
@@ -847,6 +877,9 @@ void CPlayer::Free()
 #endif // _DEBUG
 
 	Safe_Release(m_pKunai);
+
+	Safe_Release(m_pFootEffect[Foot_Left]);
+	Safe_Release(m_pFootEffect[Foot_Right]);
 
 	Safe_Release(m_pCollider_Att);
 	Safe_Release(m_pCollider_Hit);

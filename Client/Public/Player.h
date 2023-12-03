@@ -4,6 +4,13 @@
 
 BEGIN(Client)
 
+enum FootEffect
+{
+	Foot_Left,
+	Foot_Right,
+	Foot_End
+};
+
 enum PART_TYPE
 {
 	PT_HEAD,
@@ -197,6 +204,8 @@ private:
 
 	class CBodyPart* m_pBodyParts[PT_END]{};
 	_uint m_iPartNum[PT_END]{};
+
+	class CFootEffect* m_pFootEffect[Foot_End]{};
 
 	const _float m_fRunSpeed{15.f};
 	const _float m_fWalkSpeed{5.f};

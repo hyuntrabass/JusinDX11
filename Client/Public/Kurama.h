@@ -68,6 +68,7 @@ private:
 		State_None,
 		State_Initiation,
 		State_Idle,
+		State_LookAt,
 		State_Attack,
 		State_ComboAttack,
 		State_Bomb,
@@ -100,9 +101,15 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
 	CCollider* m_pCollider_Hit{ nullptr };
+	CTransform* m_pPlayerTransform{ nullptr };
 
 private:
 	_float3 m_vAppearPoints[5]{};
+
+	ANIM_DESC m_AnimationDesc{};
+
+	_float3 m_vOriginalLook{};
+
 	_uint m_iPosIndex{};
 	_bool m_hasInitiated{};
 

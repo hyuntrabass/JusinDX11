@@ -510,6 +510,12 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_50"), CVIBuffer_Trail::Create(m_pDevice, m_pContext, 50, _float2(0.03f, 0.03f)))))
+
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Tutorial : Loading Shader";
@@ -578,6 +584,11 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Kunai"), CKunai::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_Object_FootEffect"), CFootEffect::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

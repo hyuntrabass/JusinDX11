@@ -68,6 +68,7 @@ public:
 	void Jump(_float fJumpForce = 10.f);
 
 	void LookAt(_fvector vTargetPos);
+	void LookAway(_fvector vTargetPos);
 	void LookAt_Dir(_fvector vDir);
 	void Move_to(_fvector vTargetPos, _float fTimeDelta, _float fMargin = 0.1f);
 	void Turn(_fvector vAxis, _float fTimeDelta);

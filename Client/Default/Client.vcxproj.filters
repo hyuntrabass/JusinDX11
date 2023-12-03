@@ -264,7 +264,7 @@
     <ClInclude Include="..\public\RasenShurikan.h">
       <Filter>02.GameObjects\03.Player\Projectile\RasenShuri</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\FootTrail.h">
+    <ClInclude Include="..\public\FootEffect.h">
       <Filter>02.GameObjects\03.Player\Effect</Filter>
     </ClInclude>
   </ItemGroup>
@@ -393,7 +393,7 @@
     <ClCompile Include="..\private\RasenShurikan.cpp">
       <Filter>02.GameObjects\03.Player\Projectile\RasenShuri</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\FootTrail.cpp">
+    <ClCompile Include="..\private\FootEffect.cpp">
       <Filter>02.GameObjects\03.Player\Effect</Filter>
     </ClCompile>
   </ItemGroup>
