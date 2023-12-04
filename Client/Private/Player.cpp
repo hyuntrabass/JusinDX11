@@ -134,6 +134,12 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		m_pBodyParts[i]->Late_Tick(fTimeDelta);
 	}
 
+	if (m_pFootEffect[Foot_Left])
+	{
+		m_pFootEffect[Foot_Left]->Late_Tick(fTimeDelta);
+		m_pFootEffect[Foot_Right]->Late_Tick(fTimeDelta);
+	}
+
 	if (m_pKunai)
 	{
 		m_pKunai->Late_Tick(fTimeDelta);
@@ -146,37 +152,18 @@ HRESULT CPlayer::Render()
 	{
 		return S_OK;
 	}
-	for (size_t i = 0; i < PT_END; i++)
-	{
-		if (FAILED(m_pBodyParts[i]->Render()))
-		{
-			return E_FAIL;
-		}
-	}
-
-	if (m_pFootEffect[Foot_Left])
-	{
-		if (FAILED(m_pFootEffect[Foot_Left]->Render()))
-		{
-			return E_FAIL;
-		}
-
-		if (FAILED(m_pFootEffect[Foot_Right]->Render()))
-		{
-			return E_FAIL;
-		}
-	}
+	//for (size_t i = 0; i < PT_END; i++)
+	//{
+	//	if (FAILED(m_pBodyParts[i]->Render()))
+	//	{
+	//		return E_FAIL;
+	//	}
+	//}
 
 #ifdef _DEBUG
 	m_pCollider_Att->Render();
 	m_pCollider_Hit->Render();
 #endif // _DEBUG
-
-	if (m_pKunai)
-	{
-		m_pKunai->Render();
-	}
-
 
 	return S_OK;
 }
@@ -501,6 +488,8 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Land;
 			m_Animation.isLoop = false;
 			m_Animation.bSkipInterpolation = true;
+
+			m_hasJumped = false;
 			break;
 		case Client::Player_State::Dash:
 			break;
@@ -529,37 +518,37 @@ void CPlayer::Tick_State(_float fTimeDelta)
 	{
 	case Client::Player_State::Idle:
 		m_Animation = {};
-		if (m_pTransformCom->Is_OnGround())
-		{
-			if (m_hasJumped)
-			{
-				m_eState = Player_State::Land;
-			}
-			else
-			{
+		//if (m_pTransformCom->Is_OnGround())
+		//{
+		//	if (m_hasJumped)
+		//	{
+		//		m_eState = Player_State::Land;
+		//	}
+		//	else
+		//	{
 				m_Animation.iAnimIndex = Idle_Loop;
 				m_Animation.isLoop = true;
-			}
-		}
-		else
-		{
-			m_Animation.iAnimIndex = Fall_Vertical_Loop;
-			m_Animation.isLoop = true;
+		//	}
+		//}
+		//else
+		//{
+		//	m_Animation.iAnimIndex = Fall_Vertical_Loop;
+		//	m_Animation.isLoop = true;
 
-			m_hasJumped = true;
-		}
+		//	m_hasJumped = true;
+		//}
 		break;
 	case Client::Player_State::Walk:
 		m_eState = Player_State::Walk_End;
 
-		if (not m_pTransformCom->Is_OnGround())
-		{
-			m_eState = Player_State::Idle;
-		}
+		//if (not m_pTransformCom->Is_OnGround())
+		//{
+		//	m_eState = Player_State::Idle;
+		//}
 		break;
 	case Client::Player_State::Walk_End:
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Walk_End) or
-			not m_pTransformCom->Is_OnGround())
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Walk_End)/* or
+			not m_pTransformCom->Is_OnGround()*/)
 		{
 			m_eState = Player_State::Idle;
 			m_hasJumped = false;
@@ -568,14 +557,14 @@ void CPlayer::Tick_State(_float fTimeDelta)
 	case Client::Player_State::Run:
 		m_eState = Player_State::Run_End;
 
-		if (not m_pTransformCom->Is_OnGround())
-		{
-			m_eState = Player_State::Idle;
-		}
+		//if (not m_pTransformCom->Is_OnGround())
+		//{
+		//	m_eState = Player_State::Idle;
+		//}
 		break;
 	case Client::Player_State::Run_End:
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Run_End) or
-			not m_pTransformCom->Is_OnGround())
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Run_End)/* or
+			not m_pTransformCom->Is_OnGround()*/)
 		{
 			m_eState = Player_State::Idle;
 			m_hasJumped = false;
@@ -627,7 +616,6 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Land))
 		{
 			m_eState = Player_State::Idle;
-			m_hasJumped = false;
 		}
 		break;
 	case Client::Player_State::Dash:
@@ -641,7 +629,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			XMStoreFloat3(&m_vRightHandPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
 			Info.pRHandPos = &m_vRightHandPos;
 
-			if (/*m_pBodyParts[PT_HEAD]->IsAnimationFinished(WireJump_Ready) or */(m_pGameInstance->Key_Up(DIK_LCONTROL, InputChannel::GamePlay) and not m_pKunai))
+			if (/*m_pBodyParts[PT_HEAD]->IsAnimationFinished(WireJump_Ready) or */(m_pGameInstance->Key_Up(DIK_LCONTROL, InputChannel::GamePlay)/* and not m_pKunai*/))
 			{
 				PxRaycastBuffer Buffer{};
 				if (m_pGameInstance->Raycast(m_vRightHandPos, vDir, 30.f, Buffer))

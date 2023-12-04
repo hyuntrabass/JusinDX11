@@ -32,6 +32,8 @@ HRESULT CMyFont::Render(const wstring& strText, const _float2& vPosition, _float
         return E_FAIL;
     }
 
+    m_pContext->GSSetShader(nullptr, nullptr, 0);
+
     m_pBatch->Begin();
     
     _vector vTextSize = m_pFont->MeasureString(strText.c_str());

@@ -53,6 +53,32 @@ VS_OUT VS_Main(VS_IN Input)
     return Output;
 }
 
+VS_OUT VS_OutLine(VS_IN Input)
+{
+    VS_OUT Output = (VS_OUT) 0;
+	
+    matrix matWV, matWVP;
+    
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+	
+    vector vPos = vector(Input.vPos, 1.f);
+    vector vNor = vector(Input.vNor, 0.f);
+    
+    float fDist = length(g_vCamPos - mul(vPos, g_WorldMatrix));
+    
+    float fThickness = clamp(fDist / 300.f, 0.005f, 0.1f);
+    
+    vPos += normalize(vNor) * fThickness;
+    
+    Output.vPos = mul(vPos, matWVP);
+    Output.vNor = mul(vNor, g_WorldMatrix);
+    Output.vTex = Input.vTex;
+    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
+	
+    return Output;
+}
+
 struct PS_IN
 {
     vector vPos : SV_Position;
@@ -94,6 +120,22 @@ PS_OUT PS_Main(PS_IN Input)
     
     //Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
     //}
+    return Output;
+}
+
+PS_OUT PS_OutLine(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vLook = g_vCamPos - Input.vWorldPos;
+    float DotProduct = dot(normalize(vLook), normalize(Input.vNor));
+    if (DotProduct > 0.f)
+    {
+        discard;
+    }
+    
+    Output.vColor = vector(0.f, 0.f, 0.f, 1.f);
+    
     return Output;
 }
 
@@ -164,6 +206,19 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
+    }
+
+    pass OutLine
+    {
+        SetRasterizerState(RS_CCW);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_OutLine();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_OutLine();
     }
 
     pass BlendMeshes

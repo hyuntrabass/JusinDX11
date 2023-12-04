@@ -114,10 +114,15 @@ public: // PhysX
 #endif // _DEBUG
 
 public: // RenderTarget
-	HRESULT Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat);
+	HRESULT Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor);
 	HRESULT Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag);
 	HRESULT Begin_MRT(const wstring& strMRTTag);
 	HRESULT End_MRT();
+#ifdef _DEBUG
+public:
+	HRESULT Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize);
+	HRESULT Render_Debug_RT(const wstring& strMRTTag, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
+#endif // _DEBUG
 
 public: // Get_Set
 	const _uint& Get_CameraModeIndex() const;

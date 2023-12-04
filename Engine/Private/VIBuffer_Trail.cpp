@@ -7,6 +7,8 @@ CVIBuffer_Trail::CVIBuffer_Trail(_dev pDevice, _context pContext)
 
 CVIBuffer_Trail::CVIBuffer_Trail(const CVIBuffer_Trail& rhs)
 	: CVIBuffer(rhs)
+	, m_TrailBufferDesc(rhs.m_TrailBufferDesc)
+	, m_TrailInitialData(rhs.m_TrailInitialData)
 {
 }
 
@@ -23,15 +25,15 @@ HRESULT CVIBuffer_Trail::Init_Prototype(const _uint iNumVertices, _float2 vPSize
 	m_ePrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
 
 #pragma region Vertex
-	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
-	m_BufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
-	m_BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	m_BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	m_BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	m_BufferDesc.MiscFlags = 0;
-	m_BufferDesc.StructureByteStride = m_iVertexStride;
+	ZeroMemory(&m_TrailBufferDesc, sizeof m_TrailBufferDesc);
+	m_TrailBufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
+	m_TrailBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	m_TrailBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	m_TrailBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	m_TrailBufferDesc.MiscFlags = 0;
+	m_TrailBufferDesc.StructureByteStride = m_iVertexStride;
 
-	ZeroMemory(&m_InitialData, sizeof m_InitialData);
+	ZeroMemory(&m_TrailInitialData, sizeof m_TrailInitialData);
 
 	VTXPOINT* pVertices = new VTXPOINT[m_iNumVertices];
 	ZeroMemory(pVertices, sizeof(VTXPOINT) * m_iNumVertices);
@@ -42,14 +44,14 @@ HRESULT CVIBuffer_Trail::Init_Prototype(const _uint iNumVertices, _float2 vPSize
 		pVertices[i].vPSize = vPSize;
 	}
 
-	m_InitialData.pSysMem = pVertices;
+	m_TrailInitialData.pSysMem = pVertices;
 
-	if (FAILED(__super::Create_Buffer(&m_pVB)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(__super::Create_Buffer(&m_pVB)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	Safe_Delete_Array(pVertices);
+	//Safe_Delete_Array(pVertices);
 #pragma endregion
 
 #pragma region Index
@@ -86,6 +88,11 @@ HRESULT CVIBuffer_Trail::Init_Prototype(const _uint iNumVertices, _float2 vPSize
 
 HRESULT CVIBuffer_Trail::Init(void* pArg)
 {
+	if (FAILED(m_pDevice->CreateBuffer(&m_TrailBufferDesc, &m_TrailInitialData, &m_pVB)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -93,7 +100,7 @@ void CVIBuffer_Trail::Update(_float fTimeDelta, _float3* pPositions)
 {
 	D3D11_MAPPED_SUBRESOURCE SubResource{};
 
-	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubResource);
+	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
 
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
@@ -132,4 +139,9 @@ CComponent* CVIBuffer_Trail::Clone(void* pArg)
 void CVIBuffer_Trail::Free()
 {
 	__super::Free();
+
+	if (not m_isCloned)
+	{
+		Safe_Delete_Array(m_TrailInitialData.pSysMem);
+	}
 }

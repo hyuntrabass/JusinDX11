@@ -29,7 +29,7 @@ HRESULT CFootEffect::Init(void* pArg)
 
 void CFootEffect::Tick(_float3 vPos, _float fTimeDelta)
 {
-    if (m_TrailPosList.size() >= 50)
+    if (m_TrailPosList.size() >= 20)
     {
     	m_TrailPosList.pop_back();
     }
@@ -41,10 +41,32 @@ void CFootEffect::Tick(_float3 vPos, _float fTimeDelta)
 
 void CFootEffect::Late_Tick(_float fTimeDelta)
 {
+	_float3 PosArray[20]{};
+
+	for (size_t i = 0; i < 20; i++)
+	{
+		XMStoreFloat3(&PosArray[i], m_pTransformCom->Get_State(State::Pos));
+	}
+
+	_uint iIndex{};
+	for (auto& vPos : m_TrailPosList)
+	{
+		PosArray[iIndex++] = vPos;
+	}
+
+	m_pTrailBufferCom->Update(0.f, PosArray);
+
+	__super::Compute_CamDistance();
+	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 }
 
 HRESULT CFootEffect::Render()
 {
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
+	{
+		return S_OK;
+	}
+	
 	if (FAILED(Bind_TrailShaderResources()))
 	{
 		return E_FAIL;
@@ -100,7 +122,7 @@ HRESULT CFootEffect::Add_Components()
 		return E_FAIL;
 	}
 
-    if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_50"), TEXT("Com_TrailBuffer"), reinterpret_cast<CComponent**>(&m_pTrailBufferCom))))
+    if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_20"), TEXT("Com_TrailBuffer"), reinterpret_cast<CComponent**>(&m_pTrailBufferCom))))
     {
         return E_FAIL;
     }
@@ -115,21 +137,6 @@ HRESULT CFootEffect::Add_Components()
 
 HRESULT CFootEffect::Bind_TrailShaderResources()
 {
-	_float3 PosArray[50]{};
-
-	for (size_t i = 0; i < 50; i++)
-	{
-		XMStoreFloat3(&PosArray[i], m_pTransformCom->Get_State(State::Pos));
-	}
-
-	_uint iIndex{};
-	for (auto& vPos : m_TrailPosList)
-	{
-		PosArray[iIndex++] = vPos;
-	}
-
-	m_pTrailBufferCom->Update(0.f, PosArray);
-
 	if (FAILED(m_pTrailShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::View))))
 	{
 		return E_FAIL;
@@ -145,8 +152,7 @@ HRESULT CFootEffect::Bind_TrailShaderResources()
 		return E_FAIL;
 	}
 
-	_float4 vColor{ 1.f, 0.f, 0.f, 1.f };
-	//_float4 vColor{ 0.4f, 0.6f, 0.9f, 1.f };
+	_float4 vColor{ 0.2f, 0.2f, 1.f, 1.f };
 	//XMStoreFloat4(&vColor, Colors::CornflowerBlue);
 	if (FAILED(m_pTrailShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
@@ -178,8 +184,7 @@ HRESULT CFootEffect::Bind_LightShaderResources()
 		return E_FAIL;
 	}
 
-	_float4 vColor{ 1.f, 0.f, 0.f, 1.f };
-	//_float4 vColor{ 0.2f, 0.2f, 1.f, 1.f };
+	_float4 vColor{ 0.2f, 0.2f, 1.f, 1.f };
 	//XMStoreFloat4(&vColor, Colors::CornflowerBlue);
 	if (FAILED(m_pLightShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
@@ -217,6 +222,8 @@ CGameObject* CFootEffect::Clone(void* pArg)
 
 void CFootEffect::Free()
 {
+	__super::Free();
+
 	Safe_Release(m_pRendererCom);
 
 	Safe_Release(m_pLightBufferCom);

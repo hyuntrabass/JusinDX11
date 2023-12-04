@@ -72,11 +72,16 @@ void CBodyPart::Late_Tick(_float fTimeDelta)
 
 	m_Worldmatrix = m_pParentTransform->Get_World_float4x4();
 
-	//m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 }
 
 HRESULT CBodyPart::Render()
 {
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
+	{
+		return S_OK;
+	}
+
 	if (m_iSelectedModelIndex > m_iNumVariations)
 	{
 		return S_OK;
@@ -109,6 +114,16 @@ HRESULT CBodyPart::Render()
 		}
 
 		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(AnimPass_OutLine)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_Models[m_iSelectedModelIndex]->Render(i)))
 		{
 			return E_FAIL;
 		}

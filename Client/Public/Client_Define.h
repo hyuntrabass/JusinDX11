@@ -59,12 +59,14 @@ namespace Client
 	enum AnimMeshPass
 	{
 		AnimPass_Default,
+		AnimPass_OutLine,
 		AnimPass_Test,
 	};
 
 	enum StaticMeshPass
 	{
 		StaticPass_Default,
+		StaticPass_OutLine,
 		StaticPass_BlendMeshes,
 		StaticPass_Sky,
 		StaticPass_SingleColor,

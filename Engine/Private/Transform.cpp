@@ -59,7 +59,7 @@ const _bool CTransform::Is_OnGround() const
 	}
 	PxRaycastBuffer HitBuffer{};
 
-	_bool HasCollided = m_pScene->raycast(PxExVec3ToPxVec3(m_pController->getFootPosition()), PxVec3(0.f, -1.f, 0.f), 0.5f, HitBuffer);
+	_bool HasCollided = m_pScene->raycast(PxExVec3ToPxVec3(m_pController->getFootPosition()), PxVec3(0.f, -1.f, 0.f), 1.f, HitBuffer);
 
 	return HasCollided;
 }

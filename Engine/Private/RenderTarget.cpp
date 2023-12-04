@@ -1,4 +1,6 @@
 #include "RenderTarget.h"
+#include "Shader.h"
+#include "VIBuffer_Rect.h"
 
 CRenderTarget::CRenderTarget(_dev pDevice, _context pContext)
     : m_pDevice(pDevice)
@@ -13,8 +15,10 @@ ID3D11RenderTargetView* CRenderTarget::Get_RenderTargetView()
     return m_pRenderTargetView;
 }
 
-HRESULT CRenderTarget::Init(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat)
+HRESULT CRenderTarget::Init(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor)
 {
+    m_vClearColor = vColor;
+
     D3D11_TEXTURE2D_DESC Desc{};
     Desc.Width = iWidth;
     Desc.Height = iHeight;
@@ -48,11 +52,61 @@ HRESULT CRenderTarget::Init(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelForma
     return S_OK;
 }
 
-CRenderTarget* CRenderTarget::Create(_dev pDevice, _context pContext, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat)
+void CRenderTarget::Clear()
+{
+    m_pContext->ClearRenderTargetView(m_pRenderTargetView, reinterpret_cast<_float*>(&m_vClearColor));
+}
+
+#ifdef _DEBUG
+HRESULT CRenderTarget::Ready_Debug(_float2 vPos, _float2 vSize)
+{
+    XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
+
+    _uint iNumViewPorts{ 1 };
+
+    D3D11_VIEWPORT ViewportDesc{};
+
+    m_pContext->RSGetViewports(&iNumViewPorts, &ViewportDesc);
+
+    m_WorldMatrix.m[0][0] = vSize.x;
+    m_WorldMatrix.m[1][1] = vSize.y;
+    m_WorldMatrix.m[3][0] = vPos.x - ViewportDesc.Width * 0.5f;
+    m_WorldMatrix.m[3][1] = -vPos.y + ViewportDesc.Height * 0.5f;
+
+    return S_OK;
+}
+
+HRESULT CRenderTarget::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
+{
+    if (FAILED(pShader->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
+    {
+        return E_FAIL;
+    }
+
+    if (FAILED(pShader->Bind_ShaderResourceView("g_Texture", m_pShaderResourceView)))
+    {
+        return E_FAIL;
+    }
+
+    if (FAILED(pShader->Begin(0)))
+    {
+        return E_FAIL;
+    }
+
+    if (FAILED(pVIBuffer->Render()))
+    {
+        return E_FAIL;
+    }
+
+    return S_OK;
+}
+#endif // _DEBUG
+
+CRenderTarget* CRenderTarget::Create(_dev pDevice, _context pContext, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor)
 {
     CRenderTarget* pInstance = new CRenderTarget(pDevice, pContext);
-    
-    if (FAILED(pInstance->Init(iWidth, iHeight, ePixelFormat)))
+
+    if (FAILED(pInstance->Init(iWidth, iHeight, ePixelFormat, vColor)))
     {
         MSG_BOX("Failed to Create : CRenderTarget");
         Safe_Release(pInstance);
@@ -60,6 +114,7 @@ CRenderTarget* CRenderTarget::Create(_dev pDevice, _context pContext, _uint iWid
 
     return pInstance;
 }
+
 
 void CRenderTarget::Free()
 {

@@ -184,6 +184,8 @@ HRESULT CCollider::Render()
 	m_pEffect->SetView(m_pGameInstance->Get_Transform(D3DTS::View));
 	m_pEffect->SetProjection(m_pGameInstance->Get_Transform(D3DTS::Proj));
 
+	m_pContext->GSSetShader(nullptr, nullptr, 0);
+
 	m_pBatch->Begin();
 
 	m_pContext->IASetInputLayout(m_pInputLayout);

@@ -16,7 +16,7 @@ HRESULT CRenderTarget_Manager::Init()
 	return S_OK;
 }
 
-HRESULT CRenderTarget_Manager::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat)
+HRESULT CRenderTarget_Manager::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor)
 {
 	if (Find_RenderTarget(strTargetTag))
 	{
@@ -24,7 +24,7 @@ HRESULT CRenderTarget_Manager::Add_RenderTarget(const wstring& strTargetTag, _ui
 		return E_FAIL;
 	}
 
-	CRenderTarget* pRenderTarget = CRenderTarget::Create(m_pDevice, m_pContext, iWidth, iHeight, ePixelFormat);
+	CRenderTarget* pRenderTarget = CRenderTarget::Create(m_pDevice, m_pContext, iWidth, iHeight, ePixelFormat, vColor);
 	if (not pRenderTarget)
 	{
 		return E_FAIL;
@@ -81,6 +81,7 @@ HRESULT CRenderTarget_Manager::Begin_MRT(const wstring& strMRTTag)
 
 	for (auto& pRenderTarget : *pMRTList)
 	{
+		pRenderTarget->Clear();
 		pRTVs[iNumViews++] = pRenderTarget->Get_RenderTargetView();
 	}
 
@@ -98,6 +99,39 @@ HRESULT CRenderTarget_Manager::End_MRT()
 
 	return S_OK;
 }
+
+#ifdef _DEBUG
+HRESULT CRenderTarget_Manager::Ready_Debug(const wstring& strTargetTag, _float2 vPos, _float2 vSize)
+{
+	CRenderTarget* pRenderTarget = Find_RenderTarget(strTargetTag);
+	if (not pRenderTarget)
+	{
+		return E_FAIL;
+	}
+
+	return pRenderTarget->Ready_Debug(vPos, vSize);
+}
+
+HRESULT CRenderTarget_Manager::Render_Debug(const wstring& strMRTTag, CShader* pShader, CVIBuffer_Rect* pVIBuffer)
+{
+	list<CRenderTarget*>* pMRTList = Find_MRT(strMRTTag);
+	if (not pMRTList)
+	{
+		return E_FAIL;
+	}
+
+	for (auto& pTarget : *pMRTList)
+	{
+		if (FAILED(pTarget->Render(pShader, pVIBuffer)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+#endif // _DEBUG
+
 
 CRenderTarget* CRenderTarget_Manager::Find_RenderTarget(const wstring& strTargetTag)
 {

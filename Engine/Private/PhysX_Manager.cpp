@@ -300,7 +300,7 @@ PxRigidStatic* CPhysX_Manager::Cook_StaticMesh(_uint iNumVertices, void* pVertic
 
 	PxCookingParams CookingParams(Scale);
 	CookingParams.meshPreprocessParams = PxMeshPreprocessingFlags(PxMeshPreprocessingFlag::eWELD_VERTICES);
-	CookingParams.meshWeldTolerance = 0.001f;
+	CookingParams.meshWeldTolerance = 0.01f;
 	CookingParams.midphaseDesc = PxMeshMidPhase::eBVH34;
 
 	PxTriangleMeshDesc MeshDesc{};

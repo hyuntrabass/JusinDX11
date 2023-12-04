@@ -510,7 +510,7 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_50"), CVIBuffer_Trail::Create(m_pDevice, m_pContext, 50, _float2(0.03f, 0.03f)))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_20"), CVIBuffer_Trail::Create(m_pDevice, m_pContext, 20, _float2(0.01f, 0.01f)))))
 
 	{
 		return E_FAIL;

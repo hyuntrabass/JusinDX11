@@ -93,6 +93,16 @@ HRESULT CTerrain::Render()
 			iPassIndex = StaticPass_BlendMeshes;
 		}
 
+		if (FAILED(m_pShaderCom->Begin(StaticPass_OutLine)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom->Render(i)))
+		{
+			return E_FAIL;
+		}
+
 		if (FAILED(m_pShaderCom->Begin(iPassIndex)))
 		{
 			return E_FAIL;

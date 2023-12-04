@@ -738,14 +738,14 @@ HRESULT CGameInstance::Render_PhysX()
 }
 #endif // _DEBUG
 
-HRESULT CGameInstance::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat)
+HRESULT CGameInstance::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor)
 {
 	if (!m_pRenderTarget_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
 	}
 
-	return m_pRenderTarget_Manager->Add_RenderTarget(strTargetTag, iWidth, iHeight, ePixelFormat);
+	return m_pRenderTarget_Manager->Add_RenderTarget(strTargetTag, iWidth, iHeight, ePixelFormat, vColor);
 }
 HRESULT CGameInstance::Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag)
 {
@@ -774,6 +774,29 @@ HRESULT CGameInstance::End_MRT()
 
 	return m_pRenderTarget_Manager->End_MRT();
 }
+
+#ifdef _DEBUG
+HRESULT CGameInstance::Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize)
+{
+	if (!m_pRenderTarget_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
+	}
+
+	return m_pRenderTarget_Manager->Ready_Debug(strTargetTag, vPos, vSize);
+}
+
+HRESULT CGameInstance::Render_Debug_RT(const wstring& strMRTTag, CShader* pShader, CVIBuffer_Rect* pVIBuffer)
+{
+	if (!m_pRenderTarget_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
+	}
+
+	return m_pRenderTarget_Manager->Render_Debug(strMRTTag, pShader, pVIBuffer);
+}
+#endif // _DEBUG
+
 
 const _uint& CGameInstance::Get_CameraModeIndex() const
 {

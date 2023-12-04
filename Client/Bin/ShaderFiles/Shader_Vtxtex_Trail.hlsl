@@ -37,6 +37,7 @@ struct GS_OUT
 {
     vector vPos : SV_Position;
     float2 vTex : Texcoord0;
+    float fAlpha : Texcoord7;
 };
 
 [maxvertexcount(12)]
@@ -87,6 +88,16 @@ void GS_Main(line GS_IN Input[2], inout TriangleStream<GS_OUT> Triangles)
     Output[6].vPos = mul(Output[6].vPos, matVP);
     Output[7].vPos = mul(Output[7].vPos, matVP);
 
+    Output[0].fAlpha = 1.f;
+    Output[1].fAlpha = 1.f;
+    Output[2].fAlpha = 1.f;
+    Output[3].fAlpha = 1.f;
+    
+    Output[4].fAlpha = 1.f;
+    Output[5].fAlpha = 1.f;
+    Output[6].fAlpha = 1.f;
+    Output[7].fAlpha = 1.f;
+
     Triangles.Append(Output[0]);
     Triangles.Append(Output[4]);
     Triangles.Append(Output[6]);
@@ -112,6 +123,7 @@ struct PS_IN
 {
     vector vPos : SV_Position;
     float2 vTex : Texcoord0;
+    float fAlpha : Texcoord7;
 };
 
 struct PS_OUT
@@ -128,6 +140,7 @@ PS_OUT PS_Main(PS_IN Input)
     //vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
     
     Output.vColor = g_vColor;
+    Output.vColor.a = Input.fAlpha;
     //Output.vColor.a = vMask.r;
     
     return Output;

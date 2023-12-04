@@ -90,6 +90,11 @@ void CKunai::Late_Tick(_float fTimeDelta)
 
 HRESULT CKunai::Render()
 {
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
+	{
+		return S_OK;
+	}
+	
 	if (FAILED(Render_Effect()))
 	{
 		return E_FAIL;

@@ -32,6 +32,17 @@ public:
 private:
 	list<class CGameObject*> m_RenderObject[RG_End]{};
 
+private:
+	class CVIBuffer_Rect* m_pVIBuffer{ nullptr };
+	class CShader* m_pShader{ nullptr };
+
+	_float44 m_ViewMatrix{}, m_ProjMatrix{};
+
+#ifdef _DEBUG
+private:
+	HRESULT Render_Debug();
+#endif // _DEBUG
+
 public:
 	static CRenderer* Create(_dev pDevice, _context pContext);
 	virtual CComponent* Clone(void* pArg) override;

@@ -27,7 +27,7 @@ private:
 
 	CVIBuffer_Trail* m_pTrailBufferCom{ nullptr };
 	CShader* m_pTrailShaderCom{ nullptr };
-	
+
 private:
 	list<_float3> m_TrailPosList{};
 
