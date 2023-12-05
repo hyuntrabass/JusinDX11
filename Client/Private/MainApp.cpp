@@ -37,7 +37,7 @@ HRESULT CMainApp::Init()
 
 	m_pGameInstance->Init_Engine(LEVEL_END, GraphicDesc, &m_pDevice, &m_pContext);
 
-	if (FAILED(CUI_Manager::Get_Instance()->Init(m_pGameInstance)))
+	if (FAILED(CUI_Manager::Get_Instance()->Init()))
 	{
 		return E_FAIL;
 	}

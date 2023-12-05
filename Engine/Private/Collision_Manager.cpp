@@ -94,8 +94,8 @@ void CCollision_Manager::Free()
 
 	for (auto& Monster : m_Monsters)
 	{
-		Safe_Release(const_cast<CGameObject*>(Monster.first));
 		Safe_Release(Monster.second);
+		Safe_Release(const_cast<CGameObject*>(Monster.first));
 	}
 	m_Monsters.clear();
 }

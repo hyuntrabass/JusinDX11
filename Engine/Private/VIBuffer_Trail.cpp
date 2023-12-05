@@ -15,7 +15,7 @@ CVIBuffer_Trail::CVIBuffer_Trail(const CVIBuffer_Trail& rhs)
 HRESULT CVIBuffer_Trail::Init_Prototype(const _uint iNumVertices, _float2 vPSize)
 {
 	m_iNumVertexBuffers = 1;
-	m_iVertexStride = sizeof VTXPOINT;
+	m_iVertexStride = sizeof VTXTRAIL;
 	m_iNumVertices = iNumVertices;
 
 	m_iIndexStride = 2;
@@ -35,13 +35,14 @@ HRESULT CVIBuffer_Trail::Init_Prototype(const _uint iNumVertices, _float2 vPSize
 
 	ZeroMemory(&m_TrailInitialData, sizeof m_TrailInitialData);
 
-	VTXPOINT* pVertices = new VTXPOINT[m_iNumVertices];
-	ZeroMemory(pVertices, sizeof(VTXPOINT) * m_iNumVertices);
+	VTXTRAIL* pVertices = new VTXTRAIL[m_iNumVertices];
+	ZeroMemory(pVertices, sizeof(VTXTRAIL) * m_iNumVertices);
 
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
 		pVertices[i].vPosition = _float3(0.f, 0.f, 0.f);
 		pVertices[i].vPSize = vPSize;
+		pVertices[i].vColor = _float4(1.f, 1.f, 1.f, 1.f);
 	}
 
 	m_TrailInitialData.pSysMem = pVertices;
@@ -96,7 +97,7 @@ HRESULT CVIBuffer_Trail::Init(void* pArg)
 	return S_OK;
 }
 
-void CVIBuffer_Trail::Update(_float fTimeDelta, _float3* pPositions)
+void CVIBuffer_Trail::Update(_float3* pPositions, _float4* pColors, _float2* pPSize)
 {
 	D3D11_MAPPED_SUBRESOURCE SubResource{};
 
@@ -104,7 +105,18 @@ void CVIBuffer_Trail::Update(_float fTimeDelta, _float3* pPositions)
 
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
-		reinterpret_cast<VTXPOINT*>(SubResource.pData)[i].vPosition = pPositions[i];
+		if (pPositions)
+		{
+			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPosition = pPositions[i];
+		}
+		if (pColors)
+		{
+			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vColor = pColors[i];
+		}
+		if (pPSize)
+		{
+			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPSize = pPSize[i];
+		}
 	}
 
 	m_pContext->Unmap(m_pVB, 0);

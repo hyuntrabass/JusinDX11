@@ -1,39 +1,39 @@
 #include "FootEffect.h"
 
 CFootEffect::CFootEffect(_dev pDevice, _context pContext)
-    : CBlendObject(pDevice, pContext)
+	: CBlendObject(pDevice, pContext)
 {
 }
 
 CFootEffect::CFootEffect(const CFootEffect& rhs)
-    : CBlendObject(rhs)
+	: CBlendObject(rhs)
 {
 }
 
 HRESULT CFootEffect::Init_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CFootEffect::Init(void* pArg)
 {
-    if (FAILED(Add_Components()))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(Add_Components()))
+	{
+		return E_FAIL;
+	}
 
 	m_pTransformCom->Set_Scale(_float3(0.5f, 0.5f, 0.5f));
 
-    return S_OK;
+	return S_OK;
 }
 
 void CFootEffect::Tick(_float3 vPos, _float fTimeDelta)
 {
-    if (m_TrailPosList.size() >= 20)
-    {
-    	m_TrailPosList.pop_back();
-    }
-    m_TrailPosList.push_front(vPos);
+	if (m_TrailPosList.size() >= 20)
+	{
+		m_TrailPosList.pop_back();
+	}
+	m_TrailPosList.push_front(vPos);
 
 	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
 	m_pTransformCom->LookAway(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
@@ -42,10 +42,12 @@ void CFootEffect::Tick(_float3 vPos, _float fTimeDelta)
 void CFootEffect::Late_Tick(_float fTimeDelta)
 {
 	_float3 PosArray[20]{};
+	_float4 ColorArray[20]{};
 
 	for (size_t i = 0; i < 20; i++)
 	{
 		XMStoreFloat3(&PosArray[i], m_pTransformCom->Get_State(State::Pos));
+		ColorArray[i] = _float4(0.2f, 0.2f, 1.f, 1.f - static_cast<_float>(i) / 20.f);
 	}
 
 	_uint iIndex{};
@@ -54,7 +56,7 @@ void CFootEffect::Late_Tick(_float fTimeDelta)
 		PosArray[iIndex++] = vPos;
 	}
 
-	m_pTrailBufferCom->Update(0.f, PosArray);
+	m_pTrailBufferCom->Update(PosArray, ColorArray);
 
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
@@ -66,7 +68,7 @@ HRESULT CFootEffect::Render()
 	{
 		return S_OK;
 	}
-	
+
 	if (FAILED(Bind_TrailShaderResources()))
 	{
 		return E_FAIL;
@@ -102,10 +104,10 @@ HRESULT CFootEffect::Render()
 
 HRESULT CFootEffect::Add_Components()
 {
-    if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_LightBuffer"), reinterpret_cast<CComponent**>(&m_pLightBufferCom))))
 	{
@@ -122,16 +124,16 @@ HRESULT CFootEffect::Add_Components()
 		return E_FAIL;
 	}
 
-    if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_20"), TEXT("Com_TrailBuffer"), reinterpret_cast<CComponent**>(&m_pTrailBufferCom))))
-    {
-        return E_FAIL;
-    }
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_20"), TEXT("Com_TrailBuffer"), reinterpret_cast<CComponent**>(&m_pTrailBufferCom))))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Trail"), TEXT("Com_TrailShader"), reinterpret_cast<CComponent**>(&m_pTrailShaderCom))))
 	{
 		return E_FAIL;
 	}
-	
+
 	return S_OK;
 }
 
@@ -148,13 +150,6 @@ HRESULT CFootEffect::Bind_TrailShaderResources()
 	}
 
 	if (FAILED(m_pTrailShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	_float4 vColor{ 0.2f, 0.2f, 1.f, 1.f };
-	//XMStoreFloat4(&vColor, Colors::CornflowerBlue);
-	if (FAILED(m_pTrailShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
 		return E_FAIL;
 	}
@@ -204,7 +199,7 @@ CFootEffect* CFootEffect::Create(_dev pDevice, _context pContext)
 		Safe_Release(pInstnace);
 	}
 
-    return pInstnace;
+	return pInstnace;
 }
 
 CGameObject* CFootEffect::Clone(void* pArg)
@@ -217,7 +212,7 @@ CGameObject* CFootEffect::Clone(void* pArg)
 		Safe_Release(pInstance);
 	}
 
-    return pInstance;
+	return pInstance;
 }
 
 void CFootEffect::Free()

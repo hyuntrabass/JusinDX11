@@ -67,6 +67,7 @@ public: // Input Manager
 public: // Light Manager
 	HRESULT Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc);
 	const LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, _uint iIndex) const;
+	HRESULT Render_Lights(_uint iLevelIndex, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 
 public: // PipeLine
 	_float4 Get_CameraPos() const;
@@ -118,6 +119,7 @@ public: // RenderTarget
 	HRESULT Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag);
 	HRESULT Begin_MRT(const wstring& strMRTTag);
 	HRESULT End_MRT();
+	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
 #ifdef _DEBUG
 public:
 	HRESULT Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize);

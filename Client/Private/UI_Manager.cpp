@@ -42,14 +42,10 @@ const _uint CUI_Manager::Get_sizeofButtons() const
 	return m_Buttons.size();
 }
 
-HRESULT CUI_Manager::Init(CGameInstance* pGameInstance)
+HRESULT CUI_Manager::Init()
 {
-	if (not pGameInstance)
-	{
-		return E_FAIL;
-	}
-
-	m_pGameInstance = pGameInstance;
+	m_pGameInstance = CGameInstance::Get_Instance();
+	Safe_AddRef(m_pGameInstance);
 
 	return S_OK;
 }
@@ -658,4 +654,5 @@ void CUI_Manager::Clear_Buttons()
 void CUI_Manager::Free()
 {
 	Clear_Buttons();
+	Safe_Release(m_pGameInstance);
 }

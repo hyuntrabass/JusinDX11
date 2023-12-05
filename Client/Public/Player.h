@@ -50,6 +50,7 @@ enum class Player_State
 	Beaten,
 	Attack,
 	RasenShuriken,
+	Chidori,
 };
 
 class CPlayer final : public CBlendObject
@@ -228,6 +229,8 @@ private:
 	_float3 m_vWireTargetPos{};
 	class CKunai* m_pKunai { nullptr };
 	_float3 m_vRightHandPos{};
+
+	_float m_fTimer{};
 
 	CCollider* m_pCollider_Att{ nullptr };
 	CCollider* m_pCollider_Hit{ nullptr };

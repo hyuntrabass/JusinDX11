@@ -15,6 +15,7 @@ public:
 public:
 	HRESULT Init(_uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor);
 	void Clear();
+	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName);
 
 #ifdef _DEBUG
 	HRESULT Ready_Debug(_float2 vPos, _float2 vSize);

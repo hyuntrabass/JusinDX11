@@ -165,6 +165,11 @@ HRESULT CLoader::Load_Logo()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Lightning06"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Lightning/T_EFF_Lightning_06_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Model";
@@ -190,12 +195,17 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Kunai"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_WEP_Kunai.mo.hyuntrastatmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Fireball"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_D32_B_01.mo.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Kunai"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_WEP_Kunai.mo.hyuntrastatmesh", false, Pivot))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningC1"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/Lightning/SM_EFF_Lightning_C_01.mo.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -525,7 +535,7 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Trail"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Vtxtex_Trail.hlsl"), VTXPOINT::Elements, VTXPOINT::iNumElements))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Trail"), CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Vtxtex_Trail.hlsl"), VTXTRAIL::Elements, VTXTRAIL::iNumElements))))
 	{
 		return E_FAIL;
 	}
@@ -589,6 +599,11 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_Object_FootEffect"), CFootEffect::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Chidori"), CChidori::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

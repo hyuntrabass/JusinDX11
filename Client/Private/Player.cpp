@@ -339,6 +339,11 @@ void CPlayer::Move(_float fTimeDelta)
 		m_eState = Player_State::RasenShuriken;
 	}
 
+	if (m_pGameInstance->Key_Down(DIK_2))
+	{
+		m_eState = Player_State::Chidori;
+	}
+
 	if (not (m_eState == Player_State::Wire and m_pKunai) and
 		m_eState != Player_State::RasenShuriken)
 	{
@@ -446,7 +451,7 @@ void CPlayer::Init_State()
 		case Client::Player_State::Walk:
 			m_Animation.iAnimIndex = Walk_Loop;
 			m_Animation.isLoop = true;
-			
+
 			m_hasJumped = false;
 			break;
 		case Client::Player_State::Walk_End:
@@ -456,7 +461,7 @@ void CPlayer::Init_State()
 		case Client::Player_State::Run:
 			m_Animation.iAnimIndex = Run_Loop;
 			m_Animation.isLoop = true;
-			
+
 			m_hasJumped = false;
 			break;
 		case Client::Player_State::Run_End:
@@ -468,14 +473,14 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Jump_Vertical;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.8f;
-			
+
 			m_hasJumped = true;
 			break;
 		case Client::Player_State::Jump_Front:
 			m_Animation.iAnimIndex = Jump_Front;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.8f;
-			
+
 			m_hasJumped = true;
 			break;
 		case Client::Player_State::DoubleJump:
@@ -506,6 +511,15 @@ void CPlayer::Init_State()
 		case Client::Player_State::RasenShuriken:
 			m_Animation.iAnimIndex = Ninjutsu_TrueRasenShuriken;
 			break;
+		case Client::Player_State::Chidori:
+			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Charge_Lv2toLv3;
+
+			XMStoreFloat3(&m_vRightHandPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
+
+			m_fTimer = {};
+
+			m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_SkillEffect"), TEXT("Prototype_GameObject_Chidori"), &m_vRightHandPos);
+			break;
 		}
 
 		m_ePrevState = m_eState;
@@ -526,8 +540,8 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		//	}
 		//	else
 		//	{
-				m_Animation.iAnimIndex = Idle_Loop;
-				m_Animation.isLoop = true;
+		m_Animation.iAnimIndex = Idle_Loop;
+		m_Animation.isLoop = true;
 		//	}
 		//}
 		//else
@@ -746,6 +760,17 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		{
 			m_eState = Player_State::Idle;
 		}
+		break;
+	case Client::Player_State::Chidori:
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_LightningBlade_Charge_Lv2toLv3))
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Charge_Lv2toLv3_Loop;
+			m_Animation.isLoop = true;
+		}
+		m_fTimer += fTimeDelta;
+
+		XMStoreFloat3(&m_vRightHandPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
 		break;
 	}
 }

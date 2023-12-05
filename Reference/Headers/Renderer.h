@@ -6,8 +6,8 @@ BEGIN(Engine)
 enum RenderGroup
 {
 	RG_Priority,
-	RG_NonLight,
 	RG_NonBlend,
+	RG_NonLight,
 	RG_Blend,
 	RG_UI,
 	RG_Cursor,
@@ -36,8 +36,16 @@ private:
 	class CVIBuffer_Rect* m_pVIBuffer{ nullptr };
 	class CShader* m_pShader{ nullptr };
 
-	_float44 m_ViewMatrix{}, m_ProjMatrix{};
+	_float44 m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 
+private:
+	HRESULT Render_Priority();
+	HRESULT Render_NonBlend();
+	HRESULT Render_LightAcc();
+	HRESULT Render_Deferred();
+	HRESULT Render_NonLight();
+	HRESULT Render_Blend();
+	HRESULT Render_UI();
 #ifdef _DEBUG
 private:
 	HRESULT Render_Debug();

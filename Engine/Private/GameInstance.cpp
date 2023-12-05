@@ -445,6 +445,16 @@ const LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iLevelIndex, _uint iIndex) 
 	return m_pLight_Manager->Get_LightDesc(iLevelIndex, iIndex);
 }
 
+HRESULT CGameInstance::Render_Lights(_uint iLevelIndex, CShader* pShader, CVIBuffer_Rect* pVIBuffer)
+{
+	if (!m_pLight_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pLight_Manager is NULL");
+	}
+
+	return m_pLight_Manager->Render(iLevelIndex, pShader, pVIBuffer);
+}
+
 _float4 CGameInstance::Get_CameraPos() const
 {
 	if (!m_pPipeLine)
@@ -773,6 +783,16 @@ HRESULT CGameInstance::End_MRT()
 	}
 
 	return m_pRenderTarget_Manager->End_MRT();
+}
+
+HRESULT CGameInstance::Bind_ShaderResourceView(CShader* pShader, const _char* pVariableName, const wstring& strTargetTag)
+{
+	if (!m_pRenderTarget_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
+	}
+
+	return m_pRenderTarget_Manager->Bind_ShaderResourceView(pShader, pVariableName, strTargetTag);
 }
 
 #ifdef _DEBUG

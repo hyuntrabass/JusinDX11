@@ -77,7 +77,11 @@ VS_OUT VS_MainOutLine(VS_IN Input)
     vector vPos = mul(vector(Input.vPos, 1.f), Bone);
     vector vNor = mul(vector(Input.vNor, 0.f), Bone);
     
-    vPos += normalize(vNor) * 0.005f;
+    float fDist = length(g_vCamPos - mul(vPos, g_WorldMatrix));
+    
+    float fThickness = clamp(fDist / 300.f, 0.001f, 0.05f);
+    
+    vPos += normalize(vNor) * fThickness;
     
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
@@ -103,31 +107,40 @@ struct PS_OUT
     vector vColor : SV_Target0;
 };
 
-PS_OUT PS_Main(PS_IN Input)
+struct PS_OUT_DEFERRED
 {
-    PS_OUT Output = (PS_OUT) 0;
+    vector vDiffuse : SV_Target0;
+    vector vNormal : SV_Target1;
+};
+
+PS_OUT_DEFERRED PS_Main(PS_IN Input)
+{
+    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + vector(0.5f, 0.f, 0.f, 0.f) * g_bSelected;
     vector vNormal = (g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex + Input.vNor;
     
-    float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
-    fShade = ceil(fShade * 2.f) / 2.f;
+    //float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
+    //fShade = ceil(fShade * 2.f) / 2.f;
     
-    vector vReflect = reflect(normalize(g_vLightDir), vNormal);
-    vector vLook = Input.vWorldPos - g_vCamPos;
-    //float fSpecular = 0.f;
-    float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
+    //vector vReflect = reflect(normalize(g_vLightDir), vNormal);
+    //vector vLook = Input.vWorldPos - g_vCamPos;
+    ////float fSpecular = 0.f;
+    //float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
 
-    Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
+    //Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
     
-    //Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    ////Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
+    
+    Output.vDiffuse = vMtrlDiffuse;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     
     return Output;
 }
 
-PS_OUT PS_MainOutLine(PS_IN Input)
+PS_OUT_DEFERRED PS_MainOutLine(PS_IN Input)
 {
-    PS_OUT Output = (PS_OUT) 0;
+    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
     vector vLook = g_vCamPos - Input.vWorldPos;
     float DotProduct = dot(normalize(vLook), normalize(Input.vNor));
@@ -136,7 +149,7 @@ PS_OUT PS_MainOutLine(PS_IN Input)
         discard;
     }
     
-    Output.vColor = vector(0.f, 0.f, 0.f, 1.f);
+    Output.vDiffuse = vector(0.f, 0.f, 0.f, 1.f);
     
     return Output;
 }

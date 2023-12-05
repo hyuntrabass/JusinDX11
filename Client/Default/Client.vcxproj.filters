@@ -136,6 +136,9 @@
     <Filter Include="02.GameObjects\03.Player\Effect">
       <UniqueIdentifier>{aec77e1e-704e-46fa-be1b-a47c79245aaa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player\Projectile\Chidori">
+      <UniqueIdentifier>{2713453d-e10c-4636-ada0-a23bcc4caf2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -267,6 +270,9 @@
     <ClInclude Include="..\public\FootEffect.h">
       <Filter>02.GameObjects\03.Player\Effect</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Chidori.h">
+      <Filter>02.GameObjects\03.Player\Projectile\Chidori</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -395,6 +401,9 @@
     </ClCompile>
     <ClCompile Include="..\private\FootEffect.cpp">
       <Filter>02.GameObjects\03.Player\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Chidori.cpp">
+      <Filter>02.GameObjects\03.Player\Projectile\Chidori</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

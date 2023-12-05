@@ -41,7 +41,15 @@ void CTerrain::Tick(_float fTimeDelta)
 
 void CTerrain::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	//if (m_strPrototypeTag == L"Prototype_Model_SM_ENV_KNFRST_WireMesh_B.mo")
+	//{
+	//	__super::Compute_CamDistance();
+	//	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
+	//}
+	//else
+	//{
+	//}
+		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 }
 
 HRESULT CTerrain::Render()
@@ -154,32 +162,6 @@ HRESULT CTerrain::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), 0);
-	if (not pLightDesc)
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof _float4)))
 	{
 		return E_FAIL;
 	}

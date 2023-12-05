@@ -100,6 +100,18 @@ HRESULT CRenderTarget_Manager::End_MRT()
 	return S_OK;
 }
 
+HRESULT CRenderTarget_Manager::Bind_ShaderResourceView(CShader* pShader, const _char* pVariableName, const wstring& strTargetTag)
+{
+	CRenderTarget* pTarget = Find_RenderTarget(strTargetTag);
+	if (not pTarget)
+	{
+		MSG_BOX("Can't Find RenderTarget!");
+		return E_FAIL;
+	}
+
+	return pTarget->Bind_ShaderResourceView(pShader, pVariableName);
+}
+
 #ifdef _DEBUG
 HRESULT CRenderTarget_Manager::Ready_Debug(const wstring& strTargetTag, _float2 vPos, _float2 vSize)
 {

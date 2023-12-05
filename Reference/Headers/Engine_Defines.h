@@ -138,6 +138,14 @@ namespace Engine
 		Ambient_Occlusion,
 		End
 	};
+
+	enum DeferredPass
+	{
+		DefPass_Debug,
+		DefPass_Light_Directional,
+		DefPass_Light_Point,
+		DefPass_Deferred,
+	};
 }
 
 using namespace std;

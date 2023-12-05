@@ -57,6 +57,16 @@ void CRenderTarget::Clear()
     m_pContext->ClearRenderTargetView(m_pRenderTargetView, reinterpret_cast<_float*>(&m_vClearColor));
 }
 
+HRESULT CRenderTarget::Bind_ShaderResourceView(CShader* pShader, const _char* pVariableName)
+{
+    if (FAILED(pShader->Bind_ShaderResourceView(pVariableName, m_pShaderResourceView)))
+    {
+        return E_FAIL;
+    }
+
+    return S_OK;
+}
+
 #ifdef _DEBUG
 HRESULT CRenderTarget::Ready_Debug(_float2 vPos, _float2 vSize)
 {
@@ -88,7 +98,7 @@ HRESULT CRenderTarget::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
         return E_FAIL;
     }
 
-    if (FAILED(pShader->Begin(0)))
+    if (FAILED(pShader->Begin(DefPass_Debug)))
     {
         return E_FAIL;
     }

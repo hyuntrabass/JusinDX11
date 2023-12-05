@@ -206,38 +206,6 @@ HRESULT CKunai::Bind_Shader_Resources()
 		return E_FAIL;
 	}
 
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), 0);
-	if (not pLightDesc)
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	_float fNorTex{};
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fNorTex", &fNorTex, sizeof _float)))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
@@ -307,7 +275,11 @@ HRESULT CKunai::Render_Trail()
 	//	PosArray[iIndex++] = vPos;
 	//}
 
-	m_pTrailBufferCom->Update(0.f, PosArray);
+	_float4 vColor[2]{};
+	vColor[0] = { 0.4f, 0.6f, 0.9f, 1.f };
+	vColor[1] = { 0.4f, 0.6f, 0.9f, 1.f };
+
+	m_pTrailBufferCom->Update(PosArray, vColor);
 
 	if (FAILED(m_pTrailShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::View))))
 	{
@@ -324,13 +296,6 @@ HRESULT CKunai::Render_Trail()
 		return E_FAIL;
 	}
 
-	_float4 vColor{ 0.4f, 0.6f, 0.9f, 1.f };
-	//XMStoreFloat4(&vColor, Colors::CornflowerBlue);
-	if (FAILED(m_pTrailShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
-	{
-		return E_FAIL;
-	}
-	
 	if (FAILED(m_pTrailShaderCom->Begin(0)))
 	{
 		return E_FAIL;
@@ -380,6 +345,6 @@ void CKunai::Free()
 	Safe_Release(m_pEffectModelCom);
 	Safe_Release(m_pColliderCom);
 	Safe_Release(m_pEffectTexture);
-	Safe_Release(m_pTrailShaderCom);
 	Safe_Release(m_pTrailBufferCom);
+	Safe_Release(m_pTrailShaderCom);
 }

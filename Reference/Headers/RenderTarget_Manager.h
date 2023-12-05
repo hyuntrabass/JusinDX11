@@ -17,6 +17,8 @@ public:
 	HRESULT Begin_MRT(const wstring& strMRTTag);
 	HRESULT End_MRT();
 
+	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
+
 #ifdef _DEBUG
 public:
 	HRESULT Ready_Debug(const wstring& strTargetTag, _float2 vPos, _float2 vSize);

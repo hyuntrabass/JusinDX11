@@ -25,7 +25,7 @@ public:
 	const _uint Get_sizeofButtons() const;
 
 public:
-	HRESULT Init(CGameInstance* pGameInstance);
+	HRESULT Init();
 	void Tick(_float fTimeDelta);
 	void Late_Tick(_float fTimeDelta);
 	HRESULT Render();
