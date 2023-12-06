@@ -39,7 +39,7 @@ void CChidori::Tick(_float fTimeDelta)
 {
 	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(m_pPos), 1.f));
 
-	m_vUVTransform.x -= fTimeDelta * 5.f;
+	m_vUVTransform.x -= fTimeDelta * 8.f;
 	if (m_vUVTransform.x < -2.f)
 	{
 		m_vUVTransform.x = 1.f;
@@ -58,14 +58,14 @@ HRESULT CChidori::Render()
 		return E_FAIL;
 	}
 
-	for (size_t i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+	for (size_t i = 0; i < 5; i++)
 	{
 		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
 		{
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pModelCom->Render(i)))
+		if (FAILED(m_pModelCom[i]->Render(0)))
 		{
 			return E_FAIL;
 		}
@@ -86,7 +86,27 @@ HRESULT CChidori::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningC1"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningC1"), TEXT("Com_Model_1"), reinterpret_cast<CComponent**>(&m_pModelCom[0]))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB1"), TEXT("Com_Model_2"), reinterpret_cast<CComponent**>(&m_pModelCom[1]))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB2"), TEXT("Com_Model_3"), reinterpret_cast<CComponent**>(&m_pModelCom[2]))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB3"), TEXT("Com_Model_4"), reinterpret_cast<CComponent**>(&m_pModelCom[3]))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB4"), TEXT("Com_Model_5"), reinterpret_cast<CComponent**>(&m_pModelCom[4]))))
 	{
 		return E_FAIL;
 	}
@@ -121,7 +141,7 @@ HRESULT CChidori::Bind_ShaderResources()
 		return E_FAIL;
 	}
 	//Colors::LightSkyBlue
-	_float4 vColor{ 0.5f, 0.8f, 1.f, 1.f };
+	_float4 vColor{ 0.6f, 0.8f, 1.f, 1.f };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
 		return E_FAIL;
@@ -167,6 +187,9 @@ void CChidori::Free()
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pModelCom);
+	for (size_t i = 0; i < 5; i++)
+	{
+		Safe_Release(m_pModelCom[i]);
+	}
 	Safe_Release(m_pMaskTextureCom);
 }

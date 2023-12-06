@@ -237,9 +237,13 @@ PS_OUT PS_Main_MaskEffect(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
 
     vector vMask = g_MaskTexture.Sample(MaskSampler, Input.vTex + g_vUVTransform);
+    if (vMask.r < 0.1f)
+    {
+        discard;
+    }
     
     Output.vColor = g_vColor;
-    Output.vColor.a = Output.vColor.a * vMask.r;
+    Output.vColor.a = vMask.r;
     
     return Output;
 }

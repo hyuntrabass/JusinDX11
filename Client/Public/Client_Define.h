@@ -7,6 +7,7 @@
 #include "Transform.h"
 
 #pragma comment(lib, "Engine.lib")
+#pragma comment(lib, "Imm32.lib")
 
 namespace Client
 {
@@ -91,7 +92,8 @@ namespace Client
 
 	enum InstancingPass
 	{
-		InstPass_Particle,
+		InstPass_Particle_Texture,
+		InstPass_Particle_Color,
 	};
 }
 

@@ -87,6 +87,7 @@ void CTransform::Set_Position(_float3 vPosition)
 	{
 		PxExtendedVec3 NewPos{ static_cast<_double>(vPosition.x), static_cast<_double>(vPosition.y), static_cast<_double>(vPosition.z) };
 		m_pController->setPosition(NewPos);
+		Set_State(State::Pos, PxExVec3ToVector(m_pController->getFootPosition(), 1.f));
 	}
 	else
 	{

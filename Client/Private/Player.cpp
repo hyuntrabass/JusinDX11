@@ -4,6 +4,7 @@
 #include "UI_Manager.h"
 #include "Kunai.h"
 #include "FootEffect.h"
+#include "Trigger_Manager.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
@@ -41,6 +42,7 @@ HRESULT CPlayer::Init(void* pArg)
 	}
 
 	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit, true);
+	CTrigger_Manager::Get_Instance()->Register_PlayerCollider(m_pCollider_Hit);
 	m_iHP = 300;
 
 	return S_OK;
@@ -519,6 +521,7 @@ void CPlayer::Init_State()
 			m_fTimer = {};
 
 			m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_SkillEffect"), TEXT("Prototype_GameObject_Chidori"), &m_vRightHandPos);
+			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"));
 			break;
 		}
 

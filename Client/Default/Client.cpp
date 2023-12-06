@@ -21,95 +21,95 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+					  _In_opt_ HINSTANCE hPrevInstance,
+					  _In_ LPWSTR    lpCmdLine,
+					  _In_ int       nCmdShow)
 {
 #ifdef _DEBUG
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    //_CrtSetBreakAlloc(2007750);
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_CrtSetBreakAlloc(2007750);
 #endif
 
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: 여기에 코드를 입력합니다.
-    CMainApp* pMainApp{ nullptr };
+	// TODO: 여기에 코드를 입력합니다.
+	CMainApp* pMainApp{ nullptr };
 
-    // 전역 문자열을 초기화합니다.
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_CLIENT, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+	// 전역 문자열을 초기화합니다.
+	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDC_CLIENT, szWindowClass, MAX_LOADSTRING);
+	MyRegisterClass(hInstance);
 
-    // 애플리케이션 초기화를 수행합니다:
-    if (not InitInstance (hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
+	// 애플리케이션 초기화를 수행합니다:
+	if (not InitInstance(hInstance, nCmdShow))
+	{
+		return FALSE;
+	}
 
-    pMainApp = CMainApp::Create();
-    if (not pMainApp)
-    {
-        return FALSE;
-    }
+	pMainApp = CMainApp::Create();
+	if (not pMainApp)
+	{
+		return FALSE;
+	}
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
+	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
 
-    MSG msg;
+	MSG msg;
 
-    CGameInstance* pGameInstance = CGameInstance::Get_Instance();
-    Safe_AddRef(pGameInstance);
+	CGameInstance* pGameInstance = CGameInstance::Get_Instance();
+	Safe_AddRef(pGameInstance);
 
-    if (FAILED(pGameInstance->Add_Timer(L"Timer_Default")))
-    {
-        MSG_BOX("Failed to Add Timer : Default");
-        return E_FAIL;
-    }
+	if (FAILED(pGameInstance->Add_Timer(L"Timer_Default")))
+	{
+		MSG_BOX("Failed to Add Timer : Default");
+		return E_FAIL;
+	}
 
-    if (FAILED(pGameInstance->Add_Timer(L"Timer_60")))
-    {
-        MSG_BOX("Failed to Add Timer : 60");
-        return E_FAIL;
-    }
+	if (FAILED(pGameInstance->Add_Timer(L"Timer_60")))
+	{
+		MSG_BOX("Failed to Add Timer : 60");
+		return E_FAIL;
+	}
 
-    _float fTimeAcc = 0.f;
+	_float fTimeAcc = 0.f;
 
-    // 기본 메시지 루프입니다:
-    while (true)
-    {
-        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-        {
-            if (msg.message == WM_QUIT)
-            {
-                break;
-            }
-            if (not TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-            {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-            }
-        }
+	// 기본 메시지 루프입니다:
+	while (true)
+	{
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			if (msg.message == WM_QUIT)
+			{
+				break;
+			}
+			if (not TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+		}
 
-        fTimeAcc += pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
+		fTimeAcc += pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
 
-        //if (true)
-        if (fTimeAcc > 1.f / 60.f)
-        {
-            pMainApp->Tick(pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
-            pMainApp->Render();
+		//if (true)
+		if (fTimeAcc > 1.f / 60.f)
+		{
+			pMainApp->Tick(pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
+			pMainApp->Render();
 
-            fTimeAcc = 0.f;
-        }
-    }
+			fTimeAcc = 0.f;
+		}
+	}
 
-    Safe_Release(pGameInstance);
+	Safe_Release(pGameInstance);
 
-    if (Safe_Release(pMainApp))
-    {
-        MSG_BOX("memory leaks : pMainApp");
-    }
+	if (Safe_Release(pMainApp))
+	{
+		MSG_BOX("memory leaks : pMainApp");
+	}
 
-    return (int) msg.wParam;
+	return (int)msg.wParam;
 }
 
 
@@ -121,23 +121,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-    WNDCLASSEXW wcex;
+	WNDCLASSEXW wcex;
 
-    wcex.cbSize = sizeof(WNDCLASSEX);
+	wcex.cbSize = sizeof(WNDCLASSEX);
 
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_CLIENT));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_CLIENT);
-    wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = WndProc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = hInstance;
+	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_CLIENT));
+	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_CLIENT);
+	wcex.lpszClassName = szWindowClass;
+	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
-    return RegisterClassExW(&wcex);
+	return RegisterClassExW(&wcex);
 }
 
 //
@@ -152,26 +152,26 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+	g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-   RECT rc = { 0, 0, g_iWinSizeX, g_iWinSizeY };
+	RECT rc = { 0, 0, g_iWinSizeX, g_iWinSizeY };
 
-   AdjustWindowRect(&rc, WS_OVERLAPPED, TRUE);
+	AdjustWindowRect(&rc, WS_OVERLAPPED, TRUE);
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
+	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+							  CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 
-   if (not hWnd)
-   {
-      return FALSE;
-   }
+	if (not hWnd)
+	{
+		return FALSE;
+	}
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+	ShowWindow(hWnd, nCmdShow);
+	UpdateWindow(hWnd);
 
-   g_hWnd = hWnd;
+	g_hWnd = hWnd;
 
-   return TRUE;
+	return TRUE;
 }
 
 //
@@ -186,50 +186,83 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    switch (message)
-    {
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // 메뉴 선택을 구문 분석합니다:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-        }
-        break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
-    return 0;
+	wstring composingString{};
+
+	switch (message)
+	{
+	case WM_IME_COMPOSITION:
+	{
+		HIMC hIMC = ::ImmGetContext(hWnd);
+		if (hIMC)
+		{
+			if (lParam & GCS_COMPSTR)
+			{ // 조합 중인 문자열이 있는 경우
+				LONG len = ::ImmGetCompositionString(hIMC, GCS_COMPSTR, NULL, 0);
+				std::vector<wchar_t> buffer(len / sizeof(wchar_t) + 1);
+				::ImmGetCompositionString(hIMC, GCS_COMPSTR, buffer.data(), len);
+				composingString = buffer.data(); // 조합 중인 문자열을 저장
+			}
+			if (lParam & GCS_RESULTSTR)
+			{ // 조합이 완료된 문자열이 있는 경우
+				LONG len = ::ImmGetCompositionString(hIMC, GCS_RESULTSTR, NULL, 0);
+				std::vector<wchar_t> buffer(len / sizeof(wchar_t) + 1);
+				::ImmGetCompositionString(hIMC, GCS_RESULTSTR, buffer.data(), len);
+				composingString += buffer.data(); // 조합 완료된 문자열을 저장
+			}
+			::ImmReleaseContext(hWnd, hIMC);
+		}
+		break;
+	}
+	case WM_CHAR:
+		if (wParam >= 0xAC00 && wParam <= 0xD7A3) // 한글 유니코드 범위
+		{
+			// 한글 입력 처리
+			wchar_t ch = static_cast<wchar_t>(wParam);
+			std::wstring str;
+			str += ch;
+		}
+	break; case WM_COMMAND:
+	{
+		int wmId = LOWORD(wParam);
+		// 메뉴 선택을 구문 분석합니다:
+		switch (wmId)
+		{
+		case IDM_ABOUT:
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			break;
+		case IDM_EXIT:
+			DestroyWindow(hWnd);
+			break;
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+	}
+	break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
 }
 
 // 정보 대화 상자의 메시지 처리기입니다.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
 
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
 }

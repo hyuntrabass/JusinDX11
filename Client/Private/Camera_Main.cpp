@@ -19,6 +19,7 @@ HRESULT CCamera_Main::Init_Prototype()
 HRESULT CCamera_Main::Init(void* pArg)
 {
 	m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+	Safe_AddRef(m_pPlayerTransform);
 	if (not m_pTransformCom)
 	{
 		MSG_BOX("Can't Find Player!! : Camera Main");
@@ -34,6 +35,8 @@ HRESULT CCamera_Main::Init(void* pArg)
 	{
 		return E_FAIL;
 	}
+
+	//m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
 
 	return S_OK;
 }
@@ -101,7 +104,16 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * -fRStickMove);
 	}
 
+
 	m_pTransformCom->Set_State(State::Pos, m_pPlayerTransform->Get_CenterPos() - m_pTransformCom->Get_State(State::Look) * 4.f + m_pTransformCom->Get_State(State::Up));
+
+	PxRaycastBuffer Buffer{};
+	_vector vRayDir = m_pTransformCom->Get_State(State::Pos) - m_pPlayerTransform->Get_CenterPos();
+	_float fDist = XMVectorGetX(XMVector3Length(vRayDir)) - .4f;
+	if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos() + XMVector3Normalize(vRayDir) * .5f, XMVector3Normalize(vRayDir), fDist, Buffer))
+	{
+		m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
+	}
 
 	__super::Tick(fTimeDelta);
 }
@@ -139,4 +151,6 @@ CGameObject* CCamera_Main::Clone(void* pArg)
 void CCamera_Main::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pPlayerTransform);
 }

@@ -36,12 +36,12 @@ HRESULT CEffect::Init(void* pArg)
 
 void CEffect::Tick(_float fTimeDelta)
 {
-	//m_pTransformCom->LookAt(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
+	m_pTransformCom->LookAway(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
 
 	m_fLifeTime += fTimeDelta;
 	if (m_fLifeTime > 1.f)
 	{
-		m_isDead = true;
+		//m_isDead = true;
 
 	}
 	m_pVIBufferCom->Update(fTimeDelta);
@@ -60,7 +60,7 @@ HRESULT CEffect::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(InstPass_Particle)))
+	if (FAILED(m_pShaderCom->Begin(InstPass_Particle_Color)))
 	{
 		return E_FAIL;
 	}
@@ -70,23 +70,23 @@ HRESULT CEffect::Render()
 		return E_FAIL;
 	}
 
-	m_pTransformCom->LookAt_Dir(XMVectorSet(1.f, 0.f, 0.f, 0.f));
+	//m_pTransformCom->LookAt_Dir(XMVectorSet(1.f, 0.f, 0.f, 0.f));
 
-	if (FAILED(Bind_ShaderResources()))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(Bind_ShaderResources()))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pShaderCom->Begin(InstPass_Particle)))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pShaderCom->Begin(InstPass_Particle)))
+	//{
+	//	return E_FAIL;
+	//}
 
-	if (FAILED(m_pVIBufferCom->Render()))
-	{
-		return E_FAIL;
-	}
-	m_pTransformCom->LookAt_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
+	//if (FAILED(m_pVIBufferCom->Render()))
+	//{
+	//	return E_FAIL;
+	//}
+	//m_pTransformCom->LookAt_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
 
 	return S_OK;
 }
@@ -108,7 +108,7 @@ HRESULT CEffect::Add_Components()
 	Desc.vMaxPos = _float3(0.f, 0.f, 0.f);
 	Desc.vScaleRange = _float2(0.05f, 0.1f);
 	Desc.vSpeedRange = _float2(0.2f, 10.f);
-	Desc.vLifeTime = _float2(1.f, 1.f);
+	Desc.vLifeTime = _float2(0.2f, 0.4f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Instancing_Point"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), &Desc)))
 	{
@@ -141,7 +141,13 @@ HRESULT CEffect::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	//if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	//{
+	//	return E_FAIL;
+	//}
+
+	_float4 vColor{ 1.f, 0.6f, 0.f, 1.f };
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _float4)))
 	{
 		return E_FAIL;
 	}

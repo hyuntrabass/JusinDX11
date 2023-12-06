@@ -110,7 +110,6 @@ HRESULT CKurama::Render()
 	m_pCollider_Hit->Render();
 #endif // _DEBUG
 
-
 	return S_OK;
 }
 
@@ -182,32 +181,6 @@ HRESULT CKurama::Bind_ShaderResources()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_BOSSSTAGE, 0);
-	if (not pLightDesc)
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof _float4)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof _float4)))
 	{
 		return E_FAIL;
 	}

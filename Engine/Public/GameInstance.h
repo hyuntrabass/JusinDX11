@@ -109,6 +109,7 @@ public: // PhysX
 	void Update_PhysX(class CTransform* pTransform);
 	PxRigidStatic* Cook_StaticMesh(_uint iNumVertices, void* pVertices, _uint iNumIndices, void* pIndices);
 	_bool Raycast(_float3 vOrigin, _float3 vDir, _float fDist, PxRaycastBuffer& Buffer);
+	_bool Raycast(_fvector vOrigin, _fvector vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
 #ifdef _DEBUG
 	HRESULT Render_PhysX();

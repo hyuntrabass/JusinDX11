@@ -19,7 +19,7 @@ public:
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	CModel* m_pModelCom{ nullptr };
+	CModel* m_pModelCom[5]{ nullptr };
 	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:

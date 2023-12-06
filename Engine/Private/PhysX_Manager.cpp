@@ -354,6 +354,16 @@ _bool CPhysX_Manager::Raycast(_float3 vOrigin, _float3 vDir, _float fDist, PxRay
 	return false;
 }
 
+_bool CPhysX_Manager::Raycast(_fvector vOrigin, _fvector vDir, _float fDist, PxRaycastBuffer& Buffer)
+{
+	if (m_pScene->raycast(VectorToPxVec3(vOrigin), VectorToPxVec3(vDir), fDist, Buffer))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 CPhysX_Manager* CPhysX_Manager::Create(_dev pDevice, _context pContext)
 {
 	CPhysX_Manager* pInstance = new CPhysX_Manager(pDevice, pContext);

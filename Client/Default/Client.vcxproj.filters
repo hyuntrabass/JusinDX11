@@ -112,17 +112,11 @@
     <Filter Include="02.GameObjects\03.Player\Parts">
       <UniqueIdentifier>{caf63f51-0e3f-4b19-8fe7-1a72f98d5ce3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\05.Kurama">
-      <UniqueIdentifier>{e51f0c84-afe1-458b-84df-2a92e4170b7c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\06.Kakashi">
       <UniqueIdentifier>{881dd4f4-7486-41f7-aec4-d0ce64430e97}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\07.Effects">
       <UniqueIdentifier>{640e04b0-e4fe-46a5-ac69-0f034b206a0c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05.Kurama\Effects">
-      <UniqueIdentifier>{39896861-6f4c-4b83-b312-248fb9daa6b5}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\03.Player\Projectile">
       <UniqueIdentifier>{bb8f7c06-5291-49b4-b034-b639d8229b76}</UniqueIdentifier>
@@ -138,6 +132,24 @@
     </Filter>
     <Filter Include="02.GameObjects\03.Player\Projectile\Chidori">
       <UniqueIdentifier>{2713453d-e10c-4636-ada0-a23bcc4caf2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Boss">
+      <UniqueIdentifier>{c86b2fa5-6fcd-42c3-b206-020f9356f6c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Boss\Kurama">
+      <UniqueIdentifier>{e51f0c84-afe1-458b-84df-2a92e4170b7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Boss\Kurama\Effects">
+      <UniqueIdentifier>{39896861-6f4c-4b83-b312-248fb9daa6b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Boss\Pain">
+      <UniqueIdentifier>{3a403eea-daf8-41d3-9834-ce282f18de47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility">
+      <UniqueIdentifier>{7202322a-d03c-4359-95be-51e68c0870f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Utility\Trigger_Manager">
+      <UniqueIdentifier>{49a6b694-e722-4b63-b571-7ccdd8c92055}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -250,7 +262,7 @@
       <Filter>02.GameObjects\03.Player\Parts</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Kurama.h">
-      <Filter>02.GameObjects\05.Kurama</Filter>
+      <Filter>02.GameObjects\05. Boss\Kurama</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Kakashi.h">
       <Filter>02.GameObjects\06.Kakashi</Filter>
@@ -259,7 +271,7 @@
       <Filter>02.GameObjects\07.Effects</Filter>
     </ClInclude>
     <ClInclude Include="..\public\MiniBomb.h">
-      <Filter>02.GameObjects\05.Kurama\Effects</Filter>
+      <Filter>02.GameObjects\05. Boss\Kurama\Effects</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Kunai.h">
       <Filter>02.GameObjects\03.Player\Projectile\Kunai</Filter>
@@ -272,6 +284,12 @@
     </ClInclude>
     <ClInclude Include="..\public\Chidori.h">
       <Filter>02.GameObjects\03.Player\Projectile\Chidori</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Pain.h">
+      <Filter>02.GameObjects\05. Boss\Pain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Trigger_Manager.h">
+      <Filter>03.Utility\Trigger_Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -382,7 +400,7 @@
       <Filter>02.GameObjects\03.Player\Parts</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Kurama.cpp">
-      <Filter>02.GameObjects\05.Kurama</Filter>
+      <Filter>02.GameObjects\05. Boss\Kurama</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Kakashi.cpp">
       <Filter>02.GameObjects\06.Kakashi</Filter>
@@ -391,7 +409,7 @@
       <Filter>02.GameObjects\07.Effects</Filter>
     </ClCompile>
     <ClCompile Include="..\private\MiniBomb.cpp">
-      <Filter>02.GameObjects\05.Kurama\Effects</Filter>
+      <Filter>02.GameObjects\05. Boss\Kurama\Effects</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Kunai.cpp">
       <Filter>02.GameObjects\03.Player\Projectile\Kunai</Filter>
@@ -404,6 +422,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Chidori.cpp">
       <Filter>02.GameObjects\03.Player\Projectile\Chidori</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Pain.cpp">
+      <Filter>02.GameObjects\05. Boss\Pain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Trigger_Manager.cpp">
+      <Filter>03.Utility\Trigger_Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,7 @@
 #include "Loading_Screen.h"
 #include "Loading_Icon.h"
 #include "UI_Manager.h"
+#include "Trigger_Manager.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -42,10 +43,12 @@ HRESULT CMainApp::Init()
 		return E_FAIL;
 	}
 
+
 	if (FAILED(Ready_Prototype_Component_For_Static()))
 	{
 		return E_FAIL;
 	}
+	CTrigger_Manager::Get_Instance();
 
 	if (FAILED(Ready_Prototype_For_Loading()))
 	{
@@ -104,6 +107,10 @@ HRESULT CMainApp::Render()
 		return E_FAIL;
 	}
 	if (FAILED(CUI_Manager::Get_Instance()->Render()))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(CTrigger_Manager::Get_Instance()->Render()))
 	{
 		return E_FAIL;
 	}
@@ -181,6 +188,11 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), CCollider::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -237,6 +249,7 @@ void CMainApp::Free()
 	Safe_Release(m_pContext);
 
 	CUI_Manager::Get_Instance()->Destroy_Instance();
+	CTrigger_Manager::Get_Instance()->Destroy_Instance();
 
 	CGameInstance::Release_Engine();
 }

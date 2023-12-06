@@ -100,10 +100,10 @@ HRESULT CLoader::Loading_LevelResources()
 		hr = Load_Tutorial();
 		break;
 	case Client::LEVEL_STAGE1:
-		hr = Load_Stage1();
+		hr = Load_VillageStage();
 		break;
 	case Client::LEVEL_BOSSSTAGE:
-		hr = Load_Stage2();
+		hr = Load_CloudStage();
 		break;
 	}
 
@@ -206,6 +206,28 @@ HRESULT CLoader::Load_Logo()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningC1"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/Lightning/SM_EFF_Lightning_C_01.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	Pivot = XMMatrixScaling(0.5f, 0.5f, 0.5f) * Pivot;
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB1"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/Lightning/SM_EFF_Lightning_B_01.mo.hyuntrastatmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB2"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/Lightning/SM_EFF_Lightning_B_02.mo.hyuntrastatmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB3"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/Lightning/SM_EFF_Lightning_B_03.mo.hyuntrastatmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB4"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/Lightning/SM_EFF_Lightning_B_04.mo.hyuntrastatmesh", false, Pivot))))
 	{
 		return E_FAIL;
 	}
@@ -354,11 +376,6 @@ HRESULT CLoader::Load_CreateCharacter()
 
 	m_strLoadingText = L"CreateCharacter : Loading Prototype";
 #pragma region Prototype
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), CCollider::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
-
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 300, 300))))
 	{
 		return E_FAIL;
@@ -616,7 +633,7 @@ HRESULT CLoader::Load_Tutorial()
 	return S_OK;
 }
 
-HRESULT CLoader::Load_Stage1()
+HRESULT CLoader::Load_VillageStage()
 {
 	m_strLoadingText = L"Stage1 : Loading Texture";
 #pragma region Texture
@@ -659,6 +676,11 @@ HRESULT CLoader::Load_Stage1()
 		}
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STAGE1, TEXT("Prototype_Model_Pain"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Pain/Mesh/Pain.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 	m_strLoadingText = L"Stage1 : Loading Shader";
@@ -677,7 +699,7 @@ HRESULT CLoader::Load_Stage1()
 	return S_OK;
 }
 
-HRESULT CLoader::Load_Stage2()
+HRESULT CLoader::Load_CloudStage()
 {
 	m_strLoadingText = L"Stage2 : Loading Texture";
 #pragma region Texture

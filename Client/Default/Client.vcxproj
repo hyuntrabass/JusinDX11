@@ -192,6 +192,7 @@
     <ClInclude Include="..\public\MainApp.h" />
     <ClInclude Include="..\public\MapCollider.h" />
     <ClInclude Include="..\public\MiniBomb.h" />
+    <ClInclude Include="..\public\Pain.h" />
     <ClInclude Include="..\public\Parts_Window.h" />
     <ClInclude Include="..\public\Player.h" />
     <ClInclude Include="..\public\RasenShurikan.h" />
@@ -203,6 +204,7 @@
     <ClInclude Include="..\public\SubTitle.h" />
     <ClInclude Include="..\public\Terrain.h" />
     <ClInclude Include="..\public\Title_Custom.h" />
+    <ClInclude Include="..\public\Trigger_Manager.h" />
     <ClInclude Include="..\Public\UI_Manager.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
@@ -236,6 +238,7 @@
     <ClCompile Include="..\private\MainApp.cpp" />
     <ClCompile Include="..\private\MapCollider.cpp" />
     <ClCompile Include="..\private\MiniBomb.cpp" />
+    <ClCompile Include="..\private\Pain.cpp" />
     <ClCompile Include="..\private\Parts_Window.cpp" />
     <ClCompile Include="..\private\Player.cpp" />
     <ClCompile Include="..\private\RasenShurikan.cpp" />
@@ -247,6 +250,7 @@
     <ClCompile Include="..\private\SubTitle.cpp" />
     <ClCompile Include="..\private\Terrain.cpp" />
     <ClCompile Include="..\private\Title_Custom.cpp" />
+    <ClCompile Include="..\private\Trigger_Manager.cpp" />
     <ClCompile Include="..\Private\UI_Manager.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>

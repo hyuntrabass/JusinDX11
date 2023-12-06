@@ -40,8 +40,8 @@ private:
 	HRESULT Load_Logo();
 	HRESULT Load_CreateCharacter();
 	HRESULT Load_Tutorial();
-	HRESULT Load_Stage1();
-	HRESULT Load_Stage2();
+	HRESULT Load_VillageStage();
+	HRESULT Load_CloudStage();
 
 public:
 	static CLoader* Create(_dev pDevice, _context pContext, LEVEL_ID eNextLevel);

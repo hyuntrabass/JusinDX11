@@ -1,5 +1,6 @@
 #include "Level_Tutorial.h"
 #include "Level_Loading.h"
+#include "Trigger_Manager.h"
 
 CLevel_Tutorial::CLevel_Tutorial(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -49,6 +50,7 @@ void CLevel_Tutorial::Tick(_float fTimeDelta)
 	}
 
 	m_pGameInstance->PhysXTick(fTimeDelta);
+	CTrigger_Manager::Get_Instance()->Tick(fTimeDelta);
 }
 
 HRESULT CLevel_Tutorial::Render()
@@ -149,19 +151,6 @@ HRESULT CLevel_Tutorial::Ready_UIs()
 
 HRESULT CLevel_Tutorial::Ready_People()
 {
-	for (size_t i = 0; i < 10; i++)
-	{
-		_float4 vPos{};
-		vPos.x = -11 + (2.f * (rand() % 7));
-		vPos.y = 50.f;
-		vPos.z = 85.f + (2.f * (rand() % 10));
-		vPos.w = 1.f;
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Sandman", L"Prototype_GameObject_Sandman", &vPos)))
-		{
-			return E_FAIL;
-		}
-	}
-
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Kakashi", L"Prototype_GameObject_Kakashi")))
 	{
 		return E_FAIL;
