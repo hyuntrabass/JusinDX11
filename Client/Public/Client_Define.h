@@ -34,6 +34,15 @@ namespace Client
 		CM_END
 	};
 
+	enum class ItemType
+	{
+		Map,
+		Props,
+		Monster,
+		NPC,
+		End
+	};
+
 	struct ObjectInfo
 	{
 		wstring strPrototypeTag{};
@@ -70,7 +79,7 @@ namespace Client
 		StaticPass_OutLine,
 		StaticPass_BlendMeshes,
 		StaticPass_Sky,
-		StaticPass_SingleColor,
+		StaticPass_COLMesh,
 		StaticPass_SingleColorFx,
 		StaticPass_MaskEffect,
 		SingleColoredEffectFrontCull,

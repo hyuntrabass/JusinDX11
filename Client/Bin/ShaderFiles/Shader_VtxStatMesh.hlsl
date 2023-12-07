@@ -11,6 +11,15 @@ vector g_vCamPos;
 float g_fNorTex;
 bool g_bSelected = false;
 
+vector g_vLightDir;
+
+vector g_vLightDiffuse;
+vector g_vLightAmbient;
+vector g_vLightSpecular;
+
+vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1.f);
+vector g_vMtrlSpecular = vector(0.8f, 0.8f, 0.8f, 1.f);
+
 float2 g_vUVTransform;
 
 sampler MaskSampler = sampler_state
@@ -48,7 +57,6 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
     Output.vNor = mul(vector(Input.vNor, 0.f), g_WorldMatrix);
     Output.vTex = Input.vTex;
-    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
 	
     return Output;
 }
@@ -69,7 +77,7 @@ VS_OUT VS_OutLine(VS_IN Input)
     
     float fThickness = clamp(fDist / 300.f, 0.03f, 0.2f);
     
-    vPos += normalize(vNor) * fThickness;
+    vPos += normalize(vNor) * (fThickness + 0.5 * g_bSelected);
     
     Output.vPos = mul(vPos, matWVP);
     Output.vNor = mul(vNor, g_WorldMatrix);
@@ -102,7 +110,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
 {
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 1.f * g_bSelected;
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 0.3f * g_bSelected;
     vector vNormal = (g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex + Input.vNor;
     
     //float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
@@ -137,7 +145,7 @@ PS_OUT_DEFERRED PS_Main_Blend(PS_IN Input)
 {
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
-    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 1.f * g_bSelected;
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 0.3f * g_bSelected;
     vector vNormal = (g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex + Input.vNor;
     
     //float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
@@ -184,7 +192,7 @@ PS_OUT_DEFERRED PS_OutLine(PS_IN Input)
         discard;
     }
     
-    Output.vDiffuse = vector(0.f, 0.f, 0.f, 1.f);
+    Output.vDiffuse = vector(float(g_bSelected), 0.f, 0.f, 1.f);
 
     return Output;
 }
@@ -198,27 +206,25 @@ PS_OUT PS_Main_Sky(PS_IN Input)
     return Output;
 }
 
-PS_OUT_DEFERRED PS_Main_Single(PS_IN Input)
+PS_OUT PS_Main_COL(PS_IN Input)
 {
-    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
+    PS_OUT Output = (PS_OUT) 0;
     
-    //vector vMtrlDiffuse = g_vColor;
-    //vector vNormal = Input.vNor;
+    vector vMtrlDiffuse = g_vColor;
+    vector vNormal = Input.vNor;
     
-    //vector vLook = Input.vWorldPos - g_vCamPos;
+    vector vLook = Input.vWorldPos - g_vCamPos;
     
-    //float dp = dot(normalize(vLook) * -1.f, normalize(vNormal));
+    float dp = saturate(dot(normalize(vLook) * -1.f, normalize(vNormal)));
     
-    //vMtrlDiffuse = vMtrlDiffuse * dp;
-    //vMtrlDiffuse.a = 1.f;
+    vMtrlDiffuse = vMtrlDiffuse * dp;
+    vMtrlDiffuse.a = g_vColor.a;
      
-    //float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
-    ////fShade = ceil(fShade * 2.f) / 2.f;
+    float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
     
-    //vector vReflect = reflect(normalize(g_vLightDir), vNormal);
+    vector vReflect = reflect(normalize(g_vLightDir), vNormal);
 
-    Output.vDiffuse = g_vColor;
-    Output.vNormal = vector(Input.vNor.xyz * 0.5f + 0.5f, 0.f);
+    Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient));
     
     return Output;
 }
@@ -302,7 +308,7 @@ technique11 DefaultTechniqueShader_VtxNorTex
         PixelShader = compile ps_5_0 PS_Main_Sky();
     }
 
-    pass SingleColored
+    pass COLMesh
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -312,7 +318,7 @@ technique11 DefaultTechniqueShader_VtxNorTex
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Single();
+        PixelShader = compile ps_5_0 PS_Main_COL();
     }
 
     pass SingleColoredEffect

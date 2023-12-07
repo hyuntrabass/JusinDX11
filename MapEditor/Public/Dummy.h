@@ -15,6 +15,10 @@ private:
 public:
 	void Select(const _bool& isSelected);
 	void Modify(_fvector vPos, _fvector vLook);
+	
+	void Get_State(_float4& vPos, _float4& vLook);
+	
+	HRESULT WriteFile(ofstream& File, _bool WriteWData = false, _uint iWData = 0);
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -31,8 +35,9 @@ private:
 private:
 	DummyInfo m_Info{};
 	_bool m_isSelected{};
-	_bool m_isBlendObject{};
-	_uint m_iAnimIndex{};
+	_uint m_iShaderPass{};
+	_uint m_iOutLineShaderPass{};
+	ANIM_DESC m_Animation{};
 
 private:
 	HRESULT Add_Components();

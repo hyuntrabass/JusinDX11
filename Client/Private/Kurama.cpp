@@ -23,11 +23,11 @@ HRESULT CKurama::Init(void* pArg)
 	}
 
 	m_vAppearPoints[0] = _float3(-25.85f, 33.3f, -48.77f);
-	m_vAppearPoints[1] = _float3(-17.4f, 73.f, -15.f);
+	m_vAppearPoints[1] = _float3(-18.572247f, 73.f, -19.051219f);
 	m_vAppearPoints[2] = _float3(14.8f, 65.f, 29.6f);
 	m_vAppearPoints[3] = _float3(44.f, 33.f, 18.5f);
 	m_vAppearPoints[4] = _float3(108.f, 51.f, -9.9f);
-
+	
 	_vector WarpPos = XMLoadFloat3(&m_vAppearPoints[m_iPosIndex]);
 	WarpPos.m128_f32[3] = 1.f;
 
@@ -64,6 +64,10 @@ void CKurama::Late_Tick(_float fTimeDelta)
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f) and m_eState != State_None)
 	{
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+
+	#ifdef _DEBUG
+		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
+	#endif // _DEBUG
 	}
 }
 
@@ -105,10 +109,6 @@ HRESULT CKurama::Render()
 			return E_FAIL;
 		}
 	}
-
-#ifdef _DEBUG
-	m_pCollider_Hit->Render();
-#endif // _DEBUG
 
 	return S_OK;
 }

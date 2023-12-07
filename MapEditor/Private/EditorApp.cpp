@@ -113,7 +113,7 @@ void CEditorApp::Tick(_float fTimeDelta)
 	{
 		if (!m_pImguiMgr)
 		{
-			m_pImguiMgr = CImguiMgr::Create(m_pDevice, m_pContext, m_pGameInstance, m_MapModels, &m_Name_Props);
+			m_pImguiMgr = CImguiMgr::Create(m_pDevice, m_pContext, m_pGameInstance, m_MapModels, m_MapCOLModels, &m_Name_Props);
 		}
 	}
 
@@ -256,10 +256,18 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 	LightDesc.eType = LIGHT_DESC::Directional;
 	LightDesc.vDirection = _float4(0.f, -1.f, 0.5f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, LightDesc)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Light(1, LightDesc)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Add_Light(2, LightDesc)))
 	{
 		return E_FAIL;
 	}
@@ -279,7 +287,47 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 #pragma endregion
 
 #pragma region Model
-	string strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Maps/Village/Mesh/";
+	string strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Maps/Forest/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = L"Prototype_Model_";
+			wstring strFileName = entry.path().stem().wstring();
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			{
+				return E_FAIL;
+			}
+			else
+			{
+				m_MapModels[0].push_back(strFileName);
+			}
+		}
+	}
+	// Model for Map Collider.
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Maps/Forest/COL_Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = L"Prototype_Model_";
+			wstring strFileName = entry.path().stem().wstring();
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
+			{
+				return E_FAIL;
+			}
+			else
+			{
+				m_MapCOLModels[0].push_back(strFileName);
+			}
+		}
+	}
+
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Maps/Village/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -298,8 +346,28 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			}
 		}
 	}
+	// Model for Map Collider.
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Maps/Village/COL_Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = L"Prototype_Model_";
+			wstring strFileName = entry.path().stem().wstring();
+			string strFilePath = entry.path().filename().string();
 
-	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Maps/Forest/Mesh/";
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
+			{
+				return E_FAIL;
+			}
+			else
+			{
+				m_MapCOLModels[1].push_back(strFileName);
+			}
+		}
+	}
+
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Maps/Cloud/Mesh/";
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
 	{
 		if (entry.is_regular_file())
@@ -314,8 +382,27 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			}
 			else
 			{
-				m_MapModels[0].push_back(strFileName);
 				m_MapModels[2].push_back(strFileName);
+			}
+		}
+	}
+	// Model for Map Collider.
+	strInputFilePath = "../../Client/Bin/Resources/StaticMesh/Maps/Cloud/COL_Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = L"Prototype_Model_";
+			wstring strFileName = entry.path().stem().wstring();
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
+			{
+				return E_FAIL;
+			}
+			else
+			{
+				m_MapCOLModels[2].push_back(strFileName);
 			}
 		}
 	}
@@ -347,12 +434,12 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Kurama"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Kurama/Mesh/Kurama.hyuntraanimmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Kurama"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/Kurama/Mesh/Kurama.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Pain"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Pain/Mesh/Pain.hyuntraanimmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Pain"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/Pain/Mesh/Pain.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}

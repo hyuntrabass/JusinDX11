@@ -61,6 +61,9 @@ void CMiniBomb::Tick(_float fTimeDelta)
 void CMiniBomb::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+#ifdef _DEBUG
+	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
+#endif // _DEBUG
 }
 
 HRESULT CMiniBomb::Render()
@@ -74,10 +77,6 @@ HRESULT CMiniBomb::Render()
 
 	m_pModelCom->Render(0);
 	m_pEffectModelCom->Render(0);
-
-#ifdef _DEBUG
-	m_pColliderCom->Render();
-#endif // _DEBUG
 
 	return S_OK;
 }

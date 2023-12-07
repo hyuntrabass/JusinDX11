@@ -32,6 +32,11 @@ HRESULT CComponent::Init(void* pArg)
     return S_OK;
 }
 
+HRESULT CComponent::Render()
+{
+    return S_OK;
+}
+
 void CComponent::Free()
 {
     Safe_Release(m_pGameInstance);

@@ -25,7 +25,7 @@ public:
 private:
 	CGameInstance* m_pGameInstance{ nullptr };
 
-	vector<CCollider*> m_Triggers[LEVEL_END]{};
+	vector<pair<CCollider*, _bool>> m_Triggers[LEVEL_END]{};
 	CCollider* m_pPlayerCollider{ nullptr };
 
 private:

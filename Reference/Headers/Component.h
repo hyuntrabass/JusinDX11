@@ -13,6 +13,7 @@ protected:
 public:
 	virtual HRESULT Init_Prototype();
 	virtual HRESULT Init(void* pArg);
+	virtual HRESULT Render();
 
 protected:
 	_dev m_pDevice{ nullptr };

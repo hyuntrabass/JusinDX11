@@ -746,6 +746,7 @@ void CGameInstance::PhysXTick(_float fTimeDelta)
 }
 
 #ifdef _DEBUG
+#ifndef _MapEditor
 HRESULT CGameInstance::Render_PhysX()
 {
 	if (FAILED(m_pPhysX_Manager->Render()))
@@ -756,6 +757,7 @@ HRESULT CGameInstance::Render_PhysX()
 
 	return S_OK;
 }
+#endif // _MapEditor
 #endif // _DEBUG
 
 HRESULT CGameInstance::Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor)

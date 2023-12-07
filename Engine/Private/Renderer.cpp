@@ -97,7 +97,7 @@ HRESULT CRenderer::Add_RenderGroup(RenderGroup eRenderGroup, CGameObject* pRende
 		return E_FAIL;
 	}
 
-	m_RenderObject[ToIndex(eRenderGroup)].push_back(pRenderObject);
+	m_RenderObjects[ToIndex(eRenderGroup)].push_back(pRenderObject);
 
 	Safe_AddRef(pRenderObject);
 
@@ -154,9 +154,17 @@ HRESULT CRenderer::Draw_RenderGroup()
 	return S_OK;
 }
 
+HRESULT CRenderer::Add_DebugComponent(CComponent* pDebugComponent)
+{
+	m_DebugComponents.push_back(pDebugComponent);
+	Safe_AddRef(pDebugComponent);
+
+	return S_OK;
+}
+
 HRESULT CRenderer::Render_Priority()
 {
-	for (auto& pGameObject : m_RenderObject[RG_Priority])
+	for (auto& pGameObject : m_RenderObjects[RG_Priority])
 	{
 		if (pGameObject)
 		{
@@ -169,7 +177,7 @@ HRESULT CRenderer::Render_Priority()
 		Safe_Release(pGameObject);
 	}
 
-	m_RenderObject[RG_Priority].clear();
+	m_RenderObjects[RG_Priority].clear();
 
 	return S_OK;
 }
@@ -181,7 +189,7 @@ HRESULT CRenderer::Render_NonBlend()
 		return E_FAIL;
 	}
 
-	for (auto& pGameObject : m_RenderObject[RG_NonBlend])
+	for (auto& pGameObject : m_RenderObjects[RG_NonBlend])
 	{
 		if (pGameObject)
 		{
@@ -194,7 +202,7 @@ HRESULT CRenderer::Render_NonBlend()
 		Safe_Release(pGameObject);
 	}
 
-	m_RenderObject[RG_NonBlend].clear();
+	m_RenderObjects[RG_NonBlend].clear();
 
 	if (FAILED(m_pGameInstance->End_MRT()))
 	{
@@ -280,7 +288,7 @@ HRESULT CRenderer::Render_Deferred()
 
 HRESULT CRenderer::Render_NonLight()
 {
-	for (auto& pGameObject : m_RenderObject[RG_NonLight])
+	for (auto& pGameObject : m_RenderObjects[RG_NonLight])
 	{
 		if (pGameObject)
 		{
@@ -293,19 +301,19 @@ HRESULT CRenderer::Render_NonLight()
 		Safe_Release(pGameObject);
 	}
 
-	m_RenderObject[RG_NonLight].clear();
+	m_RenderObjects[RG_NonLight].clear();
 
 	return S_OK;
 }
 
 HRESULT CRenderer::Render_Blend()
 {
-	m_RenderObject[RG_Blend].sort([](CGameObject* pSrc, CGameObject* pDst)
+	m_RenderObjects[RG_Blend].sort([](CGameObject* pSrc, CGameObject* pDst)
 	{
 		return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
 	});
 
-	for (auto& pGameObject : m_RenderObject[RG_Blend])
+	for (auto& pGameObject : m_RenderObjects[RG_Blend])
 	{
 		if (pGameObject)
 		{
@@ -318,19 +326,19 @@ HRESULT CRenderer::Render_Blend()
 		Safe_Release(pGameObject);
 	}
 
-	m_RenderObject[RG_Blend].clear();
+	m_RenderObjects[RG_Blend].clear();
 
 	return S_OK;
 }
 
 HRESULT CRenderer::Render_UI()
 {
-	m_RenderObject[RG_UI].sort([](CGameObject* pSrc, CGameObject* pDst)
+	m_RenderObjects[RG_UI].sort([](CGameObject* pSrc, CGameObject* pDst)
 	{
 		return dynamic_cast<COrthographicObject*>(pSrc)->Get_Depth() > dynamic_cast<COrthographicObject*>(pDst)->Get_Depth();
 	});
 
-	for (auto& pGameObject : m_RenderObject[RG_UI])
+	for (auto& pGameObject : m_RenderObjects[RG_UI])
 	{
 		if (pGameObject)
 		{
@@ -343,7 +351,7 @@ HRESULT CRenderer::Render_UI()
 		Safe_Release(pGameObject);
 	}
 
-	m_RenderObject[RG_UI].clear();
+	m_RenderObjects[RG_UI].clear();
 
 	return S_OK;
 }
@@ -351,6 +359,13 @@ HRESULT CRenderer::Render_UI()
 #ifdef _DEBUG
 HRESULT CRenderer::Render_Debug()
 {
+	for (auto& pComponent : m_DebugComponents)
+	{
+		pComponent->Render();
+		Safe_Release(pComponent);
+	}
+	m_DebugComponents.clear();
+
 	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", m_ViewMatrix)))
 	{
 		return E_FAIL;
@@ -403,7 +418,7 @@ void CRenderer::Free()
 	Safe_Release(m_pShader);
 	Safe_Release(m_pVIBuffer);
 
-	for (auto& ObjectList : m_RenderObject)
+	for (auto& ObjectList : m_RenderObjects)
 	{
 		for (auto& pGameObject : ObjectList)
 		{

@@ -68,7 +68,7 @@ void CSandman::Tick(_float fTimeDelta)
 		m_pGameInstance->Delete_CollisionObject(this);
 		_float4 vPos{};
 		XMStoreFloat4(&vPos, m_pTransformCom->Get_CenterPos());
-		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"), &vPos);
+		//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"), &vPos);
 	}
 
 #ifdef _DEBUG
@@ -85,20 +85,20 @@ void CSandman::Tick(_float fTimeDelta)
 		m_Hit = false;
 	}
 
-	if (m_pTransformCom->Get_State(State::Pos).m128_f32[1] < 20.f)
-	{
-		m_iHP = 0;
-		ANIM_DESC Anim{};
-		Anim.iAnimIndex = Anim_Dying_Aerial_Fall_Behind_Loop;
-		Anim.isLoop = true;
-		m_pModelCom->Set_Animation(Anim);
-		m_pTransformCom->Gravity(fTimeDelta);
-		if (m_pModelCom->IsAnimationFinished(Anim_Dying_Aerial_Fall_Behind_Loop))
-		{
-			m_isDead = true;
-		}
-		return;
-	}
+	//if (m_pTransformCom->Get_State(State::Pos).m128_f32[1] < 20.f)
+	//{
+	//	m_iHP = 0;
+	//	ANIM_DESC Anim{};
+	//	Anim.iAnimIndex = Anim_Dying_Aerial_Fall_Behind_Loop;
+	//	Anim.isLoop = true;
+	//	m_pModelCom->Set_Animation(Anim);
+	//	m_pTransformCom->Gravity(fTimeDelta);
+	//	if (m_pModelCom->IsAnimationFinished(Anim_Dying_Aerial_Fall_Behind_Loop))
+	//	{
+	//		m_isDead = true;
+	//	}
+	//	return;
+	//}
 
 	if (m_pModelCom->IsAnimationFinished(Anim_etc_Appearance_Type01) or m_pModelCom->IsAnimationFinished(Anim_etc_Appearance_Type02))
 	{
@@ -129,6 +129,10 @@ void CSandman::Late_Tick(_float fTimeDelta)
 
 		m_pModelCom->Play_Animation(fTimeDelta);
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+
+	#ifdef _DEBUG
+		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
+	#endif // _DEBUG
 	}
 	else
 	{
@@ -189,11 +193,6 @@ HRESULT CSandman::Render()
 			return E_FAIL;
 		}
 	}
-
-#ifdef _DEBUG
-	m_pCollider_Hit->Render();
-#endif // _DEBUG
-
 
 	return S_OK;
 }

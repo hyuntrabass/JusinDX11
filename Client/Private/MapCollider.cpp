@@ -41,7 +41,7 @@ void CMapCollider::Tick(_float fTimeDelta)
 
 void CMapCollider::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonLight, this);
 }
 
 #ifdef _DEBUG
@@ -62,7 +62,7 @@ HRESULT CMapCollider::Render()
 
 	for (_uint i = 0; i < iNumMeshes; i++)
 	{
-		if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColor)))
+		if (FAILED(m_pShaderCom->Begin(StaticPass_COLMesh)))
 		{
 			return E_FAIL;
 		}
@@ -100,12 +100,38 @@ HRESULT CMapCollider::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	_float4 vColor{ 0.3f, 0.8f, 0.3f, 1.f };
+	_float4 vColor{ 0.3f, 0.8f, 0.3f, 0.5f };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _float4)))
 	{
 		return E_FAIL;
 	}
 
+	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, 0);
+	if (!pLightDesc)
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof _float4)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof _float4)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof _float4)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof _float4)))
+	{
+		return E_FAIL;
+	}
+	
 	return S_OK;
 }
 #endif // _DEBUG

@@ -25,6 +25,44 @@ namespace MapEditor
 		LEVEL_END
 	};
 
+	enum AnimMeshPass
+	{
+		AnimPass_Default,
+		AnimPass_OutLine,
+		AnimPass_Test,
+	};
+
+	enum StaticMeshPass
+	{
+		StaticPass_Default,
+		StaticPass_OutLine,
+		StaticPass_BlendMeshes,
+		StaticPass_Sky,
+		StaticPass_COLMesh,
+		StaticPass_SingleColorFx,
+		StaticPass_MaskEffect,
+		SingleColoredEffectFrontCull,
+	};
+
+	enum VNTPass
+	{
+		VNTPass_Terrain,
+		VNTPass_Terrain_Editor,
+	};
+
+	enum VTPass
+	{
+		VTPass_UI,
+		VTPass_Button,
+		VTPass_Background,
+		VTPass_Mask_Color,
+	};
+
+	enum InstancingPass
+	{
+		InstPass_Particle_Texture,
+		InstPass_Particle_Color,
+	};
 }
 
 extern HWND g_hWnd;

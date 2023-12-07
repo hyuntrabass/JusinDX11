@@ -124,8 +124,8 @@ HRESULT CPhysX_Manager::Init()
 
 	//PxRigidStatic* pGround = PxCreatePlane(*m_pPhysics, PxPlane(0.f, 1.f, 0.f, 0.f), *m_pMaterial);
 	//m_pScene->addActor(*pGround);
-
 #ifdef _DEBUG
+#ifndef _MapEditor
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 1.0);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 1.0);
 
@@ -134,7 +134,7 @@ HRESULT CPhysX_Manager::Init()
 	{
 		return E_FAIL;
 	}
-
+#endif
 #endif // _DEBUG
 
 	m_pGameInstance = CGameInstance::Get_Instance();
@@ -150,6 +150,7 @@ void CPhysX_Manager::Tick(_float fTimeDelta)
 }
 
 #ifdef _DEBUG
+#ifndef _MapEditor
 HRESULT CPhysX_Manager::Render()
 {
 	if (!m_pVIBufferCom)
@@ -189,6 +190,7 @@ HRESULT CPhysX_Manager::Render()
 
 	return S_OK;
 }
+#endif // _MapEditor
 #endif // _DEBUG
 
 void CPhysX_Manager::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc)
@@ -387,8 +389,10 @@ void CPhysX_Manager::Free()
 	m_pFoundation->release();
 
 #ifdef _DEBUG
+#ifndef _MapEditor
 	Safe_Release(m_pDebugShader);
 	Safe_Release(m_pVIBufferCom);
+#endif // _MapEditor
 #endif // _DEBUG
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);

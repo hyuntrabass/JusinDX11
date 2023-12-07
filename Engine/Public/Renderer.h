@@ -29,8 +29,18 @@ public:
 	HRESULT Add_RenderGroup(RenderGroup eRenderGroup, class CGameObject* pRenderObject);
 	HRESULT Draw_RenderGroup();
 
+#ifdef _DEBUG
+	HRESULT Add_DebugComponent(class CComponent* pDebugComponent);
+#endif // _DEBUG
+
+
 private:
-	list<class CGameObject*> m_RenderObject[RG_End]{};
+	list<class CGameObject*> m_RenderObjects[RG_End]{};
+
+#ifdef _DEBUG
+	list<class CComponent*> m_DebugComponents{};
+#endif // _DEBUG
+
 
 private:
 	class CVIBuffer_Rect* m_pVIBuffer{ nullptr };

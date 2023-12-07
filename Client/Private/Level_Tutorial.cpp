@@ -55,10 +55,10 @@ void CLevel_Tutorial::Tick(_float fTimeDelta)
 
 HRESULT CLevel_Tutorial::Render()
 {
-	if (FAILED(m_pGameInstance->Render_PhysX()))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Render_PhysX()))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }
@@ -103,6 +103,49 @@ HRESULT CLevel_Tutorial::Ready_Map()
 		}
 	}
 
+	filesystem::path strFilePath = TEXT("../Bin/Resources/MapData/0.hyuntramap");
+
+	ifstream InFile(strFilePath.c_str(), ios::binary);
+
+	if (InFile.is_open())
+	{
+		size_t PropSize{};
+		ItemType Type{};
+		_uint iTrash{};
+		InFile.read(reinterpret_cast<_char*>(&PropSize), sizeof size_t);
+
+		for (size_t i = 0; i < PropSize; i++)
+		{
+			ObjectInfo Info{};
+			size_t NameSize{};
+
+			InFile.read(reinterpret_cast<_char*>(&NameSize), sizeof size_t);
+			wchar_t* pBuffer = new wchar_t[NameSize / sizeof(wchar_t)];
+			InFile.read(reinterpret_cast<_char*>(pBuffer), NameSize);
+			Info.strPrototypeTag = pBuffer;
+			Safe_Delete_Array(pBuffer);
+			InFile.read(reinterpret_cast<_char*>(&Type), sizeof ItemType);
+			InFile.read(reinterpret_cast<_char*>(&iTrash), sizeof _uint);
+			InFile.read(reinterpret_cast<_char*>(&Info.vPos), sizeof _float4);
+			InFile.read(reinterpret_cast<_char*>(&Info.vLook), sizeof _float4);
+
+			if (Type != ItemType::Props)
+			{
+				continue;
+			}
+
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
+			{
+				return E_FAIL;
+			}
+		}
+		InFile.close();
+	}
+	else
+	{
+		return E_FAIL;
+	}
+	
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Sky", L"Prototype_GameObject_Sky")))
 	{
 		return E_FAIL;
@@ -118,7 +161,7 @@ HRESULT CLevel_Tutorial::Ready_Lights()
 	LightDesc.eType = LIGHT_DESC::Directional;
 	LightDesc.vDirection = _float4(0.f, -1.f, 0.2f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.8f, 0.8f, 0.8f, 1.f);
+	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	return m_pGameInstance->Add_Light(LEVEL_TUTORIAL, LightDesc);

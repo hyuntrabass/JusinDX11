@@ -139,9 +139,6 @@
     <Filter Include="02.GameObjects\05. Boss\Kurama">
       <UniqueIdentifier>{e51f0c84-afe1-458b-84df-2a92e4170b7c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\05. Boss\Kurama\Effects">
-      <UniqueIdentifier>{39896861-6f4c-4b83-b312-248fb9daa6b5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\05. Boss\Pain">
       <UniqueIdentifier>{3a403eea-daf8-41d3-9834-ce282f18de47}</UniqueIdentifier>
     </Filter>
@@ -150,6 +147,9 @@
     </Filter>
     <Filter Include="03.Utility\Trigger_Manager">
       <UniqueIdentifier>{49a6b694-e722-4b63-b571-7ccdd8c92055}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\05. Boss\Kurama\Projectile">
+      <UniqueIdentifier>{39896861-6f4c-4b83-b312-248fb9daa6b5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -271,7 +271,7 @@
       <Filter>02.GameObjects\07.Effects</Filter>
     </ClInclude>
     <ClInclude Include="..\public\MiniBomb.h">
-      <Filter>02.GameObjects\05. Boss\Kurama\Effects</Filter>
+      <Filter>02.GameObjects\05. Boss\Kurama\Projectile</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Kunai.h">
       <Filter>02.GameObjects\03.Player\Projectile\Kunai</Filter>
@@ -409,7 +409,7 @@
       <Filter>02.GameObjects\07.Effects</Filter>
     </ClCompile>
     <ClCompile Include="..\private\MiniBomb.cpp">
-      <Filter>02.GameObjects\05. Boss\Kurama\Effects</Filter>
+      <Filter>02.GameObjects\05. Boss\Kurama\Projectile</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Kunai.cpp">
       <Filter>02.GameObjects\03.Player\Projectile\Kunai</Filter>

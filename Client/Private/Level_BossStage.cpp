@@ -90,7 +90,7 @@ HRESULT CLevel_Stage2::Ready_Lights()
 	LightDesc.eType = LIGHT_DESC::Directional;
 	LightDesc.vDirection = _float4(0.f, -1.f, 0.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	return m_pGameInstance->Add_Light(LEVEL_BOSSSTAGE, LightDesc);

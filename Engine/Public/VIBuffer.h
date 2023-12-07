@@ -13,7 +13,7 @@ protected:
 public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
-	virtual HRESULT Render();
+	virtual HRESULT Render() override;
 
 protected:
 	ID3D11Buffer* m_pVB{ nullptr };

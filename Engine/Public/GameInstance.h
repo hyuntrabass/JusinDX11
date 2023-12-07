@@ -112,7 +112,9 @@ public: // PhysX
 	_bool Raycast(_fvector vOrigin, _fvector vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
 #ifdef _DEBUG
+#ifndef _MapEditor
 	HRESULT Render_PhysX();
+#endif // _MapEditor
 #endif // _DEBUG
 
 public: // RenderTarget

@@ -55,6 +55,10 @@ void CPain::Late_Tick(_float fTimeDelta)
     if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f) and m_eState != State_None)
     {
         m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+
+    #ifdef _DEBUG
+        m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
+    #endif // _DEBUG
     }
 }
 
@@ -105,10 +109,6 @@ HRESULT CPain::Render()
         }
     }
 
-#ifdef _DEBUG
-    m_pCollider_Hit->Render();
-#endif // _DEBUG
-    
     return S_OK;
 }
 

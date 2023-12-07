@@ -14,6 +14,7 @@ enum class ItemType
 	Props,
 	Monster,
 	NPC,
+	COLMap,
 	End
 };
 
@@ -21,11 +22,11 @@ struct DummyInfo
 {
 	wstring Prototype{};
 	enum class ItemType eType {};
-	_uint iIndex{};
 	_uint iStageIndex{};
 	_float4 vPos{};
 	_float4 vLook{};
 	class CImguiMgr* pImguiMgr{ nullptr };
+	class CDummy** ppDummy{ nullptr };
 };
 
 class CImguiMgr final : public CBase
@@ -36,10 +37,12 @@ private:
 
 public:
 	void SetPos(const _float4& vPos, class CDummy* pDummy);
+	void Select(const _float4& vPos, class CDummy* pDummy);
 	_bool ComputePickPos();
+	_bool ComputeSelection();
 
 public:
-	HRESULT Init(vector<wstring>* Models, vector<string>* pPropCount);
+	HRESULT Init(vector<wstring>* MapList, vector<wstring>* MapCOLList, vector<string>* PropList);
 	void Tick();
 	HRESULT Render();
 
@@ -68,21 +71,24 @@ private: // for Input
 	};
 
 private:
-	list<DummyInfo> m_DummyList{};
+	list<class CDummy*> m_DummyList{};
 	_bool m_ComputePickPos{};
+	_bool m_ComputeSelection{};
 	_float m_fCamDist{};
 	class CDummy* m_pSelectedDummy{ nullptr };
 	vector<wstring>* m_pMapModels{ nullptr };
+	vector<wstring>* m_pMapCOLModels{ nullptr };
 
 private:
 	HRESULT Ready_Layers(vector<string>* pPropCount);
 	void Create_Dummy(const _int& iListIndex);
+	void Delete_Dummy();
 
 	HRESULT Load_Data();
 	HRESULT Export_Data();
 
 public:
-	static CImguiMgr* Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance, vector<wstring>* Models, vector<string>* pPropCount);
+	static CImguiMgr* Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance, vector<wstring>* MapList, vector<wstring>* MapCOLList, vector<string>* PropList);
 	virtual void Free() override;
 };
 

@@ -34,6 +34,9 @@
     <Filter Include="01.Objects\Loading">
       <UniqueIdentifier>{7df7fca7-4dd7-4e1f-b418-8224ed731ec5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Objects\3D_Cursor">
+      <UniqueIdentifier>{0424f661-8ab5-478a-8dd6-2bc419f44438}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -96,6 +99,9 @@
     <ClInclude Include="..\public\LoadingImg.h">
       <Filter>01.Objects\Loading</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\3D_Cursor.h">
+      <Filter>01.Objects\3D_Cursor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">
@@ -150,6 +156,9 @@
     </ClCompile>
     <ClCompile Include="..\private\LoadingImg.cpp">
       <Filter>01.Objects\Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\3D_Cursor.cpp">
+      <Filter>01.Objects\3D_Cursor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

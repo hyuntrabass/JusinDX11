@@ -3,6 +3,8 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 vector g_vLightDir;
+vector g_vLightDiffusse;
+vector g_vLightAmbient;
 
 Texture2D g_Texture;
 Texture2D g_DiffuseTexture;
@@ -68,7 +70,7 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
     vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
     
     //Output.vShade = max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f);
-    Output.vShade = ceil(max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f) * 2.f) / 2.f;
+    Output.vShade = g_vLightDiffusse * saturate(ceil(max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f) * 2.f) / 2.f + g_vLightAmbient);
     
     return Output;
 }

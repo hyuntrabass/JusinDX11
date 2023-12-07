@@ -35,6 +35,16 @@ HRESULT CLight::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 		iPassIndex = DefPass_Light_Point;
 	}
 
+	if (FAILED(pShader->Bind_RawValue("g_vLightDiffusse", &m_LightDesc.vDiffuse, sizeof _float4)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(pShader->Bind_RawValue("g_vLightAmbient", &m_LightDesc.vAmbient, sizeof _float4)))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(pShader->Begin(iPassIndex)))
 	{
 		return E_FAIL;

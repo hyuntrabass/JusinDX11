@@ -2,6 +2,7 @@
 #include "Base.h"
 
 BEGIN(Engine)
+#define _MapEditor
 
 enum CollisionGroup
 {
@@ -28,7 +29,9 @@ public:
 	HRESULT Init();
 	void Tick(_float fTimeDelta);
 #ifdef _DEBUG
+#ifndef _MapEditor
 	HRESULT Render();
+#endif // _MapEditor
 #endif // _DEBUG
 
 
@@ -55,13 +58,13 @@ private:
 	PxDefaultCpuDispatcher* m_pDispatcher{ nullptr };
 	PxMaterial* m_pMaterial{ nullptr };
 
-	map<class CTransform*, PxController*> m_Characters{};
 	map<class CTransform*, PxRigidDynamic*> m_DynamicActors{};
-	map<class CTransform*, PxRigidStatic*> m_StaticActors{};
 
 #ifdef _DEBUG
+#ifndef _MapEditor
 	class CVIBuffer_PhysX* m_pVIBufferCom{ nullptr };
 	class CShader* m_pDebugShader{ nullptr };
+#endif // _MapEditor
 #endif // _DEBUG
 
 public:

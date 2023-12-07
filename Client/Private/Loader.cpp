@@ -505,6 +505,22 @@ HRESULT CLoader::Load_Tutorial()
 		}
 	}
 
+	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Props/Mesh/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = L"Prototype_Model_";
+			wstring strFileName = entry.path().stem().wstring();
+			string strFilePath = entry.path().filename().string();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sky"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Sky/Mesh/Sky.hyuntrastatmesh",false, XMMatrixScaling(0.01f, 0.01f, 0.01f)))))
 	{
 		return E_FAIL;

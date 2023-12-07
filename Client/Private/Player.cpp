@@ -126,7 +126,8 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 		cout << "PlayerPos Z :" << Pos.m128_f32[2] << endl;
 		cout << endl;
 	}
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
+	m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
+	m_pRendererCom->Add_DebugComponent(m_pCollider_Att);
 #endif // _DEBUG
 
 	__super::Compute_CamDistance();
@@ -150,23 +151,6 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 
 HRESULT CPlayer::Render()
 {
-	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
-	{
-		return S_OK;
-	}
-	//for (size_t i = 0; i < PT_END; i++)
-	//{
-	//	if (FAILED(m_pBodyParts[i]->Render()))
-	//	{
-	//		return E_FAIL;
-	//	}
-	//}
-
-#ifdef _DEBUG
-	m_pCollider_Att->Render();
-	m_pCollider_Hit->Render();
-#endif // _DEBUG
-
 	return S_OK;
 }
 
@@ -280,7 +264,10 @@ void CPlayer::Move(_float fTimeDelta)
 			m_pTransformCom->Set_Speed(m_fWalkSpeed);
 		}
 
-		m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
+		if (m_eState != Player_State::Wire)
+		{
+			m_pTransformCom->Go_To_Dir(vDirection, fTimeDelta);
+		}
 
 		_vector vLook = m_pTransformCom->Get_State(State::Look);
 		_float fInterpolTime = 0.4f;
@@ -688,13 +675,14 @@ void CPlayer::Tick_State(_float fTimeDelta)
 						m_Animation.isLoop = true;
 					}
 
-					m_pTransformCom->Set_Speed(m_fRunSpeed);
+					m_pTransformCom->Set_Speed(m_fRunSpeed + m_fWalkSpeed);
 					_bool hasArrived = m_pTransformCom->Go_To(XMVectorSetW(XMLoadFloat3(&m_vWireTargetPos), 1.f), fTimeDelta, 1.f);
 
 					if (hasArrived)
 					{
 						Safe_Release(m_pKunai);
-						m_eState = Player_State::Idle;
+						m_eState = Player_State::DoubleJump;
+						m_pTransformCom->Jump(15.f);
 					}
 				}
 				else if (m_pKunai->isDead())
