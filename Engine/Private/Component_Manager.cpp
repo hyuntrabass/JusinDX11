@@ -39,7 +39,6 @@ CComponent* CComponent_Manager::Clone_Component(_uint iLevelIndex, const wstring
     CComponent* pPrototype = Find_Prototype(iLevelIndex, strPrototypeTag);
     if (!pPrototype)
     {
-        MSG_BOX("Failed to Find Prototype");
         return nullptr;
     }
 

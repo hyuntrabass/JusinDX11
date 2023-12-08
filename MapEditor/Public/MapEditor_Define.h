@@ -36,7 +36,7 @@ namespace MapEditor
 	{
 		StaticPass_Default,
 		StaticPass_OutLine,
-		StaticPass_BlendMeshes,
+		StaticPass_AlphaTestMeshes,
 		StaticPass_Sky,
 		StaticPass_COLMesh,
 		StaticPass_SingleColorFx,

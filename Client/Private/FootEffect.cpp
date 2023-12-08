@@ -139,12 +139,12 @@ HRESULT CFootEffect::Add_Components()
 
 HRESULT CFootEffect::Bind_TrailShaderResources()
 {
-	if (FAILED(m_pTrailShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::View))))
+	if (FAILED(m_pTrailShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::View))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTrailShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::Proj))))
+	if (FAILED(m_pTrailShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::Proj))))
 	{
 		return E_FAIL;
 	}
@@ -164,12 +164,12 @@ HRESULT CFootEffect::Bind_LightShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pLightShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::View))))
+	if (FAILED(m_pLightShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::View))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pLightShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(D3DTS::Proj))))
+	if (FAILED(m_pLightShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::Proj))))
 	{
 		return E_FAIL;
 	}

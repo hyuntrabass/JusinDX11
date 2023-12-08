@@ -1,15 +1,24 @@
 #include "Engine_Shader_Define.hlsli"
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+matrix g_ViewMatrixInv, g_ProjMatrixInv;
 
 vector g_vLightDir;
-vector g_vLightDiffusse;
+vector g_vLightPos;
+vector g_vLightAtt;
+vector g_vLightDiffuse;
 vector g_vLightAmbient;
+vector g_vLightSpecular;
 
-Texture2D g_Texture;
+vector g_vCamPosition;
+float g_fCamFar;
+
 Texture2D g_DiffuseTexture;
 Texture2D g_NormalTexture;
 Texture2D g_ShadeTexture;
+Texture2D g_DepthTexture;
+Texture2D g_SpecularTexture;
+Texture2D g_Texture;
 
 struct VS_IN
 {
@@ -59,6 +68,7 @@ PS_OUT PS_Main_Debug(PS_IN Input)
 struct PS_OUT_Light
 {
     vector vShade : SV_Target0;
+    vector vSpecular : SV_Target1;
 };
 
 PS_OUT_Light PS_Main_Directional(PS_IN Input)
@@ -66,11 +76,36 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
     PS_OUT_Light Output = (PS_OUT_Light) 0;
     
     vector vNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord);
+    vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
+    float fViewZ = vDepthDesc.y * g_fCamFar;
     
     vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
     
     //Output.vShade = max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f);
-    Output.vShade = g_vLightDiffusse * saturate(ceil(max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f) * 2.f) / 2.f + g_vLightAmbient);
+    Output.vShade = g_vLightDiffuse * saturate(ceil(max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f) * 2.f) / 2.f + g_vLightAmbient);
+    
+    vector vReflect = normalize(reflect(normalize(g_vLightDir), vNormal));
+    
+    vector vWorldPos;
+    
+    // 투영 스페이스로
+    vWorldPos.x = Input.vTexcoord.x * 2.f - 1.f;
+    vWorldPos.y = Input.vTexcoord.y * -2.f + 1.f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.f;
+    
+    // w 나누기 제거
+    vWorldPos = vWorldPos * fViewZ;
+    
+    // 뷰스페이스로
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    
+    // 월드로
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    
+    vector vLook = vWorldPos - g_vCamPosition;
+    
+    Output.vSpecular = g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f);
     
     return Output;
 }
@@ -79,7 +114,41 @@ PS_OUT_Light PS_Main_Point(PS_IN Input)
 {
     PS_OUT_Light Output = (PS_OUT_Light) 0;
     
-    //Output.vColor = g_Texture.Sample(LinearSampler, Input.vTexcoord);
+    vector vNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord);
+    vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
+    float fViewZ = vDepthDesc.y * g_fCamFar;
+    
+    vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
+    
+    vector vWorldPos;
+    
+    // 투영 스페이스로
+    vWorldPos.x = Input.vTexcoord.x * 2.f - 1.f;
+    vWorldPos.y = Input.vTexcoord.y * -2.f + 1.f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.f;
+    
+    // w 나누기 제거
+    vWorldPos = vWorldPos * fViewZ;
+    
+    // 뷰스페이스로
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    
+    // 월드로
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    
+    vector vLightDir = vWorldPos - g_vLightPos;
+    float fDistance = length(vLightDir);
+    
+    float fAtt = 1.f / (g_vLightAtt.y + g_vLightAtt.z * fDistance + g_vLightAtt.w * (fDistance * fDistance));
+
+    //Output.vShade = fAtt * (g_vLightDiffuse * saturate(ceil(max(dot(normalize(vLightDir) * -1.f, vNormal), 0.f) * 2.f) / 2.f + g_vLightAmbient));
+    Output.vShade = fAtt * (g_vLightDiffuse * saturate(max(dot(normalize(vLightDir) * -1.f, normalize(vNormal)), 0.f) + g_vLightAmbient));
+
+    vector vReflect = normalize(reflect(normalize(vLightDir), vNormal));
+    vector vLook = vWorldPos - g_vCamPosition;
+    
+    Output.vSpecular = fAtt * (g_vLightSpecular * pow(saturate(dot(normalize(vLook) * -1.f, vReflect)), 30.f));
     
     return Output;
 }
@@ -119,7 +188,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_OnebyOne, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;
@@ -132,7 +201,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_OnebyOne, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_Main();
         GeometryShader = NULL;

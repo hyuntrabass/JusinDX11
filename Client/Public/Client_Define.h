@@ -70,14 +70,13 @@ namespace Client
 	{
 		AnimPass_Default,
 		AnimPass_OutLine,
-		AnimPass_Test,
 	};
 
 	enum StaticMeshPass
 	{
 		StaticPass_Default,
 		StaticPass_OutLine,
-		StaticPass_BlendMeshes,
+		StaticPass_AlphaTestMeshes,
 		StaticPass_Sky,
 		StaticPass_COLMesh,
 		StaticPass_SingleColorFx,

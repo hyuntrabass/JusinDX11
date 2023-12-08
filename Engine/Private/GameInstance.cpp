@@ -435,7 +435,7 @@ HRESULT CGameInstance::Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc)
 	return m_pLight_Manager->Add_Light(iLevelIndex, LightDesc);
 }
 
-const LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iLevelIndex, _uint iIndex) const
+LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iLevelIndex, _uint iIndex)
 {
 	if (!m_pLight_Manager)
 	{
@@ -475,7 +475,7 @@ _float4 CGameInstance::Get_CameraLook() const
 	return m_pPipeLine->Get_CameraLook();
 }
 
-_float44 CGameInstance::Get_Transform_Float4x4(D3DTS eState) const
+_float44 CGameInstance::Get_Transform_Float4x4(TransformType eState) const
 {
 	if (!m_pPipeLine)
 	{
@@ -485,7 +485,7 @@ _float44 CGameInstance::Get_Transform_Float4x4(D3DTS eState) const
 	return m_pPipeLine->Get_Transform_Float4x4(eState);
 }
 
-_float44 CGameInstance::Get_Transform_Inversed_Float4x4(D3DTS eState) const
+_float44 CGameInstance::Get_Transform_Inversed_Float4x4(TransformType eState) const
 {
 	if (!m_pPipeLine)
 	{
@@ -495,7 +495,7 @@ _float44 CGameInstance::Get_Transform_Inversed_Float4x4(D3DTS eState) const
 	return m_pPipeLine->Get_Transform_Inversed_Float4x4(eState);
 }
 
-_matrix CGameInstance::Get_Transform(D3DTS eState) const
+_matrix CGameInstance::Get_Transform(TransformType eState) const
 {
 	if (!m_pPipeLine)
 	{
@@ -505,7 +505,7 @@ _matrix CGameInstance::Get_Transform(D3DTS eState) const
 	return m_pPipeLine->Get_Transform(eState);
 }
 
-_matrix CGameInstance::Get_Transform_Inversed(D3DTS eState) const
+_matrix CGameInstance::Get_Transform_Inversed(TransformType eState) const
 {
 	if (!m_pPipeLine)
 	{
@@ -515,7 +515,7 @@ _matrix CGameInstance::Get_Transform_Inversed(D3DTS eState) const
 	return m_pPipeLine->Get_Transform_Inversed(eState);
 }
 
-void CGameInstance::Set_Transform(D3DTS eState, const _float44& TransformMatrix)
+void CGameInstance::Set_Transform(TransformType eState, const _float44& TransformMatrix)
 {
 	if (!m_pPipeLine)
 	{
@@ -525,7 +525,7 @@ void CGameInstance::Set_Transform(D3DTS eState, const _float44& TransformMatrix)
 	m_pPipeLine->Set_Transform(eState, TransformMatrix);
 }
 
-void CGameInstance::Set_Transform(D3DTS eState, _fmatrix TransformMatrix)
+void CGameInstance::Set_Transform(TransformType eState, _fmatrix TransformMatrix)
 {
 	if (!m_pPipeLine)
 	{
@@ -835,6 +835,11 @@ const _uint& CGameInstance::Get_CameraModeIndex() const
 	return m_iCameraModeIndex;
 }
 
+const _float& CGameInstance::Get_CameraFar() const
+{
+	return m_fCameraFar;
+}
+
 const _uint& CGameInstance::Get_CurrentLevelIndex() const
 {
 	return m_iLevelIndex;
@@ -848,6 +853,11 @@ const _float& CGameInstance::Get_TimeRatio() const
 void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
 {
 	m_iCameraModeIndex = iIndex;
+}
+
+void CGameInstance::Set_CameraFar(const _float& fFar)
+{
+	m_fCameraFar = fFar;
 }
 
 void CGameInstance::Set_CurrentLevelIndex(const _uint& iIndex)

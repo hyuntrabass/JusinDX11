@@ -5,7 +5,7 @@ CLight_Manager::CLight_Manager()
 {
 }
 
-const LIGHT_DESC* CLight_Manager::Get_LightDesc(_uint iLevelIndex, _uint iIndex) const
+LIGHT_DESC* CLight_Manager::Get_LightDesc(_uint iLevelIndex, _uint iIndex)
 {
 	if (iLevelIndex >= m_iNumLevels)
 	{
@@ -84,6 +84,14 @@ HRESULT CLight_Manager::Render(_uint iLevelIndex, CShader* pShader, CVIBuffer_Re
 	if (iLevelIndex >= m_iNumLevels)
 	{
 		return E_FAIL;
+	}
+
+	for (auto& pLight : m_pLights[0])
+	{
+		if (FAILED(pLight->Render(pShader, pVIBuffer)))
+		{
+			return E_FAIL;
+		}
 	}
 
 	for (auto& pLight : m_pLights[iLevelIndex])

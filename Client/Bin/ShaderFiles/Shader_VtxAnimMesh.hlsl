@@ -6,16 +6,8 @@ matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 
-vector g_vLightDir;
-
-vector g_vLightDiffuse;
-vector g_vLightAmbient;
-vector g_vLightSpecular;
-
-vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1.f);
-vector g_vMtrlSpecular = vector(0.8f, 0.8f, 0.8f, 1.f);
-
 vector g_vCamPos;
+float g_fCamFar;
 
 float g_fNorTex;
 bool g_bSelected = false;
@@ -36,6 +28,7 @@ struct VS_OUT
     vector vNor : Normal;
     float2 vTex : Texcoord0;
     vector vWorldPos : Texcoord1;
+    vector vProjPos : Texcoord2;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -59,7 +52,8 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vNor = normalize(mul(vNor, g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
-	
+    Output.vProjPos = Output.vPos;
+    
     return Output;
 }
 
@@ -90,6 +84,7 @@ VS_OUT VS_MainOutLine(VS_IN Input)
     Output.vNor = normalize(mul(vNor, g_WorldMatrix));
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
+    Output.vProjPos = Output.vPos;
 	
     return Output;
 }
@@ -100,6 +95,7 @@ struct PS_IN
     vector vNor : Normal;
     float2 vTex : Texcoord0;
     vector vWorldPos : Texcoord1;
+    vector vProjPos : Texcoord2;
 };
 
 struct PS_OUT
@@ -111,6 +107,7 @@ struct PS_OUT_DEFERRED
 {
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
+    vector vDepth : SV_Target2;
 };
 
 PS_OUT_DEFERRED PS_Main(PS_IN Input)
@@ -134,6 +131,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     
     return Output;
 }
@@ -150,22 +148,7 @@ PS_OUT_DEFERRED PS_MainOutLine(PS_IN Input)
     }
     
     Output.vDiffuse = vector(0.f, 0.f, 0.f, 1.f);
-    
-    return Output;
-}
-
-PS_OUT PS_Main_Test(PS_IN Input)
-{
-    PS_OUT Output = (PS_OUT) 0;
-    
-    vector vMtrlDiffuse = vector(0.7f, 0.7f, 0.7f, 1.f);
-    vector vNormal = Input.vNor;
-    
-    float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
-    
-    vector vReflect = reflect(normalize(g_vLightDir), vNormal);
-
-    Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient));
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     
     return Output;
 }
@@ -196,18 +179,5 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MainOutLine();
-    }
-
-    pass Test
-    {
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-        VertexShader = compile vs_5_0 VS_Main();
-        GeometryShader = NULL;
-        HullShader = NULL;
-        DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Test();
     }
 };

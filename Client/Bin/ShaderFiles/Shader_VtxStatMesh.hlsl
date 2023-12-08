@@ -7,6 +7,7 @@ texture2D g_MaskTexture;
 vector g_vColor;
 
 vector g_vCamPos;
+float g_fCamFar;
 
 float g_fNorTex;
 bool g_bSelected = false;
@@ -43,6 +44,7 @@ struct VS_OUT
     vector vNor : Normal;
     float2 vTex : Texcoord0;
     vector vWorldPos : Texcoord1;
+    vector vProjPos : Texcoord2;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -57,7 +59,9 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
     Output.vNor = mul(vector(Input.vNor, 0.f), g_WorldMatrix);
     Output.vTex = Input.vTex;
-	
+    Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
+    Output.vProjPos = Output.vPos;
+    
     return Output;
 }
 
@@ -83,6 +87,7 @@ VS_OUT VS_OutLine(VS_IN Input)
     Output.vNor = mul(vNor, g_WorldMatrix);
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
+    Output.vProjPos = Output.vPos;
 	
     return Output;
 }
@@ -93,12 +98,14 @@ struct PS_IN
     vector vNor : Normal;
     float2 vTex : Texcoord0;
     vector vWorldPos : Texcoord1;
+    vector vProjPos : Texcoord2;
 };
 
 struct PS_OUT_DEFERRED
 {
     vector vDiffuse : SV_Target0;
     vector vNormal : SV_Target1;
+    vector vDepth : SV_Target2;
 };
 
 struct PS_OUT
@@ -111,42 +118,21 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 0.3f * g_bSelected;
-    vector vNormal = (g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex + Input.vNor;
-    
-    //float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
-    //fShade = ceil(fShade * 2.f) / 2.f;
-    
-    //vector vLook = Input.vWorldPos - g_vCamPos;
-    ////float dp = dot(normalize(vLook) * -1.f, normalize(vNormal));
-    ////vMtrlDiffuse = vMtrlDiffuse * dp;
-    ////if (dp < 0.05f)
-    ////{
-    ////    Output.vColor = vector(0.f, 0.f, 0.f, 1.f);
-    ////}
-    ////else
-    ////{
-
-    //vector vReflect = reflect(normalize(g_vLightDir), vNormal);
-    ////float fSpecular = 0.f;
-    //float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
-
-    //Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
-    
-    ////Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
-    ////}
+    vector vNormal = /*(g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex +*/ Input.vNor;
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     
     return Output;
 }
 
-PS_OUT_DEFERRED PS_Main_Blend(PS_IN Input)
+PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
 {
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 0.3f * g_bSelected;
-    vector vNormal = (g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex + Input.vNor;
+    vector vNormal = /*(g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex +*/ Input.vNor;
     
     //float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
     //fShade = ceil(fShade * 2.f) / 2.f;
@@ -177,6 +163,7 @@ PS_OUT_DEFERRED PS_Main_Blend(PS_IN Input)
     
     Output.vDiffuse = vMtrlDiffuse;
     Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     
     return Output;
 }
@@ -193,6 +180,7 @@ PS_OUT_DEFERRED PS_OutLine(PS_IN Input)
     }
     
     Output.vDiffuse = vector(float(g_bSelected), 0.f, 0.f, 1.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
 
     return Output;
 }
@@ -282,7 +270,7 @@ technique11 DefaultTechniqueShader_VtxNorTex
         PixelShader = compile ps_5_0 PS_OutLine();
     }
 
-    pass BlendMeshes
+    pass AlphaTestMeshes
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
@@ -292,7 +280,7 @@ technique11 DefaultTechniqueShader_VtxNorTex
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_Main_Blend();
+        PixelShader = compile ps_5_0 PS_Main_AlphaTest();
     }
 
     pass Sky

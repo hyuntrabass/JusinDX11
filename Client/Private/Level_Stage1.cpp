@@ -148,9 +148,14 @@ HRESULT CLevel_Stage1::Ready_Light()
 	LightDesc.vDirection = _float4(0.5f, -1.f, 0.5f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
-	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+	//LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	return m_pGameInstance->Add_Light(LEVEL_STAGE1, LightDesc);
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STAGE1, LightDesc)))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
 }
 
 CLevel_Stage1* CLevel_Stage1::Create(_dev pDevice, _context pContext)

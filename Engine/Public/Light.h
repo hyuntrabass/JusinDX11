@@ -9,7 +9,7 @@ class CLight final : public CBase
 	virtual ~CLight() = default;
 
 public:
-	const LIGHT_DESC* Get_LightDesc() const;
+	LIGHT_DESC* Get_LightDesc();
 
 public:
 	HRESULT Init(const LIGHT_DESC& LightDeesc);

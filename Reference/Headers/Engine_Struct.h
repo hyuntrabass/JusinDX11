@@ -18,7 +18,8 @@ namespace Engine
 		TYPE eType{End};
 		XMFLOAT4 vDirection{};
 		XMFLOAT4 vPosition{};
-		float fRange{};
+		// Range, Constant, Linear, Quadratic
+		XMFLOAT4 vAttenuation{};
 
 		XMFLOAT4 vDiffuse{};
 		XMFLOAT4 vAmbient{};

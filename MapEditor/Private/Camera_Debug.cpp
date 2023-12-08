@@ -28,6 +28,8 @@ HRESULT CCamera_Debug::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	m_pGameInstance->Set_CameraFar(m_fFar);
+
 	return S_OK;
 }
 

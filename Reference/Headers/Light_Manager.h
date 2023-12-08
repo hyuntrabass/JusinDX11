@@ -10,7 +10,7 @@ private:
 	virtual ~CLight_Manager() = default;
 
 public:
-	const LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, _uint iIndex) const;
+	LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, _uint iIndex);
 
 public:
 	HRESULT Init(_uint iNumLevels);

@@ -37,8 +37,8 @@ HRESULT CCamera::Init(void* pArg)
 
 void CCamera::Tick(_float fTimeDelta)
 {
-	m_pGameInstance->Set_Transform(D3DTS::View, m_pTransformCom->Get_World_Inverse_float4x4());
-	m_pGameInstance->Set_Transform(D3DTS::Proj, XMMatrixPerspectiveFovLH(m_fFovY, m_fAspect, m_fNear, m_fFar));
+	m_pGameInstance->Set_Transform(TransformType::View, m_pTransformCom->Get_World_Inverse_float4x4());
+	m_pGameInstance->Set_Transform(TransformType::Proj, XMMatrixPerspectiveFovLH(m_fFovY, m_fAspect, m_fNear, m_fFar));
 }
 
 void CCamera::Late_Tick(_float fTimeDelta)

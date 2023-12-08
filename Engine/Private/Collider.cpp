@@ -181,8 +181,8 @@ _bool CCollider::Intersect(const CCollider* pTargetCollider)
 HRESULT CCollider::Render()
 {
 	m_pEffect->SetWorld(XMMatrixIdentity());
-	m_pEffect->SetView(m_pGameInstance->Get_Transform(D3DTS::View));
-	m_pEffect->SetProjection(m_pGameInstance->Get_Transform(D3DTS::Proj));
+	m_pEffect->SetView(m_pGameInstance->Get_Transform(TransformType::View));
+	m_pEffect->SetProjection(m_pGameInstance->Get_Transform(TransformType::Proj));
 
 	m_pContext->GSSetShader(nullptr, nullptr, 0);
 

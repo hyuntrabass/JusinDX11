@@ -45,6 +45,19 @@ HRESULT CPlayer::Init(void* pArg)
 	CTrigger_Manager::Get_Instance()->Register_PlayerCollider(m_pCollider_Hit);
 	m_iHP = 300;
 
+	LIGHT_DESC LightDesc{};
+
+	LightDesc.eType = LIGHT_DESC::Point;
+	XMStoreFloat4(&LightDesc.vPosition, m_pTransformCom->Get_State(State::Pos));
+	LightDesc.vAttenuation = LIGHT_RANGE_13;
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
+
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, LightDesc)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -54,6 +67,10 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		return;
 	}
+	
+	LIGHT_DESC* LightDesc{};
+	LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, 0);
+	XMStoreFloat4(&LightDesc->vPosition, m_pTransformCom->Get_State(State::Pos));
 
 	m_fAttTimer += fTimeDelta;
 

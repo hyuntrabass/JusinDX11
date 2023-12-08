@@ -30,7 +30,7 @@ void CPicking::Tick()
 	};
 
 	// 뷰 스페이스 상의 위치
-	_matrix ProjMatrix_Inverse{ m_pGameInstance->Get_Transform_Inversed(D3DTS::Proj) };
+	_matrix ProjMatrix_Inverse{ m_pGameInstance->Get_Transform_Inversed(TransformType::Proj) };
 	vCursorPos = XMVector4Transform(vCursorPos, ProjMatrix_Inverse);
 
 	_vector vRayPos{ XMVectorSet(0.f, 0.f, 0.f, 1.f) };
@@ -38,7 +38,7 @@ void CPicking::Tick()
 	//_vector vRayDir{ vCursorPos - vRayPos }; 
 
 	// 월드 스페이스 상의 위치
-	_matrix ViewMat_Inverse{ m_pGameInstance->Get_Transform_Inversed(D3DTS::View) };
+	_matrix ViewMat_Inverse{ m_pGameInstance->Get_Transform_Inversed(TransformType::View) };
 	XMStoreFloat4(&m_vRayPos_World, XMVector4Transform(vRayPos, ViewMat_Inverse));
 	XMStoreFloat4(&m_vRayDir_World, XMVector4Normalize(XMVector4Transform(vRayDir, ViewMat_Inverse)));
 }

@@ -24,8 +24,8 @@ HRESULT CFrustum::Init()
 
 void CFrustum::Tick()
 {
-	_matrix matProjInv = m_pGameInstance->Get_Transform_Inversed(D3DTS::Proj);
-	_matrix matViewInv = m_pGameInstance->Get_Transform_Inversed(D3DTS::View);
+	_matrix matProjInv = m_pGameInstance->Get_Transform_Inversed(TransformType::Proj);
+	_matrix matViewInv = m_pGameInstance->Get_Transform_Inversed(TransformType::View);
 
 	for (size_t i = 0; i < 8; i++)
 	{

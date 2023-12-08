@@ -3,7 +3,7 @@
 
 BEGIN(Engine)
 
-enum class D3DTS
+enum class TransformType
 {
 	View,
 	Proj,
@@ -19,13 +19,13 @@ private:
 public:
 	_float4 Get_CameraPos() const;
 	_float4 Get_CameraLook() const;
-	_float44 Get_Transform_Float4x4(D3DTS eState) const;
-	_float44 Get_Transform_Inversed_Float4x4(D3DTS eState) const;
-	_matrix Get_Transform(D3DTS eState) const;
-	_matrix Get_Transform_Inversed(D3DTS eState) const;
+	_float44 Get_Transform_Float4x4(TransformType eState) const;
+	_float44 Get_Transform_Inversed_Float4x4(TransformType eState) const;
+	_matrix Get_Transform(TransformType eState) const;
+	_matrix Get_Transform_Inversed(TransformType eState) const;
 
-	void Set_Transform(D3DTS eState, const _float44& TransformMatrix);
-	void Set_Transform(D3DTS eState, _fmatrix TransformMatrix);
+	void Set_Transform(TransformType eState, const _float44& TransformMatrix);
+	void Set_Transform(TransformType eState, _fmatrix TransformMatrix);
 
 public:
 	HRESULT Init();
@@ -34,8 +34,8 @@ public:
 private:
 	_float4 m_vCameraPos{};
 	_float4 m_vCameraLook{};
-	_float44 m_TransformMatrix[ToIndex(D3DTS::End)]{};
-	_float44 m_TransformMatrix_Inversed[ToIndex(D3DTS::End)]{};
+	_float44 m_TransformMatrix[ToIndex(TransformType::End)]{};
+	_float44 m_TransformMatrix_Inversed[ToIndex(TransformType::End)]{};
 
 public:
 	static CPipeLine* Create();

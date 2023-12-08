@@ -263,14 +263,6 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 	{
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance->Add_Light(1, LightDesc)))
-	{
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance->Add_Light(2, LightDesc)))
-	{
-		return E_FAIL;
-	}
 #pragma endregion
 
 #pragma region Texture

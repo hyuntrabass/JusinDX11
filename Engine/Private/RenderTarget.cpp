@@ -128,7 +128,7 @@ CRenderTarget* CRenderTarget::Create(_dev pDevice, _context pContext, _uint iWid
 
 void CRenderTarget::Free()
 {
-    SaveDDSTextureToFile(m_pContext, m_pTexture, TEXT("../Bin/Diffuse.dds"));
+    //SaveDDSTextureToFile(m_pContext, m_pTexture, TEXT("../Bin/Diffuse.dds"));
 
     Safe_Release(m_pRenderTargetView);
     Safe_Release(m_pShaderResourceView);

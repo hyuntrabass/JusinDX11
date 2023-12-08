@@ -66,19 +66,19 @@ public: // Input Manager
 
 public: // Light Manager
 	HRESULT Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc);
-	const LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, _uint iIndex) const;
+	LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, _uint iIndex);
 	HRESULT Render_Lights(_uint iLevelIndex, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 
 public: // PipeLine
 	_float4 Get_CameraPos() const;
 	_float4 Get_CameraLook() const;
-	_float44 Get_Transform_Float4x4(D3DTS eState) const;
-	_float44 Get_Transform_Inversed_Float4x4(D3DTS eState) const;
-	_matrix Get_Transform(D3DTS eState) const;
-	_matrix Get_Transform_Inversed(D3DTS eState) const;
+	_float44 Get_Transform_Float4x4(TransformType eState) const;
+	_float44 Get_Transform_Inversed_Float4x4(TransformType eState) const;
+	_matrix Get_Transform(TransformType eState) const;
+	_matrix Get_Transform_Inversed(TransformType eState) const;
 
-	void Set_Transform(D3DTS eState, const _float44& TransformMatrix);
-	void Set_Transform(D3DTS eState, _fmatrix TransformMatrix);
+	void Set_Transform(TransformType eState, const _float44& TransformMatrix);
+	void Set_Transform(TransformType eState, _fmatrix TransformMatrix);
 
 public: // Picking
 	void TransformRay_ToLocal(_fmatrix WorldMatrix);
@@ -131,10 +131,12 @@ public:
 
 public: // Get_Set
 	const _uint& Get_CameraModeIndex() const;
+	const _float& Get_CameraFar() const;
 	const _uint& Get_CurrentLevelIndex() const;
 	const _float& Get_TimeRatio() const;
 
 	void Set_CameraModeIndex(const _uint& iIndex);
+	void Set_CameraFar(const _float& fFar);
 	void Set_CurrentLevelIndex(const _uint& iIndex);
 	void Set_TimeRatio(const _float fRatio);
 
@@ -161,6 +163,7 @@ private:
 	_uint m_iCameraModeIndex{};
 	_uint m_iLevelIndex{};
 	_float m_fTimeRatio{ 1.f };
+	_float m_fCameraFar{};
 
 public:
 	static void Release_Engine();
