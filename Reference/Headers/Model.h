@@ -33,7 +33,7 @@ public:
 	const _uint& Get_NumMeshes() const;
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
-	const _float44* Get_pBoneMatrix(const _char* pBoneName) const;
+	const _float44* Get_BoneMatrix(const _char* pBoneName) const;
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
 

@@ -46,13 +46,6 @@ HRESULT CVIBuffer_Trail::Init_Prototype(const _uint iNumVertices, _float2 vPSize
 	}
 
 	m_TrailInitialData.pSysMem = pVertices;
-
-	//if (FAILED(__super::Create_Buffer(&m_pVB)))
-	//{
-	//	return E_FAIL;
-	//}
-
-	//Safe_Delete_Array(pVertices);
 #pragma endregion
 
 #pragma region Index
@@ -91,6 +84,7 @@ HRESULT CVIBuffer_Trail::Init(void* pArg)
 {
 	if (FAILED(m_pDevice->CreateBuffer(&m_TrailBufferDesc, &m_TrailInitialData, &m_pVB)))
 	{
+		Safe_Delete_Array(m_TrailInitialData.pSysMem);
 		return E_FAIL;
 	}
 

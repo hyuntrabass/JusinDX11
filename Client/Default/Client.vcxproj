@@ -88,6 +88,8 @@
       <AdditionalIncludeDirectories>../Public/;../../Reference/Headers/;../../Reference/Headers/PhysX/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -172,6 +174,7 @@
     <ClInclude Include="..\public\Chidori.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\public\Effect.h" />
+    <ClInclude Include="..\public\EyeLight.h" />
     <ClInclude Include="..\public\FootEffect.h" />
     <ClInclude Include="..\public\HpBar_Player.h" />
     <ClInclude Include="..\Public\HpBar_Player_Base.h" />
@@ -219,6 +222,7 @@
     <ClCompile Include="..\private\Camera_Main.cpp" />
     <ClCompile Include="..\private\Chidori.cpp" />
     <ClCompile Include="..\private\Effect.cpp" />
+    <ClCompile Include="..\private\EyeLight.cpp" />
     <ClCompile Include="..\private\FootEffect.cpp" />
     <ClCompile Include="..\private\HpBar_Player.cpp" />
     <ClCompile Include="..\Private\HpBar_Player_Base.cpp" />

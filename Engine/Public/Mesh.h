@@ -27,7 +27,7 @@ private:
 	_float3* m_pVerticesNor{ nullptr };
 	_ulong* m_pIndices{ nullptr };
 
-	_char m_pName[MAX_PATH]{};
+	_char m_szName[MAX_PATH]{};
 	_uint m_iMatIndex{};
 	_uint m_iNumBones{};
 	vector<_uint> m_BoneIndices{};

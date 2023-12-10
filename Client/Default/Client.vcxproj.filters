@@ -151,6 +151,9 @@
     <Filter Include="02.GameObjects\05. Boss\Kurama\Projectile">
       <UniqueIdentifier>{39896861-6f4c-4b83-b312-248fb9daa6b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\05. Boss\Kurama\Effect">
+      <UniqueIdentifier>{ba561a71-1a6c-4124-97b4-a2354758cd49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -291,6 +294,9 @@
     <ClInclude Include="..\public\Trigger_Manager.h">
       <Filter>03.Utility\Trigger_Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\EyeLight.h">
+      <Filter>02.GameObjects\05. Boss\Kurama\Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -428,6 +434,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Trigger_Manager.cpp">
       <Filter>03.Utility\Trigger_Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\EyeLight.cpp">
+      <Filter>02.GameObjects\05. Boss\Kurama\Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -631,7 +631,7 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_Object_FootEffect"), CFootEffect::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_FootEffect"), CFootEffect::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -778,6 +778,11 @@ HRESULT CLoader::Load_CloudStage()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_MiniBomb"), CMiniBomb::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_EyeLight"), CEyeLight::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

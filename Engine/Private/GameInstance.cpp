@@ -425,24 +425,34 @@ void CGameInstance::Gamepad_Vibration(_ushort LMotorSpeed, _ushort RMotorSpeed)
 	m_pInput_Manager->Gamepad_Vibration(LMotorSpeed, RMotorSpeed);
 }
 
-HRESULT CGameInstance::Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc)
+LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iLevelIndex, const wstring& strLightTag)
 {
 	if (!m_pLight_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pLight_Manager is NULL");
 	}
 
-	return m_pLight_Manager->Add_Light(iLevelIndex, LightDesc);
+	return m_pLight_Manager->Get_LightDesc(iLevelIndex, strLightTag);
 }
 
-LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iLevelIndex, _uint iIndex)
+HRESULT CGameInstance::Add_Light(_uint iLevelIndex, const wstring& strLightTag, const LIGHT_DESC& LightDesc)
 {
 	if (!m_pLight_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pLight_Manager is NULL");
 	}
 
-	return m_pLight_Manager->Get_LightDesc(iLevelIndex, iIndex);
+	return m_pLight_Manager->Add_Light(iLevelIndex, strLightTag, LightDesc);
+}
+
+HRESULT CGameInstance::Delete_Light(_uint iLevelIndex, const wstring& strLightTag)
+{
+	if (!m_pLight_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pLight_Manager is NULL");
+	}
+
+	return m_pLight_Manager->Delete_Light(iLevelIndex, strLightTag);
 }
 
 HRESULT CGameInstance::Render_Lights(_uint iLevelIndex, CShader* pShader, CVIBuffer_Rect* pVIBuffer)
@@ -873,6 +883,7 @@ void CGameInstance::Set_TimeRatio(const _float fRatio)
 void CGameInstance::Clear_Managers()
 {
 	Safe_Release(m_pInput_Manager);
+	Safe_Release(m_pCollision_Manager);
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pComponent_Manager);
 	Safe_Release(m_pTimer_Manager);
@@ -880,7 +891,6 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pFont_Manager);
-	Safe_Release(m_pCollision_Manager);
 	Safe_Release(m_pPhysX_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pRenderTarget_Manager);

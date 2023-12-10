@@ -96,7 +96,7 @@ HRESULT CLevel_CreateCharacter::Ready_Light()
 	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	return m_pGameInstance->Add_Light(LEVEL_CREATECHARACTER, LightDesc);
+	return m_pGameInstance->Add_Light(LEVEL_CREATECHARACTER, TEXT("Light_Main"), LightDesc);
 }
 
 HRESULT CLevel_CreateCharacter::Ready_Player()

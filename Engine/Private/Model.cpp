@@ -61,7 +61,7 @@ const _uint& CModel::Get_CurrentAnimationIndex() const
 	return m_AnimDesc.iAnimIndex;
 }
 
-const _float44* CModel::Get_pBoneMatrix(const _char* pBoneName) const
+const _float44* CModel::Get_BoneMatrix(const _char* pBoneName) const
 {
 	auto iter = find_if(m_Bones.begin(), m_Bones.end(), [&pBoneName](CBone* pBone) 
 	{
@@ -301,6 +301,10 @@ HRESULT CModel::Read_Materials(ifstream& File, const string& strFilePath)
 
 			pFileName = new _char[iNameSize];
 			File.read(pFileName, iNameSize);
+			if (strlen(szMatFilePath) + strlen(pFileName) >= sizeof(szFullPath))
+			{
+				MSG_BOX("Name Is Too Long!");
+			}
 			strcpy_s(szFullPath, szMatFilePath);
 			strcat_s(szFullPath, pFileName);
 			Safe_Delete_Array(pFileName);

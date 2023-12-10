@@ -20,7 +20,11 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix Off
 
 	_uint iNameSize{};
 	ModelFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof _uint);
-	ModelFile.read(m_pName, iNameSize);
+	if (iNameSize >= sizeof(m_szName))
+	{
+		MSG_BOX("Name Is Too Long!");
+	}
+	ModelFile.read(m_szName, iNameSize);
 	ModelFile.read(reinterpret_cast<_char*>(&m_iNumVertices), sizeof _uint);
 	_uint iNumFaces{};
 	ModelFile.read(reinterpret_cast<_char*>(&iNumFaces), sizeof _uint);

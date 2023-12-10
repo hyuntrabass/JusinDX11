@@ -93,7 +93,7 @@ HRESULT CLevel_Stage2::Ready_Lights()
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (FAILED(m_pGameInstance->Add_Light(LEVEL_BOSSSTAGE, LightDesc)))
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_BOSSSTAGE, TEXT("Light_Main"), LightDesc)))
 	{
 		return E_FAIL;
 	}

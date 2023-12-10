@@ -53,7 +53,7 @@ HRESULT CPlayer::Init(void* pArg)
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 
-	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, LightDesc)))
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, TEXT("Light_Player"), LightDesc)))
 	{
 		return E_FAIL;
 	}
@@ -67,9 +67,9 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	
+
 	LIGHT_DESC* LightDesc{};
-	LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, 0);
+	LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Player"));
 	XMStoreFloat4(&LightDesc->vPosition, m_pTransformCom->Get_State(State::Pos));
 
 	m_fAttTimer += fTimeDelta;
@@ -78,8 +78,8 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		if (not m_pFootEffect[Foot_Left])
 		{
-			m_pFootEffect[Foot_Left] = dynamic_cast<CFootEffect*>(m_pGameInstance->Clone_Object(TEXT("Prototype_Object_FootEffect")));
-			m_pFootEffect[Foot_Right] = dynamic_cast<CFootEffect*>(m_pGameInstance->Clone_Object(TEXT("Prototype_Object_FootEffect")));
+			m_pFootEffect[Foot_Left] = dynamic_cast<CFootEffect*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_FootEffect")));
+			m_pFootEffect[Foot_Right] = dynamic_cast<CFootEffect*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_FootEffect")));
 		}
 		if (not m_isGameStarted)
 		{
@@ -355,10 +355,6 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
 	}
-	else
-	{
-		m_pTransformCom->Reset_Gravity();
-	}
 }
 
 void CPlayer::Customize(_float fTimeDelta)
@@ -495,6 +491,14 @@ void CPlayer::Init_State()
 			m_Animation.fAnimSpeedRatio = 1.8f;
 			m_Animation.bSkipInterpolation = true;
 			break;
+		case Client::Player_State::Fall:
+			m_Animation.iAnimIndex = Fall_Vertical_Loop;
+			m_Animation.isLoop = true;
+			break;
+		case Client::Player_State::Fall_Front:
+			m_Animation.iAnimIndex = Fall_Front_Loop;
+			m_Animation.isLoop = true;
+			break;
 		case Client::Player_State::Land:
 			m_Animation.iAnimIndex = Land;
 			m_Animation.isLoop = false;
@@ -509,6 +513,7 @@ void CPlayer::Init_State()
 			m_Animation.fDurationRatio = 0.03f;
 			//m_Animation.fAnimSpeedRatio = 0.2f;
 			m_pGameInstance->Set_TimeRatio(0.1f);
+			m_pTransformCom->Reset_Gravity();
 			break;
 		case Client::Player_State::Beaten:
 			break;
@@ -516,6 +521,7 @@ void CPlayer::Init_State()
 			break;
 		case Client::Player_State::RasenShuriken:
 			m_Animation.iAnimIndex = Ninjutsu_TrueRasenShuriken;
+			m_pTransformCom->Reset_Gravity();
 			break;
 		case Client::Player_State::Chidori:
 			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Charge_Lv2toLv3;
@@ -564,7 +570,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 
 		//if (not m_pTransformCom->Is_OnGround())
 		//{
-		//	m_eState = Player_State::Idle;
+		//	m_eState = Player_State::Fall;
 		//}
 		break;
 	case Client::Player_State::Walk_End:
@@ -580,7 +586,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 
 		//if (not m_pTransformCom->Is_OnGround())
 		//{
-		//	m_eState = Player_State::Idle;
+		//	m_eState = Player_State::Fall;
 		//}
 		break;
 	case Client::Player_State::Run_End:
@@ -594,25 +600,13 @@ void CPlayer::Tick_State(_float fTimeDelta)
 	case Client::Player_State::Jump:
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Vertical))
 		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Fall_Vertical_Loop;
-			m_Animation.isLoop = true;
-		}
-		if (not m_pTransformCom->Is_Jumping())
-		{
-			m_eState = Player_State::Land;
+			m_eState = Player_State::Fall;
 		}
 		break;
 	case Client::Player_State::Jump_Front:
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Jump_Front))
 		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Fall_Front_Loop;
-			m_Animation.isLoop = true;
-		}
-		if (not m_pTransformCom->Is_Jumping())
-		{
-			m_eState = Player_State::Land;
+			m_eState = Player_State::Fall_Front;
 		}
 		break;
 	case Client::Player_State::DoubleJump:
@@ -622,11 +616,16 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		else if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(DoubleJump))
 		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Fall_Front_Loop;
-			m_Animation.isLoop = true;
+			m_eState = Player_State::Fall_Front;
 		}
-
+		break;
+	case Client::Player_State::Fall:
+		if (not m_pTransformCom->Is_Jumping())
+		{
+			m_eState = Player_State::Land;
+		}
+		break;
+	case Client::Player_State::Fall_Front:
 		if (not m_pTransformCom->Is_Jumping())
 		{
 			m_hasDoubleJumped = false;
@@ -653,7 +652,9 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			if (/*m_pBodyParts[PT_HEAD]->IsAnimationFinished(WireJump_Ready) or */(m_pGameInstance->Key_Up(DIK_LCONTROL, InputChannel::GamePlay)/* and not m_pKunai*/))
 			{
 				PxRaycastBuffer Buffer{};
-				if (m_pGameInstance->Raycast(m_vRightHandPos, vDir, 30.f, Buffer))
+				_float3 RayOrigin{};
+				XMStoreFloat3(&RayOrigin, m_pTransformCom->Get_CenterPos() + XMVector3Normalize(m_pTransformCom->Get_State(State::Look)));
+				if (m_pGameInstance->Raycast(RayOrigin, vDir, 30.f, Buffer))
 				{
 					m_vWireTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
 
@@ -668,6 +669,10 @@ void CPlayer::Tick_State(_float fTimeDelta)
 					Info.vLook.w = 1.f;
 				}
 
+				if (m_pKunai)
+				{
+					Safe_Release(m_pKunai);
+				}
 				m_pKunai = dynamic_cast<CKunai*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Kunai"), &Info));
 
 				m_Animation.fDurationRatio = 1.f;
@@ -705,7 +710,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 				else if (m_pKunai->isDead())
 				{
 					Safe_Release(m_pKunai);
-					m_eState = Player_State::Idle;
+					m_eState = Player_State::Fall;
 				}
 			}
 			else

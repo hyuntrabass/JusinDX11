@@ -106,7 +106,7 @@ HRESULT CMapCollider::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), 0);
+	const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
 	if (!pLightDesc)
 	{
 		return E_FAIL;

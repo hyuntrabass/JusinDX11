@@ -9,6 +9,10 @@ HRESULT CChannel::Init(ifstream& ModelFile)
 {
 	_uint iNameSize{};
 	ModelFile.read(reinterpret_cast<_char*>(&iNameSize), sizeof _uint);
+	if (iNameSize >= sizeof(m_szName))
+	{
+		MSG_BOX("Name Is Too Long!");
+	}
 	ModelFile.read(m_szName, iNameSize);
 
 	ModelFile.read(reinterpret_cast<_char*>(&m_iBoneIndex), sizeof _uint);

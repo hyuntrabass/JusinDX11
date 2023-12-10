@@ -311,7 +311,7 @@ HRESULT CDummy::Bind_ShaderResources()
 			return E_FAIL;
 		}
 
-		const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, 0);
+		const LIGHT_DESC* pLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Main"));
 		if (!pLightDesc)
 		{
 			return E_FAIL;

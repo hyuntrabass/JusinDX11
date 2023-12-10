@@ -259,7 +259,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, LightDesc)))
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, TEXT("Light_Main"), LightDesc)))
 	{
 		return E_FAIL;
 	}

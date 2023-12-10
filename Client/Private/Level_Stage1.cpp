@@ -125,7 +125,7 @@ HRESULT CLevel_Stage1::Ready_Map()
 				continue;
 			}
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STAGE1, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
 			{
 				return E_FAIL;
 			}
@@ -150,7 +150,7 @@ HRESULT CLevel_Stage1::Ready_Light()
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	//LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STAGE1, LightDesc)))
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STAGE1, TEXT("Light_Main"), LightDesc)))
 	{
 		return E_FAIL;
 	}

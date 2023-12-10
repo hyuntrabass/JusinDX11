@@ -1,4 +1,5 @@
 #include "Kurama.h"
+#include "EyeLight.h"
 
 CKurama::CKurama(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -36,6 +37,9 @@ HRESULT CKurama::Init(void* pArg)
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
 	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit);
 
+	m_pEyeLights[0] = dynamic_cast<CEyeLight*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_EyeLight")));
+	m_pEyeLights[1] = dynamic_cast<CEyeLight*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_EyeLight")));
+
 	m_iHP = 500;
 
 	return S_OK;
@@ -49,6 +53,12 @@ void CKurama::Tick(_float fTimeDelta)
 	TIck_State(fTimeDelta);
 
 	m_pTransformCom->Gravity(fTimeDelta);
+
+	_float3 vEyePos[2]{};
+	XMStoreFloat3(&vEyePos[0], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("EyeUpLeft1")) * m_pTransformCom->Get_World_Matrix()).r[3]);
+	XMStoreFloat3(&vEyePos[1], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("EyeUpRight1")) * m_pTransformCom->Get_World_Matrix()).r[3]);
+	m_pEyeLights[0]->Tick(vEyePos[0], fTimeDelta);
+	m_pEyeLights[1]->Tick(vEyePos[1], fTimeDelta);
 
 	_matrix ColliderOffset = XMMatrixTranslation(0.f, 4.f, 0.f);
 	m_pCollider_Hit->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
@@ -64,6 +74,9 @@ void CKurama::Late_Tick(_float fTimeDelta)
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f) and m_eState != State_None)
 	{
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+
+		m_pEyeLights[0]->Late_Tick(fTimeDelta);
+		m_pEyeLights[1]->Late_Tick(fTimeDelta);
 
 	#ifdef _DEBUG
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
@@ -390,7 +403,7 @@ void CKurama::TIck_State(_float fTimeDelta)
 				m_pTransformCom->LookAt(vPlayerPosForLookAt);
 
 				ObjectInfo Info{};
-				XMStoreFloat4(&Info.vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_pBoneMatrix("LipMouthDownCenter")).r[3], m_pTransformCom->Get_World_Matrix()));
+				XMStoreFloat4(&Info.vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("LipMouthDownCenter")).r[3], m_pTransformCom->Get_World_Matrix()));
 				XMStoreFloat4(&Info.vLook, m_pPlayerTransform->Get_CenterPos());
 				m_pGameInstance->Add_Layer(LEVEL_BOSSSTAGE, TEXT("Layer_MiniBomb"), TEXT("Prototype_GameObject_MiniBomb"), &Info);
 				m_hasShot = true;
@@ -476,6 +489,8 @@ void CKurama::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pEyeLights[0]);
+	Safe_Release(m_pEyeLights[1]);
 	Safe_Release(m_pCollider_Hit);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

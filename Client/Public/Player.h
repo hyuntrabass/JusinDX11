@@ -44,6 +44,8 @@ enum class Player_State
 	Jump,
 	Jump_Front,
 	DoubleJump,
+	Fall,
+	Fall_Front,
 	Land,
 	Dash,
 	Wire,

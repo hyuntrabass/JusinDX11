@@ -65,8 +65,9 @@ public: // Input Manager
 	void Gamepad_Vibration(_ushort LMotorSpeed, _ushort RMotorSpeed);
 
 public: // Light Manager
-	HRESULT Add_Light(_uint iLevelIndex, const LIGHT_DESC& LightDesc);
-	LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, _uint iIndex);
+	LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, const wstring& strLightTag);
+	HRESULT Add_Light(_uint iLevelIndex, const wstring& strLightTag, const LIGHT_DESC& LightDesc);
+	HRESULT Delete_Light(_uint iLevelIndex, const wstring& strLightTag);
 	HRESULT Render_Lights(_uint iLevelIndex, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 
 public: // PipeLine

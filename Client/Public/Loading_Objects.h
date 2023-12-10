@@ -26,3 +26,4 @@
 #include "Kunai.h"
 #include "FootEffect.h"
 #include "Chidori.h"
+#include "EyeLight.h"

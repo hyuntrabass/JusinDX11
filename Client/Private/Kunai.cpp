@@ -44,11 +44,32 @@ HRESULT CKunai::Init(void* pArg)
 
 	m_pTransformCom->Set_Speed(50.f);
 
+	LIGHT_DESC LightDesc{};
+
+	LightDesc.eType = LIGHT_DESC::Point;
+	XMStoreFloat4(&LightDesc.vPosition, m_pTransformCom->Get_State(State::Pos));
+	LightDesc.vAttenuation = LIGHT_RANGE_7;
+	LightDesc.vDiffuse = _float4(0.f, 0.f, 1.f, 1.f);
+
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, TEXT("Light_Kunai"), LightDesc)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 void CKunai::Tick(_float fTimeDelta)
 {
+	if (m_isDead)
+	{
+		return;
+	}
+
+	LIGHT_DESC* LightDesc{};
+	LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Kunai"));
+	XMStoreFloat4(&LightDesc->vPosition, m_pTransformCom->Get_State(State::Pos));
+
 	if (m_bFail)
 	{
 		m_pTransformCom->Go_Straight(fTimeDelta);
@@ -75,14 +96,10 @@ void CKunai::Tick(_float fTimeDelta)
 
 void CKunai::Late_Tick(_float fTimeDelta)
 {
-	//if (m_TrailPosList.size() >= 50)
-	//{
-	//	m_TrailPosList.pop_back();
-	//}
-	//_float3 vPos{};
-	//XMStoreFloat3(&vPos, m_pTransformCom->Get_State(State::Pos));
-	//m_TrailPosList.push_front(vPos);
-
+	if (m_isDead)
+	{
+		return;
+	}
 	__super::Compute_CamDistance();
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
@@ -94,7 +111,7 @@ HRESULT CKunai::Render()
 	{
 		return S_OK;
 	}
-	
+
 	if (FAILED(Render_Effect()))
 	{
 		return E_FAIL;
@@ -310,7 +327,7 @@ HRESULT CKunai::Render_Trail()
 	{
 		return E_FAIL;
 	}
-	
+
 	return S_OK;
 }
 
@@ -342,6 +359,8 @@ CGameObject* CKunai::Clone(void* pArg)
 
 void CKunai::Free()
 {
+	m_pGameInstance->Delete_Light(LEVEL_STATIC, TEXT("Light_Kunai"));
+
 	__super::Free();
 
 	Safe_Release(m_pRendererCom);

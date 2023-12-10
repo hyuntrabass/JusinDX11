@@ -28,6 +28,10 @@ HRESULT CBone::Init(ifstream& ModelFile)
 {
 	_uint iNameSize{};
 	ModelFile.read(reinterpret_cast<char*>(&iNameSize), sizeof _uint);
+	if (iNameSize >= sizeof(m_szName))
+	{
+		MSG_BOX("Name Is Too Long!");
+	}
 	ModelFile.read(m_szName, iNameSize);
 	ModelFile.read(reinterpret_cast<char*>(&m_TransformationMatrix), sizeof _float44);
 	ModelFile.read(reinterpret_cast<char*>(&m_iParentIndex), sizeof _int);

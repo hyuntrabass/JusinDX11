@@ -106,6 +106,8 @@ private:
 private:
 	_float3 m_vAppearPoints[5]{};
 
+	class CEyeLight* m_pEyeLights[2]{};
+
 	ANIM_DESC m_AnimationDesc{};
 
 	_float3 m_vOriginalLook{};

@@ -142,7 +142,7 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 
 	if (FAILED(m_pDevice->CreateBuffer(&m_InstancingBufferDesc, &m_InstancingInitialData, &m_pVBInstance)))
 	{
-		Safe_Delete_Array(pVertexInstance);
+		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
 		return E_FAIL;
 	}
 

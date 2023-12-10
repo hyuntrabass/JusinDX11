@@ -220,6 +220,7 @@ void CTransform::Gravity(_float fTimeDelta, _fvector vUpDir)
 void CTransform::Reset_Gravity()
 {
 	m_fGravity = {};
+	m_fJumpForce = {};
 }
 
 void CTransform::WallTest()
