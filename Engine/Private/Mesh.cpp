@@ -10,7 +10,17 @@ CMesh::CMesh(_dev pDevice, _context pContext)
 
 CMesh::CMesh(const CMesh& rhs)
 	: CVIBuffer(rhs)
+	, m_pVerticesPos(rhs.m_pVerticesPos)
+	, m_pVerticesNor(rhs.m_pVerticesNor)
+	, m_pIndices(rhs.m_pIndices)
+	, m_iMatIndex(rhs.m_iMatIndex)
+	, m_iNumBones(rhs.m_iNumBones)
+	, m_BoneIndices(rhs.m_BoneIndices)
+	, m_OffsetMatrices(rhs.m_OffsetMatrices)
+	, m_BoneMatrices(rhs.m_BoneMatrices)
+	, m_eType(rhs.m_eType)
 {
+	strcpy_s(m_szName, rhs.m_szName);
 }
 
 HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix OffsetMatrix)
@@ -87,16 +97,20 @@ HRESULT CMesh::Init_Prototype(ModelType eType, ifstream& ModelFile, _fmatrix Off
 	Safe_Delete_Array(pIndices);
 #pragma endregion
 
-	if (m_eType == ModelType::Collision)
-	{
-		m_pActor = m_pGameInstance->Cook_StaticMesh(m_iNumVertices, m_pVerticesPos, m_iNumIndices, m_pIndices);
-	}
-
 	return S_OK;
 }
 
 HRESULT CMesh::Init(void* pArg)
 {
+	if (m_eType == ModelType::Collision)
+	{
+		m_pActor = m_pGameInstance->Cook_StaticMesh(m_iNumVertices, m_pVerticesPos, m_iNumIndices, m_pIndices);
+		if (not m_pActor)
+		{
+			return E_FAIL;
+		}
+	}
+
 	return S_OK;
 }
 
@@ -154,6 +168,17 @@ _bool CMesh::Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos)
 	}
 
 	return false;
+}
+
+void CMesh::Apply_TransformToActor(_fmatrix WorldMatrix)
+{
+	if (not m_pActor)
+	{
+		return;
+	}
+	_vector vQuat = XMQuaternionRotationMatrix(WorldMatrix);
+	PxTransform Transform(VectorToPxVec3(WorldMatrix.r[3]), PxQuat(vQuat.m128_f32[0], vQuat.m128_f32[1], vQuat.m128_f32[2], vQuat.m128_f32[3]));
+	m_pActor->setGlobalPose(Transform);
 }
 
 HRESULT CMesh::Ready_StaticMesh(ifstream& ModelFile, _fmatrix OffsetMatrix)
@@ -285,7 +310,6 @@ CComponent* CMesh::Clone(void* pArg)
 		MSG_BOX("Failed to Clone : CMesh");
 		Safe_Release(pInstance);
 	}
-
 	return pInstance;
 }
 
@@ -293,12 +317,18 @@ void CMesh::Free()
 {
 	__super::Free();
 
-	if (m_eType == ModelType::Collision)
+	if (m_hasCloned)
 	{
-		m_pActor->release();
+		if (m_eType == ModelType::Collision)
+		{
+			m_pActor->release();
+		}
 	}
-	Safe_Delete_Array(m_BoneMatrices);
-	Safe_Delete_Array(m_pVerticesPos);
-	Safe_Delete_Array(m_pVerticesNor);
-	Safe_Delete_Array(m_pIndices);
+	else
+	{
+		Safe_Delete_Array(m_BoneMatrices);
+		Safe_Delete_Array(m_pVerticesPos);
+		Safe_Delete_Array(m_pVerticesNor);
+		Safe_Delete_Array(m_pIndices);
+	}
 }

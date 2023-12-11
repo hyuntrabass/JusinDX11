@@ -17,6 +17,11 @@ public:
 	virtual void Late_Tick(_float fTimeDelta) override;
 
 private:
+	class CImguiMgr* m_pImguiMgr{ nullptr };
+	CUTSCENE* m_pScene{ nullptr };
+	_uint m_iSceneIndex{};
+	_float m_fSceneTimer{};
+
 	_bool m_isMoveMode{ true };
 	_float m_fMouseSensor{ 0.1f };
 	_float m_fSpeed{ 10.f };

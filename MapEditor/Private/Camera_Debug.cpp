@@ -1,4 +1,5 @@
 #include "Camera_Debug.h"
+#include "ImguiMgr.h"
 
 CCamera_Debug::CCamera_Debug(_dev pDevice, _context pContext)
 	: CCamera(pDevice, pContext)
@@ -30,11 +31,41 @@ HRESULT CCamera_Debug::Init(void* pArg)
 
 	m_pGameInstance->Set_CameraFar(m_fFar);
 
+	m_pImguiMgr = CImguiMgr::Get_Instance();
+	Safe_AddRef(m_pImguiMgr);
+
 	return S_OK;
 }
 
 void CCamera_Debug::Tick(_float fTimeDelta)
 {
+	if (m_pImguiMgr->HasTo_PlayeScene())
+	{
+		if (not m_pScene)
+		{
+			m_pScene = m_pImguiMgr->Get_CurrentScene();
+			m_iSceneIndex = {};
+			m_fSceneTimer = {};
+		}
+
+		m_pTransformCom->Set_State(State::Pos, XMVectorLerp(XMLoadFloat4(&(*m_pScene)[m_iSceneIndex].first), XMLoadFloat4(&(*m_pScene)[m_iSceneIndex + 1].first), m_fSceneTimer * 2.f));
+		m_pTransformCom->LookAt_Dir(XMVectorLerp(XMLoadFloat4(&(*m_pScene)[m_iSceneIndex].second), XMLoadFloat4(&(*m_pScene)[m_iSceneIndex + 1].second), m_fSceneTimer * 2.f));
+
+		m_fSceneTimer += fTimeDelta;
+		if (m_fSceneTimer > 0.5f)
+		{
+			m_fSceneTimer = {};
+			m_iSceneIndex++;
+			if (m_iSceneIndex >= m_pScene->size() - 1)
+			{
+				m_pImguiMgr->End_Scene();
+				m_pScene = nullptr;
+			}
+		}
+
+		__super::Tick(fTimeDelta);
+		return;
+	}
 	if (m_pGameInstance->Mouse_Pressing(DIM_MBUTTON))
 	{
 		_long dwMouseMove;
@@ -166,4 +197,6 @@ CGameObject* CCamera_Debug::Clone(void* pArg)
 void CCamera_Debug::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pImguiMgr);
 }

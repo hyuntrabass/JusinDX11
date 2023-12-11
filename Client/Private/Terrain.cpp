@@ -32,6 +32,8 @@ HRESULT CTerrain::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	m_pModelCom->Apply_TransformToActor(m_pTransformCom->Get_World_Matrix());
+
 	return S_OK;
 }
 
@@ -41,15 +43,7 @@ void CTerrain::Tick(_float fTimeDelta)
 
 void CTerrain::Late_Tick(_float fTimeDelta)
 {
-	//if (m_strPrototypeTag == L"Prototype_Model_SM_ENV_KNFRST_WireMesh_B.mo")
-	//{
-	//	__super::Compute_CamDistance();
-	//	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
-	//}
-	//else
-	//{
-	//}
-		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 }
 
 HRESULT CTerrain::Render()
@@ -81,22 +75,24 @@ HRESULT CTerrain::Render()
 			iPassIndex = StaticPass_SingleColorFx;
 		}
 
-		_float fNorTex = 0.f;
+		_bool HasNorTex{};
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
 		{
-			fNorTex = 0.f;
+			HasNorTex = false;
 		}
 		else
 		{
-			fNorTex = 1.f;
+			HasNorTex = true;
 		}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fNorTex", &fNorTex, sizeof _float)))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}
 
-		if (m_strPrototypeTag == L"Prototype_Model_SM_ENV_KNFRST_WireMesh_B.mo")
+		if (m_strPrototypeTag == TEXT("Prototype_Model_SM_ENV_KNFRST_WireMesh_B.mo") or
+			m_strPrototypeTag == TEXT("Prototype_Model_MERGED_SM_ENV_KNVLLG_FarTree_A1.mo") or
+			m_strPrototypeTag == TEXT("Prototype_Model_SM_ENV_KNVLLG_RockWall_Set_01.mo"))
 		{
 			iPassIndex = StaticPass_AlphaTestMeshes;
 		}

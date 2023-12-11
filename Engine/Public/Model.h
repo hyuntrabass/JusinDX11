@@ -45,6 +45,7 @@ public:
 	void Play_Animation(_float fTimeDelta);
 	HRESULT Bind_BoneMatrices(_uint iMeshIndex, class CShader* pShader, const _char* pVariableName);
 	HRESULT Bind_Material(class CShader* pShader, const _char* pVariableName, _uint iMeshIndex, TextureType eTextureType);
+	void Apply_TransformToActor(_fmatrix WorldMatrix);
 
 	HRESULT Render(_uint iMeshIndex);
 

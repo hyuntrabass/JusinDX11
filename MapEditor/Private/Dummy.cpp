@@ -7,7 +7,9 @@ CDummy::CDummy(_dev pDevice, _context pContext)
 
 CDummy::CDummy(const CDummy& rhs)
 	: CBlendObject(rhs)
+	, m_pImguiMgr(CImguiMgr::Get_Instance())
 {
+	Safe_AddRef(m_pImguiMgr);
 }
 
 void CDummy::Select(const _bool& isSelected)
@@ -33,13 +35,29 @@ HRESULT CDummy::WriteFile(ofstream& File, _bool WriteWData, _uint iWData)
 {
 	if (WriteWData)
 	{
-		m_Info.vPos.w = iWData;
+		m_Info.vPos.w = static_cast<_float>(iWData);
 	}
 	size_t iNameSize = m_Info.Prototype.size() * sizeof(_tchar) + sizeof(_tchar);
 	File.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
 	File.write(reinterpret_cast<const _char*>(m_Info.Prototype.data()), iNameSize);
 	File.write(reinterpret_cast<const _char*>(&m_Info.eType), sizeof ItemType);
 	File.write(reinterpret_cast<const _char*>(&m_Info.iStageIndex), sizeof _uint);
+	File.write(reinterpret_cast<const _char*>(&m_Info.vPos), sizeof _float4);
+	File.write(reinterpret_cast<const _char*>(&m_Info.vLook), sizeof _float4);
+
+	return S_OK;
+}
+
+HRESULT CDummy::WriteMonsterFile(ofstream& File, _bool WriteWData, _uint iWData)
+{
+	if (WriteWData)
+	{
+		m_Info.vPos.w = static_cast<_float>(iWData);
+	}
+	size_t iNameSize = m_Info.Prototype.size() * sizeof(_tchar) + sizeof(_tchar);
+	File.write(reinterpret_cast<const _char*>(&iNameSize), sizeof size_t);
+	File.write(reinterpret_cast<const _char*>(m_Info.Prototype.data()), iNameSize);
+	File.write(reinterpret_cast<const _char*>(&m_Info.iTriggerNum), sizeof _uint);
 	File.write(reinterpret_cast<const _char*>(&m_Info.vPos), sizeof _float4);
 	File.write(reinterpret_cast<const _char*>(&m_Info.vLook), sizeof _float4);
 
@@ -54,6 +72,11 @@ HRESULT CDummy::Init_Prototype()
 HRESULT CDummy::Init(void* pArg)
 {
 	m_Info = *(DummyInfo*)pArg;
+
+	if (m_Info.Prototype == L"Prototype_Model_SandNinja" || m_Info.Prototype == L"Prototype_Model_Sandman")
+	{
+		m_isAnim = true;
+	}
 
 	if (FAILED(Add_Components()))
 	{
@@ -92,27 +115,27 @@ void CDummy::Tick(_float fTimeDelta)
 		m_isDead = true;
 	}
 
-	if (m_Info.pImguiMgr)
+	if (m_pImguiMgr)
 	{
-		if (m_Info.pImguiMgr->ComputePickPos())
+		if (m_pImguiMgr->ComputePickPos())
 		{
 			_float4 vPickPos{};
 			if (m_pModelCom->Intersect_RayModel(m_pTransformCom->Get_World_Matrix(), &vPickPos))
 			{
-				m_Info.pImguiMgr->SetPos(vPickPos, this);
+				m_pImguiMgr->SetPos(vPickPos, this);
 			}
 		}
-		if (m_Info.pImguiMgr->ComputeSelection())
+		if (m_pImguiMgr->ComputeSelection())
 		{
 			_float4 vPickPos{};
 			if (m_pModelCom->Intersect_RayModel(m_pTransformCom->Get_World_Matrix(), &vPickPos))
 			{
-				m_Info.pImguiMgr->Select(vPickPos, this);
+				m_pImguiMgr->Select(vPickPos, this);
 			}
 		}
 	}
 
-	if (m_Info.Prototype == L"Prototype_Model_Kurama" || m_Info.Prototype == L"Prototype_Model_Pain")
+	if (m_isAnim)
 	{
 		if (m_pGameInstance->Key_Pressing(DIK_UP))
 		{
@@ -190,17 +213,17 @@ HRESULT CDummy::Render()
 			{
 			}
 
-			_float fNorTex = 0.f;
+			_bool HasNorTex{};
 			if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
 			{
-				fNorTex = 0.f;
+				HasNorTex = false;
 			}
 			else
 			{
-				fNorTex = 1.f;
+				HasNorTex = true;
 			}
 
-			if (FAILED(m_pShaderCom->Bind_RawValue("g_fNorTex", &fNorTex, sizeof _float)))
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 			{
 				return E_FAIL;
 			}
@@ -210,7 +233,7 @@ HRESULT CDummy::Render()
 				return E_FAIL;
 			}
 
-			if (m_Info.Prototype == L"Prototype_Model_Kurama" || m_Info.Prototype == L"Prototype_Model_Pain")
+			if (m_isAnim)
 			{
 				if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
 				{
@@ -249,7 +272,7 @@ HRESULT CDummy::Add_Components()
 	{
 		return E_FAIL;
 	}
-	if (m_Info.Prototype == L"Prototype_Model_Kurama" || m_Info.Prototype == L"Prototype_Model_Pain")
+	if (m_isAnim)
 	{
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		{
@@ -370,6 +393,8 @@ CGameObject* CDummy::Clone(void* pArg)
 void CDummy::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pImguiMgr);
 
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);

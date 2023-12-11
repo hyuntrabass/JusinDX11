@@ -100,17 +100,17 @@ HRESULT CKakashi::Render()
 		{
 		}
 
-		_float fNorTex = 0.f;
+		_bool HasNorTex{};
 		if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
 		{
-			fNorTex = 0.f;
+			HasNorTex = false;
 		}
 		else
 		{
-			fNorTex = 1.f;
+			HasNorTex = true;
 		}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fNorTex", &fNorTex, sizeof _float)))
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &HasNorTex, sizeof _bool)))
 		{
 			return E_FAIL;
 		}

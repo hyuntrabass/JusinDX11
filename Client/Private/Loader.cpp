@@ -706,6 +706,10 @@ HRESULT CLoader::Load_VillageStage()
 
 	m_strLoadingText = L"Stage1 : Loading Prototype";
 #pragma region Prototype
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Pain"), CPain::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 
 #pragma endregion
 

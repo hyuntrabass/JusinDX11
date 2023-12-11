@@ -19,6 +19,7 @@ public:
 	void Get_State(_float4& vPos, _float4& vLook);
 	
 	HRESULT WriteFile(ofstream& File, _bool WriteWData = false, _uint iWData = 0);
+	HRESULT WriteMonsterFile(ofstream& File, _bool WriteWData = false, _uint iWData = 0);
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -33,10 +34,13 @@ private:
 	CModel* m_pModelCom{ nullptr };
 
 private:
+	CImguiMgr* m_pImguiMgr{ nullptr };
+
 	DummyInfo m_Info{};
 	_bool m_isSelected{};
 	_uint m_iShaderPass{};
 	_uint m_iOutLineShaderPass{};
+	_bool m_isAnim{};
 	ANIM_DESC m_Animation{};
 
 private:

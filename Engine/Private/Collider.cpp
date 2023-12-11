@@ -259,7 +259,7 @@ void CCollider::Free()
 #ifdef _DEBUG
 	Safe_Release(m_pInputLayout);
 
-	if (not m_isCloned)
+	if (not m_hasCloned)
 	{
 		Safe_Delete(m_pBatch);
 		Safe_Delete(m_pEffect);

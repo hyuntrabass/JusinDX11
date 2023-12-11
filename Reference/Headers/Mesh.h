@@ -21,6 +21,7 @@ public:
 public:
 	HRESULT Bind_BoneMatrices(class CShader* pShader, const vector<class CBone*>& Bones, const _char* pVariableName, _fmatrix PivotMatrix);
 	_bool Intersect_RayMesh(_fmatrix WorldMatrix, _float4* pPickPos);
+	void Apply_TransformToActor(_fmatrix WorldMatrix);
 
 private:
 	_float3* m_pVerticesPos{ nullptr };
@@ -44,7 +45,7 @@ private:
 
 public:
 	static CMesh* Create(_dev pDevice, _context pContext, ModelType eType, ifstream& ModelFile, _fmatrix OffsetMatrix);
-	virtual CComponent* Clone(void* pArg) override;
+	virtual CComponent* Clone(void* pArg = nullptr) override;
 	virtual void Free() override;
 };
 

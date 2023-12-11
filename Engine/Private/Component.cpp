@@ -15,7 +15,7 @@ CComponent::CComponent(const CComponent& rhs)
     : m_pDevice(rhs.m_pDevice)
     , m_pContext(rhs.m_pContext)
     , m_pGameInstance(rhs.m_pGameInstance)
-    , m_isCloned(true)
+    , m_hasCloned(true)
 {
     Safe_AddRef(m_pGameInstance);
     Safe_AddRef(m_pContext);

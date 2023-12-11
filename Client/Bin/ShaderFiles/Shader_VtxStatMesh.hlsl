@@ -9,7 +9,7 @@ vector g_vColor;
 vector g_vCamPos;
 float g_fCamFar;
 
-float g_fNorTex;
+bool g_HasNorTex;
 bool g_bSelected = false;
 
 vector g_vLightDir;
@@ -45,6 +45,8 @@ struct VS_OUT
     float2 vTex : Texcoord0;
     vector vWorldPos : Texcoord1;
     vector vProjPos : Texcoord2;
+    float3 vTangent : Tangent;
+    float3 vBinormal : Binormal;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -61,6 +63,8 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vTex = Input.vTex;
     Output.vWorldPos = mul(vector(Input.vPos, 1.f), g_WorldMatrix);
     Output.vProjPos = Output.vPos;
+    Output.vTangent = normalize(mul(vector(Input.vTan, 0.f), g_WorldMatrix)).xyz;
+    Output.vBinormal = normalize(cross(Output.vNor.xyz, Output.vTangent));
     
     return Output;
 }
@@ -99,6 +103,8 @@ struct PS_IN
     float2 vTex : Texcoord0;
     vector vWorldPos : Texcoord1;
     vector vProjPos : Texcoord2;
+    float3 vTangent : Tangent;
+    float3 vBinormal : Binormal;
 };
 
 struct PS_OUT_DEFERRED
@@ -118,10 +124,25 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 0.3f * g_bSelected;
-    vector vNormal = /*(g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex +*/ Input.vNor;
+    
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+    
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+    
+        vNormal = mul(normalize(vNormal), WorldMatrix) * -1.f;
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
+    }
     
     Output.vDiffuse = vector(vMtrlDiffuse.xyz, 1.f);
-    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     
     return Output;
@@ -132,37 +153,30 @@ PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 0.3f * g_bSelected;
-    vector vNormal = /*(g_NormalTexture.Sample(LinearSampler, Input.vTex) * 2 - 1) * g_fNorTex +*/ Input.vNor;
     
-    //float fShade = saturate(dot(normalize(g_vLightDir) * -1.f, vNormal));
-    //fShade = ceil(fShade * 2.f) / 2.f;
-    
-    //vector vLook = Input.vWorldPos - g_vCamPos;
-    ////float dp = dot(normalize(vLook) * -1.f, normalize(vNormal));
-    ////vMtrlDiffuse = vMtrlDiffuse * dp;
-    ////if (dp < 0.05f)
-    ////{
-    ////    Output.vColor = vector(0.f, 0.f, 0.f, 1.f);
-    ////}
-    ////else
-    ////{
-
-    //vector vReflect = reflect(normalize(g_vLightDir), vNormal);
-    ////float fSpecular = 0.f;
-    //float fSpecular = pow(saturate(dot(normalize(vReflect) * -1.f, normalize(vLook))), 10.f) * 0.3f;
-
-    //Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient)) + ((g_vLightSpecular * g_vMtrlSpecular) * fSpecular);
-    
-    ////Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
-    ////}
-    
-    if (vMtrlDiffuse.a < 0.1f)
+    if (vMtrlDiffuse.a < 0.5f)
     {
         discard;
     }
+        
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+    
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+    
+        vNormal = mul(normalize(vNormal), WorldMatrix);
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
+    }
     
     Output.vDiffuse = vMtrlDiffuse;
-    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vNormal = vector(vNormal * 0.5f + 0.5f, 0.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
     
     return Output;
@@ -213,6 +227,7 @@ PS_OUT PS_Main_COL(PS_IN Input)
     vector vReflect = reflect(normalize(g_vLightDir), vNormal);
 
     Output.vColor = (g_vLightDiffuse * vMtrlDiffuse) * (fShade + (g_vLightAmbient * g_vMtrlAmbient));
+    Output.vColor.a = vMtrlDiffuse.a;
     
     return Output;
 }

@@ -43,4 +43,6 @@ namespace Engine
 
 	using _randNum = std::mt19937_64;
 	using _randFloat = std::uniform_real_distribution<float>;
+
+	using CUTSCENE = std::vector<std::pair<XMFLOAT4, XMFLOAT4>>;
 }

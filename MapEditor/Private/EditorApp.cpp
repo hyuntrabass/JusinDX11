@@ -6,6 +6,7 @@
 #include "Dummy.h"
 #include "Sky.h"
 #include "LoadingImg.h"
+#include "3D_Cursor.h"
 
 CEditorApp::CEditorApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
@@ -113,7 +114,8 @@ void CEditorApp::Tick(_float fTimeDelta)
 	{
 		if (!m_pImguiMgr)
 		{
-			m_pImguiMgr = CImguiMgr::Create(m_pDevice, m_pContext, m_pGameInstance, m_MapModels, m_MapCOLModels, &m_Name_Props);
+			(m_pImguiMgr = CImguiMgr::Get_Instance())->Init(m_pDevice, m_pContext, m_MapList, m_MapCOLList, &m_PropList);
+			Safe_AddRef(m_pImguiMgr);
 		}
 	}
 
@@ -124,7 +126,7 @@ void CEditorApp::Tick(_float fTimeDelta)
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
-		m_pImguiMgr->Tick();
+		m_pImguiMgr->Tick(fTimeDelta);
 	}
 
 }
@@ -294,7 +296,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			}
 			else
 			{
-				m_MapModels[0].push_back(strFileName);
+				m_MapList[0].push_back(strFileName);
 			}
 		}
 	}
@@ -314,7 +316,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			}
 			else
 			{
-				m_MapCOLModels[0].push_back(strFileName);
+				m_MapCOLList[0].push_back(strFileName);
 			}
 		}
 	}
@@ -334,7 +336,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			}
 			else
 			{
-				m_MapModels[1].push_back(strFileName);
+				m_MapList[1].push_back(strFileName);
 			}
 		}
 	}
@@ -354,7 +356,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			}
 			else
 			{
-				m_MapCOLModels[1].push_back(strFileName);
+				m_MapCOLList[1].push_back(strFileName);
 			}
 		}
 	}
@@ -374,7 +376,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			}
 			else
 			{
-				m_MapModels[2].push_back(strFileName);
+				m_MapList[2].push_back(strFileName);
 			}
 		}
 	}
@@ -394,7 +396,7 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			}
 			else
 			{
-				m_MapCOLModels[2].push_back(strFileName);
+				m_MapCOLList[2].push_back(strFileName);
 			}
 		}
 	}
@@ -416,12 +418,12 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 			}
 			else
 			{
-				m_Name_Props.push_back(strFileNameString);
+				m_PropList.push_back(strFileNameString);
 			}
 		}
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Sky/Mesh/Sky.hyuntrastatmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_SkySphere"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Sky/Mesh/Sky.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -431,7 +433,17 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Pain"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Boss/Pain/Mesh/Pain.hyuntraanimmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sandman"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Loser02/Mesh/Loser02.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_SandNinja"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Sandman/Mesh/SandNinja.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_Sphere_02.mo.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -456,6 +468,11 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Sky"), CSky::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Cursor"), C3D_Cursor::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -494,6 +511,7 @@ void CEditorApp::Free()
 	CloseHandle(m_hThread);
 
 	Safe_Release(m_pImguiMgr);
+	CImguiMgr::Destroy_Instance();
 	Safe_Release(m_pRenderer);
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);

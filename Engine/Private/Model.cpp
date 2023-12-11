@@ -12,7 +12,6 @@ CModel::CModel(_dev pDevice, _context pContext)
 CModel::CModel(const CModel& rhs)
 	: CComponent(rhs)
 	, m_iNumMeshes(rhs.m_iNumMeshes)
-	, m_Meshes(rhs.m_Meshes)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_Materials(rhs.m_Materials)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
@@ -32,9 +31,11 @@ CModel::CModel(const CModel& rhs)
 		m_Animations.push_back(pAnimation);
 	}
 
-	for (auto& pMesh : m_Meshes)
+	for (auto& pPrototypeMesh : rhs.m_Meshes)
 	{
-		Safe_AddRef(pMesh);
+		CMesh* pMesh = reinterpret_cast<CMesh*>(pPrototypeMesh->Clone());
+
+		m_Meshes.push_back(pMesh);
 	}
 
 	for (auto& Material : m_Materials)
@@ -196,6 +197,14 @@ HRESULT CModel::Bind_Material(CShader* pShader, const _char* pVariableName, _uin
 	}
 
 	return pMaterial->Bind_ShaderResource(pShader, pVariableName);
+}
+
+void CModel::Apply_TransformToActor(_fmatrix WorldMatrix)
+{
+	for (auto& pMesh : m_Meshes)
+	{
+		pMesh->Apply_TransformToActor(WorldMatrix);
+	}
 }
 
 HRESULT CModel::Render(_uint iMeshIndex)

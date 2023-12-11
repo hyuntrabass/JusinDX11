@@ -2,6 +2,9 @@
 #include "GameInstance.h"
 #include "Camera_Debug.h"
 #include "Dummy.h"
+#include "3D_Cursor.h"
+
+IMPLEMENT_SINGLETON(CImguiMgr)
 
 using namespace ImGui;
 
@@ -17,14 +20,25 @@ static void Tip(const char* desc)
 	}
 }
 
-CImguiMgr::CImguiMgr(_dev pDevice, _context pContext, CGameInstance* pGameInstance)
-	: m_pDevice(pDevice)
-	, m_pContext(pContext)
-	, m_pGameInstance(pGameInstance)
+CImguiMgr::CImguiMgr()
+	: m_pGameInstance(CGameInstance::Get_Instance())
 {
 	Safe_AddRef(m_pGameInstance);
-	Safe_AddRef(m_pContext);
-	Safe_AddRef(m_pDevice);
+}
+
+const _float4& CImguiMgr::Get_Position() const
+{
+	return m_vPos;
+}
+
+const _bool& CImguiMgr::HasTo_PlayeScene() const
+{
+	return m_PlayScene;
+}
+
+CUTSCENE* CImguiMgr::Get_CurrentScene()
+{
+	return m_pCurrentScene;
 }
 
 void CImguiMgr::SetPos(const _float4& vPos, CDummy* pDummy)
@@ -60,6 +74,11 @@ void CImguiMgr::Select(const _float4& vPos, CDummy* pDummy)
 	}
 }
 
+void CImguiMgr::End_Scene()
+{
+	m_PlayScene = false;
+}
+
 _bool CImguiMgr::ComputePickPos()
 {
 	return m_ComputePickPos;
@@ -70,8 +89,14 @@ _bool CImguiMgr::ComputeSelection()
 	return m_ComputeSelection;
 }
 
-HRESULT CImguiMgr::Init(vector<wstring>* MapList, vector<wstring>* MapCOLList, vector<string>* PropList)
+HRESULT CImguiMgr::Init(_dev pDevice, _context pContext, vector<wstring>* MapList, vector<wstring>* MapCOLList, vector<string>* PropList)
 {
+	m_pDevice = pDevice;
+	m_pContext = pContext;
+
+	Safe_AddRef(m_pContext);
+	Safe_AddRef(m_pDevice);
+
 	IMGUI_CHECKVERSION();
 	CreateContext();
 
@@ -92,7 +117,7 @@ HRESULT CImguiMgr::Init(vector<wstring>* MapList, vector<wstring>* MapCOLList, v
 	return S_OK;
 }
 
-void CImguiMgr::Tick()
+void CImguiMgr::Tick(_float fTimeDelta)
 {
 	static _bool bDemo{ true };
 	ShowDemoWindow(&bDemo);
@@ -100,9 +125,11 @@ void CImguiMgr::Tick()
 	const _char* szStages[3]{ "Tutorial", "Stage1", "Stage2" };
 	Begin("Editor");
 
+	Checkbox("TextInputMode", &m_isTextInputMode);
+
 	if (Combo("Stage", &m_Curr_Stage, szStages, IM_ARRAYSIZE(szStages)))
 	{
-		m_DummyList.clear();
+		m_PropList.clear();
 		m_pGameInstance->Set_CurrentLevelIndex(m_Curr_Stage);
 		Load_Data();
 	}
@@ -142,6 +169,7 @@ void CImguiMgr::Tick()
 
 	static _int iCurrListIndex{};
 	static _int iTrigger_Number{};
+	static _float fTrigger_Size{};
 	if (BeginTabItem("Props"))
 	{
 		PushItemWidth(300.f);
@@ -165,7 +193,129 @@ void CImguiMgr::Tick()
 		m_eItemType = ItemType::NPC;
 		EndTabItem();
 	}
+	if (BeginTabItem("Trigger"))
+	{
+		ListBox("Triggers", &iCurrListIndex, m_TriggerItemList.data(), m_TriggerItemList.size());
+		
+		if (Button("Create Trigger"))
+		{
+			m_TriggerList.push_back(m_vPos);
+			_char* pBuffer = new _char[MAX_PATH];
+			snprintf(pBuffer, MAX_PATH, "X:%.1f, Y:%.1f, Z:%.1f", m_vPos.x, m_vPos.y, m_vPos.z);
+			m_TriggerItemList.push_back(pBuffer);
+		}
+
+		if (Button("Delete Trigger"))
+		{
+			{
+				auto iter = m_TriggerList.begin();
+				for (_int i = 0; i < iCurrListIndex; i++)
+				{
+					iter++;
+				}
+				m_TriggerList.erase(iter);
+			}
+
+			{
+				Safe_Delete_Array(m_TriggerItemList[iCurrListIndex]);
+				auto iter = m_TriggerItemList.begin();
+				iter += iCurrListIndex;
+				m_TriggerItemList.erase(iter);
+			}
+		}
+
+		EndTabItem();
+	}
+	if (BeginTabItem("Camera"))
+	{
+		static char buf[32] = ""; 
+		ImGui::InputText("Scene_Name", buf, 32, ImGuiInputTextFlags_CharsNoBlank);
+
+		ListBox("Scenes", &iCurrListIndex, m_SceneList.data(), m_SceneList.size());
+
+		if (Button("Rec") or not m_isTextInputMode and m_pGameInstance->Key_Down(DIK_R))
+		{
+			if (not m_isRecording)
+			{
+				m_isRecording = true;
+				m_fRecTimer = {};
+				CUTSCENE* pScene = new CUTSCENE;
+				m_Scenes.push_back(pScene);
+			}
+			else
+			{
+				m_isRecording = false;
+				_char* pBuffer = new _char[32];
+				strcpy_s(pBuffer, 32, buf);
+				m_SceneList.push_back(pBuffer);
+			}
+		}
+
+		if (Button("Play"))
+		{
+			m_PlayScene = true;
+			m_pCurrentScene = m_Scenes[iCurrListIndex];
+		}
+
+		if (Button("Export"))
+		{
+			filesystem::path strFilePath = "../../Client/Bin/Resources/CutScenes/" + string(m_SceneList[iCurrListIndex]) + ".hyuntrascene";
+
+			ofstream OutFile(strFilePath.c_str(), ios::binary);
+
+			if (OutFile.is_open())
+			{
+				size_t SceneSize = m_Scenes[iCurrListIndex]->size();
+				OutFile.write(reinterpret_cast<_char*>(&SceneSize), sizeof size_t);
+
+				for (auto& Pair : *m_Scenes[iCurrListIndex])
+				{
+					OutFile.write(reinterpret_cast<const _char*>(&Pair.first), sizeof _float4);
+					OutFile.write(reinterpret_cast<const _char*>(&Pair.second), sizeof _float4);
+				}
+				OutFile.close();
+			}
+		}SameLine();
+
+		if (Button("Import"))
+		{
+			filesystem::path strFilePath = "../../Client/Bin/Resources/CutScenes/" + string(buf) + ".hyuntrascene";
+
+			ifstream ImportFile(strFilePath.c_str(), ios::binary);
+
+			if (ImportFile.is_open())
+			{
+				size_t SceneSize{};
+				ImportFile.read(reinterpret_cast<_char*>(&SceneSize), sizeof size_t);
+
+				CUTSCENE* pScene = new CUTSCENE;
+				m_Scenes.push_back(pScene);
+
+				_float4 vPos{}, vLook{};
+
+				for (size_t i = 0; i < SceneSize; i++)
+				{
+					ImportFile.read(reinterpret_cast<_char*>(&vPos), sizeof _float4);
+					ImportFile.read(reinterpret_cast<_char*>(&vLook), sizeof _float4);
+					m_Scenes.back()->push_back({ vPos, vLook });
+				}
+				_char* pBuffer = new _char[32];
+				strcpy_s(pBuffer, 32, buf);
+				m_SceneList.push_back(pBuffer);
+
+				ImportFile.close();
+			}
+		}
+		EndTabItem();
+	}
 	EndTabBar();
+
+	if (m_isRecording and m_fRecTimer > 0.5f)
+	{
+		m_fRecTimer = {};
+		m_Scenes.back()->push_back({m_pGameInstance->Get_CameraPos(), m_pGameInstance->Get_CameraLook()});
+	}
+	m_fRecTimer += fTimeDelta;
 
 	SeparatorText("Position");
 
@@ -278,7 +428,7 @@ void CImguiMgr::Tick()
 		XMStoreFloat4(&m_vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
 	}
 
-	if (m_pGameInstance->Key_Pressing(DIK_V))
+	if (not m_isTextInputMode and m_pGameInstance->Key_Pressing(DIK_V))
 	{
 		_float3 vPickPos{};
 		if (m_pGameInstance->Picking_InWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 300.f, 1.f), XMVectorSet(300.f, 0.f, 0.f, 1.f), &vPickPos) ||
@@ -342,12 +492,12 @@ void CImguiMgr::Tick()
 
 	SeparatorText("");
 
-	if (Button("Create") || m_pGameInstance->Key_Down(DIK_C) || m_pGameInstance->Gamepad_Down(XINPUT_RB))
+	if (Button("Create") || not m_isTextInputMode and m_pGameInstance->Key_Down(DIK_C) || m_pGameInstance->Gamepad_Down(XINPUT_RB))
 	{
 		Create_Dummy(iCurrListIndex);
 		m_pGameInstance->Gamepad_Vibration(32000, 16000);
 	} SameLine();
-	if (Button("Modify") || m_pGameInstance->Key_Down(DIK_R))
+	if (Button("Modify") || m_pGameInstance->Key_Down(DIK_M))
 	{
 		if (m_pSelectedDummy)
 		{
@@ -355,7 +505,7 @@ void CImguiMgr::Tick()
 		}
 
 	} SameLine();
-	if (Button("Delete") || m_pGameInstance->Key_Down(DIK_F))
+	if (Button("Delete") || not m_isTextInputMode and m_pGameInstance->Key_Down(DIK_F))
 	{
 		Delete_Dummy();
 	}
@@ -374,7 +524,7 @@ HRESULT CImguiMgr::Render()
 	return S_OK;
 }
 
-HRESULT CImguiMgr::Ready_Layers(vector<string>* pPropCount)
+HRESULT CImguiMgr::Ready_Layers(vector<string>* PropList)
 {
 	CCamera::Camera_Desc CamDesc;
 	CamDesc.vCameraPos = _float4(-10.f, 15.f, -10.f, 1.f);
@@ -399,12 +549,17 @@ HRESULT CImguiMgr::Ready_Layers(vector<string>* pPropCount)
 		return E_FAIL;
 	}
 
-	m_iNumProps = static_cast<int>(pPropCount->size());
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Cursor"), TEXT("Prototype_GameObject_Cursor"), this)))
+	{
+		return E_FAIL;
+	}
+
+	m_iNumProps = static_cast<int>(PropList->size());
 	m_pItemList_Props = new const _char * [m_iNumProps];
 
 	for (size_t i = 0; i < m_iNumProps; i++)
 	{
-		m_pItemList_Props[i] = (*pPropCount)[i].c_str();
+		m_pItemList_Props[i] = (*PropList)[i].c_str();
 	}
 
 	return S_OK;
@@ -420,7 +575,6 @@ void CImguiMgr::Create_Dummy(const _int& iListIndex)
 
 	DummyInfo Info{};
 
-	Info.pImguiMgr = this;
 	Info.ppDummy = &m_pSelectedDummy;
 	Info.vPos = m_vPos;
 	XMStoreFloat4(&Info.vLook, XMVector4Normalize(XMLoadFloat4(&m_vLook)));
@@ -444,7 +598,15 @@ void CImguiMgr::Create_Dummy(const _int& iListIndex)
 		MSG_BOX("Failed to Add Layer : Dummy");
 	}
 
-	m_DummyList.push_back(m_pSelectedDummy);
+	switch (m_eItemType)
+	{
+	case MapEditor::ItemType::Props:
+		m_PropList.push_back(m_pSelectedDummy);
+		break;
+	case MapEditor::ItemType::Monster:
+		m_MonsterList.push_back(m_pSelectedDummy);
+		break;
+	}
 }
 
 void CImguiMgr::Delete_Dummy()
@@ -453,11 +615,11 @@ void CImguiMgr::Delete_Dummy()
 	{
 		m_pSelectedDummy->Kill();
 
-		for (auto iter = m_DummyList.begin(); iter != m_DummyList.end();)
+		for (auto iter = m_PropList.begin(); iter != m_PropList.end();)
 		{
 			if (*iter == m_pSelectedDummy)
 			{
-				iter = m_DummyList.erase(iter);
+				iter = m_PropList.erase(iter);
 			}
 			else
 			{
@@ -474,7 +636,6 @@ HRESULT CImguiMgr::Load_Data()
 	Info.vLook = _float4(0.f, 0.f, 1.f, 0.f);
 	Info.eType = ItemType::Map;
 	Info.iStageIndex = m_Curr_Stage;
-	Info.pImguiMgr = this;
 	_int i{};
 
 	for (auto& strFileName : m_pMapModels[m_Curr_Stage])
@@ -504,7 +665,7 @@ HRESULT CImguiMgr::Load_Data()
 
 	if (InFile.is_open())
 	{
-		m_DummyList.clear();
+		m_PropList.clear();
 
 		size_t DummySize{};
 		InFile.read(reinterpret_cast<_char*>(&DummySize), sizeof size_t);
@@ -523,7 +684,6 @@ HRESULT CImguiMgr::Load_Data()
 			InFile.read(reinterpret_cast<_char*>(&Info.iStageIndex), sizeof _uint);
 			InFile.read(reinterpret_cast<_char*>(&Info.vPos), sizeof _float4);
 			InFile.read(reinterpret_cast<_char*>(&Info.vLook), sizeof _float4);
-			Info.pImguiMgr = this;
 			Info.ppDummy = &m_pSelectedDummy;
 
 			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
@@ -532,7 +692,7 @@ HRESULT CImguiMgr::Load_Data()
 			}
 			else
 			{
-				m_DummyList.push_back(m_pSelectedDummy);
+				m_PropList.push_back(m_pSelectedDummy);
 			}
 		}
 		InFile.close();
@@ -553,10 +713,10 @@ HRESULT CImguiMgr::Export_Data()
 
 	if (OutFile.is_open())
 	{
-		size_t DummySize = m_DummyList.size();
+		size_t DummySize = m_PropList.size();
 		OutFile.write(reinterpret_cast<_char*>(&DummySize), sizeof size_t);
 
-		for (auto& Data : m_DummyList)
+		for (auto& Data : m_PropList)
 		{
 			Data->WriteFile(OutFile);
 		}
@@ -570,21 +730,63 @@ HRESULT CImguiMgr::Export_Data()
 	return S_OK;
 }
 
-CImguiMgr* CImguiMgr::Create(_dev pDevice, _context pContext, CGameInstance* pGameInstance, vector<wstring>* MapList, vector<wstring>* MapCOLList, vector<string>* PropList)
+HRESULT CImguiMgr::Export_Trigger_Data()
 {
-	CImguiMgr* pInstance = new CImguiMgr(pDevice, pContext, pGameInstance);
+	filesystem::path strFilePath = L"../../Client/Bin/Resources/MapData/Trigger_" + std::to_wstring(m_Curr_Stage) + L".hyuntramap";
 
-	if (FAILED(pInstance->Init(MapList, MapCOLList, PropList)))
+	ofstream OutFile(strFilePath.c_str(), ios::binary);
+
+	if (OutFile.is_open())
 	{
-		MSG_BOX("Failed to Create : CImguiMgr");
-		Safe_Release(pInstance);
+		size_t TriggerSize = m_TriggerList.size();
+		OutFile.write(reinterpret_cast<const _char*>(&TriggerSize), sizeof size_t);
+
+		for (auto& vPos : m_TriggerList)
+		{
+			OutFile.write(reinterpret_cast<const _char*>(&vPos), sizeof _float4);
+		}
+		OutFile.close();
+	}
+	else
+	{
+		return E_FAIL;
 	}
 
-	return pInstance;
+	return S_OK;
+}
+
+HRESULT CImguiMgr::Export_Monster_Data()
+{
+	filesystem::path strFilePath = L"../../Client/Bin/Resources/MapData/Monster_" + std::to_wstring(m_Curr_Stage) + L".hyuntramap";
+
+	ofstream OutFile(strFilePath.c_str(), ios::binary);
+
+	if (OutFile.is_open())
+	{
+		size_t DummySize = m_MonsterList.size();
+		OutFile.write(reinterpret_cast<_char*>(&DummySize), sizeof size_t);
+
+		for (auto& Data : m_MonsterList)
+		{
+			Data->WriteMonsterFile(OutFile);
+		}
+		OutFile.close();
+	}
+	else
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
 }
 
 void CImguiMgr::Free()
 {
+	for (auto pBuffer : m_TriggerItemList)
+	{
+		Safe_Delete_Array(pBuffer);
+	}
+
 	Safe_Release(m_pGameInstance);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

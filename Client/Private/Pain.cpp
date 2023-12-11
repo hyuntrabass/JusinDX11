@@ -27,6 +27,9 @@ HRESULT CPain::Init(void* pArg)
     m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
     m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit);
 
+    m_AnimationDesc.fAnimSpeedRatio = 3.f;
+    m_eState = State_Idle;
+
     m_iHP = 300;
 
     return S_OK;
@@ -39,10 +42,21 @@ void CPain::Tick(_float fTimeDelta)
     Init_State();
     TIck_State(fTimeDelta);
 
+    if (m_pModelCom->IsAnimationFinished(m_AnimationDesc.iAnimIndex))
+    {
+        m_AnimationDesc.iAnimIndex++;
+        if (m_AnimationDesc.iAnimIndex >= Anim_End)
+        {
+            m_AnimationDesc.iAnimIndex = 0;
+        }
+        m_pModelCom->Set_Animation(m_AnimationDesc);
+    }
+
+
     m_pTransformCom->Gravity(fTimeDelta);
 
-    _matrix ColliderOffset = XMMatrixTranslation(0.f, 4.f, 0.f);
-    m_pCollider_Hit->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
+    _matrix ColliderOffset = XMMatrixTranslation(0.f, 0.8f, 0.f);
+    m_pCollider_Hit->Update(/*ColliderOffset * */m_pTransformCom->Get_World_Matrix());
     m_fTimer += fTimeDelta;
 }
 
@@ -69,18 +83,22 @@ HRESULT CPain::Render()
         return E_FAIL;
     }
 
-    _float fNormal{};
-
-    for (size_t i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+    _bool hasNormal{};
+    for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
     {
         if (FAILED(m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType::Diffuse)))
         {
-            return E_FAIL;
+
         }
 
         if (SUCCEEDED(m_pModelCom->Bind_Material(m_pShaderCom, "g_NormalTexture", i, TextureType::Normals)))
         {
-            fNormal = 1.f;
+            hasNormal = true;
+        }
+
+        if (FAILED(m_pShaderCom->Bind_RawValue("g_HasNorTex", &hasNormal, sizeof _bool)))
+        {
+            return E_FAIL;
         }
 
         if (FAILED(m_pModelCom->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
@@ -223,7 +241,7 @@ void CPain::Init_State()
 
 void CPain::TIck_State(_float fTimeDelta)
 {
-    m_AnimationDesc = {};
+    //m_AnimationDesc = {};
     switch (m_eState)
     {
     case Client::CPain::State_None:

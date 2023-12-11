@@ -177,7 +177,7 @@ CComponent* CVIBuffer_Instancing_Point::Clone(void* pArg)
 
 void CVIBuffer_Instancing_Point::Free()
 {
-	if (not m_isCloned)
+	if (not m_hasCloned)
 	{
 		Safe_Delete_Array(m_InstancingInitialData.pSysMem);
 	}

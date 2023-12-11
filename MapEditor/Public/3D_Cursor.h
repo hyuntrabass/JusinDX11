@@ -12,6 +12,9 @@ private:
 	virtual ~C3D_Cursor() = default;
 
 public:
+	void Set_Position(_float3 vPos);
+
+public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
@@ -24,7 +27,7 @@ private:
 	CModel* m_pModelCom{ nullptr };
 
 private:
-	class ImguiMgr* m_pImgui_Manager{ nullptr };
+	class CImguiMgr* m_pImgui_Manager{ nullptr };
 
 private:
 	HRESULT Add_Components();

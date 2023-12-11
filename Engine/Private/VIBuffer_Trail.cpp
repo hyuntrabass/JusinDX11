@@ -146,7 +146,7 @@ void CVIBuffer_Trail::Free()
 {
 	__super::Free();
 
-	if (not m_isCloned)
+	if (not m_hasCloned)
 	{
 		Safe_Delete_Array(m_TrailInitialData.pSysMem);
 	}

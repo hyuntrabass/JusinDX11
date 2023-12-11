@@ -31,9 +31,9 @@ private:
 	_float m_fTimeAcc{};
 	_uint m_iFrameCount{};
 	_uint m_iPropCount{};
-	vector<string> m_Name_Props{};
-	vector<wstring> m_MapModels[3]{};
-	vector<wstring> m_MapCOLModels[3]{};
+	vector<string> m_PropList{};
+	vector<wstring> m_MapList[3]{};
+	vector<wstring> m_MapCOLList[3]{};
 
 private:
 	HANDLE m_hThread{};

@@ -19,7 +19,7 @@ protected:
 	_dev m_pDevice{ nullptr };
 	_context m_pContext{ nullptr };
 	class CGameInstance* m_pGameInstance { nullptr };
-	_bool m_isCloned{ false };
+	_bool m_hasCloned{ false };
 
 public:
 	virtual CComponent* Clone(void* pArg) = 0;

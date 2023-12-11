@@ -75,6 +75,11 @@ HRESULT CLevel_Stage1::Ready_Map()
 		}
 	}
 
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STAGE1, L"Layer_Boss", L"Prototype_GameObject_Pain")))
+	{
+		return E_FAIL;
+	}
+
 	strInputFilePath = "../Bin/Resources/StaticMesh/Maps/Village/COL_Mesh/";
 	strPrototypeTag = L"Prototype_Model_COL_";
 
