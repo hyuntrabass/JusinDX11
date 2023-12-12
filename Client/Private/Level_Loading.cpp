@@ -58,13 +58,13 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 		case Client::LEVEL_CREATECHARACTER:
 			pLevel = CLevel_CreateCharacter::Create(m_pDevice, m_pContext);
 			break;
-		case Client::LEVEL_TUTORIAL:
+		case Client::LEVEL_FOREST:
 			pLevel = CLevel_Tutorial::Create(m_pDevice, m_pContext);
 			break;
-		case Client::LEVEL_STAGE1:
+		case Client::LEVEL_VILLAGE:
 			pLevel = CLevel_Stage1::Create(m_pDevice, m_pContext);
 			break;
-		case Client::LEVEL_BOSSSTAGE:
+		case Client::LEVEL_CLOUD:
 			pLevel = CLevel_Stage2::Create(m_pDevice, m_pContext);
 			break;
 		}

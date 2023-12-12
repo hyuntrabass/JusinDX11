@@ -37,9 +37,12 @@ HRESULT CSandman::Init(void* pArg)
 
 	if (pArg)
 	{
-		m_vOriginPos = *reinterpret_cast<_float4*>(pArg);
+		ObjectInfo Info = *reinterpret_cast<ObjectInfo*>(pArg);
+
+		m_vOriginPos = Info.vPos;
 
 		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_vOriginPos));
+		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&Info.vLook));
 	}
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);

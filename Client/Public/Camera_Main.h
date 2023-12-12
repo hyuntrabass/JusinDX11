@@ -23,6 +23,12 @@ private:
 	_float m_fMouseSensor{ 0.08f };
 	_float m_fSpeed{ 10.f };
 
+private:
+	class CTrigger_Manager* m_pTrigger_Manager{ nullptr };
+	_float m_fSceneTimer{};
+	_uint m_iSceneIndex{};
+	CUTSCENE* m_pScene{ nullptr };
+
 public:
 	static CCamera_Main* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;

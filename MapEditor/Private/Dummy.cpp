@@ -96,6 +96,11 @@ HRESULT CDummy::Init(void* pArg)
 		m_iShaderPass = StaticPass_AlphaTestMeshes;
 	}
 
+	if (m_Info.eType == ItemType::Trigger)
+	{
+		m_iShaderPass = StaticPass_COLMesh;
+	}
+
 	if (m_Info.Prototype == L"Prototype_Model_Pain")
 	{
 		m_Animation.iAnimIndex = (rand() % 2) + 1;
@@ -154,7 +159,8 @@ void CDummy::Tick(_float fTimeDelta)
 
 void CDummy::Late_Tick(_float fTimeDelta)
 {
-	if (m_Info.eType == ItemType::COLMap)
+	if (m_Info.eType == ItemType::COLMap or
+		m_Info.eType == ItemType::Trigger)
 	{
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonLight, this);
 	}
@@ -191,6 +197,23 @@ HRESULT CDummy::Render()
 			{
 				return E_FAIL;
 			}
+		}
+	}
+	else if (m_Info.eType == ItemType::Trigger)
+	{
+		if (FAILED(Bind_ShaderResources()))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(StaticPass_COLMesh)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom->Render(0)))
+		{
+			return E_FAIL;
 		}
 	}
 	else
@@ -326,7 +349,8 @@ HRESULT CDummy::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (m_Info.eType == ItemType::COLMap)
+	if (m_Info.eType == ItemType::COLMap or
+		m_Info.eType == ItemType::Trigger)
 	{
 		_float4 vColor{ 0.3f, 0.8f, 0.3f, 0.5f };
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _float4)))

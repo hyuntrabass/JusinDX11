@@ -7,7 +7,7 @@ CLevel_Stage2::CLevel_Stage2(_dev pDevice, _context pContext)
 
 HRESULT CLevel_Stage2::Init()
 {
-	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_BOSSSTAGE);
+	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_CLOUD);
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 
@@ -48,7 +48,7 @@ HRESULT CLevel_Stage2::Ready_Map()
 			ObjectInfo Info{};
 			Info.strPrototypeTag = strPrototypeTag + strFileName;
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_BOSSSTAGE, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CLOUD, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
 			{
 				return E_FAIL;
 			}
@@ -67,7 +67,7 @@ HRESULT CLevel_Stage2::Ready_Map()
 			ObjectInfo Info{};
 			Info.strPrototypeTag = strPrototypeTag + strFileName;
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_BOSSSTAGE, L"Layer_Terrain_COL", L"Prototype_GameObject_MapCollider", &Info)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CLOUD, L"Layer_Terrain_COL", L"Prototype_GameObject_MapCollider", &Info)))
 			{
 				return E_FAIL;
 			}
@@ -75,7 +75,7 @@ HRESULT CLevel_Stage2::Ready_Map()
 		}
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_BOSSSTAGE, L"Layer_Boss", L"Prototype_GameObject_Kurama")))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CLOUD, L"Layer_Boss", L"Prototype_GameObject_Kurama")))
 	{
 		return E_FAIL;
 	}
@@ -93,7 +93,7 @@ HRESULT CLevel_Stage2::Ready_Lights()
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (FAILED(m_pGameInstance->Add_Light(LEVEL_BOSSSTAGE, TEXT("Light_Main"), LightDesc)))
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_CLOUD, TEXT("Light_Main"), LightDesc)))
 	{
 		return E_FAIL;
 	}

@@ -448,6 +448,12 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		return E_FAIL;
 	}
 
+	_matrix Scale = XMMatrixScaling(5.f, 5.f, 5.f);
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Trigger"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_Sphere_02.mo.hyuntrastatmesh", false, Scale))))
+	{
+		return E_FAIL;
+	}
+
 #pragma endregion
 
 

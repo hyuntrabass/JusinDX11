@@ -9,7 +9,7 @@ CLevel_Stage1::CLevel_Stage1(_dev pDevice, _context pContext)
 
 HRESULT CLevel_Stage1::Init()
 {
-	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_STAGE1);
+	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 
@@ -40,7 +40,7 @@ void CLevel_Stage1::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_PRIOR) || m_pGameInstance->Key_Down(DIK_NUMPAD9))
 	{
-		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_BOSSSTAGE))))
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_CLOUD))))
 		{
 			return;
 		}
@@ -67,7 +67,7 @@ HRESULT CLevel_Stage1::Ready_Map()
 			ObjectInfo Info{};
 			Info.strPrototypeTag = strPrototypeTag + strFileName;
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STAGE1, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
 			{
 				return E_FAIL;
 			}
@@ -75,7 +75,7 @@ HRESULT CLevel_Stage1::Ready_Map()
 		}
 	}
 
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STAGE1, L"Layer_Boss", L"Prototype_GameObject_Pain")))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, L"Layer_Boss", L"Prototype_GameObject_Pain")))
 	{
 		return E_FAIL;
 	}
@@ -91,7 +91,7 @@ HRESULT CLevel_Stage1::Ready_Map()
 			ObjectInfo Info{};
 			Info.strPrototypeTag = strPrototypeTag + strFileName;
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STAGE1, L"Layer_Terrain_COL", L"Prototype_GameObject_MapCollider", &Info)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, L"Layer_Terrain_COL", L"Prototype_GameObject_MapCollider", &Info)))
 			{
 				return E_FAIL;
 			}
@@ -130,7 +130,7 @@ HRESULT CLevel_Stage1::Ready_Map()
 				continue;
 			}
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STAGE1, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
 			{
 				return E_FAIL;
 			}
@@ -155,7 +155,7 @@ HRESULT CLevel_Stage1::Ready_Light()
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	//LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STAGE1, TEXT("Light_Main"), LightDesc)))
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_VILLAGE, TEXT("Light_Main"), LightDesc)))
 	{
 		return E_FAIL;
 	}

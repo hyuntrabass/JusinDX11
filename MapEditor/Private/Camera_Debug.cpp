@@ -48,11 +48,11 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 			m_fSceneTimer = {};
 		}
 
-		m_pTransformCom->Set_State(State::Pos, XMVectorLerp(XMLoadFloat4(&(*m_pScene)[m_iSceneIndex].first), XMLoadFloat4(&(*m_pScene)[m_iSceneIndex + 1].first), m_fSceneTimer * 2.f));
-		m_pTransformCom->LookAt_Dir(XMVectorLerp(XMLoadFloat4(&(*m_pScene)[m_iSceneIndex].second), XMLoadFloat4(&(*m_pScene)[m_iSceneIndex + 1].second), m_fSceneTimer * 2.f));
+		m_pTransformCom->Set_State(State::Pos, XMVectorLerp(XMLoadFloat4(&(*m_pScene)[m_iSceneIndex].first), XMLoadFloat4(&(*m_pScene)[m_iSceneIndex + 1].first), m_fSceneTimer * 4.f));
+		m_pTransformCom->LookAt_Dir(XMVectorLerp(XMLoadFloat4(&(*m_pScene)[m_iSceneIndex].second), XMLoadFloat4(&(*m_pScene)[m_iSceneIndex + 1].second), m_fSceneTimer * 4.f));
 
 		m_fSceneTimer += fTimeDelta;
-		if (m_fSceneTimer > 0.5f)
+		if (m_fSceneTimer > 0.25f)
 		{
 			m_fSceneTimer = {};
 			m_iSceneIndex++;

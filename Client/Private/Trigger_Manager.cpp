@@ -15,6 +15,22 @@ CTrigger_Manager::CTrigger_Manager()
 	}
 }
 
+const _bool& CTrigger_Manager::Hasto_PlayScene() const
+{
+	return m_PlayScene;
+}
+
+void CTrigger_Manager::End_Scene()
+{
+	m_PlayScene = false;
+	m_pCurrentCutScene = nullptr;
+}
+
+CUTSCENE* CTrigger_Manager::Get_CurrentScene()
+{
+	return m_pCurrentCutScene;
+}
+
 void CTrigger_Manager::Register_PlayerCollider(CCollider* pCollider)
 {
 	m_pPlayerCollider = pCollider;
@@ -25,13 +41,13 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 {
 	switch (m_pGameInstance->Get_CurrentLevelIndex())
 	{
-	case LEVEL_TUTORIAL:
+	case LEVEL_FOREST:
 		Trigger_Tutorial(fTimeDelta);
 		break;
-	case LEVEL_STAGE1:
+	case LEVEL_VILLAGE:
 		Trigger_Village(fTimeDelta);
 		break;
-	case LEVEL_BOSSSTAGE:
+	case LEVEL_CLOUD:
 		Trigger_Cloud(fTimeDelta);
 		break;
 	}
@@ -60,27 +76,173 @@ HRESULT CTrigger_Manager::Add_Triggers()
 	Desc.eType = ColliderType::Sphere;
 
 	// Tutorial
-	Desc.vCenter = _float3(40.f, 32.f, 126.f);
-	Desc.fRadius = 1.f;
-	if (pCollider = dynamic_cast<CCollider*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), &Desc)))
 	{
-		m_Triggers[LEVEL_TUTORIAL].push_back({ pCollider, false });
-	}
-	else
-	{
-		return E_FAIL;
+		filesystem::path strFilePath = TEXT("../Bin/Resources/MapData/Trigger_0.hyuntratrigger");
+
+		ifstream File(strFilePath.c_str(), ios::binary);
+
+		if (File.is_open())
+		{
+			size_t TriggerSize{};
+			File.read(reinterpret_cast<_char*>(&TriggerSize), sizeof size_t);
+			for (size_t i = 0; i < TriggerSize; i++)
+			{
+				File.read(reinterpret_cast<_char*>(&Desc.vCenter), sizeof _float3);
+
+				Desc.fRadius = 5.f;
+				pCollider = nullptr;
+				if (pCollider = dynamic_cast<CCollider*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), &Desc)))
+				{
+					m_Triggers[LEVEL_FOREST].push_back({ pCollider, false });
+				}
+				else
+				{
+					return E_FAIL;
+				}
+
+			}
+		}
+		else
+		{
+			return E_FAIL;
+		}
 	}
 
 	// Village
-	Desc.vCenter = _float3(-95.f, 9.f, 60.f);
-	Desc.fRadius = 5.f;
-	if (pCollider = dynamic_cast<CCollider*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), &Desc)))
 	{
-		m_Triggers[LEVEL_STAGE1].push_back({ pCollider, false });
+		filesystem::path strFilePath = TEXT("../Bin/Resources/MapData/Trigger_1.hyuntratrigger");
+
+		ifstream File(strFilePath.c_str(), ios::binary);
+
+		if (File.is_open())
+		{
+			size_t TriggerSize{};
+			File.read(reinterpret_cast<_char*>(&TriggerSize), sizeof size_t);
+			for (size_t i = 0; i < TriggerSize; i++)
+			{
+				File.read(reinterpret_cast<_char*>(&Desc.vCenter), sizeof _float3);
+
+				Desc.fRadius = 5.f;
+				pCollider = nullptr;
+				if (pCollider = dynamic_cast<CCollider*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), &Desc)))
+				{
+					m_Triggers[LEVEL_VILLAGE].push_back({ pCollider, false });
+					m_MonsterTriggers[LEVEL_VILLAGE].push_back(vector<ObjectInfo>());
+				}
+				else
+				{
+					return E_FAIL;
+				}
+
+			}
+		}
+		else
+		{
+			return E_FAIL;
+		}
 	}
-	else
 	{
-		return E_FAIL;
+		filesystem::path strFilePath = TEXT("../Bin/Resources/MapData/Monster_1.hyuntramonster");
+
+		ifstream File(strFilePath.c_str(), ios::binary);
+
+		if (File.is_open())
+		{
+			size_t NumMonter{};
+			File.read(reinterpret_cast<_char*>(&NumMonter), sizeof size_t);
+			for (size_t i = 0; i < NumMonter; i++)
+			{
+				ObjectInfo Info{};
+				size_t NameSize{};
+				_uint iTriggerNum{};
+
+				File.read(reinterpret_cast<_char*>(&NameSize), sizeof size_t);
+				wchar_t* pBuffer = new wchar_t[NameSize / sizeof(wchar_t)];
+				File.read(reinterpret_cast<_char*>(pBuffer), NameSize);
+				Info.strPrototypeTag = pBuffer;
+				Safe_Delete_Array(pBuffer);
+
+				File.read(reinterpret_cast<_char*>(&iTriggerNum), sizeof _uint);
+				File.read(reinterpret_cast<_char*>(&Info.vPos), sizeof _float4);
+				File.read(reinterpret_cast<_char*>(&Info.vLook), sizeof _float4);
+
+				m_MonsterTriggers[LEVEL_VILLAGE][iTriggerNum].push_back(Info);
+			}
+		}
+		else
+		{
+			return E_FAIL;
+		}
+	}
+
+	// Cloud
+	{
+		filesystem::path strFilePath = TEXT("../Bin/Resources/MapData/Trigger_2.hyuntratrigger");
+
+		ifstream File(strFilePath.c_str(), ios::binary);
+
+		if (File.is_open())
+		{
+			size_t TriggerSize{};
+			File.read(reinterpret_cast<_char*>(&TriggerSize), sizeof size_t);
+			for (size_t i = 0; i < TriggerSize; i++)
+			{
+				File.read(reinterpret_cast<_char*>(&Desc.vCenter), sizeof _float3);
+
+				Desc.fRadius = 5.f;
+				pCollider = nullptr;
+				if (pCollider = dynamic_cast<CCollider*>(m_pGameInstance->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), &Desc)))
+				{
+					m_Triggers[LEVEL_CLOUD].push_back({ pCollider, false });
+				}
+				else
+				{
+					return E_FAIL;
+				}
+
+			}
+		}
+		else
+		{
+			return E_FAIL;
+		}
+	}
+
+	// CutScenes
+	{
+		filesystem::path strInputFilePath = "../Bin/Resources/Cutscenes/";
+		for (const auto& entry : filesystem::recursive_directory_iterator(strInputFilePath))
+		{
+			if (entry.is_regular_file())
+			{
+				wstring strTag = L"Cutscene_";
+				strTag += entry.path().stem().wstring();
+				filesystem::path FullFilePath = strInputFilePath/entry.path().filename();
+
+				CUTSCENE Scene{};
+				ifstream File(FullFilePath, ios::binary);
+
+				if (File.is_open())
+				{
+					size_t SceneSize{};
+
+					File.read(reinterpret_cast<_char*>(&SceneSize), sizeof size_t);
+
+					Scene.reserve(SceneSize);
+
+					for (size_t i = 0; i < SceneSize; i++)
+					{
+						_float4 vPos{}, vLook{};
+						File.read(reinterpret_cast<_char*>(&vPos), sizeof _float4);
+						File.read(reinterpret_cast<_char*>(&vLook), sizeof _float4);
+
+						Scene.push_back({ vPos, vLook });
+					}
+
+					m_CutScenes.emplace(strTag, Scene);
+				}
+			}
+		}
 	}
 
 	return S_OK;
@@ -88,118 +250,57 @@ HRESULT CTrigger_Manager::Add_Triggers()
 
 void CTrigger_Manager::Trigger_Tutorial(_float fTimeDelta)
 {
-	if (m_Triggers[LEVEL_TUTORIAL][0].first->Intersect(m_pPlayerCollider))
+	if (not m_Triggers[LEVEL_FOREST][0].second and m_Triggers[LEVEL_FOREST][0].first->Intersect(m_pPlayerCollider))
 	{
-
+		m_PlayScene = true;
+		m_pCurrentCutScene = &m_CutScenes.find(TEXT("Cutscene_test"))->second;
+		m_Triggers[LEVEL_FOREST][0].second = true;
 	}
 }
 
 void CTrigger_Manager::Trigger_Village(_float fTimeDelta)
 {
-	// 1 전투 구역
-	//	---
-	//	CamPos X : -124.91263
-	//	CamPos Y : 9.0392337
-	//	CamPos Z : 65.47890333
-	// 
-	//	CamPos X : -124.65463
-	//	CamPos Y : 8.8516537
-	//	CamPos Z : 59.96750333
-	// 
-	//	CamPos X : -124.54663
-	//	CamPos Y : 8.8516537
-	//	CamPos Z : 55.38440333
-	//	-- -
-	//	CamPos X : -88.736763
-	//	CamPos Y : 9.3991437
-	//	CamPos Z : 90.56580333
-	//	CamPos X : -98.494963
-	//	CamPos Y : 8.6679337
-	//	CamPos Z : 82.06280333
-	//	-- -
-	//	CamPos X : -60.451463
-	//	CamPos Y : 10.231437
-	//	CamPos Z : 61.81960333
-	//	CamPos X : -68.154363
-	//	CamPos Y : 8.3743337
-	//	CamPos Z : 66.85740333
-	//	-- -
-	//	CamPos X : -81.413663
-	//	CamPos Y : 7.9853837
-	//	CamPos Z : 22.07440333
-	//	CamPos X : -75.283863
-	//	CamPos Y : 8.1619737
-	//	CamPos Z : 32.79530333
-	//	-- -
 	_float4 vOriginPos{};
 
-	if (not m_Triggers[LEVEL_STAGE1][0].second and m_Triggers[LEVEL_STAGE1][0].first->Intersect(m_pPlayerCollider))
+	for (size_t i = 0; i < m_Triggers[LEVEL_VILLAGE].size(); i++)
 	{
-		vOriginPos = { -124.9f, 9.f, 65.4789f, 1.f };
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STAGE1, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Sandman"), &vOriginPos)))
-		{
-			MSG_BOX("Failed to Add Layer : Sandman");
-		}
+		auto& Trigger = m_Triggers[LEVEL_VILLAGE][i];
 
-		vOriginPos = { -124.9f, 9.f, 60.4789f, 1.f };
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STAGE1, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Sandman"), &vOriginPos)))
+		if (not Trigger.second and Trigger.first->Intersect(m_pPlayerCollider))
 		{
-			MSG_BOX("Failed to Add Layer : Sandman");
+			for (auto& ObjInfo : m_MonsterTriggers[LEVEL_VILLAGE][i])
+			{
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Sandman"), &ObjInfo)))
+				{
+					MSG_BOX("Failed to Add Layer : Sandman");
+				}
+			}
+			Trigger.second = true;
 		}
-
-		vOriginPos = { -124.9f, 9.f, 55.4789f, 1.f };
-		if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STAGE1, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Sandman"), &vOriginPos)))
-		{
-			MSG_BOX("Failed to Add Layer : Sandman");
-		}
-
-		m_Triggers[LEVEL_STAGE1][0].second = true;
 	}
 
-	// 2 전투 구역
-	//	-- -
-	//	CamPos X : 11.8373673
-	//	CamPos Y : 18.824737
-	//	CamPos Z : 75.72790333
-	//	CamPos X : 0.28881773
-	//	CamPos Y : 17.978537
-	//	CamPos Z : 68.72090333
-	//	-- -
-	//	CamPos X : -4.40751281
-	//	CamPos Y : 25.516637
-	//	CamPos Z : -24.4558853
-	//	CamPos X : 6.829993681
-	//	CamPos Y : 19.153737
-	//	CamPos Z : -5.26891853
-	//	-- -
-	// 
-	// 3 전투 구역
-	//	-- -
-	//	CamPos X : 130.4962781
-	//	CamPos Y : 18.231737
-	//	CamPos Z : 104.4956163
-	//	CamPos X : 106.3982781
-	//	CamPos Y : 18.304237
-	//	CamPos Z : 101.8246163
-	//	-- -
-	// 
-	// 보스 전투 구역
-	//	-- -
-	//	CamPos X : 62.39672781
-	//	CamPos Y : 38.428137
-	//	CamPos Z : -81.4633596
-	//	CamPos X : 89.27652781
-	//	CamPos Y : 38.081137
-	//	CamPos Z : -81.1606596
-	//	-- -
-	//	CamPos X : 105.9792781
-	//	CamPos Y : 38.141337
-	//	CamPos Z : -65.0155596
-	//	CamPos X : 105.6812781
-	//	CamPos Y : 37.775737
-	//	CamPos Z : -40.3979596
+	//if (not m_Triggers[LEVEL_VILLAGE][0].second and m_Triggers[LEVEL_VILLAGE][0].first->Intersect(m_pPlayerCollider))
+	//{
+	//	vOriginPos = { -124.9f, 9.f, 65.4789f, 1.f };
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Sandman"), &vOriginPos)))
+	//	{
+	//		MSG_BOX("Failed to Add Layer : Sandman");
+	//	}
 
+	//	vOriginPos = { -124.9f, 9.f, 60.4789f, 1.f };
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Sandman"), &vOriginPos)))
+	//	{
+	//		MSG_BOX("Failed to Add Layer : Sandman");
+	//	}
 
+	//	vOriginPos = { -124.9f, 9.f, 55.4789f, 1.f };
+	//	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Sandman"), &vOriginPos)))
+	//	{
+	//		MSG_BOX("Failed to Add Layer : Sandman");
+	//	}
+
+	//	m_Triggers[LEVEL_VILLAGE][0].second = true;
+	//}
 }
 
 void CTrigger_Manager::Trigger_Cloud(_float fTimeDelta)

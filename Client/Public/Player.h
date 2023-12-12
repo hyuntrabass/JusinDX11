@@ -231,8 +231,11 @@ private:
 	_float3 m_vWireTargetPos{};
 	class CKunai* m_pKunai { nullptr };
 	_float3 m_vRightHandPos{};
+	CGameObject* m_pSkillEffect{ nullptr };
 
 	_float m_fTimer{};
+
+	_float4 m_OriginMainLightDiff{};
 
 	CCollider* m_pCollider_Att{ nullptr };
 	CCollider* m_pCollider_Hit{ nullptr };

@@ -16,6 +16,10 @@ private:
 	virtual ~CTrigger_Manager() = default;
 
 public:
+	const _bool& Hasto_PlayScene() const;
+	void End_Scene();
+	CUTSCENE* Get_CurrentScene();
+
 	void Register_PlayerCollider(CCollider* pCollider);
 	void Tick(_float fTimeDelta);
 #ifdef _DEBUG
@@ -27,6 +31,12 @@ private:
 
 	vector<pair<CCollider*, _bool>> m_Triggers[LEVEL_END]{};
 	CCollider* m_pPlayerCollider{ nullptr };
+
+	vector<vector<ObjectInfo>> m_MonsterTriggers[LEVEL_END]{};
+
+	map<const wstring, CUTSCENE> m_CutScenes{};
+	CUTSCENE* m_pCurrentCutScene{ nullptr };
+	_bool m_PlayScene{};
 
 private:
 	HRESULT Add_Triggers();

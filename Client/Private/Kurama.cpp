@@ -155,7 +155,7 @@ HRESULT CKurama::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_BOSSSTAGE, TEXT("Prototype_Model_Kurama"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_CLOUD, TEXT("Prototype_Model_Kurama"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	{
 		return E_FAIL;
 	}
@@ -405,7 +405,7 @@ void CKurama::TIck_State(_float fTimeDelta)
 				ObjectInfo Info{};
 				XMStoreFloat4(&Info.vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("LipMouthDownCenter")).r[3], m_pTransformCom->Get_World_Matrix()));
 				XMStoreFloat4(&Info.vLook, m_pPlayerTransform->Get_CenterPos());
-				m_pGameInstance->Add_Layer(LEVEL_BOSSSTAGE, TEXT("Layer_MiniBomb"), TEXT("Prototype_GameObject_MiniBomb"), &Info);
+				m_pGameInstance->Add_Layer(LEVEL_CLOUD, TEXT("Layer_MiniBomb"), TEXT("Prototype_GameObject_MiniBomb"), &Info);
 				m_hasShot = true;
 			}
 		}

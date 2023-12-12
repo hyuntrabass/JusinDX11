@@ -149,7 +149,7 @@ HRESULT CPain::Add_Components()
         return E_FAIL;
     }
 
-    if (FAILED(__super::Add_Component(LEVEL_STAGE1, TEXT("Prototype_Model_Pain"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+    if (FAILED(__super::Add_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Pain"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
     {
         return E_FAIL;
     }

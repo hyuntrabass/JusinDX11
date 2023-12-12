@@ -168,7 +168,6 @@ void CImguiMgr::Tick(_float fTimeDelta)
 	BeginTabBar("Tab bar");
 
 	static _int iCurrListIndex{};
-	static _int iTrigger_Number{};
 	static _float fTrigger_Size{};
 	if (BeginTabItem("Props"))
 	{
@@ -181,7 +180,12 @@ void CImguiMgr::Tick(_float fTimeDelta)
 	if (BeginTabItem("Monster"))
 	{
 		ListBox("Monster", &iCurrListIndex, m_pItemList_Monster, IM_ARRAYSIZE(m_pItemList_Monster));
-		InputInt("Trigger_Number", &iTrigger_Number);
+		InputInt("Trigger_Number", &m_iTriggerNum);
+
+		if (Button("Export_Monster"))
+		{
+			Export_Monster_Data();
+		}
 
 		m_eItemType = ItemType::Monster;
 		EndTabItem();
@@ -195,14 +199,17 @@ void CImguiMgr::Tick(_float fTimeDelta)
 	}
 	if (BeginTabItem("Trigger"))
 	{
+		m_eItemType = ItemType::Trigger;
+
 		ListBox("Triggers", &iCurrListIndex, m_TriggerItemList.data(), m_TriggerItemList.size());
-		
+
 		if (Button("Create Trigger"))
 		{
-			m_TriggerList.push_back(m_vPos);
+			m_TriggerList.push_back(_float3(m_vPos.x, m_vPos.y, m_vPos.z));
 			_char* pBuffer = new _char[MAX_PATH];
 			snprintf(pBuffer, MAX_PATH, "X:%.1f, Y:%.1f, Z:%.1f", m_vPos.x, m_vPos.y, m_vPos.z);
 			m_TriggerItemList.push_back(pBuffer);
+			Create_TriggerDummy();
 		}
 
 		if (Button("Delete Trigger"))
@@ -224,11 +231,16 @@ void CImguiMgr::Tick(_float fTimeDelta)
 			}
 		}
 
+		if (Button("Export_Trigger"))
+		{
+			Export_Trigger_Data();
+		}
+
 		EndTabItem();
 	}
 	if (BeginTabItem("Camera"))
 	{
-		static char buf[32] = ""; 
+		static char buf[32] = "";
 		ImGui::InputText("Scene_Name", buf, 32, ImGuiInputTextFlags_CharsNoBlank);
 
 		ListBox("Scenes", &iCurrListIndex, m_SceneList.data(), m_SceneList.size());
@@ -249,7 +261,7 @@ void CImguiMgr::Tick(_float fTimeDelta)
 				strcpy_s(pBuffer, 32, buf);
 				m_SceneList.push_back(pBuffer);
 			}
-		}
+		}SameLine();
 
 		if (Button("Play"))
 		{
@@ -310,10 +322,10 @@ void CImguiMgr::Tick(_float fTimeDelta)
 	}
 	EndTabBar();
 
-	if (m_isRecording and m_fRecTimer > 0.5f)
+	if (m_isRecording and m_fRecTimer > 0.25f)
 	{
 		m_fRecTimer = {};
-		m_Scenes.back()->push_back({m_pGameInstance->Get_CameraPos(), m_pGameInstance->Get_CameraLook()});
+		m_Scenes.back()->push_back({ m_pGameInstance->Get_CameraPos(), m_pGameInstance->Get_CameraLook() });
 	}
 	m_fRecTimer += fTimeDelta;
 
@@ -588,6 +600,7 @@ void CImguiMgr::Create_Dummy(const _int& iListIndex)
 		break;
 	case MapEditor::ItemType::Monster:
 		MultiByteToWideChar(CP_ACP, 0, m_pItemList_Monster[iListIndex], static_cast<int>(strlen(m_pItemList_Monster[iListIndex])), strUnicode, static_cast<int>(strlen(m_pItemList_Monster[iListIndex])));
+		Info.iTriggerNum = m_iTriggerNum;
 		break;
 	}
 	Info.Prototype += strUnicode;
@@ -606,6 +619,29 @@ void CImguiMgr::Create_Dummy(const _int& iListIndex)
 	case MapEditor::ItemType::Monster:
 		m_MonsterList.push_back(m_pSelectedDummy);
 		break;
+	}
+}
+
+void CImguiMgr::Create_TriggerDummy()
+{
+	if (m_pSelectedDummy)
+	{
+		m_pSelectedDummy->Select(false);
+		m_pSelectedDummy = nullptr;
+	}
+
+	DummyInfo Info{};
+
+	Info.ppDummy = &m_pSelectedDummy;
+	Info.vPos = m_vPos;
+	Info.vLook = _float4(0.f, 0.f, 1.f, 0.f);
+	Info.Prototype = L"Prototype_Model_Trigger";
+	Info.eType = m_eItemType;
+	Info.iStageIndex = m_Curr_Stage;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+	{
+		MSG_BOX("Failed to Add Layer : Dummy");
 	}
 }
 
@@ -659,47 +695,84 @@ HRESULT CImguiMgr::Load_Data()
 		}
 	}
 
-	filesystem::path strFilePath = L"../../Client/Bin/Resources/MapData/" + std::to_wstring(m_Curr_Stage) + L".hyuntramap";
-
-	ifstream InFile(strFilePath.c_str(), ios::binary);
-
-	if (InFile.is_open())
 	{
-		m_PropList.clear();
+		filesystem::path strFilePath = L"../../Client/Bin/Resources/MapData/" + std::to_wstring(m_Curr_Stage) + L".hyuntramap";
 
-		size_t DummySize{};
-		InFile.read(reinterpret_cast<_char*>(&DummySize), sizeof size_t);
+		ifstream InFile(strFilePath.c_str(), ios::binary);
 
-		for (size_t i = 0; i < DummySize; i++)
+		if (InFile.is_open())
 		{
-			DummyInfo Info{};
-			size_t NameSize{};
+			m_PropList.clear();
 
-			InFile.read(reinterpret_cast<_char*>(&NameSize), sizeof size_t);
-			wchar_t* pBuffer = new wchar_t[NameSize / sizeof(wchar_t)];
-			InFile.read(reinterpret_cast<_char*>(pBuffer), NameSize);
-			Info.Prototype = pBuffer;
-			Safe_Delete_Array(pBuffer);
-			InFile.read(reinterpret_cast<_char*>(&Info.eType), sizeof ItemType);
-			InFile.read(reinterpret_cast<_char*>(&Info.iStageIndex), sizeof _uint);
-			InFile.read(reinterpret_cast<_char*>(&Info.vPos), sizeof _float4);
-			InFile.read(reinterpret_cast<_char*>(&Info.vLook), sizeof _float4);
-			Info.ppDummy = &m_pSelectedDummy;
+			size_t DummySize{};
+			InFile.read(reinterpret_cast<_char*>(&DummySize), sizeof size_t);
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+			for (size_t i = 0; i < DummySize; i++)
 			{
-				MSG_BOX("Failed to Add Layer : Dummy");
+				DummyInfo Info{};
+				size_t NameSize{};
+
+				InFile.read(reinterpret_cast<_char*>(&NameSize), sizeof size_t);
+				wchar_t* pBuffer = new wchar_t[NameSize / sizeof(wchar_t)];
+				InFile.read(reinterpret_cast<_char*>(pBuffer), NameSize);
+				Info.Prototype = pBuffer;
+				Safe_Delete_Array(pBuffer);
+				InFile.read(reinterpret_cast<_char*>(&Info.eType), sizeof ItemType);
+				InFile.read(reinterpret_cast<_char*>(&Info.iStageIndex), sizeof _uint);
+				InFile.read(reinterpret_cast<_char*>(&Info.vPos), sizeof _float4);
+				InFile.read(reinterpret_cast<_char*>(&Info.vLook), sizeof _float4);
+				Info.ppDummy = &m_pSelectedDummy;
+
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+				{
+					MSG_BOX("Failed to Add Layer : Dummy");
+				}
+				else
+				{
+					m_PropList.push_back(m_pSelectedDummy);
+				}
 			}
-			else
+			InFile.close();
+		}
+	}
+
+	{
+		filesystem::path strFilePath = TEXT("../../Client/Bin/Resources/MapData/Trigger_") + std::to_wstring(m_Curr_Stage) + TEXT(".hyuntratrigger");
+
+		ifstream File(strFilePath.c_str(), ios::binary);
+
+		m_TriggerItemList.clear();
+		m_TriggerList.clear();
+
+		if (File.is_open())
+		{
+
+			size_t TriggerSize{};
+			File.read(reinterpret_cast<_char*>(&TriggerSize), sizeof size_t);
+			for (size_t i = 0; i < TriggerSize; i++)
 			{
-				m_PropList.push_back(m_pSelectedDummy);
+				DummyInfo Info{};
+
+				File.read(reinterpret_cast<_char*>(&Info.vPos), sizeof _float3);
+				Info.vPos.w = 1.f;
+
+				m_TriggerList.push_back(_float3(Info.vPos.x, Info.vPos.y, Info.vPos.z));
+				_char* pBuffer = new _char[MAX_PATH];
+				snprintf(pBuffer, MAX_PATH, "X:%.1f, Y:%.1f, Z:%.1f", Info.vPos.x, Info.vPos.y, Info.vPos.z);
+				m_TriggerItemList.push_back(pBuffer);
+
+				Info.ppDummy = &m_pSelectedDummy;
+				Info.vLook = _float4(0.f, 0.f, 1.f, 0.f);
+				Info.Prototype = L"Prototype_Model_Trigger";
+				Info.eType = ItemType::Trigger;
+				Info.iStageIndex = m_Curr_Stage;
+
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_Dummy"), TEXT("Prototype_GameObject_Dummy"), &Info)))
+				{
+					MSG_BOX("Failed to Add Layer : Dummy");
+				}
 			}
 		}
-		InFile.close();
-	}
-	else
-	{
-		return E_FAIL;
 	}
 
 	return S_OK;
@@ -732,7 +805,7 @@ HRESULT CImguiMgr::Export_Data()
 
 HRESULT CImguiMgr::Export_Trigger_Data()
 {
-	filesystem::path strFilePath = L"../../Client/Bin/Resources/MapData/Trigger_" + std::to_wstring(m_Curr_Stage) + L".hyuntramap";
+	filesystem::path strFilePath = L"../../Client/Bin/Resources/MapData/Trigger_" + std::to_wstring(m_Curr_Stage) + L".hyuntratrigger";
 
 	ofstream OutFile(strFilePath.c_str(), ios::binary);
 
@@ -743,7 +816,7 @@ HRESULT CImguiMgr::Export_Trigger_Data()
 
 		for (auto& vPos : m_TriggerList)
 		{
-			OutFile.write(reinterpret_cast<const _char*>(&vPos), sizeof _float4);
+			OutFile.write(reinterpret_cast<const _char*>(&vPos), sizeof _float3);
 		}
 		OutFile.close();
 	}
@@ -757,7 +830,7 @@ HRESULT CImguiMgr::Export_Trigger_Data()
 
 HRESULT CImguiMgr::Export_Monster_Data()
 {
-	filesystem::path strFilePath = L"../../Client/Bin/Resources/MapData/Monster_" + std::to_wstring(m_Curr_Stage) + L".hyuntramap";
+	filesystem::path strFilePath = L"../../Client/Bin/Resources/MapData/Monster_" + std::to_wstring(m_Curr_Stage) + L".hyuntramonster";
 
 	ofstream OutFile(strFilePath.c_str(), ios::binary);
 

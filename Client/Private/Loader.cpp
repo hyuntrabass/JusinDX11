@@ -96,13 +96,13 @@ HRESULT CLoader::Loading_LevelResources()
 	case Client::LEVEL_CREATECHARACTER:
 		hr = Load_CreateCharacter();
 		break;
-	case Client::LEVEL_TUTORIAL:
+	case Client::LEVEL_FOREST:
 		hr = Load_Tutorial();
 		break;
-	case Client::LEVEL_STAGE1:
+	case Client::LEVEL_VILLAGE:
 		hr = Load_VillageStage();
 		break;
-	case Client::LEVEL_BOSSSTAGE:
+	case Client::LEVEL_CLOUD:
 		hr = Load_CloudStage();
 		break;
 	}
@@ -481,7 +481,7 @@ HRESULT CLoader::Load_Tutorial()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TUTORIAL, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_FOREST, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
 			{
 				return E_FAIL;
 			}
@@ -498,7 +498,7 @@ HRESULT CLoader::Load_Tutorial()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_TUTORIAL, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_FOREST, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
 			{
 				return E_FAIL;
 			}
@@ -668,7 +668,7 @@ HRESULT CLoader::Load_VillageStage()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STAGE1, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
 			{
 				return E_FAIL;
 			}
@@ -685,14 +685,14 @@ HRESULT CLoader::Load_VillageStage()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STAGE1, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
 			{
 				return E_FAIL;
 			}
 		}
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STAGE1, TEXT("Prototype_Model_Pain"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Pain/Mesh/Pain.hyuntraanimmesh"))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_VILLAGE, TEXT("Prototype_Model_Pain"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Pain/Mesh/Pain.hyuntraanimmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -738,7 +738,7 @@ HRESULT CLoader::Load_CloudStage()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_BOSSSTAGE, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_CLOUD, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath))))
 			{
 				return E_FAIL;
 			}
@@ -755,14 +755,14 @@ HRESULT CLoader::Load_CloudStage()
 			wstring strFileName = entry.path().stem().wstring();
 			string strFilePath = entry.path().filename().string();
 
-			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_BOSSSTAGE, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_CLOUD, strPrototypeTag + strFileName, CModel::Create(m_pDevice, m_pContext, strInputFilePath + strFilePath, true))))
 			{
 				return E_FAIL;
 			}
 		}
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_BOSSSTAGE, TEXT("Prototype_Model_Kurama"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Kurama/Mesh/Kurama.hyuntraanimmesh", false, XMMatrixScaling(0.8f, 0.8f, 0.8f)))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_CLOUD, TEXT("Prototype_Model_Kurama"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/AnimMesh/Boss/Kurama/Mesh/Kurama.hyuntraanimmesh", false, XMMatrixScaling(0.8f, 0.8f, 0.8f)))))
 	{
 		return E_FAIL;
 	}

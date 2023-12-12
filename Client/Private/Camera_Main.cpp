@@ -1,5 +1,6 @@
 #include "Camera_Main.h"
 #include "UI_Manager.h"
+#include "Trigger_Manager.h"
 
 CCamera_Main::CCamera_Main(_dev pDevice, _context pContext)
 	: CCamera(pDevice, pContext)
@@ -36,6 +37,9 @@ HRESULT CCamera_Main::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	m_pTrigger_Manager = CTrigger_Manager::Get_Instance();
+	Safe_AddRef(m_pTrigger_Manager);
+
 	//m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
 
 	return S_OK;
@@ -52,6 +56,34 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_P))
 	{
 		m_pGameInstance->Set_CameraModeIndex(CM_DEBUG);
+	}
+
+	if (m_pTrigger_Manager->Hasto_PlayScene())
+	{
+		if (not m_pScene)
+		{
+			m_pScene = m_pTrigger_Manager->Get_CurrentScene();
+			m_iSceneIndex = {};
+			m_fSceneTimer = {};
+		}
+
+		m_pTransformCom->Set_State(State::Pos, XMVectorLerp(XMLoadFloat4(&(*m_pScene)[m_iSceneIndex].first), XMLoadFloat4(&(*m_pScene)[m_iSceneIndex + 1].first), m_fSceneTimer * 4.f));
+		m_pTransformCom->LookAt_Dir(XMVectorLerp(XMLoadFloat4(&(*m_pScene)[m_iSceneIndex].second), XMLoadFloat4(&(*m_pScene)[m_iSceneIndex + 1].second), m_fSceneTimer * 4.f));
+
+		m_fSceneTimer += fTimeDelta;
+		if (m_fSceneTimer > 0.25f)
+		{
+			m_fSceneTimer = {};
+			m_iSceneIndex++;
+			if (m_iSceneIndex >= m_pScene->size() - 1)
+			{
+				m_pTrigger_Manager->End_Scene();
+				m_pScene = nullptr;
+			}
+		}
+
+		__super::Tick(fTimeDelta);
+		return;
 	}
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CREATECHARACTER)
@@ -153,5 +185,6 @@ void CCamera_Main::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pTrigger_Manager);
 	Safe_Release(m_pPlayerTransform);
 }

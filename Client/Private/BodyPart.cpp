@@ -144,7 +144,7 @@ HRESULT CBodyPart::Render()
 
 _bool CBodyPart::IsAnimationFinished(_uint iAnimIndex)
 {
-	return m_Models[m_iSelectedModelIndex]->IsAnimationFinished(m_Animation->iAnimIndex);
+	return m_Models[m_iSelectedModelIndex]->IsAnimationFinished(iAnimIndex);
 }
 
 _uint CBodyPart::Get_CurrentAnimationIndex()

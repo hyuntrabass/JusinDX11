@@ -9,11 +9,14 @@ CLevel_Tutorial::CLevel_Tutorial(_dev pDevice, _context pContext)
 
 HRESULT CLevel_Tutorial::Init()
 {
-	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_TUTORIAL);
+	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_FOREST);
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+	CTransform* pMainCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
 
 	pPlayerTransform->Set_Position(_float3(40.f, 32.f, 126.f));
+	pPlayerTransform->LookAt_Dir(XMVectorSet(-1.f, 0.f, 0.f, 0.f));
+	pMainCamTransform->LookAt_Dir(XMVectorSet(-1.f, 0.f, 0.f, 0.f));
 
 	if (FAILED(Ready_Map()))
 	{
@@ -42,7 +45,7 @@ void CLevel_Tutorial::Tick(_float fTimeDelta)
 {
 	if (m_pGameInstance->Key_Down(DIK_PRIOR) || m_pGameInstance->Key_Down(DIK_NUMPAD9))
 	{
-		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_STAGE1))))
+		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_VILLAGE))))
 		{
 			return;
 		}
@@ -76,7 +79,7 @@ HRESULT CLevel_Tutorial::Ready_Map()
 			ObjectInfo Info{};
 			Info.strPrototypeTag = strPrototypeTag + strFileName;
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_FOREST, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
 			{
 				return E_FAIL;
 			}
@@ -95,7 +98,7 @@ HRESULT CLevel_Tutorial::Ready_Map()
 			ObjectInfo Info{};
 			Info.strPrototypeTag = strPrototypeTag + strFileName;
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Terrain_COL", L"Prototype_GameObject_MapCollider", &Info)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_FOREST, L"Layer_Terrain_COL", L"Prototype_GameObject_MapCollider", &Info)))
 			{
 				return E_FAIL;
 			}
@@ -134,7 +137,7 @@ HRESULT CLevel_Tutorial::Ready_Map()
 				continue;
 			}
 
-			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
+			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_FOREST, L"Layer_Terrain", L"Prototype_GameObject_Terrain", &Info)))
 			{
 				return E_FAIL;
 			}
@@ -164,7 +167,7 @@ HRESULT CLevel_Tutorial::Ready_Lights()
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	LightDesc.vSpecular = _float4(0.f, 0.f, 0.f, 0.f);
 
-	if (FAILED(m_pGameInstance->Add_Light(LEVEL_TUTORIAL, TEXT("Light_Main"), LightDesc)))
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_FOREST, TEXT("Light_Main"), LightDesc)))
 	{
 		return E_FAIL;
 	}
@@ -199,7 +202,7 @@ HRESULT CLevel_Tutorial::Ready_UIs()
 
 HRESULT CLevel_Tutorial::Ready_People()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_TUTORIAL, L"Layer_Kakashi", L"Prototype_GameObject_Kakashi")))
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_FOREST, L"Layer_Kakashi", L"Prototype_GameObject_Kakashi")))
 	{
 		return E_FAIL;
 	}

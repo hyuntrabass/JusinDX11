@@ -87,6 +87,9 @@ void CPlayer::Tick(_float fTimeDelta)
 
 			m_isGameStarted = true;
 		}
+
+		XMStoreFloat3(&m_vRightHandPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
+
 		Move(fTimeDelta);
 		Init_State();
 		Tick_State(fTimeDelta);
@@ -109,6 +112,10 @@ void CPlayer::Tick(_float fTimeDelta)
 	if (m_pKunai)
 	{
 		m_pKunai->Tick(fTimeDelta);
+	}
+	if (m_pSkillEffect)
+	{
+		m_pSkillEffect->Tick(fTimeDelta);
 	}
 
 	if (m_pFootEffect[Foot_Left])
@@ -163,6 +170,10 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	if (m_pKunai)
 	{
 		m_pKunai->Late_Tick(fTimeDelta);
+	}
+	if (m_pSkillEffect)
+	{
+		m_pSkillEffect->Late_Tick(fTimeDelta);
 	}
 }
 
@@ -526,12 +537,14 @@ void CPlayer::Init_State()
 		case Client::Player_State::Chidori:
 			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Charge_Lv2toLv3;
 
-			XMStoreFloat3(&m_vRightHandPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
-
 			m_fTimer = {};
 
-			m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_SkillEffect"), TEXT("Prototype_GameObject_Chidori"), &m_vRightHandPos);
-			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"));
+			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Chidori"), &m_vRightHandPos);
+			//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"));
+
+			LIGHT_DESC* Desc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
+			m_OriginMainLightDiff = Desc->vDiffuse;
+			Desc->vDiffuse = _float4(0.2f, 0.2f, 0.2f, 1.f);
 			break;
 		}
 
@@ -646,7 +659,6 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		{
 			Kunai_Info Info{};
 			_float3 vDir{ reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()) };
-			XMStoreFloat3(&m_vRightHandPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
 			Info.pRHandPos = &m_vRightHandPos;
 
 			if (/*m_pBodyParts[PT_HEAD]->IsAnimationFinished(WireJump_Ready) or */(m_pGameInstance->Key_Up(DIK_LCONTROL, InputChannel::GamePlay)/* and not m_pKunai*/))
@@ -755,6 +767,8 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			{
 				m_pGameInstance->Attack_Monster(m_pCollider_Att, 10);
 				m_bAttacked = true;
+				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"), &m_vRightHandPos);
+
 			}
 			else
 			{
@@ -783,7 +797,39 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		m_fTimer += fTimeDelta;
 
-		XMStoreFloat3(&m_vRightHandPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
+		if (m_fTimer > 2.f and m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_LightningBlade_Charge_Lv2toLv3_Loop)
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Charge_Lv2toLv3_Conect_toRun;
+			m_Animation.bSkipInterpolation = true;
+		}
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_LightningBlade_Charge_Lv2toLv3_Conect_toRun))
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Run_Loop;
+			m_Animation.bSkipInterpolation = true;
+			m_Animation.isLoop = true;
+		}
+		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_LightningBlade_Run_Loop)
+		{
+			m_pTransformCom->Set_Speed(m_fRunSpeed * 3.f);
+			m_pTransformCom->Go_To_Dir(m_pTransformCom->Get_State(State::Look), fTimeDelta);
+		}
+		if (m_fTimer > 3.f)
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Attack_End;
+			m_Animation.bSkipInterpolation = true;
+		}
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_LightningBlade_Attack_End))
+		{
+			LIGHT_DESC* Desc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
+			Desc->vDiffuse = m_OriginMainLightDiff;
+			Safe_Release(m_pSkillEffect);
+
+			m_fTimer = {};
+			m_eState = Player_State::Idle;
+		}
 		break;
 	}
 }

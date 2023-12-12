@@ -15,6 +15,7 @@ enum class ItemType
 	Monster,
 	NPC,
 	COLMap,
+	Trigger,
 	End
 };
 
@@ -89,8 +90,10 @@ private:
 	vector<wstring>* m_pMapModels{ nullptr };
 	vector<wstring>* m_pMapCOLModels{ nullptr };
 
-	list<_float4> m_TriggerList{};
+	list<_float3> m_TriggerList{};
 	vector<const _char*> m_TriggerItemList{};
+
+	_int m_iTriggerNum{};
 
 	_bool m_isRecording{};
 	_float m_fRecTimer{};
@@ -102,6 +105,7 @@ private:
 private:
 	HRESULT Ready_Layers(vector<string>* pPropCount);
 	void Create_Dummy(const _int& iListIndex);
+	void Create_TriggerDummy();
 	void Delete_Dummy();
 
 	HRESULT Load_Data();

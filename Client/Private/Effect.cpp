@@ -24,7 +24,7 @@ HRESULT CEffect::Init(void* pArg)
 
 	if (pArg)
 	{
-		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(reinterpret_cast<_float4*>(pArg)));
+		m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(reinterpret_cast<_float3*>(pArg)), 1.f));
 	}
 	else
 	{
@@ -39,10 +39,9 @@ void CEffect::Tick(_float fTimeDelta)
 	m_pTransformCom->LookAway(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
 
 	m_fLifeTime += fTimeDelta;
-	if (m_fLifeTime > 1.f)
+	if (m_fLifeTime > 0.2f)
 	{
-		//m_isDead = true;
-
+		m_isDead = true;
 	}
 	m_pVIBufferCom->Update(fTimeDelta);
 }
@@ -106,9 +105,9 @@ HRESULT CEffect::Add_Components()
 	CVIBuffer_Instancing::ParticleDesc Desc{};
 	Desc.vMinPos = _float3(0.f, 0.f, 0.f);
 	Desc.vMaxPos = _float3(0.f, 0.f, 0.f);
-	Desc.vScaleRange = _float2(0.05f, 0.1f);
-	Desc.vSpeedRange = _float2(0.2f, 10.f);
-	Desc.vLifeTime = _float2(0.2f, 0.4f);
+	Desc.vScaleRange = _float2(0.01f, 0.05f);
+	Desc.vSpeedRange = _float2(1.f, 20.f);
+	Desc.vLifeTime = _float2(0.2f, 0.2f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Instancing_Point"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), &Desc)))
 	{
