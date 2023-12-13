@@ -91,7 +91,7 @@ HRESULT CVIBuffer_Trail::Init(void* pArg)
 	return S_OK;
 }
 
-void CVIBuffer_Trail::Update(_float3* pPositions, _float4* pColors, _float2* pPSize)
+void CVIBuffer_Trail::Update(_uint iNumVerticesToUse, _float3* pPositions, _float4* pColors, _float2* pPSize)
 {
 	D3D11_MAPPED_SUBRESOURCE SubResource{};
 
@@ -99,17 +99,26 @@ void CVIBuffer_Trail::Update(_float3* pPositions, _float4* pColors, _float2* pPS
 
 	for (size_t i = 0; i < m_iNumVertices; i++)
 	{
-		if (pPositions)
+		if (i >= iNumVerticesToUse)
 		{
-			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPosition = pPositions[i];
+			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPosition = pPositions[iNumVerticesToUse - 1];
+			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vColor = _float4();
+			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPSize = _float2();;
 		}
-		if (pColors)
+		else
 		{
-			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vColor = pColors[i];
-		}
-		if (pPSize)
-		{
-			reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPSize = pPSize[i];
+			if (pPositions)
+			{
+				reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPosition = pPositions[i];
+			}
+			if (pColors)
+			{
+				reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vColor = pColors[i];
+			}
+			if (pPSize)
+			{
+				reinterpret_cast<VTXTRAIL*>(SubResource.pData)[i].vPSize = pPSize[i];
+			}
 		}
 	}
 

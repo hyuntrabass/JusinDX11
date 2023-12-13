@@ -1,33 +1,50 @@
-#include "EyeLight.h"
+#include "CommonTrail.h"
 
-CEyeLight::CEyeLight(_dev pDevice, _context pContext)
+CCommonTrail::CCommonTrail(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
 {
 }
 
-CEyeLight::CEyeLight(const CEyeLight& rhs)
+CCommonTrail::CCommonTrail(const CCommonTrail& rhs)
 	: CBlendObject(rhs)
 {
 }
 
-HRESULT CEyeLight::Init_Prototype()
+HRESULT CCommonTrail::Init_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CEyeLight::Init(void* pArg)
+HRESULT CCommonTrail::Init(void* pArg)
 {
 	if (FAILED(Add_Components()))
 	{
 		return E_FAIL;
 	}
 
+	if (not pArg)
+	{
+		MSG_BOX("No Argument!");
+		return E_FAIL;
+	}
+
+	m_Info = *reinterpret_cast<TRAIL_DESC*>(pArg);
+
+	if (m_Info.iNumVertices > 50)
+	{
+		MSG_BOX("버텍스 개수는 50을 초과할 수 없습니다.");
+	}
+
+	m_PosArray = new _float3[m_Info.iNumVertices];
+	m_ColorArray = new _float4[m_Info.iNumVertices];
+	m_PSizeArray = new _float2[m_Info.iNumVertices];
+
 	return S_OK;
 }
 
-void CEyeLight::Tick(_float3 vPos, _float fTimeDelta)
+void CCommonTrail::Tick(_float3 vPos)
 {
-	if (m_TrailPosList.size() >= 20)
+	if (m_TrailPosList.size() >= m_Info.iNumVertices)
 	{
 		m_TrailPosList.pop_back();
 	}
@@ -36,30 +53,32 @@ void CEyeLight::Tick(_float3 vPos, _float fTimeDelta)
 	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
 }
 
-void CEyeLight::Late_Tick(_float fTimeDelta)
+void CCommonTrail::Late_Tick(_float fTimeDelta)
 {
-	_float3 PosArray[20]{};
-	_float4 ColorArray[20]{};
-
-	for (size_t i = 0; i < 20; i++)
+	for (size_t i = 0; i < m_Info.iNumVertices; i++)
 	{
-		XMStoreFloat3(&PosArray[i], m_pTransformCom->Get_State(State::Pos));
-		ColorArray[i] = _float4(1.f, 0.f, 0.f, 1.f - static_cast<_float>(i) / 20.f);
+		XMStoreFloat3(&m_PosArray[i], m_pTransformCom->Get_State(State::Pos));
+		m_ColorArray[i] = _float4(m_Info.vColor.x, m_Info.vColor.y, m_Info.vColor.z, 1.f - static_cast<_float>(i) / m_Info.iNumVertices);
 	}
 
 	_uint iIndex{};
 	for (auto& vPos : m_TrailPosList)
 	{
-		PosArray[iIndex++] = vPos;
+		m_PosArray[iIndex++] = vPos;
 	}
 
-	m_pTrailBufferCom->Update(PosArray, ColorArray);
+	for (size_t i = 0; i < m_Info.iNumVertices; i++)
+	{
+		m_PSizeArray[i] = m_Info.vPSize;
+	}
+
+	m_pTrailBufferCom->Update(m_Info.iNumVertices, m_PosArray, m_ColorArray, m_PSizeArray);
 
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 }
 
-HRESULT CEyeLight::Render()
+HRESULT CCommonTrail::Render()
 {
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
 	{
@@ -84,14 +103,14 @@ HRESULT CEyeLight::Render()
 	return S_OK;
 }
 
-HRESULT CEyeLight::Add_Components()
+HRESULT CCommonTrail::Add_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_20"), TEXT("Com_TrailBuffer"), reinterpret_cast<CComponent**>(&m_pTrailBufferCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_50"), TEXT("Com_TrailBuffer"), reinterpret_cast<CComponent**>(&m_pTrailBufferCom))))
 	{
 		return E_FAIL;
 	}
@@ -104,7 +123,7 @@ HRESULT CEyeLight::Add_Components()
 	return S_OK;
 }
 
-HRESULT CEyeLight::Bind_ShaderResources()
+HRESULT CCommonTrail::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::View))))
 	{
@@ -124,35 +143,39 @@ HRESULT CEyeLight::Bind_ShaderResources()
 	return S_OK;
 }
 
-CEyeLight* CEyeLight::Create(_dev pDevice, _context pContext)
+CCommonTrail* CCommonTrail::Create(_dev pDevice, _context pContext)
 {
-	CEyeLight* pInstnace = new CEyeLight(pDevice, pContext);
+	CCommonTrail* pInstnace = new CCommonTrail(pDevice, pContext);
 
 	if (FAILED(pInstnace->Init_Prototype()))
 	{
-		MSG_BOX("Failed to Create : CEyeLight");
+		MSG_BOX("Failed to Create : CCommonTrail");
 		Safe_Release(pInstnace);
 	}
 
 	return pInstnace;
 }
 
-CGameObject* CEyeLight::Clone(void* pArg)
+CGameObject* CCommonTrail::Clone(void* pArg)
 {
-	CEyeLight* pInstance = new CEyeLight(*this);
+	CCommonTrail* pInstance = new CCommonTrail(*this);
 
 	if (FAILED(pInstance->Init((pArg))))
 	{
-		MSG_BOX("Failed to Clone : CEyeLight");
+		MSG_BOX("Failed to Clone : CCommonTrail");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CEyeLight::Free()
+void CCommonTrail::Free()
 {
 	__super::Free();
+
+	Safe_Delete_Array(m_PosArray);
+	Safe_Delete_Array(m_ColorArray);
+	Safe_Delete_Array(m_PSizeArray);
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTrailBufferCom);

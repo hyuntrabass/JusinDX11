@@ -6,6 +6,7 @@ BEGIN(Engine)
 enum RenderGroup
 {
 	RG_Priority,
+	RG_Shadow,
 	RG_NonBlend,
 	RG_NonLight,
 	RG_Blend,
@@ -50,6 +51,7 @@ private:
 
 private:
 	HRESULT Render_Priority();
+	HRESULT Render_Shadow();
 	HRESULT Render_NonBlend();
 	HRESULT Render_LightAcc();
 	HRESULT Render_Deferred();

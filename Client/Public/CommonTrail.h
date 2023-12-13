@@ -4,17 +4,24 @@
 
 BEGIN(Client)
 
-class CEyeLight final : public CBlendObject
+struct TRAIL_DESC
+{
+	_float4 vColor{};
+	_float2 vPSize{};
+	_uint iNumVertices{};
+};
+
+class CCommonTrail final : public CBlendObject
 {
 private:
-	CEyeLight(_dev pDevice, _context pContext);
-	CEyeLight(const CEyeLight& rhs);
-	virtual ~CEyeLight() = default;
+	CCommonTrail(_dev pDevice, _context pContext);
+	CCommonTrail(const CCommonTrail& rhs);
+	virtual ~CCommonTrail() = default;
 
 public:
 	HRESULT Init_Prototype() override;
 	HRESULT Init(void* pArg) override;
-	void Tick(_float3 vPos, _float fTimeDelta);
+	void Tick(_float3 vPos);
 	void Late_Tick(_float fTimeDelta) override;
 	HRESULT Render() override;
 
@@ -26,13 +33,18 @@ private:
 
 private:
 	list<_float3> m_TrailPosList{};
+	TRAIL_DESC m_Info{};
+	_float3* m_PosArray{};
+	_float4* m_ColorArray{};
+	_float2* m_PSizeArray{};
+
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CEyeLight* Create(_dev pDevice, _context pContext);
+	static CCommonTrail* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

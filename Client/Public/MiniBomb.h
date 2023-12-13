@@ -1,10 +1,10 @@
 #pragma once
 #include "Client_Define.h"
-#include "GameObject.h"
+#include "BlendObject.h"
 
 BEGIN(Client)
 
-class CMiniBomb final : public CGameObject
+class CMiniBomb final : public CBlendObject
 {
 private:
 	CMiniBomb(_dev pDevice, _context pContext);

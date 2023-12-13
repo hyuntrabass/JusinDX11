@@ -553,7 +553,7 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_20"), CVIBuffer_Trail::Create(m_pDevice, m_pContext, 20, _float2(0.01f, 0.01f)))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_50"), CVIBuffer_Trail::Create(m_pDevice, m_pContext, 50, _float2(0.01f, 0.01f)))))
 
 	{
 		return E_FAIL;
@@ -637,6 +637,11 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Chidori"), CChidori::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_CommonTrail"), CCommonTrail::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -782,11 +787,6 @@ HRESULT CLoader::Load_CloudStage()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_MiniBomb"), CMiniBomb::Create(m_pDevice, m_pContext))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_EyeLight"), CEyeLight::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

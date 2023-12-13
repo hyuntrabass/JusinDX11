@@ -1,4 +1,5 @@
 #include "FootEffect.h"
+#include "CommonTrail.h"
 
 CFootEffect::CFootEffect(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
@@ -22,6 +23,13 @@ HRESULT CFootEffect::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	TRAIL_DESC TrailDesc{};
+	TrailDesc.vColor = _float4(0.2f, 0.2f, 1.f, 1.f);
+	TrailDesc.vPSize = _float2(0.01f, 0.01f);
+	TrailDesc.iNumVertices = 20;
+
+	m_pTrail = dynamic_cast<CCommonTrail*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &TrailDesc));
+
 	m_pTransformCom->Set_Scale(_float3(0.5f, 0.5f, 0.5f));
 
 	return S_OK;
@@ -29,34 +37,15 @@ HRESULT CFootEffect::Init(void* pArg)
 
 void CFootEffect::Tick(_float3 vPos, _float fTimeDelta)
 {
-	if (m_TrailPosList.size() >= 20)
-	{
-		m_TrailPosList.pop_back();
-	}
-	m_TrailPosList.push_front(vPos);
-
 	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
 	m_pTransformCom->LookAway(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
+
+	m_pTrail->Tick(vPos);
 }
 
 void CFootEffect::Late_Tick(_float fTimeDelta)
 {
-	_float3 PosArray[20]{};
-	_float4 ColorArray[20]{};
-
-	for (size_t i = 0; i < 20; i++)
-	{
-		XMStoreFloat3(&PosArray[i], m_pTransformCom->Get_State(State::Pos));
-		ColorArray[i] = _float4(0.2f, 0.2f, 1.f, 1.f - static_cast<_float>(i) / 20.f);
-	}
-
-	_uint iIndex{};
-	for (auto& vPos : m_TrailPosList)
-	{
-		PosArray[iIndex++] = vPos;
-	}
-
-	m_pTrailBufferCom->Update(PosArray, ColorArray);
+	m_pTrail->Late_Tick(fTimeDelta);
 
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
@@ -69,32 +58,17 @@ HRESULT CFootEffect::Render()
 		return S_OK;
 	}
 
-	if (FAILED(Bind_TrailShaderResources()))
+	if (FAILED(Bind_ShaderResources()))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTrailShaderCom->Begin(0)))
+	if (FAILED(m_pShaderCom->Begin(VTPass_Mask_Color)))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTrailBufferCom->Render()))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(Bind_LightShaderResources()))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pLightShaderCom->Begin(VTPass_Mask_Color)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pLightBufferCom->Render()))
+	if (FAILED(m_pVIBufferCom->Render()))
 	{
 		return E_FAIL;
 	}
@@ -109,12 +83,12 @@ HRESULT CFootEffect::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_LightBuffer"), reinterpret_cast<CComponent**>(&m_pLightBufferCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_LightBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_LightShader"), reinterpret_cast<CComponent**>(&m_pLightShaderCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_LightShader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 	{
 		return E_FAIL;
 	}
@@ -124,64 +98,34 @@ HRESULT CFootEffect::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_20"), TEXT("Com_TrailBuffer"), reinterpret_cast<CComponent**>(&m_pTrailBufferCom))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex_Trail"), TEXT("Com_TrailShader"), reinterpret_cast<CComponent**>(&m_pTrailShaderCom))))
-	{
-		return E_FAIL;
-	}
-
 	return S_OK;
 }
 
-HRESULT CFootEffect::Bind_TrailShaderResources()
+HRESULT CFootEffect::Bind_ShaderResources()
 {
-	if (FAILED(m_pTrailShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::View))))
+	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTrailShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::Proj))))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::View))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTrailShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof _float4)))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::Proj))))
 	{
 		return E_FAIL;
 	}
 
-	return S_OK;
-}
-
-HRESULT CFootEffect::Bind_LightShaderResources()
-{
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pLightShaderCom, "g_WorldMatrix")))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pLightShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::View))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pLightShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::Proj))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pLightShaderCom, "g_Texture")))
+	if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
 	{
 		return E_FAIL;
 	}
 
 	_float4 vColor{ 0.2f, 0.2f, 1.f, 1.f };
 	//XMStoreFloat4(&vColor, Colors::CornflowerBlue);
-	if (FAILED(m_pLightShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
 		return E_FAIL;
 	}
@@ -221,10 +165,9 @@ void CFootEffect::Free()
 
 	Safe_Release(m_pRendererCom);
 
-	Safe_Release(m_pLightBufferCom);
-	Safe_Release(m_pLightShaderCom);
+	Safe_Release(m_pVIBufferCom);
+	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pMaskTextureCom);
 
-	Safe_Release(m_pTrailBufferCom);
-	Safe_Release(m_pTrailShaderCom);
+	Safe_Release(m_pTrail);
 }

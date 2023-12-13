@@ -151,8 +151,11 @@
     <Filter Include="02.GameObjects\05. Boss\Kurama\Projectile">
       <UniqueIdentifier>{39896861-6f4c-4b83-b312-248fb9daa6b5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\05. Boss\Kurama\Effect">
-      <UniqueIdentifier>{ba561a71-1a6c-4124-97b4-a2354758cd49}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\07.Effects\Trail">
+      <UniqueIdentifier>{7bfff2d6-cda0-42dc-8e5d-161c52e3b734}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07.Effects\Particle">
+      <UniqueIdentifier>{fa3c4f78-9182-4f77-bdec-492b69629c87}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -270,9 +273,6 @@
     <ClInclude Include="..\public\Kakashi.h">
       <Filter>02.GameObjects\06.Kakashi</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Effect.h">
-      <Filter>02.GameObjects\07.Effects</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\MiniBomb.h">
       <Filter>02.GameObjects\05. Boss\Kurama\Projectile</Filter>
     </ClInclude>
@@ -294,8 +294,11 @@
     <ClInclude Include="..\public\Trigger_Manager.h">
       <Filter>03.Utility\Trigger_Manager</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\EyeLight.h">
-      <Filter>02.GameObjects\05. Boss\Kurama\Effect</Filter>
+    <ClInclude Include="..\public\CommonTrail.h">
+      <Filter>02.GameObjects\07.Effects\Trail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Effect.h">
+      <Filter>02.GameObjects\07.Effects\Particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -411,9 +414,6 @@
     <ClCompile Include="..\private\Kakashi.cpp">
       <Filter>02.GameObjects\06.Kakashi</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Effect.cpp">
-      <Filter>02.GameObjects\07.Effects</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\MiniBomb.cpp">
       <Filter>02.GameObjects\05. Boss\Kurama\Projectile</Filter>
     </ClCompile>
@@ -435,8 +435,11 @@
     <ClCompile Include="..\private\Trigger_Manager.cpp">
       <Filter>03.Utility\Trigger_Manager</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\EyeLight.cpp">
-      <Filter>02.GameObjects\05. Boss\Kurama\Effect</Filter>
+    <ClCompile Include="..\private\CommonTrail.cpp">
+      <Filter>02.GameObjects\07.Effects\Trail</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Effect.cpp">
+      <Filter>02.GameObjects\07.Effects\Particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

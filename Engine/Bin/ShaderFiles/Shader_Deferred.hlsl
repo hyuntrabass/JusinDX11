@@ -2,6 +2,7 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 matrix g_ViewMatrixInv, g_ProjMatrixInv;
+matrix g_LightViewMatrix, g_LightProjMatrix;
 
 vector g_vLightDir;
 vector g_vLightPos;
@@ -12,6 +13,8 @@ vector g_vLightSpecular;
 
 vector g_vCamPosition;
 float g_fCamFar;
+
+float2 g_vFogNF;
 
 Texture2D g_DiffuseTexture;
 Texture2D g_NormalTexture;
@@ -82,7 +85,8 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
     vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
     
     //Output.vShade = max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f);
-    Output.vShade = g_vLightDiffuse * saturate(ceil(max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f) * 2.f) / 2.f + g_vLightAmbient);
+    //Output.vShade = g_vLightDiffuse * saturate(ceil(max(dot(normalize(g_vLightDir) * -1.f, vNormal), 0.f) * 2.f) / 2.f + g_vLightAmbient); // Ä«Å÷
+    Output.vShade = g_vLightDiffuse * saturate(max(dot(normalize(g_vLightDir) * -1.f, normalize(vNormal)), 0.f) + g_vLightAmbient); // Ä«Å÷X
     
     vector vReflect = normalize(reflect(normalize(g_vLightDir), vNormal));
     
@@ -165,6 +169,14 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     vector vShade = g_ShadeTexture.Sample(LinearSampler, Input.vTexcoord);
     
     Output.vColor = vDiffuse * vShade;
+    
+    vector vFogColor = vector(0.9f, 0.9f, 0.9f, 1.f);
+    vector vDepthDesc = g_DepthTexture.Sample(LinearSampler, Input.vTexcoord);
+    float fViewZ = vDepthDesc.y * g_fCamFar;
+
+    float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
+    
+    Output.vColor = fFogFactor * Output.vColor + (1.f - fFogFactor) * vFogColor;
     
     return Output;
 }

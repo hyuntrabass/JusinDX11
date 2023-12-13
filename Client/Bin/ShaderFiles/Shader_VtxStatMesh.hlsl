@@ -9,6 +9,8 @@ vector g_vColor;
 vector g_vCamPos;
 float g_fCamFar;
 
+float2 g_vFogNF;
+
 bool g_HasNorTex;
 bool g_bSelected = false;
 
@@ -204,7 +206,8 @@ PS_OUT PS_Main_Sky(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
-    
+    Output.vColor = 0.7f * Output.vColor + (1.f - 0.7f) * vector(0.9f, 0.9f, 0.9f, 1.f);
+
     return Output;
 }
 

@@ -11,9 +11,11 @@ class CLight final : public CBase
 public:
 	LIGHT_DESC* Get_LightDesc();
 
+
 public:
 	HRESULT Init(const LIGHT_DESC& LightDeesc);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
+	HRESULT Bind_ViewProjMatrix(class CShader* pShader, const _char* pViewVariableName, const _char* pProjVariableName);
 
 private:
 	LIGHT_DESC m_LightDesc{};

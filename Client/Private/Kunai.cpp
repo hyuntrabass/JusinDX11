@@ -301,7 +301,7 @@ HRESULT CKunai::Render_Trail()
 	vColor[0] = { 0.4f, 0.6f, 0.9f, 1.f };
 	vColor[1] = { 0.4f, 0.6f, 0.9f, 1.f };
 
-	m_pTrailBufferCom->Update(PosArray, vColor);
+	m_pTrailBufferCom->Update(2, PosArray, vColor);
 
 	if (FAILED(m_pTrailShaderCom->Bind_Matrix("g_ViewMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::View))))
 	{

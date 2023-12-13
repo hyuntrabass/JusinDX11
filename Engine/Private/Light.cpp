@@ -70,6 +70,30 @@ HRESULT CLight::Render(CShader* pShader, CVIBuffer_Rect* pVIBuffer)
 	return S_OK;
 }
 
+HRESULT CLight::Bind_ViewProjMatrix(CShader* pShader, const _char* pViewVariableName, const _char* pProjVariableName)
+{
+	_float44		ViewMatrix, ProjMatrix;
+
+	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 20.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
+	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), (_float)1280.f / 720.0f, 0.f, 300.f));
+
+	if (FAILED(pShader->Bind_Matrix("g_LightViewMatrix", ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(pShader->Bind_Matrix("g_LightProjMatrix", ProjMatrix)))
+		return E_FAIL;
+
+	//if (FAILED(pShader->Bind_Matrix(pViewVariableName, ViewMatrix)))
+	//{
+	//	return E_FAIL;
+	//}
+	//if (FAILED(pShader->Bind_Matrix(pProjVariableName, ProjMatrix)))
+	//{
+	//	return E_FAIL;
+	//}
+
+	return S_OK;
+}
+
 CLight* CLight::Create(const LIGHT_DESC& LightDesc)
 {
 	CLight* pInstance = new CLight();

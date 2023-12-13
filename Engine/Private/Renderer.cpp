@@ -42,6 +42,11 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Diffuse"))))
 	{
 		return E_FAIL;
@@ -63,6 +68,11 @@ HRESULT CRenderer::Init_Prototype()
 	}
 
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Lights"), TEXT("Target_Specular"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow"), TEXT("Target_LightDepth"))))
 	{
 		return E_FAIL;
 	}
@@ -103,6 +113,10 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Specular"), _float2(150.f, 150.f), _float2(100.f, 100.f))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_LightDepth"), _float2(ViewportDesc.Width - 50.f, 50.f), _float2(100.f, 100.f))))
 	{
 		return E_FAIL;
 	}
@@ -210,6 +224,52 @@ HRESULT CRenderer::Render_Priority()
 	return S_OK;
 }
 
+HRESULT CRenderer::Render_Shadow()
+{
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Shadow"))))
+	{
+		return E_FAIL;
+	}
+
+	_uint iNumViewPorts{ 1 };
+
+	D3D11_VIEWPORT OldViewportDesc{};
+
+	m_pContext->RSGetViewports(&iNumViewPorts, &OldViewportDesc);
+
+	D3D11_VIEWPORT TempViewPortDesc{};
+	TempViewPortDesc.TopLeftX = 0;
+	TempViewPortDesc.TopLeftY = 0;
+	TempViewPortDesc.Width = static_cast<_float>(D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION);
+	TempViewPortDesc.Height = static_cast<_float>(D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION);
+	TempViewPortDesc.MinDepth = 0.f;
+	TempViewPortDesc.MaxDepth = 1.f;
+
+	m_pContext->RSSetViewports(iNumViewPorts, &TempViewPortDesc);
+
+	for (auto& pGameObject : m_RenderObjects[RG_Shadow])
+	{
+		if (pGameObject)
+		{
+			if (FAILED(pGameObject->Render()))
+			{
+				MSG_BOX("Failed to Render");
+			}
+		}
+
+		Safe_Release(pGameObject);
+	}
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+	{
+		return E_FAIL;
+	}
+
+	m_pContext->RSSetViewports(iNumViewPorts, &OldViewportDesc);
+
+	return S_OK;
+}
+
 HRESULT CRenderer::Render_NonBlend()
 {
 	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_GameObjects"))))
@@ -311,6 +371,23 @@ HRESULT CRenderer::Render_Deferred()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_DepthTexture", TEXT("Target_Depth"))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_LightDepthTexture", TEXT("Target_LightDepth"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShader->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraFar(), sizeof _float)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_RawValue("g_vFogNF", &m_pGameInstance->Get_FogNF(), sizeof _float2)))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
 	{
@@ -321,6 +398,10 @@ HRESULT CRenderer::Render_Deferred()
 		return E_FAIL;
 	}
 	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", m_ProjMatrix)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Bind_LightViewProjMatrix()))
 	{
 		return E_FAIL;
 	}

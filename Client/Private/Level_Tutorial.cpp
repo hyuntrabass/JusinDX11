@@ -10,6 +10,7 @@ CLevel_Tutorial::CLevel_Tutorial(_dev pDevice, _context pContext)
 HRESULT CLevel_Tutorial::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_FOREST);
+	m_pGameInstance->Set_FogNF(_float2(30.f, 300.f));
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 	CTransform* pMainCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
@@ -163,7 +164,7 @@ HRESULT CLevel_Tutorial::Ready_Lights()
 
 	LightDesc.eType = LIGHT_DESC::Directional;
 	LightDesc.vDirection = _float4(0.f, -1.f, 0.2f, 0.f);
-	LightDesc.vDiffuse = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	LightDesc.vDiffuse = _float4(0.4f, 0.4f, 0.6f, 1.f);
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	LightDesc.vSpecular = _float4(0.f, 0.f, 0.f, 0.f);
 

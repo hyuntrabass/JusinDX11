@@ -10,6 +10,7 @@ CLevel_Stage1::CLevel_Stage1(_dev pDevice, _context pContext)
 HRESULT CLevel_Stage1::Init()
 {
 	m_pGameInstance->Set_CurrentLevelIndex(LEVEL_VILLAGE);
+	m_pGameInstance->Set_FogNF(_float2(100.f, 2000.f));
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
 

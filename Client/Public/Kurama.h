@@ -106,7 +106,8 @@ private:
 private:
 	_float3 m_vAppearPoints[5]{};
 
-	class CEyeLight* m_pEyeLights[2]{};
+	class CCommonTrail* m_pEyeLights[2]{};
+	class CCommonTrail* m_pFingerLights[10]{};
 
 	ANIM_DESC m_AnimationDesc{};
 

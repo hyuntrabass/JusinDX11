@@ -1,12 +1,12 @@
 #include "MiniBomb.h"
 
 CMiniBomb::CMiniBomb(_dev pDevice, _context pContext)
-	: CGameObject(pDevice, pContext)
+	: CBlendObject(pDevice, pContext)
 {
 }
 
 CMiniBomb::CMiniBomb(const CMiniBomb& rhs)
-	: CGameObject(rhs)
+	: CBlendObject(rhs)
 {
 }
 
@@ -60,7 +60,8 @@ void CMiniBomb::Tick(_float fTimeDelta)
 
 void CMiniBomb::Late_Tick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	__super::Compute_CamDistance();
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif // _DEBUG

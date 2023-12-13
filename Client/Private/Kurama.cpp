@@ -1,5 +1,5 @@
 #include "Kurama.h"
-#include "EyeLight.h"
+#include "CommonTrail.h"
 
 CKurama::CKurama(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -37,8 +37,21 @@ HRESULT CKurama::Init(void* pArg)
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
 	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit);
 
-	m_pEyeLights[0] = dynamic_cast<CEyeLight*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_EyeLight")));
-	m_pEyeLights[1] = dynamic_cast<CEyeLight*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_EyeLight")));
+	TRAIL_DESC TrailDesc{};
+
+	TrailDesc.vColor = _float4(1.f, 0.f, 0.f, 1.f);
+	TrailDesc.vPSize = _float2(0.01f, 0.01f);
+	TrailDesc.iNumVertices = 50;
+	m_pEyeLights[0] = dynamic_cast<CCommonTrail*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &TrailDesc));
+	m_pEyeLights[1] = dynamic_cast<CCommonTrail*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &TrailDesc));
+
+	TrailDesc.vColor = _float4(1.f, 0.35f, 0.f, 1.f);
+	TrailDesc.vPSize = _float2(0.05f, 0.05f);
+	TrailDesc.iNumVertices = 20;
+	for (size_t i = 0; i < 10; i++)
+	{
+		m_pFingerLights[i] = dynamic_cast<CCommonTrail*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &TrailDesc));
+	}
 
 	m_iHP = 500;
 
@@ -55,10 +68,27 @@ void CKurama::Tick(_float fTimeDelta)
 	m_pTransformCom->Gravity(fTimeDelta);
 
 	_float3 vEyePos[2]{};
-	XMStoreFloat3(&vEyePos[0], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("EyeUpLeft1")) * m_pTransformCom->Get_World_Matrix()).r[3]);
-	XMStoreFloat3(&vEyePos[1], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("EyeUpRight1")) * m_pTransformCom->Get_World_Matrix()).r[3]);
-	m_pEyeLights[0]->Tick(vEyePos[0], fTimeDelta);
-	m_pEyeLights[1]->Tick(vEyePos[1], fTimeDelta);
+	XMStoreFloat3(&vEyePos[0], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("EyeUpLeft1")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
+	XMStoreFloat3(&vEyePos[1], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("EyeUpRight1")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
+	m_pEyeLights[0]->Tick(vEyePos[0]);
+	m_pEyeLights[1]->Tick(vEyePos[1]);
+
+	_float3 vFingerPos[10];
+	XMStoreFloat3(&vFingerPos[0], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("LeftHandThumb3")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
+	XMStoreFloat3(&vFingerPos[1], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("LeftHandIndex3")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
+	XMStoreFloat3(&vFingerPos[2], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("LeftHandMiddle3")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
+	XMStoreFloat3(&vFingerPos[3], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("LeftHandRing3")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
+	XMStoreFloat3(&vFingerPos[4], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("LeftHandPinky3")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
+	XMStoreFloat3(&vFingerPos[5], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("RightHandThumb3")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
+	XMStoreFloat3(&vFingerPos[6], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("RightHandIndex3")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
+	XMStoreFloat3(&vFingerPos[7], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("RightHandMiddle3")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
+	XMStoreFloat3(&vFingerPos[8], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("RightHandRing3")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
+	XMStoreFloat3(&vFingerPos[9], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("RightHandPinky3")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
+
+	for (size_t i = 0; i < 10; i++)
+	{
+		m_pFingerLights[i]->Tick(vFingerPos[i]);
+	}
 
 	_matrix ColliderOffset = XMMatrixTranslation(0.f, 4.f, 0.f);
 	m_pCollider_Hit->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
@@ -77,6 +107,11 @@ void CKurama::Late_Tick(_float fTimeDelta)
 
 		m_pEyeLights[0]->Late_Tick(fTimeDelta);
 		m_pEyeLights[1]->Late_Tick(fTimeDelta);
+
+		for (size_t i = 0; i < 10; i++)
+		{
+			m_pFingerLights[i]->Late_Tick(fTimeDelta);
+		}
 
 	#ifdef _DEBUG
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
@@ -330,7 +365,7 @@ void CKurama::TIck_State(_float fTimeDelta)
 		break;
 	case Client::CKurama::State_Idle:
 	{
-		_float fRadian = fabs(acosf(XMVectorGetX(XMVector3Dot(XMVector3Normalize(m_pPlayerTransform->Get_State(State::Pos) - m_pTransformCom->Get_State(State::Pos)), XMVector3Normalize(m_pTransformCom->Get_State(State::Look))))));
+		_float fRadian = fabs(acosf(XMVectorGetX(XMVector3Dot(XMVector3Normalize(XMVectorSetY(m_pPlayerTransform->Get_State(State::Pos) - m_pTransformCom->Get_State(State::Pos), 0.f)), XMVector3Normalize(XMVectorSetY(m_pTransformCom->Get_State(State::Look), 0.f))))));
 
 		if (fRadian > XMConvertToRadians(60.f))
 		{
@@ -491,6 +526,10 @@ void CKurama::Free()
 
 	Safe_Release(m_pEyeLights[0]);
 	Safe_Release(m_pEyeLights[1]);
+	for (size_t i = 0; i < 10; i++)
+	{
+		Safe_Release(m_pFingerLights[i]);
+	}
 	Safe_Release(m_pCollider_Hit);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

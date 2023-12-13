@@ -34,6 +34,7 @@ public:
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
 	const _float44* Get_BoneMatrix(const _char* pBoneName) const;
+	_matrix Get_PivotMatrix();
 
 	void Set_Animation(ANIM_DESC Animation_Desc);
 

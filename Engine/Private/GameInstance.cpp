@@ -860,6 +860,11 @@ const _float& CGameInstance::Get_TimeRatio() const
 	return m_fTimeRatio;
 }
 
+const _float2& CGameInstance::Get_FogNF() const
+{
+	return m_vFogNF;
+}
+
 void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
 {
 	m_iCameraModeIndex = iIndex;
@@ -878,6 +883,11 @@ void CGameInstance::Set_CurrentLevelIndex(const _uint& iIndex)
 void CGameInstance::Set_TimeRatio(const _float fRatio)
 {
 	m_fTimeRatio = fRatio;
+}
+
+void CGameInstance::Set_FogNF(const _float2& vFogNF)
+{
+	m_vFogNF = vFogNF;
 }
 
 void CGameInstance::Clear_Managers()

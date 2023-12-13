@@ -135,11 +135,13 @@ public: // Get_Set
 	const _float& Get_CameraFar() const;
 	const _uint& Get_CurrentLevelIndex() const;
 	const _float& Get_TimeRatio() const;
+	const _float2& Get_FogNF() const;
 
 	void Set_CameraModeIndex(const _uint& iIndex);
 	void Set_CameraFar(const _float& fFar);
 	void Set_CurrentLevelIndex(const _uint& iIndex);
 	void Set_TimeRatio(const _float fRatio);
+	void Set_FogNF(const _float2& vFogNF);
 
 private:
 	class CGraphic_Device* m_pGraphic_Device{ nullptr };
@@ -165,6 +167,7 @@ private:
 	_uint m_iLevelIndex{};
 	_float m_fTimeRatio{ 1.f };
 	_float m_fCameraFar{};
+	_float2 m_vFogNF{ 2000.f, 2000.f };
 
 public:
 	static void Release_Engine();

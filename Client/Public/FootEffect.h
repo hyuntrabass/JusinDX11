@@ -21,20 +21,14 @@ public:
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	
-	CVIBuffer_Rect* m_pLightBufferCom{ nullptr };
-	CShader* m_pLightShaderCom{ nullptr };
+	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
+	CShader* m_pShaderCom{ nullptr };
 	CTexture* m_pMaskTextureCom{ nullptr };
-
-	CVIBuffer_Trail* m_pTrailBufferCom{ nullptr };
-	CShader* m_pTrailShaderCom{ nullptr };
-
-private:
-	list<_float3> m_TrailPosList{};
+	class CCommonTrail* m_pTrail{ nullptr };
 
 private:
 	HRESULT Add_Components();
-	HRESULT Bind_TrailShaderResources();
-	HRESULT Bind_LightShaderResources();
+	HRESULT Bind_ShaderResources();
 
 public:
 	static CFootEffect* Create(_dev pDevice, _context pContext);
