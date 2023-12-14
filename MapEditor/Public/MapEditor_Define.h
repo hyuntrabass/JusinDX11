@@ -41,7 +41,7 @@ namespace MapEditor
 		StaticPass_COLMesh,
 		StaticPass_SingleColorFx,
 		StaticPass_MaskEffect,
-		SingleColoredEffectFrontCull,
+		StaticPass_SingleColoredEffectFrontCull,
 	};
 
 	enum VNTPass

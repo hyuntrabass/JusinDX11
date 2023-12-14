@@ -73,6 +73,7 @@ void CBodyPart::Late_Tick(_float fTimeDelta)
 	m_Worldmatrix = m_pParentTransform->Get_World_float4x4();
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Shadow, this);
 }
 
 HRESULT CBodyPart::Render()
@@ -129,6 +130,47 @@ HRESULT CBodyPart::Render()
 		}
 
 		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_Models[m_iSelectedModelIndex]->Render(i)))
+		{
+			return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CBodyPart::Render_Shadow()
+{
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
+	{
+		return S_OK;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", m_Worldmatrix)))
+	{
+		return E_FAIL;
+	}
+
+	LIGHT_DESC* Light = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
+	XMStoreFloat4(&Light->vPosition, m_pParentTransform->Get_State(State::Pos));
+
+	if (FAILED(m_pGameInstance->Bind_Light_ViewProjMatrix(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"), m_pShaderCom, "g_ViewMatrix", "g_ProjMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	for (_uint i = 0; i < m_Models[m_iSelectedModelIndex]->Get_NumMeshes(); i++)
+	{
+		if (FAILED(m_Models[m_iSelectedModelIndex]->Bind_BoneMatrices(i, m_pShaderCom, "g_BoneMatrices")))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(AnimPass_Shadow)))
 		{
 			return E_FAIL;
 		}

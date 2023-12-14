@@ -40,7 +40,13 @@ void CFootEffect::Tick(_float3 vPos, _float fTimeDelta)
 	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
 	m_pTransformCom->LookAway(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
 
-	m_pTrail->Tick(vPos);
+	m_fTrailTimer += fTimeDelta;
+
+	if (m_fTrailTimer > 0.015f)
+	{
+		m_pTrail->Tick(vPos);
+		m_fTrailTimer = {};
+	}
 }
 
 void CFootEffect::Late_Tick(_float fTimeDelta)

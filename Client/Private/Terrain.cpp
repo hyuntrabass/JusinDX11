@@ -44,6 +44,7 @@ void CTerrain::Tick(_float fTimeDelta)
 void CTerrain::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
+	//m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Shadow, this);
 }
 
 HRESULT CTerrain::Render()
@@ -117,6 +118,39 @@ HRESULT CTerrain::Render()
 			return E_FAIL;
 		}
 	}
+	return S_OK;
+}
+
+HRESULT CTerrain::Render_Shadow()
+{
+	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_LOADING)
+	{
+		return S_OK;
+	}
+
+	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Bind_Light_ViewProjMatrix(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"), m_pShaderCom, "g_ViewMatrix", "g_ProjMatrix")))
+	{
+		return E_FAIL;
+	}
+
+	for (_uint i = 0; i < m_pModelCom->Get_NumMeshes(); i++)
+	{
+		if (FAILED(m_pShaderCom->Begin(StaticPass_Shadow)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom->Render(i)))
+		{
+			return E_FAIL;
+		}
+	}
+
 	return S_OK;
 }
 

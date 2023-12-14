@@ -74,12 +74,23 @@ HRESULT CLight::Bind_ViewProjMatrix(CShader* pShader, const _char* pViewVariable
 {
 	_float44		ViewMatrix, ProjMatrix;
 
-	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(XMVectorSet(-20.f, 20.f, -20.f, 1.f), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f)));
-	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), (_float)1280.f / 720.0f, 0.f, 300.f));
+	_float fLightFar{ 500.f };
 
-	if (FAILED(pShader->Bind_Matrix("g_LightViewMatrix", ViewMatrix)))
+	_vector vAt = XMLoadFloat4(&m_LightDesc.vPosition);
+	_vector vPos = vAt - XMVector3Normalize(XMLoadFloat4(&m_LightDesc.vDirection)) * 50.f;
+
+	//vAt = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+	//vPos = XMVectorSet(20.f, 100.f, 0.f, 1.f);
+
+	XMStoreFloat4x4(&ViewMatrix, XMMatrixLookAtLH(vPos, vAt, XMVectorSet(0.f, 1.f, 0.f, 0.f)));
+	//XMStoreFloat4x4(&ProjMatrix, XMMatrixOrthographicLH(30.f, 30.f, 0.f, fLightFar));
+	XMStoreFloat4x4(&ProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), (_float)1280.f / 720.0f, 0.1f, fLightFar));
+
+	if (FAILED(pShader->Bind_Matrix(pViewVariableName, ViewMatrix)))
 		return E_FAIL;
-	if (FAILED(pShader->Bind_Matrix("g_LightProjMatrix", ProjMatrix)))
+	if (FAILED(pShader->Bind_Matrix(pProjVariableName, ProjMatrix)))
+		return E_FAIL;
+	if (FAILED(pShader->Bind_RawValue("g_fLightFar", &fLightFar, sizeof _float)))
 		return E_FAIL;
 
 	//if (FAILED(pShader->Bind_Matrix(pViewVariableName, ViewMatrix)))

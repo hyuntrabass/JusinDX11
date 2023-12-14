@@ -18,6 +18,7 @@ public:
 	void Tick(_float fTimeDelta) override;
 	void Late_Tick(_float fTimeDelta) override;
 	HRESULT Render() override;
+	virtual HRESULT Render_Shadow() override;
 
 public:
 	_bool IsAnimationFinished(_uint iAnimIndex);

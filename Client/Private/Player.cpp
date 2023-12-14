@@ -524,7 +524,6 @@ void CPlayer::Init_State()
 			m_Animation.fDurationRatio = 0.03f;
 			//m_Animation.fAnimSpeedRatio = 0.2f;
 			m_pGameInstance->Set_TimeRatio(0.1f);
-			m_pTransformCom->Reset_Gravity();
 			break;
 		case Client::Player_State::Beaten:
 			break;
@@ -709,11 +708,12 @@ void CPlayer::Tick_State(_float fTimeDelta)
 						m_Animation.isLoop = true;
 					}
 
-					m_pTransformCom->Set_Speed(m_fRunSpeed + m_fWalkSpeed);
+					m_pTransformCom->Set_Speed(m_fRunSpeed * 2.f);
 					_bool hasArrived = m_pTransformCom->Go_To(XMVectorSetW(XMLoadFloat3(&m_vWireTargetPos), 1.f), fTimeDelta, 1.f);
 
 					if (hasArrived)
 					{
+						m_pTransformCom->Reset_Gravity();
 						Safe_Release(m_pKunai);
 						m_eState = Player_State::DoubleJump;
 						m_pTransformCom->Jump(15.f);

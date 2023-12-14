@@ -49,7 +49,11 @@ private:
 
 	_float44 m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 
+	ID3D11DepthStencilView* m_pShadowDSV{ nullptr };
+
 private:
+	HRESULT Ready_ShadowDSV();
+
 	HRESULT Render_Priority();
 	HRESULT Render_Shadow();
 	HRESULT Render_NonBlend();

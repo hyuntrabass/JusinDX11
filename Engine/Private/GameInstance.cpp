@@ -465,6 +465,16 @@ HRESULT CGameInstance::Render_Lights(_uint iLevelIndex, CShader* pShader, CVIBuf
 	return m_pLight_Manager->Render(iLevelIndex, pShader, pVIBuffer);
 }
 
+HRESULT CGameInstance::Bind_Light_ViewProjMatrix(_uint iLevelIndex, const wstring& strLightTag, CShader* pShader, const _char* pViewVariableName, const _char* pProjVariableName)
+{
+	if (!m_pLight_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pLight_Manager is NULL");
+	}
+
+	return m_pLight_Manager->Bind_ViewProjMatrix(iLevelIndex, strLightTag, pShader, pViewVariableName, pProjVariableName);
+}
+
 _float4 CGameInstance::Get_CameraPos() const
 {
 	if (!m_pPipeLine)
@@ -788,14 +798,14 @@ HRESULT CGameInstance::Add_MRT(const wstring& strMRTTag, const wstring& strTarge
 
 	return m_pRenderTarget_Manager->Add_MRT(strMRTTag, strTargetTag);
 }
-HRESULT CGameInstance::Begin_MRT(const wstring& strMRTTag)
+HRESULT CGameInstance::Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView)
 {
 	if (!m_pRenderTarget_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pRenderTarget_Manager is NULL");
 	}
 
-	return m_pRenderTarget_Manager->Begin_MRT(strMRTTag);
+	return m_pRenderTarget_Manager->Begin_MRT(strMRTTag, pDepthStencillView);
 }
 HRESULT CGameInstance::End_MRT()
 {

@@ -70,6 +70,7 @@ namespace Client
 	{
 		AnimPass_Default,
 		AnimPass_OutLine,
+		AnimPass_Shadow,
 	};
 
 	enum StaticMeshPass
@@ -81,7 +82,8 @@ namespace Client
 		StaticPass_COLMesh,
 		StaticPass_SingleColorFx,
 		StaticPass_MaskEffect,
-		SingleColoredEffectFrontCull,
+		StaticPass_SingleColoredEffectFrontCull,
+		StaticPass_Shadow,
 	};
 
 	enum VNTPass

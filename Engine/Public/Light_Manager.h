@@ -13,6 +13,7 @@ public:
 	LIGHT_DESC* Get_LightDesc(_uint iLevelIndex, const wstring& strLightTag);
 	HRESULT Add_Light(_uint iLevelIndex, const wstring& strLightTag, const LIGHT_DESC& LightDesc);
 	HRESULT Delete_Light(_uint iLevelIndex, const wstring& strLightTag);
+	HRESULT Bind_ViewProjMatrix(_uint iLevelIndex, const wstring& strLightTag, class CShader* pShader, const _char* pViewVariableName, const _char* pProjVariableName);
 
 public:
 	HRESULT Init(_uint iNumLevels);

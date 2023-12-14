@@ -166,7 +166,6 @@ HRESULT CLevel_Tutorial::Ready_Lights()
 	LightDesc.vDirection = _float4(0.f, -1.f, 0.2f, 0.f);
 	LightDesc.vDiffuse = _float4(0.4f, 0.4f, 0.6f, 1.f);
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
-	LightDesc.vSpecular = _float4(0.f, 0.f, 0.f, 0.f);
 
 	if (FAILED(m_pGameInstance->Add_Light(LEVEL_FOREST, TEXT("Light_Main"), LightDesc)))
 	{

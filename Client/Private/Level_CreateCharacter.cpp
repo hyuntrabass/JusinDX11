@@ -94,7 +94,6 @@ HRESULT CLevel_CreateCharacter::Ready_Light()
 	LightDesc.vDirection = _float4(-1.f, -1.f, -2.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	return m_pGameInstance->Add_Light(LEVEL_CREATECHARACTER, TEXT("Light_Main"), LightDesc);
 }

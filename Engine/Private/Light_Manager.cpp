@@ -54,6 +54,17 @@ HRESULT CLight_Manager::Delete_Light(_uint iLevelIndex, const wstring& strLightT
 	return S_OK;
 }
 
+HRESULT CLight_Manager::Bind_ViewProjMatrix(_uint iLevelIndex, const wstring& strLightTag, CShader* pShader, const _char* pViewVariableName, const _char* pProjVariableName)
+{
+	CLight* pLight = Find_Light(iLevelIndex, strLightTag);
+	if (not pLight)
+	{
+		return E_FAIL;
+	}
+
+	return pLight->Bind_ViewProjMatrix(pShader, pViewVariableName, pProjVariableName);
+}
+
 HRESULT CLight_Manager::Init(_uint iNumLevels)
 {
 	if (m_pLights)

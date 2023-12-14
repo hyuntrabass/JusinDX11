@@ -8,6 +8,7 @@ vector g_vColor;
 
 vector g_vCamPos;
 float g_fCamFar;
+float g_fLightFar;
 
 float2 g_vFogNF;
 
@@ -260,6 +261,15 @@ PS_OUT PS_Main_MaskEffect(PS_IN Input)
     return Output;
 }
 
+vector PS_Main_Shadow(PS_IN Input) : SV_Target0
+{
+    vector Output = (vector) 0;
+    
+    Output.x = Input.vProjPos.w / g_fLightFar;
+    
+    return Output;
+}
+
 technique11 DefaultTechniqueShader_VtxNorTex
 {
     pass Default
@@ -364,5 +374,18 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Effect();
+    }
+
+    pass Shadow
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Shadow();
     }
 };

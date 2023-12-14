@@ -8,6 +8,7 @@ texture2D g_NormalTexture;
 
 vector g_vCamPos;
 float g_fCamFar;
+float g_fLightFar;
 
 bool g_HasNorTex;
 bool g_bSelected = false;
@@ -59,7 +60,7 @@ VS_OUT VS_Main(VS_IN Input)
     return Output;
 }
 
-VS_OUT VS_MainOutLine(VS_IN Input)
+VS_OUT VS_Main_OutLine(VS_IN Input)
 {
     VS_OUT Output = (VS_OUT) 0;
 	
@@ -145,7 +146,7 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     return Output;
 }
 
-PS_OUT_DEFERRED PS_MainOutLine(PS_IN Input)
+PS_OUT_DEFERRED PS_Main_OutLine(PS_IN Input)
 {
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
     
@@ -158,6 +159,15 @@ PS_OUT_DEFERRED PS_MainOutLine(PS_IN Input)
     
     Output.vDiffuse = vector(0.f, 0.f, 0.f, 1.f);
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    
+    return Output;
+}
+
+vector PS_Main_Shadow(PS_IN Input) : SV_Target0
+{
+    vector Output = (vector) 0;
+    
+    Output.x = Input.vProjPos.w / g_fLightFar;
     
     return Output;
 }
@@ -183,10 +193,23 @@ technique11 DefaultTechniqueShader_VtxNorTex
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_MainOutLine();
+        VertexShader = compile vs_5_0 VS_Main_OutLine();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_MainOutLine();
+        PixelShader = compile ps_5_0 PS_Main_OutLine();
+    }
+
+    pass Shadow
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Shadow();
     }
 };

@@ -69,6 +69,7 @@ public: // Light Manager
 	HRESULT Add_Light(_uint iLevelIndex, const wstring& strLightTag, const LIGHT_DESC& LightDesc);
 	HRESULT Delete_Light(_uint iLevelIndex, const wstring& strLightTag);
 	HRESULT Render_Lights(_uint iLevelIndex, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
+	HRESULT Bind_Light_ViewProjMatrix(_uint iLevelIndex, const wstring& strLightTag, class CShader* pShader, const _char* pViewVariableName, const _char* pProjVariableName);
 
 public: // PipeLine
 	_float4 Get_CameraPos() const;
@@ -121,7 +122,7 @@ public: // PhysX
 public: // RenderTarget
 	HRESULT Add_RenderTarget(const wstring& strTargetTag, _uint iWidth, _uint iHeight, DXGI_FORMAT ePixelFormat, const _float4& vColor);
 	HRESULT Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag);
-	HRESULT Begin_MRT(const wstring& strMRTTag);
+	HRESULT Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView = nullptr);
 	HRESULT End_MRT();
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
 #ifdef _DEBUG

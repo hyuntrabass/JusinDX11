@@ -164,6 +164,7 @@ HRESULT CTrigger_Manager::Add_Triggers()
 
 				File.read(reinterpret_cast<_char*>(&iTriggerNum), sizeof _uint);
 				File.read(reinterpret_cast<_char*>(&Info.vPos), sizeof _float4);
+				Info.vPos.y += 0.2f;
 				File.read(reinterpret_cast<_char*>(&Info.vLook), sizeof _float4);
 
 				m_MonsterTriggers[LEVEL_VILLAGE][iTriggerNum].push_back(Info);

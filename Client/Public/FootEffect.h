@@ -25,6 +25,7 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CTexture* m_pMaskTextureCom{ nullptr };
 	class CCommonTrail* m_pTrail{ nullptr };
+	_float m_fTrailTimer{};
 
 private:
 	HRESULT Add_Components();
