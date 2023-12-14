@@ -13,16 +13,11 @@ HRESULT CLevel_Stage1::Init()
 	m_pGameInstance->Set_FogNF(_float2(100.f, 2000.f));
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+	CTransform* pMainCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
 
 	pPlayerTransform->Set_Position(_float3(-112.7f, 24.f, 82.1f));
 	pPlayerTransform->LookAt_Dir(XMVectorSet(0.679f, 0.f, -0.7263f, 0.f));
-	//  CamPos X : -112.7049
-//	CamPos Y : 23.1608
-//	CamPos Z : 82.16119683
-
-//	CamLook X : 0.679019947
-//	CamLook Y : 0.1067018628
-//	CamLook Z : -0.726328318
+	pMainCamTransform->LookAt_Dir(XMVectorSet(0.679f, 0.f, -0.7263f, 0.f));
 
 	if (FAILED(Ready_Light()))
 	{
@@ -33,6 +28,9 @@ HRESULT CLevel_Stage1::Init()
 	{
 		MSG_BOX("Failed to Ready Map");
 	}
+
+	m_pGameInstance->StopAll();
+	m_pGameInstance->PlayBGM(TEXT("Pain"), 0.5f);
 
 	return S_OK;
 }

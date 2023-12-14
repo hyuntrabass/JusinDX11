@@ -231,6 +231,7 @@ private:
 	_float3 m_vOriginalLook{};
 
 	_bool m_hasInitiated{};
+	_bool m_hasPushed{};
 
 	State_Char m_eState{};
 	State_Char m_ePrevState{};

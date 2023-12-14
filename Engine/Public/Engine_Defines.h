@@ -61,11 +61,11 @@ using namespace physx;
 #include "Engine_Typedef.h"
 #include "Engine_Function.h"
 
-//// 사운드 재생을 위한 헤더
-//#include <io.h>
-//#include "fmod.h"
-//#include "fmod.hpp"
-//#pragma comment(lib, "fmod_vc.lib")
+// 사운드 재생을 위한 헤더
+#include <io.h>
+#include "fmod.h"
+#include "fmod.hpp"
+#pragma comment(lib, "fmod_vc.lib")
 
 #ifdef _DEBUG
 

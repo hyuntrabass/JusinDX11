@@ -32,6 +32,9 @@ HRESULT CLevel_CreateCharacter::Init()
 		MSG_BOX("Failed to Ready UI_Tuto");
 	}
 
+	m_pGameInstance->StopAll();
+	m_pGameInstance->PlayBGM(TEXT("y2mate.com - Naruto Theme  The Raising Fighting Spirit"), 0.5f);
+
 	return S_OK;
 }
 

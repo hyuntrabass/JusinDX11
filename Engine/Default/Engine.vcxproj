@@ -128,6 +128,7 @@
     <ClCompile Include="..\private\RenderTarget_Manager.cpp" />
     <ClCompile Include="..\private\Shader.cpp" />
     <ClCompile Include="..\private\Mesh.cpp" />
+    <ClCompile Include="..\Private\Sound_Manager.cpp" />
     <ClCompile Include="..\private\Texture.cpp" />
     <ClCompile Include="..\private\Timer.cpp" />
     <ClCompile Include="..\private\Timer_Manager.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="..\public\RenderTarget_Manager.h" />
     <ClInclude Include="..\public\Shader.h" />
     <ClInclude Include="..\public\Mesh.h" />
+    <ClInclude Include="..\Public\Sound_Manager.h" />
     <ClInclude Include="..\public\Texture.h" />
     <ClInclude Include="..\public\Timer.h" />
     <ClInclude Include="..\public\Timer_Manager.h" />

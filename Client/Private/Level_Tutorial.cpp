@@ -39,6 +39,9 @@ HRESULT CLevel_Tutorial::Init()
 		MSG_BOX("Failed to Ready People");
 	}
 
+	m_pGameInstance->StopAll();
+	m_pGameInstance->PlayBGM(TEXT("y2mate.com - Naruto Shippuden OST 1  Track 02  Douten  Heaven Shaking Event "), 0.5f);
+
 	return S_OK;
 }
 

@@ -5,6 +5,7 @@
 #include "Input_Device.h"
 #include "PhysX_Manager.h"
 #include "Collision_Manager.h"
+#include "Sound_Manager.h"
 
 BEGIN(Engine)
 
@@ -131,6 +132,16 @@ public:
 	HRESULT Render_Debug_RT(const wstring& strMRTTag, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 #endif // _DEBUG
 
+public: // Sound Manager
+	HRESULT Init_SoundManager();
+	_bool Is_SoundManager_Ready();
+	void Play_Sound(const wstring& strSoundTag, SoundChannel eChannel, _float fVolume);
+	void PlayBGM(const wstring& strSoundTag, float fVolume);
+	void StopSound(SoundChannel eChannel);
+	void StopAll();
+
+	void SetChannelVolume(SoundChannel eChannel, _float fVolume);
+
 public: // Get_Set
 	const _uint& Get_CameraModeIndex() const;
 	const _float& Get_CameraFar() const;
@@ -158,6 +169,7 @@ private:
 	class CFrustum* m_pFrustum{ nullptr };
 	class CCollision_Manager* m_pCollision_Manager{ nullptr };
 	class CRenderTarget_Manager* m_pRenderTarget_Manager{ nullptr };
+	class CSound_Manager* m_pSound_Manager{ nullptr };
 
 	class CPipeLine* m_pPipeLine{ nullptr };
 	class CPicking* m_pPicking{ nullptr };

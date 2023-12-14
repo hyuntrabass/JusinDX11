@@ -318,52 +318,112 @@ void CTransform::Go_To_Dir(_fvector vDir, _float fTimeDelta)
 
 void CTransform::Go_Backward(_float fTimeDelta)
 {
-	_vector vPos = Get_State(State::Pos);
-	_vector vLook = Get_State(State::Look);
+	if (m_pController)
+	{
+		PxVec3 Disp = -VectorToPxVec3(XMVector3Normalize(Get_State(State::Look)) * m_fSpeedPerSec * fTimeDelta);
+		//PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(XMVectorSetY(Get_State(State::Look), 0.f)) * m_fSpeedPerSec * fTimeDelta);
+		m_pController->move(Disp, 0.0001f, fTimeDelta, 0);
 
-	vPos -= XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+		PxExtendedVec3 MovedPos = m_pController->getFootPosition();
+		Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
+	}
+	else
+	{
+		_vector vPos = Get_State(State::Pos);
+		_vector vLook = Get_State(State::Look);
 
-	Set_State(State::Pos, vPos);
+		vPos -= XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+
+		Set_State(State::Pos, vPos);
+	}
 }
 
 void CTransform::Go_Left(_float fTimeDelta)
 {
-	_vector vPos = Get_State(State::Pos);
-	_vector vRight = Get_State(State::Right);
+	if (m_pController)
+	{
+		PxVec3 Disp = -VectorToPxVec3(XMVector3Normalize(Get_State(State::Right)) * m_fSpeedPerSec * fTimeDelta);
+		//PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(XMVectorSetY(Get_State(State::Look), 0.f)) * m_fSpeedPerSec * fTimeDelta);
+		m_pController->move(Disp, 0.0001f, fTimeDelta, 0);
 
-	vPos -= XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
+		PxExtendedVec3 MovedPos = m_pController->getFootPosition();
+		Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
+	}
+	else
+	{
+		_vector vPos = Get_State(State::Pos);
+		_vector vRight = Get_State(State::Right);
 
-	Set_State(State::Pos, vPos);
+		vPos -= XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
+
+		Set_State(State::Pos, vPos);
+	}
 }
 
 void CTransform::Go_Right(_float fTimeDelta)
 {
-	_vector vPos = Get_State(State::Pos);
-	_vector vRight = Get_State(State::Right);
+	if (m_pController)
+	{
+		PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(Get_State(State::Right)) * m_fSpeedPerSec * fTimeDelta);
+		//PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(XMVectorSetY(Get_State(State::Look), 0.f)) * m_fSpeedPerSec * fTimeDelta);
+		m_pController->move(Disp, 0.0001f, fTimeDelta, 0);
 
-	vPos += XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
+		PxExtendedVec3 MovedPos = m_pController->getFootPosition();
+		Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
+	}
+	else
+	{
+		_vector vPos = Get_State(State::Pos);
+		_vector vRight = Get_State(State::Right);
 
-	Set_State(State::Pos, vPos);
+		vPos += XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
+
+		Set_State(State::Pos, vPos);
+	}
 }
 
 void CTransform::Go_Up(_float fTimeDelta)
 {
-	_vector vPos = Get_State(State::Pos);
-	_vector vUp = Get_State(State::Up);
+	if (m_pController)
+	{
+		PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(Get_State(State::Up)) * m_fSpeedPerSec * fTimeDelta);
+		//PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(XMVectorSetY(Get_State(State::Look), 0.f)) * m_fSpeedPerSec * fTimeDelta);
+		m_pController->move(Disp, 0.0001f, fTimeDelta, 0);
 
-	vPos += XMVector3Normalize(vUp) * m_fSpeedPerSec * fTimeDelta;
+		PxExtendedVec3 MovedPos = m_pController->getFootPosition();
+		Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
+	}
+	else
+	{
+		_vector vPos = Get_State(State::Pos);
+		_vector vUp = Get_State(State::Up);
 
-	Set_State(State::Pos, vPos);
+		vPos += XMVector3Normalize(vUp) * m_fSpeedPerSec * fTimeDelta;
+
+		Set_State(State::Pos, vPos);
+	}
 }
 
 void CTransform::Go_Down(_float fTimeDelta)
 {
-	_vector vPos = Get_State(State::Pos);
-	_vector vUp = Get_State(State::Up);
+	if (m_pController)
+	{
+		PxVec3 Disp = -VectorToPxVec3(XMVector3Normalize(Get_State(State::Up)) * m_fSpeedPerSec * fTimeDelta);
+		//PxVec3 Disp = VectorToPxVec3(XMVector3Normalize(XMVectorSetY(Get_State(State::Look), 0.f)) * m_fSpeedPerSec * fTimeDelta);
+		m_pController->move(Disp, 0.0001f, fTimeDelta, 0);
 
-	vPos -= XMVector3Normalize(vUp) * m_fSpeedPerSec * fTimeDelta;
+		PxExtendedVec3 MovedPos = m_pController->getFootPosition();
+		Set_State(State::Pos, PxExVec3ToVector(MovedPos, 1.f));
+	}
+	else
+	{
+		_vector vPos = Get_State(State::Pos);
+		_vector vUp = Get_State(State::Up);
 
-	Set_State(State::Pos, vPos);
+		vPos -= XMVector3Normalize(vUp) * m_fSpeedPerSec * fTimeDelta;
+
+		Set_State(State::Pos, vPos);
+	}
 }
 
 void CTransform::Jump(_float fJumpForce)

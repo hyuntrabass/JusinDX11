@@ -15,6 +15,9 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+private:
+	_bool m_hasBGMStarted{};
+
 public:
 	static CLevel_Logo* Create(_dev pDevice, _context pContext);
 	virtual void Free() override;

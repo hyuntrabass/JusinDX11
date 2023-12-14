@@ -118,17 +118,6 @@ void CPlayer::Tick(_float fTimeDelta)
 		m_pSkillEffect->Tick(fTimeDelta);
 	}
 
-	if (m_pFootEffect[Foot_Left])
-	{
-		_float3 vFootPos[Foot_End]{};
-
-		XMStoreFloat3(&vFootPos[Foot_Left], (XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("LeftFoot")) * m_pTransformCom->Get_World_Matrix()).r[3]);
-		XMStoreFloat3(&vFootPos[Foot_Right], (XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("RightFoot")) * m_pTransformCom->Get_World_Matrix()).r[3]);
-
-		m_pFootEffect[Foot_Left]->Tick(vFootPos[Foot_Left], fTimeDelta);
-		m_pFootEffect[Foot_Right]->Tick(vFootPos[Foot_Right], fTimeDelta);
-	}
-
 	_matrix ColliderOffset = XMMatrixTranslation(0.f, 0.8f, 0.f);
 	m_pCollider_Att->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
 	m_pCollider_Hit->Update(m_pTransformCom->Get_World_Matrix());
@@ -159,6 +148,17 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	for (size_t i = 0; i < PT_END; i++)
 	{
 		m_pBodyParts[i]->Late_Tick(fTimeDelta);
+	}
+
+	if (m_pFootEffect[Foot_Left])
+	{
+		_float3 vFootPos[Foot_End]{};
+
+		XMStoreFloat3(&vFootPos[Foot_Left], (XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("LeftFoot")) * XMMatrixTranslation(0.f, -0.1f, 0.f) * m_pTransformCom->Get_World_Matrix()).r[3]);
+		XMStoreFloat3(&vFootPos[Foot_Right], (XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("RightFoot")) * m_pTransformCom->Get_World_Matrix()).r[3]);
+
+		m_pFootEffect[Foot_Left]->Tick(vFootPos[Foot_Left], fTimeDelta);
+		m_pFootEffect[Foot_Right]->Tick(vFootPos[Foot_Right], fTimeDelta);
 	}
 
 	if (m_pFootEffect[Foot_Left])
@@ -456,6 +456,12 @@ void CPlayer::Init_State()
 			m_pTransformCom->Set_UpDirection(XMVectorSet(0.f, 1.f, 0.f, 0.f));
 			Safe_Release(m_pKunai);
 		}
+		else if (m_ePrevState == Player_State::Chidori)
+		{
+			LIGHT_DESC* Desc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
+			Desc->vDiffuse = m_OriginMainLightDiff;
+			Safe_Release(m_pSkillEffect);
+		}
 
 		switch (m_eState)
 		{
@@ -715,8 +721,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 					{
 						m_pTransformCom->Reset_Gravity();
 						Safe_Release(m_pKunai);
-						m_eState = Player_State::DoubleJump;
-						m_pTransformCom->Jump(15.f);
+						m_eState = Player_State::Fall_Front;
 					}
 				}
 				else if (m_pKunai->isDead())
@@ -823,10 +828,6 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_LightningBlade_Attack_End))
 		{
-			LIGHT_DESC* Desc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
-			Desc->vDiffuse = m_OriginMainLightDiff;
-			Safe_Release(m_pSkillEffect);
-
 			m_fTimer = {};
 			m_eState = Player_State::Idle;
 		}

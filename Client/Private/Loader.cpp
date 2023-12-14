@@ -117,6 +117,12 @@ HRESULT CLoader::Loading_LevelResources()
 
 HRESULT CLoader::Load_Logo()
 {
+	m_strLoadingText = L"CreateCharacter : Loading Sounds";
+	if (FAILED(m_pGameInstance->Init_SoundManager()))
+	{
+		return E_FAIL;
+	}
+
 	m_strLoadingText = L"Logo : Loading Texture";
 #pragma region Texture
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_BackGround"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MainMenu/BackGround.jpg")))))
@@ -376,10 +382,10 @@ HRESULT CLoader::Load_CreateCharacter()
 
 	m_strLoadingText = L"CreateCharacter : Loading Prototype";
 #pragma region Prototype
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 300, 300))))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"), CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 300, 300))))
+	//{
+	//	return E_FAIL;
+	//}6
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Camera_Debug"), CCamera_Debug::Create(m_pDevice, m_pContext))))
 	{

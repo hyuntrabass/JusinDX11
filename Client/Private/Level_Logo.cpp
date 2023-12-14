@@ -21,6 +21,12 @@ HRESULT CLevel_Logo::Init()
 
 void CLevel_Logo::Tick(_float fTimeDelta)
 {
+	if (not m_hasBGMStarted and m_pGameInstance->Is_SoundManager_Ready())
+	{
+		m_pGameInstance->PlayBGM(TEXT("Buzz"), 0.5f);
+		m_hasBGMStarted = true;
+	}
+
 	if (CUI_Manager::Get_Instance()->Is_ButtonPushed(0))
 	{
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_CREATECHARACTER))))

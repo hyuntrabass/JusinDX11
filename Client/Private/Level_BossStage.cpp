@@ -11,8 +11,11 @@ HRESULT CLevel_Stage2::Init()
 	m_pGameInstance->Set_FogNF(_float2(80.f, 700.f));
 
 	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+	CTransform* pMainCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
 
 	pPlayerTransform->Set_Position(_float3(-45.3f, 72.6f, 106.3f));
+	pPlayerTransform->LookAt_Dir(XMVectorSet(-1.f, 0.f, 0.f, 0.f));
+	pMainCamTransform->LookAt_Dir(XMVectorSet(-1.f, 0.f, 0.f, 0.f));
 
 	if (FAILED(Ready_Map()))
 	{
@@ -23,6 +26,9 @@ HRESULT CLevel_Stage2::Init()
 	{
 		MSG_BOX("Failed to Ready Lights");
 	}
+
+	m_pGameInstance->StopAll();
+	m_pGameInstance->PlayBGM(TEXT("Madara"), 0.5f);
 
 	return S_OK;
 }
