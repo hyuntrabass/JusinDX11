@@ -252,4 +252,9 @@ void CMainApp::Free()
 	CTrigger_Manager::Get_Instance()->Destroy_Instance();
 
 	CGameInstance::Release_Engine();
+	
+	if (_heapchk() != _HEAPOK)
+	{
+		MSG_BOX("Heap currupted");
+	}
 }
