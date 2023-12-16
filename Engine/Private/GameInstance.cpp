@@ -665,7 +665,7 @@ void CGameInstance::Delete_CollisionObject(CGameObject* pObject, _bool IsPlayer)
 	m_pCollision_Manager->Delete_CollisionObject(pObject, IsPlayer);
 }
 
-void CGameInstance::Attack_Monster(CCollider* pCollider, _uint iDamage)
+_bool CGameInstance::Attack_Monster(CCollider* pCollider, _uint iDamage)
 {
 	if (!m_pCollision_Manager)
 	{
@@ -675,7 +675,7 @@ void CGameInstance::Attack_Monster(CCollider* pCollider, _uint iDamage)
 	return m_pCollision_Manager->Attack_Monster(pCollider, iDamage);
 }
 
-void CGameInstance::Attack_Player(CCollider* pCollider, _uint iDamage)
+_bool CGameInstance::Attack_Player(CCollider* pCollider, _uint iDamage)
 {
 	if (!m_pCollision_Manager)
 	{

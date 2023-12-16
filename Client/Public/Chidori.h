@@ -2,6 +2,8 @@
 #include "Client_Define.h"
 #include "BlendObject.h"
 
+BEGIN(Client)
+
 class CChidori : public CBlendObject
 {
 private:
@@ -17,9 +19,10 @@ public:
 	HRESULT Render() override;
 
 private:
+	static const _uint iNumModels{ 8 };
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	CModel* m_pModelCom[5]{ nullptr };
+	CModel* m_pModelCom[iNumModels]{ nullptr };
 	CTexture* m_pMaskTextureCom{ nullptr };
 
 private:
@@ -36,3 +39,4 @@ public:
 	virtual void Free() override;
 };
 
+END

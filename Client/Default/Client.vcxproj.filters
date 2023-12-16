@@ -279,7 +279,7 @@
     <ClInclude Include="..\Public\Kunai.h">
       <Filter>02.GameObjects\03.Player\Projectile\Kunai</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\RasenShurikan.h">
+    <ClInclude Include="..\public\RasenShuriken.h">
       <Filter>02.GameObjects\03.Player\Projectile\RasenShuri</Filter>
     </ClInclude>
     <ClInclude Include="..\public\FootEffect.h">
@@ -420,7 +420,7 @@
     <ClCompile Include="..\Private\Kunai.cpp">
       <Filter>02.GameObjects\03.Player\Projectile\Kunai</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\RasenShurikan.cpp">
+    <ClCompile Include="..\private\RasenShuriken.cpp">
       <Filter>02.GameObjects\03.Player\Projectile\RasenShuri</Filter>
     </ClCompile>
     <ClCompile Include="..\private\FootEffect.cpp">

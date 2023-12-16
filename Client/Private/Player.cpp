@@ -88,11 +88,23 @@ void CPlayer::Tick(_float fTimeDelta)
 			m_isGameStarted = true;
 		}
 
-		XMStoreFloat3(&m_vRightHandPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
 
 		Move(fTimeDelta);
 		Init_State();
 		Tick_State(fTimeDelta);
+
+		XMStoreFloat3(&m_vRightHandPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
+
+		if (m_pFootEffect[Foot_Left])
+		{
+			_float3 vFootPos[Foot_End]{};
+
+			XMStoreFloat3(&vFootPos[Foot_Left], (XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("LeftFoot")) * XMMatrixTranslation(0.f, -0.1f, 0.f) * m_pTransformCom->Get_World_Matrix()).r[3]);
+			XMStoreFloat3(&vFootPos[Foot_Right], (XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("RightFoot")) * m_pTransformCom->Get_World_Matrix()).r[3]);
+
+			m_pFootEffect[Foot_Left]->Tick(vFootPos[Foot_Left], fTimeDelta);
+			m_pFootEffect[Foot_Right]->Tick(vFootPos[Foot_Right], fTimeDelta);
+		}
 	}
 	else
 	{
@@ -148,17 +160,6 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	for (size_t i = 0; i < PT_END; i++)
 	{
 		m_pBodyParts[i]->Late_Tick(fTimeDelta);
-	}
-
-	if (m_pFootEffect[Foot_Left])
-	{
-		_float3 vFootPos[Foot_End]{};
-
-		XMStoreFloat3(&vFootPos[Foot_Left], (XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("LeftFoot")) * XMMatrixTranslation(0.f, -0.1f, 0.f) * m_pTransformCom->Get_World_Matrix()).r[3]);
-		XMStoreFloat3(&vFootPos[Foot_Right], (XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("RightFoot")) * m_pTransformCom->Get_World_Matrix()).r[3]);
-
-		m_pFootEffect[Foot_Left]->Tick(vFootPos[Foot_Left], fTimeDelta);
-		m_pFootEffect[Foot_Right]->Tick(vFootPos[Foot_Right], fTimeDelta);
 	}
 
 	if (m_pFootEffect[Foot_Left])
@@ -538,6 +539,9 @@ void CPlayer::Init_State()
 		case Client::Player_State::RasenShuriken:
 			m_Animation.iAnimIndex = Ninjutsu_TrueRasenShuriken;
 			m_pTransformCom->Reset_Gravity();
+
+			Safe_Release(m_pSkillEffect);
+			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Rasenshuriken"), &m_vRightHandPos);
 			break;
 		case Client::Player_State::Chidori:
 			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Charge_Lv2toLv3;
@@ -953,6 +957,8 @@ void CPlayer::Free()
 
 	Safe_Release(m_pFootEffect[Foot_Left]);
 	Safe_Release(m_pFootEffect[Foot_Right]);
+
+	Safe_Release(m_pSkillEffect);
 
 	Safe_Release(m_pCollider_Att);
 	Safe_Release(m_pCollider_Hit);

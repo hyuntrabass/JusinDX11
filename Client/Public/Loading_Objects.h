@@ -28,3 +28,4 @@
 #include "Chidori.h"
 #include "CommonTrail.h"
 #include "Pain.h"
+#include "RasenShuriken.h"

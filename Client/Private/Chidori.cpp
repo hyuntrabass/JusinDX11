@@ -58,7 +58,7 @@ HRESULT CChidori::Render()
 		return E_FAIL;
 	}
 
-	for (size_t i = 0; i < 5; i++)
+	for (size_t i = 0; i < iNumModels; i++)
 	{
 		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
 		{
@@ -107,6 +107,21 @@ HRESULT CChidori::Add_Components()
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB4"), TEXT("Com_Model_5"), reinterpret_cast<CComponent**>(&m_pModelCom[4]))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Chidori"), TEXT("Com_Model_6"), reinterpret_cast<CComponent**>(&m_pModelCom[5]))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Chidori"), TEXT("Com_Model_7"), reinterpret_cast<CComponent**>(&m_pModelCom[6]))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Chidori"), TEXT("Com_Model_8"), reinterpret_cast<CComponent**>(&m_pModelCom[7]))))
 	{
 		return E_FAIL;
 	}
@@ -187,7 +202,7 @@ void CChidori::Free()
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
-	for (size_t i = 0; i < 5; i++)
+	for (size_t i = 0; i < iNumModels; i++)
 	{
 		Safe_Release(m_pModelCom[i]);
 	}

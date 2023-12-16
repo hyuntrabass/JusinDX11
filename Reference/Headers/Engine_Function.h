@@ -57,6 +57,20 @@ namespace Engine
 		}
 	}
 
+	template<typename T>
+	T Lerp(T Src, T Dst, float Alpha)
+	{
+		if (Alpha < 0.f)
+		{
+			Alpha = 0.f;
+		}
+		if (Alpha > 1.f)
+		{
+			Alpha = 1.f;
+		}
+		return Src * (1.f - Alpha) + Dst * Alpha;
+	}
+
 	const PxVec3 ENGINE_DLL VectorToPxVec3(FXMVECTOR vVector);
 	const XMVECTOR ENGINE_DLL PxExVec3ToVector(PxExtendedVec3 Src, float w = 0.f);
 	const PxVec3 ENGINE_DLL PxExVec3ToPxVec3(PxExtendedVec3 Src);

@@ -26,13 +26,6 @@ vector g_vMtrlSpecular = vector(0.8f, 0.8f, 0.8f, 1.f);
 
 float2 g_vUVTransform;
 
-sampler MaskSampler = sampler_state
-{
-    Filter = MIN_MAG_MIP_LINEAR;
-    AddressU = clamp;
-    AddressV = clamp;
-};
-
 struct VS_IN
 {
     float3 vPos : Position;
@@ -249,7 +242,7 @@ PS_OUT PS_Main_MaskEffect(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
 
-    vector vMask = g_MaskTexture.Sample(MaskSampler, Input.vTex + g_vUVTransform);
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
     if (vMask.r < 0.1f)
     {
         discard;
