@@ -4,11 +4,14 @@ matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 texture2D g_MaskTexture;
+texture2D g_NoiseTexture;
+
 vector g_vColor;
 
 vector g_vCamPos;
 float g_fCamFar;
 float g_fLightFar;
+float g_fDissolveRatio;
 
 float2 g_vFogNF;
 
@@ -238,10 +241,49 @@ PS_OUT PS_Main_Effect(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_Effect_Dissolve(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+
+    float fDissolve = g_NoiseTexture.Sample(LinearSampler, Input.vTex).r;
+    
+    if (g_fDissolveRatio > fDissolve)
+    {
+        discard;
+    }
+    
+    Output.vColor = g_vColor;
+    
+    return Output;
+}
+
 PS_OUT PS_Main_MaskEffect(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
 
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
+    if (vMask.r < 0.1f)
+    {
+        discard;
+    }
+    
+    Output.vColor = g_vColor;
+    Output.vColor.a = vMask.r;
+    
+    return Output;
+}
+
+PS_OUT PS_Main_MaskEffect_Dissolve(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+
+    float fDissolve = g_NoiseTexture.Sample(LinearSampler, Input.vTex).r;
+    
+    if (g_fDissolveRatio > fDissolve)
+    {
+        discard;
+    }
+    
     vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex + g_vUVTransform);
     if (vMask.r < 0.1f)
     {
@@ -343,6 +385,19 @@ technique11 DefaultTechniqueShader_VtxNorTex
         PixelShader = compile ps_5_0 PS_Main_Effect();
     }
 
+    pass SingleColoredEffectDissolve
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Effect_Dissolve();
+    }
+
     pass MaskEffect
     {
         SetRasterizerState(RS_None);
@@ -354,6 +409,19 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_MaskEffect();
+    }
+
+    pass MaskEffectDissolve
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_MaskEffect_Dissolve();
     }
 
     pass SingleColoredEffectFrontCull

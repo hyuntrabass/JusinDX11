@@ -34,6 +34,7 @@ const _bool& CAnimation::IsFinished() const
 void CAnimation::ResetFinished()
 {
 	m_isFinished = false;
+	m_fCurrentAnimPos = {};
 }
 
 HRESULT CAnimation::Init(ifstream& ModelFile)

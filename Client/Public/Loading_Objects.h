@@ -21,7 +21,7 @@
 #include "BodyPart.h"
 #include "Kurama.h"
 #include "Kakashi.h"
-#include "Effect.h"
+#include "Effect_Hit.h"
 #include "MiniBomb.h"
 #include "Kunai.h"
 #include "FootEffect.h"
@@ -29,3 +29,5 @@
 #include "CommonTrail.h"
 #include "Pain.h"
 #include "RasenShuriken.h"
+#include "Effect_Warp.h"
+

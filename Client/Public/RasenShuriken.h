@@ -12,6 +12,7 @@ private:
 		State_Charge,
 		State_Shoot,
 		State_Explode,
+		State_Dissolve,
 	};
 private:
 	CRasenShuriken(_dev pDevice, _context pContext);
@@ -26,7 +27,7 @@ public:
 	HRESULT Render() override;
 
 public:
-	void Shoot(_float3 vTargetPos);
+	void Shoot();
 
 private:
 	static const _uint iNumModels{ 5 };
@@ -36,6 +37,7 @@ private:
 	CTexture* m_pCoreMaskTextureCom{ nullptr };
 	CTexture* m_pCircleMaskTextureCom{ nullptr };
 	CTexture* m_pWingTrailMaskTextureCom{ nullptr };
+	CTexture* m_pNoiseTextureCom{ nullptr };
 	CCollider* m_pColliderCom{ nullptr };
 
 private:
@@ -44,8 +46,13 @@ private:
 
 	RasenState m_eState{};
 	_float m_fTimer{};
+	_float m_fScaleRatio{};
+	_float m_fCoreAlpha{};
+	_uint m_iAttCount{};
 	_float3 m_vTargetPos{};
+	_bool m_hasTarget{};
 	_float m_fCoreScale{};
+	_float m_fDissolveRatio{};
 
 private:
 	HRESULT Add_Components();

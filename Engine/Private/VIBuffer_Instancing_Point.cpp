@@ -113,10 +113,15 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 	if (pArg)
 	{
 		ParticleDesc Desc = *reinterpret_cast<ParticleDesc*>(pArg);
+		m_isLoop = Desc.isLoop;
 
 		_randFloat RandomX = _randFloat(Desc.vMinPos.x, Desc.vMaxPos.x);
 		_randFloat RandomY = _randFloat(Desc.vMinPos.y, Desc.vMaxPos.y);
 		_randFloat RandomZ = _randFloat(Desc.vMinPos.z, Desc.vMaxPos.z);
+
+		_randFloat RandomDirX = _randFloat(Desc.vMinDir.x, Desc.vMaxDir.x);
+		_randFloat RandomDirY = _randFloat(Desc.vMinDir.y, Desc.vMaxDir.y);
+		_randFloat RandomDirZ = _randFloat(Desc.vMinDir.z, Desc.vMaxDir.z);
 
 		_randFloat RandomScale = _randFloat(Desc.vScaleRange.x, Desc.vScaleRange.y);
 		_randFloat RandomSpeed = _randFloat(Desc.vSpeedRange.x, Desc.vSpeedRange.y);
@@ -136,7 +141,7 @@ HRESULT CVIBuffer_Instancing_Point::Init(void* pArg)
 			pVertexInstance[i].vOriginPos = pVertexInstance[i].vPos;
 			pVertexInstance[i].fSpeed = RandomSpeed(RandomNumber);
 			pVertexInstance[i].vLifeTime.y = RandomLifeTime(RandomNumber);
-			XMStoreFloat4(&pVertexInstance[i].vDirection, XMVector3Normalize(XMVectorSet(cos(fCeta), sin(fCeta), 0.f, 0.f)));
+			XMStoreFloat4(&pVertexInstance[i].vDirection, XMVector3Normalize(XMVectorSet(RandomDirX(RandomNumber), RandomDirY(RandomNumber), RandomDirZ(RandomNumber), 0.f)));
 		}
 	}
 

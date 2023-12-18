@@ -33,6 +33,21 @@ HRESULT CRasenShuriken::Init(void* pArg)
 	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(m_pPos), 1.f));
 
 	m_pTransformCom->Set_RotationPerSec(360.f);
+	m_pTransformCom->Set_Speed(50.f);
+
+	PxRaycastBuffer Buffer{};
+	if (m_pGameInstance->Raycast(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()), XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 50.f, Buffer))
+	{
+		m_vTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
+		m_hasTarget = true;
+	}
+	else
+	{
+		m_vTargetPos = _float3(reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()));
+		m_hasTarget = false;
+	}
+
+	m_fDissolveRatio = 1.f;
 
 	m_fCoreScale = 1.f;
 
@@ -46,19 +61,64 @@ void CRasenShuriken::Tick(_float fTimeDelta)
 	case Client::CRasenShuriken::State_Charge:
 		m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(m_pPos) + XMVectorSet(0.f, 0.4f, 0.f, 0.f), 1.f));
 		m_fCoreScale = Lerp(1.5f, 0.5f, m_fTimer);
+		m_fCoreAlpha = Lerp(0.f, 0.7f, m_fTimer);
+		m_fDissolveRatio -= fTimeDelta * 1.5f;
 		break;
 	case Client::CRasenShuriken::State_Shoot:
-		m_pTransformCom->Go_To(XMVectorSetW(XMLoadFloat3(&m_vTargetPos), 1.f), fTimeDelta);
-		if (m_pGameInstance->Attack_Monster(m_pColliderCom, 0))
+		m_fScaleRatio = {};
+		if (m_hasTarget)
+		{
+			if (m_pTransformCom->Go_To(XMVectorSetW(XMLoadFloat3(&m_vTargetPos), 1.f), fTimeDelta))
+			{
+				m_eState = State_Explode;
+			}
+		}
+		else
+		{
+			m_pTransformCom->Go_To_Dir(XMLoadFloat3(&m_vTargetPos), fTimeDelta);
+			if (m_fTimer > 1.f)
+			{
+				m_eState = State_Explode;
+			}
+		}
+
+		if (m_pGameInstance->CheckCollision_Monster(m_pColliderCom))
 		{
 			m_eState = State_Explode;
 		}
 		break;
 	case Client::CRasenShuriken::State_Explode:
+		m_fCoreScale = Lerp(0.5f, 10.5f, m_fScaleRatio);
+		m_fCoreAlpha = Lerp(0.7f, 0.2f, m_fTimer);
+		m_fScaleRatio += fTimeDelta;
+
+		if (m_fTimer > 0.5)
+		{
+			m_pGameInstance->Attack_Monster(m_pColliderCom, 20);
+			m_fTimer = {};
+			m_iAttCount++;
+		}
+
+		if (m_iAttCount >= 5)
+		{
+			m_eState = State_Dissolve;
+			m_fScaleRatio = {};
+			m_fDissolveRatio = {};
+		}
+		break;
+	case Client::CRasenShuriken::State_Dissolve:
+		m_fDissolveRatio += fTimeDelta / 2.5f;
+		//m_fCoreScale = Lerp(10.5f, 20.5f, m_fScaleRatio);
+		//m_fScaleRatio += fTimeDelta;
+		if (m_fDissolveRatio > 1.f)
+		{
+			m_isDead = true;
+		}
 		break;
 	}
 
 	m_fTimer += fTimeDelta;
+
 
 	m_vUVTransform.x += fTimeDelta;
 	if (m_vUVTransform.x > 2.f)
@@ -68,11 +128,13 @@ void CRasenShuriken::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 
-	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+	m_pColliderCom->Update(XMMatrixScaling(m_fCoreScale, m_fCoreScale, m_fCoreScale) * m_pTransformCom->Get_World_Matrix());
 }
 
 void CRasenShuriken::Late_Tick(_float fTimeDelta)
 {
+	__super::Compute_CamDistance();
+
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
@@ -82,6 +144,7 @@ void CRasenShuriken::Late_Tick(_float fTimeDelta)
 HRESULT CRasenShuriken::Render()
 {
 	_float4 vColor{};
+	_uint iDissolve{};
 
 #pragma region Core
 	_float44 World{};
@@ -93,13 +156,28 @@ HRESULT CRasenShuriken::Render()
 		return E_FAIL;
 	}
 
-	vColor = { 0.5f, 0.9f, 1.f, 0.7f };
+	vColor = { 0.5f, 0.9f, 1.f, m_fCoreAlpha };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColorFx)))
+	if (m_eState == State_Dissolve or m_eState == State_Charge)
+	{
+		iDissolve = 1;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pNoiseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_NoiseTexture")))
+		{
+			return E_FAIL;
+		}
+	}
+
+	if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColorFx + iDissolve)))
 	{
 		return E_FAIL;
 	}
@@ -139,7 +217,7 @@ HRESULT CRasenShuriken::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
+	if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect + iDissolve)))
 	{
 		return E_FAIL;
 	}
@@ -149,6 +227,11 @@ HRESULT CRasenShuriken::Render()
 		return E_FAIL;
 	}
 #pragma endregion
+
+	if (m_eState == State_Dissolve)
+	{
+		return S_OK;
+	}
 
 	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
 	{
@@ -162,7 +245,7 @@ HRESULT CRasenShuriken::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColorFx)))
+	if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColorFx + iDissolve)))
 	{
 		return E_FAIL;
 	}
@@ -186,7 +269,7 @@ HRESULT CRasenShuriken::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
+	if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect + iDissolve)))
 	{
 		return E_FAIL;
 	}
@@ -210,7 +293,7 @@ HRESULT CRasenShuriken::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
+	if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect + iDissolve)))
 	{
 		return E_FAIL;
 	}
@@ -225,10 +308,10 @@ HRESULT CRasenShuriken::Render()
 	return S_OK;
 }
 
-void CRasenShuriken::Shoot(_float3 vTargetPos)
+void CRasenShuriken::Shoot()
 {
 	m_eState = State_Shoot;
-	m_vTargetPos = vTargetPos;
+	m_fTimer = {};
 }
 
 HRESULT CRasenShuriken::Add_Components()
@@ -284,6 +367,11 @@ HRESULT CRasenShuriken::Add_Components()
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gradient_Wave_03"), TEXT("Com_WingTrailMaskTexture"), reinterpret_cast<CComponent**>(&m_pWingTrailMaskTextureCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Line_05"), TEXT("Com_NoiseTexture"), reinterpret_cast<CComponent**>(&m_pNoiseTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -355,5 +443,6 @@ void CRasenShuriken::Free()
 	Safe_Release(m_pCircleMaskTextureCom);
 	Safe_Release(m_pCoreMaskTextureCom);
 	Safe_Release(m_pWingTrailMaskTextureCom);
+	Safe_Release(m_pNoiseTextureCom);
 	Safe_Release(m_pColliderCom);
 }

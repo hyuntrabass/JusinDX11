@@ -39,7 +39,7 @@ const _uint& CUI_Manager::Get_PageIndex() const
 
 const _uint CUI_Manager::Get_sizeofButtons() const
 {
-	return m_Buttons.size();
+	return static_cast<_uint>(m_Buttons.size());
 }
 
 HRESULT CUI_Manager::Init()
@@ -59,7 +59,7 @@ void CUI_Manager::Tick(_float fTimeDelta)
 
 	m_Buttons[m_iButtonIndex]->Activate_Button(false);
 
-	_uint iButtons_size = m_Buttons.size();
+	_uint iButtons_size = static_cast<_uint>(m_Buttons.size());
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CREATECHARACTER and m_iPageIndex != 0)
 	{
 		iButtons_size--;
@@ -120,7 +120,7 @@ void CUI_Manager::Tick(_float fTimeDelta)
 		{
 			if (m_iButtonIndex == 0)
 			{
-				m_iScroll = m_iNumButtons - m_Buttons.size();
+				m_iScroll = m_iNumButtons - static_cast<_uint>(m_Buttons.size());
 				m_iButtonIndex = iButtons_size - 1;
 			}
 			else

@@ -246,7 +246,7 @@ private:
 	void Artificial_Intelligence(_float fTimeDelta);
 
 	void Init_State();
-	void TIck_State(_float fTimeDelta);
+	void Tick_State(_float fTimeDelta);
 
 public:
 	static CPain* Create(_dev pDevice, _context pContext);

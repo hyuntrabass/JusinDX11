@@ -41,7 +41,7 @@ void CPain::Tick(_float fTimeDelta)
 	Artificial_Intelligence(fTimeDelta);
 
 	Init_State();
-	TIck_State(fTimeDelta);
+	Tick_State(fTimeDelta);
 
 	//if (m_pModelCom->IsAnimationFinished(m_AnimationDesc.iAnimIndex))
 	//{
@@ -136,6 +136,11 @@ void CPain::Set_Damage(_int iDamage)
 	m_iHP -= iDamage;
 
 	m_eState = State_Beaten;
+	m_AnimationDesc.iAnimIndex = Anim_Beaten_Right;
+	m_AnimationDesc.bSkipInterpolation = true;
+	m_AnimationDesc.bRestartAnimation = true;
+	m_pModelCom->Set_Animation(m_AnimationDesc);
+	m_AnimationDesc.bRestartAnimation = false;
 }
 
 HRESULT CPain::Add_Components()
@@ -247,6 +252,8 @@ void CPain::Init_State()
 		case Client::CPain::State_Sommon:
 			break;
 		case Client::CPain::State_Beaten:
+			m_AnimationDesc.iAnimIndex = Anim_Beaten_Right;
+			m_AnimationDesc.bSkipInterpolation = true;
 			break;
 		case Client::CPain::State_Die:
 			break;
@@ -258,7 +265,7 @@ void CPain::Init_State()
 	}
 }
 
-void CPain::TIck_State(_float fTimeDelta)
+void CPain::Tick_State(_float fTimeDelta)
 {
 	//m_AnimationDesc = {};
 	switch (m_eState)
@@ -303,6 +310,10 @@ void CPain::TIck_State(_float fTimeDelta)
 	case Client::CPain::State_Sommon:
 		break;
 	case Client::CPain::State_Beaten:
+		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Right))
+		{
+			m_eState = State_Idle;
+		}
 		break;
 	case Client::CPain::State_Die:
 		break;

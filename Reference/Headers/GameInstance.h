@@ -102,8 +102,10 @@ public: // Frustum
 public: // Collision
 	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false);
 	void Delete_CollisionObject(class CGameObject* pObject, _bool IsPlayer = false);
-	_bool Attack_Monster(class CCollider* pCollider, _uint iDamage);
-	_bool Attack_Player(class CCollider* pCollider, _uint iDamage);
+	void Attack_Monster(class CCollider* pCollider, _uint iDamage);
+	_bool CheckCollision_Monster(class CCollider* pCollider);
+	void Attack_Player(class CCollider* pCollider, _uint iDamage);
+	_bool CheckCollision_Player(class CCollider* pCollider);
 
 public: // PhysX
 	void Init_PhysX_Character(class CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc = nullptr);

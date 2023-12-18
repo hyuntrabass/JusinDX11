@@ -191,6 +191,11 @@ HRESULT CLoader::Load_Logo()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Line_05"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_Line_05_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Line_06"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_Line_06_M.dds")))))
 	{
 		return E_FAIL;
@@ -524,11 +529,6 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Particle"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Test/Tile.dds")))))
-	{
-		return E_FAIL;
-	}
-
 #pragma endregion
 
 	m_strLoadingText = L"Tutorial : Loading Model";
@@ -603,7 +603,7 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Instancing_Point"), CVIBuffer_Instancing_Point::Create(m_pDevice, m_pContext, 300))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Instancing_Point"), CVIBuffer_Instancing_Point::Create(m_pDevice, m_pContext, 100))))
 
 	{
 		return E_FAIL;
@@ -683,7 +683,7 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Effect"), CEffect::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Effect"), CEffect_Hit::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -854,6 +854,11 @@ HRESULT CLoader::Load_CloudStage()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_MiniBomb"), CMiniBomb::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Effect_Warp"), CEffect_Warp::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

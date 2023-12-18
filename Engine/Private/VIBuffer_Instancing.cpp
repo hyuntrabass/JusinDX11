@@ -40,8 +40,15 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta)
 
 		if (pVertex->vLifeTime.x > pVertex->vLifeTime.y)
 		{
-			pVertex->vLifeTime.x = 0.f;
-			pVertex->vPos = pVertex->vOriginPos;
+			if (m_isLoop)
+			{
+				pVertex->vLifeTime.x = 0.f;
+				pVertex->vPos = pVertex->vOriginPos;
+			}
+			else
+			{
+				pVertex->vPos = _float4(0.f, -100.f, 0.f, 1.f);
+			}
 		}
 	}
 

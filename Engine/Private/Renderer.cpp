@@ -46,7 +46,7 @@ HRESULT CRenderer::Init_Prototype()
 	//{
 	//	return E_FAIL;
 	//}
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION * 0.5f, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION / 2, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
 	{
 		return E_FAIL;
 	}
@@ -229,7 +229,7 @@ HRESULT CRenderer::Ready_ShadowDSV()
 	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 
 	TextureDesc.Width = D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION;
-	TextureDesc.Height = D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION * 0.5f;
+	TextureDesc.Height = D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION / 2;
 	TextureDesc.MipLevels = 1;
 	TextureDesc.ArraySize = 1;
 	TextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;

@@ -5,10 +5,12 @@ matrix g_BoneMatrices[256];
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
+texture2D g_NoiseTexture;
 
 vector g_vCamPos;
 float g_fCamFar;
 float g_fLightFar;
+float g_fDissolveRatio;
 
 bool g_HasNorTex;
 bool g_bSelected = false;
@@ -172,6 +174,41 @@ vector PS_Main_Shadow(PS_IN Input) : SV_Target0
     return Output;
 }
 
+PS_OUT_DEFERRED PS_Main_Dissolve(PS_IN Input)
+{
+    PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + vector(0.5f, 0.f, 0.f, 0.f) * g_bSelected;
+    float fDissolve = g_NoiseTexture.Sample(LinearSampler, Input.vTex).r;
+    
+    if (g_fDissolveRatio > fDissolve)
+    {
+        discard;
+    }
+    
+    float3 vNormal;
+    if (g_HasNorTex)
+    {
+        vector vNormalDesc = g_NormalTexture.Sample(LinearSampler, Input.vTex);
+    
+        vNormal = vNormalDesc.xyz * 2.f - 1.f;
+    
+        float3x3 WorldMatrix = float3x3(Input.vTangent, Input.vBinormal, Input.vNor.xyz);
+    
+        vNormal = mul(normalize(vNormal), WorldMatrix);
+    }
+    else
+    {
+        vNormal = Input.vNor.xyz;
+    }
+    
+    Output.vDiffuse = vMtrlDiffuse;
+    Output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
+    
+    return Output;
+}
+
 technique11 DefaultTechniqueShader_VtxNorTex
 {
     pass Default
@@ -211,5 +248,18 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Shadow();
+    }
+
+    pass Dissolve
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Dissolve();
     }
 };

@@ -5,6 +5,7 @@
 #include "Kunai.h"
 #include "FootEffect.h"
 #include "Trigger_Manager.h"
+#include "RasenShuriken.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
@@ -174,7 +175,14 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 	}
 	if (m_pSkillEffect)
 	{
-		m_pSkillEffect->Late_Tick(fTimeDelta);
+		if (m_pSkillEffect->isDead())
+		{
+			Safe_Release(m_pSkillEffect);
+		}
+		else
+		{
+			m_pSkillEffect->Late_Tick(fTimeDelta);
+		}
 	}
 }
 
@@ -539,6 +547,17 @@ void CPlayer::Init_State()
 		case Client::Player_State::RasenShuriken:
 			m_Animation.iAnimIndex = Ninjutsu_TrueRasenShuriken;
 			m_pTransformCom->Reset_Gravity();
+			m_fTimer = {};
+			m_bAttacked = false;
+
+			if (m_pTransformCom->Is_OnGround())
+			{
+				m_pTransformCom->LookAt_Dir(XMVectorSetY(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 0.f));
+			}
+			else
+			{
+				m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()));
+			}
 
 			Safe_Release(m_pSkillEffect);
 			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Rasenshuriken"), &m_vRightHandPos);
@@ -792,6 +811,19 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		break;
 	case Client::Player_State::RasenShuriken:
+		if (not m_bAttacked and m_fTimer > 3.3f)
+		{
+			reinterpret_cast<CRasenShuriken*>(m_pSkillEffect)->Shoot();
+
+			m_bAttacked = true;
+		}
+		m_fTimer += fTimeDelta;
+
+		if (m_bAttacked)
+		{
+			m_pTransformCom->Gravity(fTimeDelta);
+		}
+
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(m_Animation.iAnimIndex))
 		{
 			m_eState = Player_State::Idle;

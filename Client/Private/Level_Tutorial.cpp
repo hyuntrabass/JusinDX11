@@ -40,7 +40,7 @@ HRESULT CLevel_Tutorial::Init()
 	}
 
 	m_pGameInstance->StopAll();
-	m_pGameInstance->PlayBGM(TEXT("y2mate.com - Naruto Shippuden OST 1  Track 02  Douten  Heaven Shaking Event "), 0.5f);
+	m_pGameInstance->PlayBGM(TEXT("Forest_Ambience"), 0.5f);
 
 	return S_OK;
 }

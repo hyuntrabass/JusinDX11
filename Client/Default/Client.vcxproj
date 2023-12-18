@@ -173,8 +173,9 @@
     <ClInclude Include="..\public\Camera_Main.h" />
     <ClInclude Include="..\public\Chidori.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
-    <ClInclude Include="..\public\Effect.h" />
+    <ClInclude Include="..\public\Effect_Hit.h" />
     <ClInclude Include="..\public\CommonTrail.h" />
+    <ClInclude Include="..\public\Effect_Warp.h" />
     <ClInclude Include="..\public\FootEffect.h" />
     <ClInclude Include="..\public\HpBar_Player.h" />
     <ClInclude Include="..\Public\HpBar_Player_Base.h" />
@@ -221,8 +222,9 @@
     <ClCompile Include="..\private\Camera_Debug.cpp" />
     <ClCompile Include="..\private\Camera_Main.cpp" />
     <ClCompile Include="..\private\Chidori.cpp" />
-    <ClCompile Include="..\private\Effect.cpp" />
+    <ClCompile Include="..\private\Effect_Hit.cpp" />
     <ClCompile Include="..\private\CommonTrail.cpp" />
+    <ClCompile Include="..\private\Effect_Warp.cpp" />
     <ClCompile Include="..\private\FootEffect.cpp" />
     <ClCompile Include="..\private\HpBar_Player.cpp" />
     <ClCompile Include="..\Private\HpBar_Player_Base.cpp" />

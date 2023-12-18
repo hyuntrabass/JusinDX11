@@ -103,6 +103,8 @@ private:
 	CCollider* m_pCollider_Hit{ nullptr };
 	CTransform* m_pPlayerTransform{ nullptr };
 
+	CGameObject* m_pEffect{ nullptr };
+
 private:
 	_float3 m_vAppearPoints[5]{};
 
@@ -130,7 +132,7 @@ private:
 	void Artificial_Intelligence(_float fTimeDelta);
 
 	void Init_State();
-	void TIck_State(_float fTimeDelta);
+	void Tick_State(_float fTimeDelta);
 
 public:
 	static CKurama* Create(_dev pDevice, _context pContext);

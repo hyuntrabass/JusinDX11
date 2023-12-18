@@ -12,7 +12,8 @@ public:
 		_float2 vSpeedRange{};
 		_float2 vLifeTime{};
 		_float2 vScaleRange{};
-		//_float3 vDir{};
+		_float3 vMinDir{}, vMaxDir{};
+		_bool isLoop{};
 	};
 protected:
 	CVIBuffer_Instancing(_dev pDevice, _context pContext);
@@ -34,6 +35,9 @@ protected:
 	_uint m_iNumInstances{};
 	_uint m_iIndexCountPerInstance{};
 	_uint m_iInstanceStride{};
+
+
+	_bool m_isLoop{};
 
 public:
 	virtual CComponent* Clone(void* pArg) = 0;

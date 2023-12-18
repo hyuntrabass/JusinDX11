@@ -1,15 +1,15 @@
 #pragma once
 #include "Client_Define.h"
-#include "BlendObject.h"
+#include "GameObject.h"
 
 BEGIN(Client)
 
-class CEffect final : public CBlendObject
+class CEffect_Hit final : public CGameObject
 {
 private:
-	CEffect(_dev pDevice, _context pContext);
-	CEffect(const CEffect& rhs);
-	virtual ~CEffect() = default;
+	CEffect_Hit(_dev pDevice, _context pContext);
+	CEffect_Hit(const CEffect_Hit& rhs);
+	virtual ~CEffect_Hit() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -21,7 +21,6 @@ public:
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	CTexture* m_pTextureCom{ nullptr };
 	CTexture* m_pMaskTextureCom{ nullptr };
 	CVIBuffer_Instancing_Point* m_pVIBufferCom{ nullptr };
 
@@ -33,7 +32,7 @@ private:
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CEffect* Create(_dev pDevice, _context pContext);
+	static CEffect_Hit* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

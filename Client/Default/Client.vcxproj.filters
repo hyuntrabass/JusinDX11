@@ -157,6 +157,9 @@
     <Filter Include="02.GameObjects\07.Effects\Particle">
       <UniqueIdentifier>{fa3c4f78-9182-4f77-bdec-492b69629c87}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\05. Boss\Kurama\Effect">
+      <UniqueIdentifier>{3c808e35-34d2-4a19-9f9b-beb8e7757d93}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -297,8 +300,11 @@
     <ClInclude Include="..\public\CommonTrail.h">
       <Filter>02.GameObjects\07.Effects\Trail</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Effect.h">
+    <ClInclude Include="..\public\Effect_Hit.h">
       <Filter>02.GameObjects\07.Effects\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Effect_Warp.h">
+      <Filter>02.GameObjects\05. Boss\Kurama\Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -438,8 +444,11 @@
     <ClCompile Include="..\private\CommonTrail.cpp">
       <Filter>02.GameObjects\07.Effects\Trail</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Effect.cpp">
+    <ClCompile Include="..\private\Effect_Hit.cpp">
       <Filter>02.GameObjects\07.Effects\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Effect_Warp.cpp">
+      <Filter>02.GameObjects\05. Boss\Kurama\Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

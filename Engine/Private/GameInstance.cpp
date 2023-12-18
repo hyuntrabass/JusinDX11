@@ -665,26 +665,45 @@ void CGameInstance::Delete_CollisionObject(CGameObject* pObject, _bool IsPlayer)
 	m_pCollision_Manager->Delete_CollisionObject(pObject, IsPlayer);
 }
 
-_bool CGameInstance::Attack_Monster(CCollider* pCollider, _uint iDamage)
+void CGameInstance::Attack_Monster(CCollider* pCollider, _uint iDamage)
 {
 	if (!m_pCollision_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
 	}
 
-	return m_pCollision_Manager->Attack_Monster(pCollider, iDamage);
+	m_pCollision_Manager->Attack_Monster(pCollider, iDamage);
 }
 
-_bool CGameInstance::Attack_Player(CCollider* pCollider, _uint iDamage)
+_bool CGameInstance::CheckCollision_Monster(CCollider* pCollider)
 {
 	if (!m_pCollision_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
 	}
 
-	return m_pCollision_Manager->Attack_Player(pCollider, iDamage);
+	return m_pCollision_Manager->CheckCollision_Monster(pCollider);
 }
 
+void CGameInstance::Attack_Player(CCollider* pCollider, _uint iDamage)
+{
+	if (!m_pCollision_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
+	}
+
+	m_pCollision_Manager->Attack_Player(pCollider, iDamage);
+}
+
+_bool CGameInstance::CheckCollision_Player(CCollider* pCollider)
+{
+	if (!m_pCollision_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pCollision_Manager is NULL");
+	}
+
+	return m_pCollision_Manager->CheckCollision_Player(pCollider);
+}
 void CGameInstance::Init_PhysX_Character(CTransform* pTransform, CollisionGroup eGroup, PxCapsuleControllerDesc* pDesc)
 {
 	if (!m_pPhysX_Manager)
