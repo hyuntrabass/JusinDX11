@@ -72,6 +72,8 @@ void CRasenShuriken::Tick(_float fTimeDelta)
 			{
 				m_eState = State_Explode;
 			}
+
+			m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&m_vTargetPos), 1.f));
 		}
 		else
 		{
@@ -80,6 +82,7 @@ void CRasenShuriken::Tick(_float fTimeDelta)
 			{
 				m_eState = State_Explode;
 			}
+			m_pTransformCom->LookAt_Dir(XMLoadFloat3(&m_vTargetPos));
 		}
 
 		if (m_pGameInstance->CheckCollision_Monster(m_pColliderCom))
@@ -88,6 +91,7 @@ void CRasenShuriken::Tick(_float fTimeDelta)
 		}
 		break;
 	case Client::CRasenShuriken::State_Explode:
+		m_pTransformCom->LookAt_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
 		m_fCoreScale = Lerp(0.5f, 10.5f, m_fScaleRatio);
 		m_fCoreAlpha = Lerp(0.7f, 0.2f, m_fTimer);
 		m_fScaleRatio += fTimeDelta;
@@ -120,7 +124,7 @@ void CRasenShuriken::Tick(_float fTimeDelta)
 	m_fTimer += fTimeDelta;
 
 
-	m_vUVTransform.x += fTimeDelta;
+	m_vUVTransform.x += fTimeDelta * 4;
 	if (m_vUVTransform.x > 2.f)
 	{
 		m_vUVTransform.x = 1.f;
@@ -145,6 +149,20 @@ HRESULT CRasenShuriken::Render()
 {
 	_float4 vColor{};
 	_uint iDissolve{};
+	if (m_eState == State_Dissolve or m_eState == State_Charge)
+	{
+		iDissolve = 1;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof(_float))))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pNoiseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_NoiseTexture")))
+		{
+			return E_FAIL;
+		}
+	}
 
 #pragma region Core
 	_float44 World{};
@@ -162,21 +180,6 @@ HRESULT CRasenShuriken::Render()
 		return E_FAIL;
 	}
 
-	if (m_eState == State_Dissolve or m_eState == State_Charge)
-	{
-		iDissolve = 1;
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof(_float))))
-		{
-			return E_FAIL;
-		}
-
-		if (FAILED(m_pNoiseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_NoiseTexture")))
-		{
-			return E_FAIL;
-		}
-	}
-
 	if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColorFx + iDissolve)))
 	{
 		return E_FAIL;
@@ -188,7 +191,7 @@ HRESULT CRasenShuriken::Render()
 	}
 #pragma endregion
 
-	
+
 	XMStoreFloat4x4(&World, XMMatrixScaling(m_fCoreScale, m_fCoreScale, m_fCoreScale) * m_pTransformCom->Get_World_Matrix());
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", World)))
@@ -282,7 +285,7 @@ HRESULT CRasenShuriken::Render()
 
 
 #pragma region Circle
-	vColor = { 0.4f, 0.7f, 1.f, 0.3f };
+	vColor = { 0.5f, 0.9f, 1.f, 1.f };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
 		return E_FAIL;
@@ -302,8 +305,23 @@ HRESULT CRasenShuriken::Render()
 	{
 		return E_FAIL;
 	}
-#pragma endregion
 
+	vColor = { 0.f, 0.6f, 1.f, 0.1f };
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Begin(StaticPass_SingleColorFx + iDissolve)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pModelCom[4]->Render(0)))
+	{
+		return E_FAIL;
+	}
+#pragma endregion
 
 	return S_OK;
 }

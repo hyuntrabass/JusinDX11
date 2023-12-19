@@ -991,10 +991,10 @@ void CGameInstance::Clear_Managers()
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pFont_Manager);
-	Safe_Release(m_pPhysX_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pRenderTarget_Manager);
 	Safe_Release(m_pSound_Manager);
+	Safe_Release(m_pPhysX_Manager);
 }
 
 void CGameInstance::Release_Engine()

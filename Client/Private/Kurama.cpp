@@ -51,6 +51,7 @@ HRESULT CKurama::Init(void* pArg)
 	for (size_t i = 0; i < 10; i++)
 	{
 		m_pFingerLights[i] = dynamic_cast<CCommonTrail*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_CommonTrail"), &TrailDesc));
+		m_pFingerLights[i]->Off();
 	}
 
 	m_iHP = 500;
@@ -176,9 +177,7 @@ void CKurama::Set_Damage(_int iDamage)
 {
 	m_iHP -= iDamage;
 
-	if (iDamage > 15 or
-		m_eState != State_MiniBomb and
-		m_eState != State_ComboAttack)
+	if (iDamage > m_iSuperArmor)
 	{
 		m_eState = State_Beaten;
 		m_AnimationDesc = {};
@@ -187,6 +186,8 @@ void CKurama::Set_Damage(_int iDamage)
 		m_AnimationDesc.bRestartAnimation = true;
 		m_pModelCom->Set_Animation(m_AnimationDesc);
 		m_AnimationDesc.bRestartAnimation = false;
+		
+		m_iSuperArmor = {};
 	}
 }
 
@@ -287,7 +288,7 @@ void CKurama::Artificial_Intelligence(_float fTimeDelta)
 	{
 		if (fDistToPlayer < 13.f)
 		{
-			m_eState = State_ComboAttack;
+			m_eState = State_ComboAttack2;
 		}
 		else
 		{
@@ -307,15 +308,16 @@ void CKurama::Init_State()
 		case Client::CKurama::State_Initiation:
 			m_AnimationDesc.iAnimIndex = Anim_etc_Appearance;
 			m_AnimationDesc.bSkipInterpolation = true;
-
-			//m_pModelCom->Set_Animation(m_AnimationDesc);
 			break;
 		case Client::CKurama::State_Idle:
 			m_AnimationDesc.iAnimIndex = Anim_Idle_Loop;
 			m_AnimationDesc.isLoop = true;
-			//m_AnimationDesc.bSkipInterpolation = true;
-
-			//m_pModelCom->Set_Animation(m_AnimationDesc);
+			m_fTimer = {};
+			m_iSuperArmor = {};
+			for (size_t i = 0; i < 10; i++)
+			{
+				m_pFingerLights[i]->Off();
+			}
 			break;
 		case Client::CKurama::State_LookAt:
 			XMStoreFloat3(&m_vOriginalLook, m_pTransformCom->Get_State(State::Look));
@@ -324,19 +326,44 @@ void CKurama::Init_State()
 		case Client::CKurama::State_Attack:
 			break;
 		case Client::CKurama::State_ComboAttack:
+		{
 			m_AnimationDesc.iAnimIndex = Anim_Attack_MowDown_Right;
 			m_AnimationDesc.fAnimSpeedRatio = 3.5f;
 			m_AnimationDesc.bSkipInterpolation = true;
 			m_AnimationDesc.fDurationRatio = 0.5f;
-			//m_pModelCom->Set_Animation(m_AnimationDesc);
 			_vector vPlayerPosForLookAt = XMVectorSetY(m_pPlayerTransform->Get_State(State::Pos), m_pTransformCom->Get_State(State::Pos).m128_f32[1]);
 			m_pTransformCom->LookAt(vPlayerPosForLookAt);
+
+			m_iSuperArmor = 50;
+			for (size_t i = 0; i < 10; i++)
+			{
+				m_pFingerLights[i]->On();
+			}
 			break;
+		}
+		case Client::CKurama::State_ComboAttack2:
+		{
+			m_AnimationDesc.iAnimIndex = Anim_Attack_SwingingDownScratch_Right;
+			m_AnimationDesc.fAnimSpeedRatio = 3.5f;
+			m_AnimationDesc.bSkipInterpolation = true;
+			m_AnimationDesc.fDurationRatio = 0.5f;
+			_vector vPlayerPosForLookAt = XMVectorSetY(m_pPlayerTransform->Get_State(State::Pos), m_pTransformCom->Get_State(State::Pos).m128_f32[1]);
+			m_pTransformCom->LookAt(vPlayerPosForLookAt);
+			
+			m_iSuperArmor = 50;
+			for (size_t i = 0; i < 10; i++)
+			{
+				m_pFingerLights[i]->On();
+			}
+			break;
+		}
 		case Client::CKurama::State_MiniBomb:
 			m_fTimer = {};
 
 			m_AnimationDesc = {};
 			m_AnimationDesc.iAnimIndex = Anim_Ninjutsu_ConsecutiveTailedBeastBomb;
+			
+			m_iSuperArmor = 15;
 			break;
 		case Client::CKurama::State_Roar:
 			break;
@@ -357,14 +384,19 @@ void CKurama::Init_State()
 				LightDesc.vDiffuse = _float4(0.f, 1.f, 0.7f, 1.f);
 				LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 
+				m_pGameInstance->Delete_Light(LEVEL_CLOUD, TEXT("Light_Kurama_Warp"));
 				m_pGameInstance->Add_Light(LEVEL_CLOUD, TEXT("Light_Kurama_Warp"), LightDesc);
 			}
 
-			//m_pModelCom->Set_Animation(m_AnimationDesc);
+			m_iSuperArmor = 100;
 			break;
 		case Client::CKurama::State_Beaten:
 			m_AnimationDesc.iAnimIndex = Anim_Beaten_Type01;
 			m_AnimationDesc.bSkipInterpolation = true;
+			for (size_t i = 0; i < 10; i++)
+			{
+				m_pFingerLights[i]->Off();
+			}
 			break;
 		case Client::CKurama::State_Die:
 			break;
@@ -460,6 +492,19 @@ void CKurama::Tick_State(_float fTimeDelta)
 
 		m_fTimer = {};
 		break;
+	case Client::CKurama::State_ComboAttack2:
+		if (m_pModelCom->IsAnimationFinished(Anim_Attack_SwingingDownScratch_Right))
+		{
+			m_AnimationDesc.iAnimIndex = Anim_Attack_UppercutScratch_Left;
+			m_AnimationDesc.fDurationRatio = 1.f;
+		}
+		if (m_pModelCom->IsAnimationFinished(Anim_Attack_UppercutScratch_Left))
+		{
+			m_eState = State_Idle;
+		}
+
+		m_fTimer = {};
+		break;
 	case Client::CKurama::State_MiniBomb:
 		//m_pModelCom->Set_Animation(m_AnimationDesc);
 
@@ -486,7 +531,6 @@ void CKurama::Tick_State(_float fTimeDelta)
 
 		if (m_pModelCom->IsAnimationFinished(Anim_Ninjutsu_ConsecutiveTailedBeastBomb))
 		{
-			m_fTimer = {};
 			m_eState = State_Idle;
 		}
 
@@ -505,8 +549,14 @@ void CKurama::Tick_State(_float fTimeDelta)
 
 		if (m_fTimer > 4.f and m_pModelCom->Get_CurrentAnimationIndex() == Anim_HandSeal_RecoveryChakra_Loop)
 		{
-			m_AnimationDesc = {};
+			for (size_t i = 0; i < 10; i++)
+			{
+				m_pFingerLights[i]->On();
+			}
+
 			m_pTransformCom->Set_Position(m_vAppearPoints[++m_iPosIndex]);
+
+			m_AnimationDesc = {};
 			m_AnimationDesc.iAnimIndex = Anim_HandSeal_RecoveryChakra_End;
 
 			m_pGameInstance->Delete_Light(LEVEL_CLOUD, TEXT("Light_Kurama_Warp"));

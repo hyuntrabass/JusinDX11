@@ -71,6 +71,7 @@ private:
 		State_LookAt,
 		State_Attack,
 		State_ComboAttack,
+		State_ComboAttack2,
 		State_Bomb,
 		State_MiniBomb,
 		State_Blast,
@@ -117,6 +118,7 @@ private:
 
 	_uint m_iPosIndex{};
 	_bool m_hasInitiated{};
+	_uint m_iSuperArmor{};
 
 	State_Char m_eState{};
 	State_Char m_ePrevState{};

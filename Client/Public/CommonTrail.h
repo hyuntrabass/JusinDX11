@@ -19,6 +19,10 @@ private:
 	virtual ~CCommonTrail() = default;
 
 public:
+	void On();
+	void Off();
+
+public:
 	HRESULT Init_Prototype() override;
 	HRESULT Init(void* pArg) override;
 	void Tick(_float3 vPos);
@@ -32,6 +36,8 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 
 private:
+	_bool m_bNoRender{};
+
 	list<_float3> m_TrailPosList{};
 	TRAIL_DESC m_Info{};
 	_float3* m_PosArray{};

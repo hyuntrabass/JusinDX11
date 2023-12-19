@@ -10,6 +10,16 @@ CCommonTrail::CCommonTrail(const CCommonTrail& rhs)
 {
 }
 
+void CCommonTrail::On()
+{
+	m_bNoRender = false;
+}
+
+void CCommonTrail::Off()
+{
+	m_bNoRender = true;
+}
+
 HRESULT CCommonTrail::Init_Prototype()
 {
 	return S_OK;
@@ -55,6 +65,10 @@ void CCommonTrail::Tick(_float3 vPos)
 
 void CCommonTrail::Late_Tick(_float fTimeDelta)
 {
+	if (m_bNoRender)
+	{
+		return;
+	}
 	for (size_t i = 0; i < m_Info.iNumVertices; i++)
 	{
 		XMStoreFloat3(&m_PosArray[i], m_pTransformCom->Get_State(State::Pos));

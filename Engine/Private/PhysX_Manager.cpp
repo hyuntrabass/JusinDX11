@@ -8,9 +8,11 @@
 CPhysX_Manager::CPhysX_Manager(_dev pDevice, _context pContext)
 	: m_pDevice(pDevice)
 	, m_pContext(pContext)
+	, m_pGameInstance(CGameInstance::Get_Instance())
 {
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
+	Safe_AddRef(m_pGameInstance);
 }
 
 //class TriggerCallback : public PxSimulationEventCallback
@@ -93,9 +95,8 @@ HRESULT CPhysX_Manager::Init()
 
 	//m_pPvd = PxCreatePvd(*m_pFoundation);
 	//PxPvdTransport* pTransport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
-	PxTolerancesScale Scale{};
 
-	m_pPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_pFoundation, Scale, true);
+	m_pPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_pFoundation, PxTolerancesScale(), true);
 	if (!m_pPhysics)
 	{
 		return E_FAIL;
@@ -103,7 +104,9 @@ HRESULT CPhysX_Manager::Init()
 
 	PxSceneDesc SceneDesc(m_pPhysics->getTolerancesScale());
 	SceneDesc.gravity = PxVec3(0.f, -9.81f, 0.f);
-	m_pDispatcher = PxDefaultCpuDispatcherCreate(1);
+	const PxU32 numCores = PxThread::getNbPhysicalCores();
+	m_pDispatcher = PxDefaultCpuDispatcherCreate(numCores == 0 ? 0 : numCores - 1);
+	//m_pDispatcher = PxDefaultCpuDispatcherCreate(1);
 	SceneDesc.cpuDispatcher = m_pDispatcher;
 	SceneDesc.filterShader = PxDefaultSimulationFilterShader;
 	//SceneDesc.simulationEventCallback = &g_callback;
@@ -136,9 +139,6 @@ HRESULT CPhysX_Manager::Init()
 	}
 #endif
 #endif // _DEBUG
-
-	m_pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(m_pGameInstance);
 
 	return S_OK;
 }
@@ -381,12 +381,12 @@ CPhysX_Manager* CPhysX_Manager::Create(_dev pDevice, _context pContext)
 
 void CPhysX_Manager::Free()
 {
-	m_pMaterial->release();
-	m_pDispatcher->release();
-	m_pControllerManager->release();
-	m_pScene->release();
-	m_pPhysics->release();
-	m_pFoundation->release();
+	PX_RELEASE(m_pControllerManager);
+	PX_RELEASE(m_pScene);
+	PX_RELEASE(m_pDispatcher);
+	PX_RELEASE(m_pMaterial);
+	PX_RELEASE(m_pPhysics);
+	PX_RELEASE(m_pFoundation);
 
 #ifdef _DEBUG
 #ifndef _MapEditor

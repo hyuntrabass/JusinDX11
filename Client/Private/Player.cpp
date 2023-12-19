@@ -550,14 +550,7 @@ void CPlayer::Init_State()
 			m_fTimer = {};
 			m_bAttacked = false;
 
-			if (m_pTransformCom->Is_OnGround())
-			{
-				m_pTransformCom->LookAt_Dir(XMVectorSetY(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 0.f));
-			}
-			else
-			{
-				m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()));
-			}
+			m_pTransformCom->LookAt_Dir(XMVectorSetY(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 0.f));
 
 			Safe_Release(m_pSkillEffect);
 			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Rasenshuriken"), &m_vRightHandPos);
@@ -795,8 +788,10 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			{
 				m_pGameInstance->Attack_Monster(m_pCollider_Att, 10);
 				m_bAttacked = true;
-				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"), &m_vRightHandPos);
-
+				if (m_pGameInstance->CheckCollision_Monster(m_pCollider_Att))
+				{
+					m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"), &m_vRightHandPos);
+				}
 			}
 			else
 			{

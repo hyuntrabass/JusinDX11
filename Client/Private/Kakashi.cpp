@@ -22,7 +22,7 @@ HRESULT CKakashi::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pTransformCom->Set_State(State::Pos, XMVectorSet(11.4f, 31.f, 118.8f, 1.f));
+	m_pTransformCom->Set_State(State::Pos, XMVectorSet(11.4f, 30.8f, 118.8f, 1.f));
 	m_pTransformCom->LookAt_Dir(XMVectorSet(0.96f, 0.f, 0.27785f, 0.f));
 
 	ANIM_DESC Anim{};
