@@ -1,4 +1,5 @@
 #include "HpBar_Player.h"
+#include "UI_Manager.h"
 
 CHpBar_Player::CHpBar_Player(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -41,6 +42,33 @@ void CHpBar_Player::Tick(_float fTimeDelta)
 
 void CHpBar_Player::Late_Tick(_float fTimeDelta)
 {
+	_float fHPRatio{ CUI_Manager::Get_Instance()->Get_HPRatio(TEXT("Player")) };
+
+	_vector vSrcColor{ XMVectorSet(1.f, 0.f, 0.f, 1.f) }, vMiddleColor{ XMVectorSet(1.f, 1.f, 0.f, 1.f) }, vDstColor{ XMVectorSet(0.f, 1.f, 0.4f, 1.f) };
+
+	if (fHPRatio > 0.5f)
+	{
+		XMStoreFloat4(&m_vColor, XMVectorLerp(vMiddleColor, vDstColor, (fHPRatio - 0.5f) * 2.f));
+	}
+	else
+	{
+		XMStoreFloat4(&m_vColor, XMVectorLerp(vSrcColor, vMiddleColor, fHPRatio * 2.f));
+	}
+
+	fHPRatio = fHPRatio * (0.83333f - 0.16666f) + 0.16666f;
+
+	if (fabs(m_fHPRatio - fHPRatio) > 0.01f)
+	{
+		if (m_fHPRatio < fHPRatio)
+		{
+			m_fHPRatio += 0.5f * fTimeDelta;
+		}
+		else
+		{
+			m_fHPRatio -= 0.5f * fTimeDelta;
+		}
+	}
+
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 
@@ -57,6 +85,36 @@ HRESULT CHpBar_Player::Render()
 	}
 
 	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pVIBufferCom->Render()))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof m_vColor)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fHpRatio", &m_fHPRatio, sizeof m_fHPRatio)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pMaskTextureCom[0]->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pMaskTextureCom[1]->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Begin(VTPass_HP)))
 	{
 		return E_FAIL;
 	}
@@ -86,7 +144,17 @@ HRESULT CHpBar_Player::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_HpBar"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_HpBar_Frame"), TEXT("Com_FrameTexture"), reinterpret_cast<CComponent**>(&m_pFrameTextureCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_HpBar_Mask"), TEXT("Com_MaskTexture"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom[0]))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_HpBar_Mask2"), TEXT("Com_MaskTexture2"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom[1]))))
 	{
 		return E_FAIL;
 	}
@@ -107,7 +175,7 @@ HRESULT CHpBar_Player::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	if (FAILED(m_pFrameTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
 	{
 		return E_FAIL;
 	}
@@ -145,7 +213,9 @@ void CHpBar_Player::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pTextureCom);
+	Safe_Release(m_pFrameTextureCom);
+	Safe_Release(m_pMaskTextureCom[0]);
+	Safe_Release(m_pMaskTextureCom[1]);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);

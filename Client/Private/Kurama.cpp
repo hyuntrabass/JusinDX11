@@ -177,7 +177,7 @@ void CKurama::Set_Damage(_int iDamage)
 {
 	m_iHP -= iDamage;
 
-	if (iDamage > m_iSuperArmor)
+	if (iDamage > static_cast<_int>(m_iSuperArmor))
 	{
 		m_eState = State_Beaten;
 		m_AnimationDesc = {};
@@ -375,19 +375,6 @@ void CKurama::Init_State()
 			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(State::Pos));
 			m_pEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Effect_Warp"), &vPos);
 
-			{
-				LIGHT_DESC LightDesc{};
-
-				LightDesc.eType = LIGHT_DESC::Point;
-				XMStoreFloat4(&LightDesc.vPosition, m_pTransformCom->Get_State(State::Pos));
-				LightDesc.vAttenuation = LIGHT_RANGE_65;
-				LightDesc.vDiffuse = _float4(0.f, 1.f, 0.7f, 1.f);
-				LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
-
-				m_pGameInstance->Delete_Light(LEVEL_CLOUD, TEXT("Light_Kurama_Warp"));
-				m_pGameInstance->Add_Light(LEVEL_CLOUD, TEXT("Light_Kurama_Warp"), LightDesc);
-			}
-
 			m_iSuperArmor = 100;
 			break;
 		case Client::CKurama::State_Beaten:
@@ -559,7 +546,6 @@ void CKurama::Tick_State(_float fTimeDelta)
 			m_AnimationDesc = {};
 			m_AnimationDesc.iAnimIndex = Anim_HandSeal_RecoveryChakra_End;
 
-			m_pGameInstance->Delete_Light(LEVEL_CLOUD, TEXT("Light_Kurama_Warp"));
 			Safe_Release(m_pEffect);
 		}
 

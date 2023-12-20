@@ -137,8 +137,21 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * -fRStickMove);
 	}
 
+	if (m_pGameInstance->Get_MouseMove(MouseState::wheel) > 0)
+	{
+		m_fPlayerDistance -= 1.f;
+	}
+	else if (m_pGameInstance->Get_MouseMove(MouseState::wheel) < 0)
+	{
+		m_fPlayerDistance += 1.f;
+	}
 
-	m_pTransformCom->Set_State(State::Pos, m_pPlayerTransform->Get_CenterPos() - m_pTransformCom->Get_State(State::Look) * 4.f + m_pTransformCom->Get_State(State::Up));
+	// kurama: far ~ near == 4 ~ 15
+
+	m_pTransformCom->Set_State(State::Pos, 
+							   m_pPlayerTransform->Get_CenterPos() 
+							   - (m_pTransformCom->Get_State(State::Look) * m_fPlayerDistance)
+							   + (m_pTransformCom->Get_State(State::Up) * m_fPlayerDistance * 0.25f));
 
 	PxRaycastBuffer Buffer{};
 	_vector vRayDir = m_pTransformCom->Get_State(State::Pos) - m_pPlayerTransform->Get_CenterPos();

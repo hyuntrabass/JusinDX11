@@ -166,6 +166,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\Aim.h" />
     <ClInclude Include="..\public\BackGround.h" />
     <ClInclude Include="..\public\BackGround_CreateCharacter.h" />
     <ClInclude Include="..\public\BodyPart.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="..\public\Effect_Hit.h" />
     <ClInclude Include="..\public\CommonTrail.h" />
     <ClInclude Include="..\public\Effect_Warp.h" />
+    <ClInclude Include="..\Public\Fireball.h" />
     <ClInclude Include="..\public\FootEffect.h" />
     <ClInclude Include="..\public\HpBar_Player.h" />
     <ClInclude Include="..\Public\HpBar_Player_Base.h" />
@@ -216,6 +218,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\Aim.cpp" />
     <ClCompile Include="..\private\BackGround.cpp" />
     <ClCompile Include="..\private\BackGround_CreateCharacter.cpp" />
     <ClCompile Include="..\private\BodyPart.cpp" />
@@ -225,6 +228,7 @@
     <ClCompile Include="..\private\Effect_Hit.cpp" />
     <ClCompile Include="..\private\CommonTrail.cpp" />
     <ClCompile Include="..\private\Effect_Warp.cpp" />
+    <ClCompile Include="..\Private\Fireball.cpp" />
     <ClCompile Include="..\private\FootEffect.cpp" />
     <ClCompile Include="..\private\HpBar_Player.cpp" />
     <ClCompile Include="..\Private\HpBar_Player_Base.cpp" />

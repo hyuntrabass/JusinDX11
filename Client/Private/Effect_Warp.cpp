@@ -27,6 +27,17 @@ HRESULT CEffect_Warp::Init(void* pArg)
 		m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(reinterpret_cast<_float3*>(pArg)), 1.f));
 	}
 
+	LIGHT_DESC LightDesc{};
+
+	LightDesc.eType = LIGHT_DESC::Point;
+	XMStoreFloat4(&LightDesc.vPosition, m_pTransformCom->Get_State(State::Pos));
+	LightDesc.vAttenuation = LIGHT_RANGE_65;
+	LightDesc.vDiffuse = _float4(1.f, 0.35f, 0.f, 1.f);
+	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
+
+	m_pGameInstance->Delete_Light(LEVEL_CLOUD, TEXT("Light_Kurama_Warp"));
+	m_pGameInstance->Add_Light(LEVEL_CLOUD, TEXT("Light_Kurama_Warp"), LightDesc);
+
 	return S_OK;
 }
 
@@ -109,7 +120,8 @@ HRESULT CEffect_Warp::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	_float4 vColor{ 0.f, 1.f, 0.8f, 1.f };
+	//_float4 vColor{ 0.f, 1.f, 0.8f, 1.f };
+	_float4 vColor{ 1.f, 0.35f, 0.f, 1.f };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof _float4)))
 	{
 		return E_FAIL;
@@ -156,6 +168,8 @@ CGameObject* CEffect_Warp::Clone(void* pArg)
 
 void CEffect_Warp::Free()
 {
+	m_pGameInstance->Delete_Light(LEVEL_CLOUD, TEXT("Light_Kurama_Warp"));
+
 	__super::Free();
 
 	Safe_Release(m_pRendererCom);

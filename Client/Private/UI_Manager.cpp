@@ -1,6 +1,7 @@
 #include "UI_Manager.h"
 #include "GameInstance.h"
 #include "Button_Common.h"
+#include "Aim.h"
 
 IMPLEMENT_SINGLETON(CUI_Manager)
 
@@ -15,6 +16,36 @@ void CUI_Manager::Set_ButtonState(const wstring& strButtonTag, const _bool& bSta
 	//}
 
 	//iter->second = bState;
+}
+
+void CUI_Manager::Set_HP(const wstring& strHPTag, _uint iMaxHP, _uint iCurrHP)
+{
+	_float fHPRatio{ static_cast<_float>(iCurrHP) / static_cast<_float>(iMaxHP) };
+
+	auto iter = m_HPs.find(strHPTag);
+	if (iter == m_HPs.end())
+	{
+		m_HPs.emplace(strHPTag, fHPRatio);
+	}
+	else
+	{
+		iter->second = fHPRatio;
+	}
+}
+
+void CUI_Manager::Create_Aim()
+{
+	Safe_Release(m_pAim);
+
+	m_pAim = dynamic_cast<CAim*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_UI_Aim")));
+}
+
+void CUI_Manager::Delete_Aim()
+{
+	if (m_pAim)
+	{
+		m_pAim->Set_Damage(10);
+	}
 }
 
 const _bool CUI_Manager::Is_ButtonPushed(_uint iIndex) const
@@ -40,6 +71,18 @@ const _uint& CUI_Manager::Get_PageIndex() const
 const _uint CUI_Manager::Get_sizeofButtons() const
 {
 	return static_cast<_uint>(m_Buttons.size());
+}
+
+const _float& CUI_Manager::Get_HPRatio(const wstring& strHPTag)
+{
+	auto iter = m_HPs.find(strHPTag);
+	if (iter == m_HPs.end())
+	{
+		MSG_BOX("No such HP!");
+		return -1.f;
+	}
+
+	return iter->second;
 }
 
 HRESULT CUI_Manager::Init()
@@ -141,10 +184,24 @@ void CUI_Manager::Tick(_float fTimeDelta)
 	{
 		Customization();
 	}
+
+	if (m_pAim)
+	{
+		m_pAim->Tick(fTimeDelta);
+		if (m_pAim->isDead())
+		{
+			Safe_Release(m_pAim);
+		}
+
+	}
 }
 
 void CUI_Manager::Late_Tick(_float fTimeDelta)
 {
+	if (m_pAim)
+	{
+		m_pAim->Late_Tick(fTimeDelta);
+	}
 }
 
 HRESULT CUI_Manager::Render()

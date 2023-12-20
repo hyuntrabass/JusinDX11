@@ -106,6 +106,8 @@ void CButton_Common::Tick(_float fTimeDelta)
 	}
 	else
 	{
+		m_iIndex = 0;
+
 		switch (m_iButtonType)
 		{
 		case 0:
@@ -115,7 +117,6 @@ void CButton_Common::Tick(_float fTimeDelta)
 			m_Color = Colors::Black;
 			break;
 		}
-		m_iIndex = 0;
 	}
 }
 

@@ -35,18 +35,6 @@ HRESULT CRasenShuriken::Init(void* pArg)
 	m_pTransformCom->Set_RotationPerSec(360.f);
 	m_pTransformCom->Set_Speed(50.f);
 
-	PxRaycastBuffer Buffer{};
-	if (m_pGameInstance->Raycast(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()), XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 50.f, Buffer))
-	{
-		m_vTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
-		m_hasTarget = true;
-	}
-	else
-	{
-		m_vTargetPos = _float3(reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()));
-		m_hasTarget = false;
-	}
-
 	m_fDissolveRatio = 1.f;
 
 	m_fCoreScale = 1.f;
@@ -330,6 +318,19 @@ void CRasenShuriken::Shoot()
 {
 	m_eState = State_Shoot;
 	m_fTimer = {};
+
+	PxRaycastBuffer Buffer{};
+	if (m_pGameInstance->Raycast(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()), XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 50.f, Buffer))
+	{
+		m_vTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
+		m_hasTarget = true;
+	}
+	else
+	{
+		m_vTargetPos = _float3(reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()));
+		m_hasTarget = false;
+	}
+
 }
 
 HRESULT CRasenShuriken::Add_Components()

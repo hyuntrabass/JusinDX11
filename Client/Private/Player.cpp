@@ -44,7 +44,10 @@ HRESULT CPlayer::Init(void* pArg)
 
 	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit, true);
 	CTrigger_Manager::Get_Instance()->Register_PlayerCollider(m_pCollider_Hit);
-	m_iHP = 300;
+
+	
+	m_iMaxHP = 100;
+	m_iHP = m_iMaxHP;
 
 	LIGHT_DESC LightDesc{};
 
@@ -134,6 +137,16 @@ void CPlayer::Tick(_float fTimeDelta)
 	_matrix ColliderOffset = XMMatrixTranslation(0.f, 0.8f, 0.f);
 	m_pCollider_Att->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
 	m_pCollider_Hit->Update(m_pTransformCom->Get_World_Matrix());
+
+	CUI_Manager::Get_Instance()->Set_HP(TEXT("Player"), m_iMaxHP, m_iHP);
+	if (m_pGameInstance->Key_Down(DIK_UP, InputChannel::GamePlay))
+	{
+		Set_Damage(-10);
+	}
+	if (m_pGameInstance->Key_Down(DIK_DOWN, InputChannel::GamePlay))
+	{
+		Set_Damage(10);
+	}
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -189,6 +202,20 @@ void CPlayer::Late_Tick(_float fTimeDelta)
 HRESULT CPlayer::Render()
 {
 	return S_OK;
+}
+
+void CPlayer::Set_Damage(_int iDamage)
+{
+	m_iHP -= iDamage;
+
+	if (m_iHP < 0)
+	{
+		m_iHP = 0;
+	}
+	else if (m_iHP > m_iMaxHP)
+	{
+		m_iHP = m_iMaxHP;
+	}
 }
 
 void CPlayer::Move(_float fTimeDelta)
@@ -345,6 +372,7 @@ void CPlayer::Move(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_LCONTROL))
 	{
 		m_eState = Player_State::Wire;
+		CUI_Manager::Get_Instance()->Create_Aim();
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_F))
@@ -464,6 +492,7 @@ void CPlayer::Init_State()
 			m_pGameInstance->Set_TimeRatio(1.f);
 			m_pTransformCom->Set_UpDirection(XMVectorSet(0.f, 1.f, 0.f, 0.f));
 			Safe_Release(m_pKunai);
+			CUI_Manager::Get_Instance()->Delete_Aim();
 		}
 		else if (m_ePrevState == Player_State::Chidori)
 		{
@@ -550,10 +579,10 @@ void CPlayer::Init_State()
 			m_fTimer = {};
 			m_bAttacked = false;
 
-			m_pTransformCom->LookAt_Dir(XMVectorSetY(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 0.f));
-
 			Safe_Release(m_pSkillEffect);
 			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Rasenshuriken"), &m_vRightHandPos);
+
+			CUI_Manager::Get_Instance()->Create_Aim();
 			break;
 		case Client::Player_State::Chidori:
 			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Charge_Lv2toLv3;
@@ -679,15 +708,16 @@ void CPlayer::Tick_State(_float fTimeDelta)
 
 		{
 			Kunai_Info Info{};
-			_float3 vDir{ reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()) };
+			_float4 vDir{ reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()) };
 			Info.pRHandPos = &m_vRightHandPos;
 
-			if (/*m_pBodyParts[PT_HEAD]->IsAnimationFinished(WireJump_Ready) or */(m_pGameInstance->Key_Up(DIK_LCONTROL, InputChannel::GamePlay)/* and not m_pKunai*/))
+			if (m_pGameInstance->Key_Up(DIK_LCONTROL, InputChannel::GamePlay))
 			{
 				PxRaycastBuffer Buffer{};
-				_float3 RayOrigin{};
-				XMStoreFloat3(&RayOrigin, m_pTransformCom->Get_CenterPos() + XMVector3Normalize(m_pTransformCom->Get_State(State::Look)));
-				if (m_pGameInstance->Raycast(RayOrigin, vDir, 30.f, Buffer))
+				_float fDistToCamera{ XMVectorGetX(XMVector3Length(m_pTransformCom->Get_State(State::Pos) - XMLoadFloat4(&m_pGameInstance->Get_CameraPos()))) };
+				//_float3 RayOrigin{};
+				//XMStoreFloat3(&RayOrigin, m_pTransformCom->Get_CenterPos() + XMVector3Normalize(m_pTransformCom->Get_State(State::Look)));
+				if (m_pGameInstance->Raycast(m_pGameInstance->Get_CameraPos(), vDir, 30.f + fDistToCamera, Buffer))
 				{
 					m_vWireTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
 
@@ -698,7 +728,8 @@ void CPlayer::Tick_State(_float fTimeDelta)
 				}
 				else
 				{
-					XMStoreFloat4(&Info.vLook, (XMLoadFloat3(&m_vRightHandPos) + XMLoadFloat3(&vDir)));
+					m_pTransformCom->Reset_Gravity();
+					XMStoreFloat4(&Info.vLook, (XMLoadFloat3(&m_vRightHandPos) + XMLoadFloat4(&vDir)));
 					Info.vLook.w = 1.f;
 				}
 
@@ -711,6 +742,8 @@ void CPlayer::Tick_State(_float fTimeDelta)
 				m_Animation.fDurationRatio = 1.f;
 				m_Animation.fAnimSpeedRatio = 1.5f;
 				m_pGameInstance->Set_TimeRatio(1.f);
+
+				CUI_Manager::Get_Instance()->Delete_Aim();
 			}
 			else if (m_pKunai)
 			{
@@ -748,7 +781,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			}
 			else
 			{
-				m_pTransformCom->LookAt_Dir(XMLoadFloat3(&vDir));
+				m_pTransformCom->LookAt_Dir(XMLoadFloat4(&vDir));
 			}
 		}
 
@@ -809,6 +842,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		if (not m_bAttacked and m_fTimer > 3.3f)
 		{
 			reinterpret_cast<CRasenShuriken*>(m_pSkillEffect)->Shoot();
+			CUI_Manager::Get_Instance()->Delete_Aim();
 
 			m_bAttacked = true;
 		}
@@ -817,6 +851,10 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		if (m_bAttacked)
 		{
 			m_pTransformCom->Gravity(fTimeDelta);
+		}
+		else
+		{
+			m_pTransformCom->LookAt_Dir(XMVectorSetY(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 0.f));
 		}
 
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(m_Animation.iAnimIndex))

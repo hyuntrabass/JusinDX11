@@ -356,6 +356,16 @@ _bool CPhysX_Manager::Raycast(_float3 vOrigin, _float3 vDir, _float fDist, PxRay
 	return false;
 }
 
+_bool CPhysX_Manager::Raycast(_float4 vOrigin, _float4 vDir, _float fDist, PxRaycastBuffer& Buffer)
+{
+	if (m_pScene->raycast(PxVec3(vOrigin.x, vOrigin.y, vOrigin.z), PxVec3(vDir.x, vDir.y, vDir.z), fDist, Buffer))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 _bool CPhysX_Manager::Raycast(_fvector vOrigin, _fvector vDir, _float fDist, PxRaycastBuffer& Buffer)
 {
 	if (m_pScene->raycast(VectorToPxVec3(vOrigin), VectorToPxVec3(vDir), fDist, Buffer))

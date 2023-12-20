@@ -764,6 +764,16 @@ _bool CGameInstance::Raycast(_float3 vOrigin, _float3 vDir, _float fDist, PxRayc
 	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, Buffer);
 }
 
+_bool CGameInstance::Raycast(_float4 vOrigin, _float4 vDir, _float fDist, PxRaycastBuffer& Buffer)
+{
+	if (!m_pPhysX_Manager)
+	{
+		MSG_BOX("FATAL ERROR : m_pPhysX_Manager is NULL");
+	}
+
+	return m_pPhysX_Manager->Raycast(vOrigin, vDir, fDist, Buffer);
+}
+
 _bool CGameInstance::Raycast(_fvector vOrigin, _fvector vDir, _float fDist, PxRaycastBuffer& Buffer)
 {
 	if (!m_pPhysX_Manager)

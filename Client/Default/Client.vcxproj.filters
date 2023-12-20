@@ -160,6 +160,12 @@
     <Filter Include="02.GameObjects\05. Boss\Kurama\Effect">
       <UniqueIdentifier>{3c808e35-34d2-4a19-9f9b-beb8e7757d93}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player\Projectile\Fireball">
+      <UniqueIdentifier>{48410a66-4681-4d77-8b42-f50fb1b1b173}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\Aim">
+      <UniqueIdentifier>{bb89b3d2-317f-4b80-8112-370c861a649d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -240,9 +246,6 @@
     <ClInclude Include="..\public\HpBar_Player.h">
       <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\HpBar_Player_Base.h">
-      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player\Base</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\SlotBase_Tool.h">
       <Filter>02.GameObjects\00.GUI\02.Hud\Slots\Tool\Base</Filter>
     </ClInclude>
@@ -305,6 +308,15 @@
     </ClInclude>
     <ClInclude Include="..\public\Effect_Warp.h">
       <Filter>02.GameObjects\05. Boss\Kurama\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Fireball.h">
+      <Filter>02.GameObjects\03.Player\Projectile\Fireball</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Aim.h">
+      <Filter>02.GameObjects\00.GUI\02.Hud\Aim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HpBar_Player_Base.h">
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -449,6 +461,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Effect_Warp.cpp">
       <Filter>02.GameObjects\05. Boss\Kurama\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Fireball.cpp">
+      <Filter>02.GameObjects\03.Player\Projectile\Fireball</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Aim.cpp">
+      <Filter>02.GameObjects\00.GUI\02.Hud\Aim</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

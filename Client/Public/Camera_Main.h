@@ -22,6 +22,7 @@ private:
 	_bool m_isMoveMode{ true };
 	_float m_fMouseSensor{ 0.08f };
 	_float m_fSpeed{ 10.f };
+	_float m_fPlayerDistance{ 4.f };
 
 private:
 	class CTrigger_Manager* m_pTrigger_Manager{ nullptr };

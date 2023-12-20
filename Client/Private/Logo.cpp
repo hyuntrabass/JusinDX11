@@ -37,17 +37,6 @@ HRESULT CLogo::Init(void* pArg)
 
 void CLogo::Tick(_float fTimeDelta)
 {
-	//if (m_fAngle < 360.f)
-	//{
-	//	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), m_fAngle);
-	//	m_fAngle += 540.f * fTimeDelta;
-	//}
-	//else
-	//{
-	//	m_fAngle = 360.f;
-	//	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), m_fAngle);
-	//}
-
 	if (m_fSizeX > 1030.f)
 	{
 		_float fDecreaseAmount{ 150 };
