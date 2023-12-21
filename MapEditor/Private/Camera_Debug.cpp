@@ -29,7 +29,7 @@ HRESULT CCamera_Debug::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pGameInstance->Set_CameraFar(m_fFar);
+	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 
 	m_pImguiMgr = CImguiMgr::Get_Instance();
 	Safe_AddRef(m_pImguiMgr);

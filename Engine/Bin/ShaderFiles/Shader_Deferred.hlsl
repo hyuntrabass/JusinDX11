@@ -12,7 +12,7 @@ vector g_vLightAmbient;
 vector g_vLightSpecular;
 
 vector g_vCamPosition;
-float g_fCamFar;
+float2 g_vCamNF;
 float g_fLightFar;
 float g_fScreenWidth;
 float g_fScreenHeight;
@@ -111,7 +111,7 @@ PS_OUT_Light PS_Main_Directional(PS_IN Input)
     
     vector vNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord);
     vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
-    float fViewZ = vDepthDesc.y * g_fCamFar;
+    float fViewZ = vDepthDesc.y * g_vCamNF.y;
     
     vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
     
@@ -151,7 +151,7 @@ PS_OUT_Light PS_Main_Point(PS_IN Input)
     
     vector vNormalDesc = g_NormalTexture.Sample(PointSampler, Input.vTexcoord);
     vector vDepthDesc = g_DepthTexture.Sample(PointSampler, Input.vTexcoord);
-    float fViewZ = vDepthDesc.y * g_fCamFar;
+    float fViewZ = vDepthDesc.y * g_vCamNF.y;
     
     vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
     
@@ -203,33 +203,48 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     Output.vColor = vDiffuse * vShade + vSpecular;
     
     vector vDepthDesc = g_DepthTexture.Sample(LinearSampler, Input.vTexcoord);
-    float fViewZ = vDepthDesc.y * g_fCamFar;
+    float fViewZ = vDepthDesc.y * g_vCamNF.y;
+    float fViewRealZ = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * vDepthDesc.x - g_vCamNF.y);
     
     vector vFogColor = vector(0.9f, 0.9f, 0.9f, 1.f);
     float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
     
-    float fNearViewZ1 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord1).y * g_fCamFar;
-    float fNearViewZ2 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord2).y * g_fCamFar;
-    float fNearViewZ3 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord3).y * g_fCamFar;
-    float fNearViewZ4 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord4).y * g_fCamFar;
-    float fNearViewZ5 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord5).y * g_fCamFar;
-    float fNearViewZ6 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord6).y * g_fCamFar;
-    float fNearViewZ7 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord7).y * g_fCamFar;
-    float fNearViewZ8 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord8).y * g_fCamFar;
+    float fNearViewZ1 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord1).x;
+    float fNearViewZ2 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord2).x;
+    float fNearViewZ3 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord3).x;
+    float fNearViewZ4 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord4).x;
+    float fNearViewZ5 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord5).x;
+    float fNearViewZ6 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord6).x;
+    float fNearViewZ7 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord7).x;
+    float fNearViewZ8 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord8).x;
     
-    if (abs(fViewZ - fNearViewZ1) > 1.f ||
-        abs(fViewZ - fNearViewZ2) > 1.f ||
-        abs(fViewZ - fNearViewZ3) > 1.f ||
-        abs(fViewZ - fNearViewZ4) > 1.f ||
-        abs(fViewZ - fNearViewZ5) > 1.f ||
-        abs(fViewZ - fNearViewZ6) > 1.f ||
-        abs(fViewZ - fNearViewZ7) > 1.f ||
-        abs(fViewZ - fNearViewZ8) > 1.f)
+    fNearViewZ1 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ1 - g_vCamNF.y);
+    fNearViewZ2 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ2 - g_vCamNF.y);
+    fNearViewZ3 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ3 - g_vCamNF.y);
+    fNearViewZ4 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ4 - g_vCamNF.y);
+    fNearViewZ5 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ5 - g_vCamNF.y);
+    fNearViewZ6 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ6 - g_vCamNF.y);
+    fNearViewZ7 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ7 - g_vCamNF.y);
+    fNearViewZ8 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ8 - g_vCamNF.y);
+    
+    if (abs(fViewRealZ - fNearViewZ1) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ1 / g_vCamNF.y)*/ ||
+        abs(fViewRealZ - fNearViewZ2) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ2 / g_vCamNF.y)*/ ||
+        abs(fViewRealZ - fNearViewZ3) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ3 / g_vCamNF.y)*/ ||
+        abs(fViewRealZ - fNearViewZ4) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ4 / g_vCamNF.y)*/ ||
+        abs(fViewRealZ - fNearViewZ5) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ5 / g_vCamNF.y)*/ ||
+        abs(fViewRealZ - fNearViewZ6) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ6 / g_vCamNF.y)*/ ||
+        abs(fViewRealZ - fNearViewZ7) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ7 / g_vCamNF.y)*/ ||
+        abs(fViewRealZ - fNearViewZ8) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ8 / g_vCamNF.y)*/)
     {
         Output.vColor = fFogFactor * (vector) 0 + (1.f - fFogFactor) * vFogColor;
         return Output;
     }
-
+    
+    //float depthDiff1 = fNearViewZ8 - fNearViewZ4;
+    //float depthDiff2 = fNearViewZ6 - fNearViewZ2;
+    
+    //float edgeStrength = 1.f - 64.f * (depthDiff1 * depthDiff1 + depthDiff2 * depthDiff2);
+    
     //float3 vCenter = g_NormalTexture.Sample(LinearSampler, Input.vTexcoord).xyz;
     //float3 vT = g_NormalTexture.Sample(LinearSampler, Input.vNearTexcoord1).xyz;
     //float3 vTR = g_NormalTexture.Sample(LinearSampler, Input.vNearTexcoord2).xyz;
@@ -279,7 +294,7 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
         Output.vColor.xyz = Output.vColor.xyz * 0.5f;
     }
 
-    Output.vColor = fFogFactor * Output.vColor + (1.f - fFogFactor) * vFogColor /** (0.1f + 0.9 * n)*/;
+    Output.vColor = fFogFactor * Output.vColor + (1.f - fFogFactor) * vFogColor /** edgeStrength*/ /** (0.1f + 0.9 * n)*/;
     
     return Output;
 }

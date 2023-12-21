@@ -39,7 +39,7 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()));
 		return;
 	}
-	m_pGameInstance->Set_CameraFar(m_fFar);
+	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 
 #ifdef _DEBUG
 	_vector Pos = m_pTransformCom->Get_State(State::Pos);

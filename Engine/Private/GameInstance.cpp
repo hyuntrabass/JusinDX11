@@ -945,9 +945,9 @@ const _uint& CGameInstance::Get_CameraModeIndex() const
 	return m_iCameraModeIndex;
 }
 
-const _float& CGameInstance::Get_CameraFar() const
+const _float2& CGameInstance::Get_CameraNF() const
 {
-	return m_fCameraFar;
+	return m_vCameraNF;
 }
 
 const _uint& CGameInstance::Get_CurrentLevelIndex() const
@@ -970,9 +970,9 @@ void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
 	m_iCameraModeIndex = iIndex;
 }
 
-void CGameInstance::Set_CameraFar(const _float& fFar)
+void CGameInstance::Set_CameraNF(const _float2& vCamNF)
 {
-	m_fCameraFar = fFar;
+	m_vCameraNF = vCamNF;
 }
 
 void CGameInstance::Set_CurrentLevelIndex(const _uint& iIndex)

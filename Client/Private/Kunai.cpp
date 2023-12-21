@@ -223,7 +223,7 @@ HRESULT CKunai::Bind_Shader_Resources()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraFar(), sizeof _float)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fCamFar", &m_pGameInstance->Get_CameraNF().y, sizeof _float)))
 	{
 		return E_FAIL;
 	}
@@ -262,6 +262,12 @@ HRESULT CKunai::Render_Effect()
 	}
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", m_pGameInstance->Get_Transform_Float4x4(TransformType::Proj))))
+	{
+		return E_FAIL;
+	}
+
+	_float2 UV{};
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &UV, sizeof(_float2))))
 	{
 		return E_FAIL;
 	}

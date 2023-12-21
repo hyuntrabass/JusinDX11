@@ -554,6 +554,7 @@ void CPlayer::Init_State()
 		case Client::Player_State::Fall_Front:
 			m_Animation.iAnimIndex = Fall_Front_Loop;
 			m_Animation.isLoop = true;
+			m_Animation.bRestartAnimation;
 			break;
 		case Client::Player_State::Land:
 			m_Animation.iAnimIndex = Land;
@@ -854,6 +855,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		{
 			reinterpret_cast<CRasenShuriken*>(m_pSkillEffect)->Shoot();
 			CUI_Manager::Get_Instance()->Delete_Aim();
+			m_Animation.fAnimSpeedRatio = 3.f;
 
 			m_bAttacked = true;
 		}

@@ -51,7 +51,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 	{
 		return;
 	}
-	m_pGameInstance->Set_CameraFar(m_fFar);
+	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
 
 	if (m_pGameInstance->Key_Down(DIK_P))
 	{
