@@ -85,6 +85,7 @@ namespace Client
 		StaticPass_SingleColorDissolve,
 		StaticPass_MaskEffect,
 		StaticPass_MaskDissolve,
+		StaticPass_MaskEffectClamp,
 		StaticPass_SingleColoredEffectFrontCull,
 		StaticPass_Shadow,
 	};

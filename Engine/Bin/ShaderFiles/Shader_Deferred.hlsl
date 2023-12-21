@@ -14,6 +14,8 @@ vector g_vLightSpecular;
 vector g_vCamPosition;
 float g_fCamFar;
 float g_fLightFar;
+float g_fScreenWidth;
+float g_fScreenHeight;
 
 float2 g_vFogNF;
 
@@ -35,6 +37,14 @@ struct VS_OUT
 {
     vector vPos : SV_Position;
     float2 vTexcoord : Texcoord0;
+    float2 vNearTexcoord1 : Texcoord1;
+    float2 vNearTexcoord2 : Texcoord2;
+    float2 vNearTexcoord3 : Texcoord3;
+    float2 vNearTexcoord4 : Texcoord4;
+    float2 vNearTexcoord5 : Texcoord5;
+    float2 vNearTexcoord6 : Texcoord6;
+    float2 vNearTexcoord7 : Texcoord7;
+    float2 vNearTexcoord8 : Texcoord8;
 };
 
 VS_OUT VS_Main(VS_IN Input)
@@ -47,6 +57,17 @@ VS_OUT VS_Main(VS_IN Input)
     Output.vPos = mul(vector(Input.vPos, 1.f), matWVP);
     Output.vTexcoord = Input.vTexcoord;
     
+    float2 fTexelSize = float2(1.f / g_fScreenWidth, 1.f / g_fScreenHeight);
+    
+    Output.vNearTexcoord4 = Input.vTexcoord + float2(0.f, fTexelSize.y * +1.f);
+    Output.vNearTexcoord6 = Input.vTexcoord + float2(fTexelSize.x * +1.f, fTexelSize.y * +1.f);
+    Output.vNearTexcoord2 = Input.vTexcoord + float2(fTexelSize.x * +1.f, 0.f);
+    Output.vNearTexcoord5 = Input.vTexcoord + float2(fTexelSize.x * +1.f, fTexelSize.y * -1.f);
+    Output.vNearTexcoord3 = Input.vTexcoord + float2(0.f, fTexelSize.y * -1.f);
+    Output.vNearTexcoord8 = Input.vTexcoord + float2(fTexelSize.x * -1.f, fTexelSize.y * -1.f);
+    Output.vNearTexcoord7 = Input.vTexcoord + float2(fTexelSize.x * -1.f, fTexelSize.y * +1.f);
+    Output.vNearTexcoord1 = Input.vTexcoord + float2(fTexelSize.x * -1.f, 0.f);
+    
     return Output;
 }
 
@@ -54,6 +75,14 @@ struct PS_IN
 {
     vector vPos : SV_Position;
     float2 vTexcoord : Texcoord0;
+    float2 vNearTexcoord1 : Texcoord1;
+    float2 vNearTexcoord2 : Texcoord2;
+    float2 vNearTexcoord3 : Texcoord3;
+    float2 vNearTexcoord4 : Texcoord4;
+    float2 vNearTexcoord5 : Texcoord5;
+    float2 vNearTexcoord6 : Texcoord6;
+    float2 vNearTexcoord7 : Texcoord7;
+    float2 vNearTexcoord8 : Texcoord8;
 };
 
 struct PS_OUT
@@ -173,9 +202,55 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     
     Output.vColor = vDiffuse * vShade + vSpecular;
     
-    vector vFogColor = vector(0.9f, 0.9f, 0.9f, 1.f);
     vector vDepthDesc = g_DepthTexture.Sample(LinearSampler, Input.vTexcoord);
     float fViewZ = vDepthDesc.y * g_fCamFar;
+    
+    vector vFogColor = vector(0.9f, 0.9f, 0.9f, 1.f);
+    float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
+    
+    float fNearViewZ1 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord1).y * g_fCamFar;
+    float fNearViewZ2 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord2).y * g_fCamFar;
+    float fNearViewZ3 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord3).y * g_fCamFar;
+    float fNearViewZ4 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord4).y * g_fCamFar;
+    float fNearViewZ5 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord5).y * g_fCamFar;
+    float fNearViewZ6 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord6).y * g_fCamFar;
+    float fNearViewZ7 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord7).y * g_fCamFar;
+    float fNearViewZ8 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord8).y * g_fCamFar;
+    
+    if (abs(fViewZ - fNearViewZ1) > 1.f ||
+        abs(fViewZ - fNearViewZ2) > 1.f ||
+        abs(fViewZ - fNearViewZ3) > 1.f ||
+        abs(fViewZ - fNearViewZ4) > 1.f ||
+        abs(fViewZ - fNearViewZ5) > 1.f ||
+        abs(fViewZ - fNearViewZ6) > 1.f ||
+        abs(fViewZ - fNearViewZ7) > 1.f ||
+        abs(fViewZ - fNearViewZ8) > 1.f)
+    {
+        Output.vColor = fFogFactor * (vector) 0 + (1.f - fFogFactor) * vFogColor;
+        return Output;
+    }
+
+    //float3 vCenter = g_NormalTexture.Sample(LinearSampler, Input.vTexcoord).xyz;
+    //float3 vT = g_NormalTexture.Sample(LinearSampler, Input.vNearTexcoord1).xyz;
+    //float3 vTR = g_NormalTexture.Sample(LinearSampler, Input.vNearTexcoord2).xyz;
+    //float3 vR = g_NormalTexture.Sample(LinearSampler, Input.vNearTexcoord3).xyz;
+    
+    //vT = abs(vCenter - vT);
+    //vTR = abs(vCenter - vTR);
+    //vR = abs(vCenter - vR);
+    
+    //float n = 0;
+    //n = max(n, vT.x);
+    //n = max(n, vT.y);
+    //n = max(n, vT.z);
+    //n = max(n, vR.x);
+    //n = max(n, vR.y);
+    //n = max(n, vR.z);
+    //n = max(n, vTR.x);
+    //n = max(n, vTR.y);
+    //n = max(n, vTR.z);
+    
+    //n = 1.f - clamp(clamp((n * 2.f) - 0.8f, 0.f, 1.f) * 1.5f, 0.f, 1.f);
     
     float4 vWorldPos;
     
@@ -204,9 +279,7 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
         Output.vColor.xyz = Output.vColor.xyz * 0.5f;
     }
 
-    float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
-    
-    Output.vColor = fFogFactor * Output.vColor + (1.f - fFogFactor) * vFogColor;
+    Output.vColor = fFogFactor * Output.vColor + (1.f - fFogFactor) * vFogColor /** (0.1f + 0.9 * n)*/;
     
     return Output;
 }

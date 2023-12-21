@@ -28,26 +28,68 @@ HRESULT CChidori::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pPos = reinterpret_cast<_float3*>(pArg);
+	m_pSocketMatrix = reinterpret_cast<_float44*>(pArg);
 
-	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(m_pPos), 1.f));
+	LIGHT_DESC* pMainLight_Desc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
+	m_OriginMainLight = *pMainLight_Desc;
+
+	LIGHT_DESC* pPlayerLightDesc{};
+	pPlayerLightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Player"));
+	m_OriginPlayerLight = *pPlayerLightDesc;
+	pPlayerLightDesc->vDiffuse = _float4();
+
+	LIGHT_DESC LightDesc{};
+
+	LightDesc.eType = LIGHT_DESC::Point;
+	LightDesc.vAttenuation = LIGHT_RANGE_20;
+	LightDesc.vDiffuse = _float4(0.3f, 0.7f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
+
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, TEXT("Light_Chidori"), LightDesc)))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
 
 void CChidori::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(m_pPos), 1.f));
+	LIGHT_DESC* LightDesc{};
+	LightDesc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
+	XMStoreFloat4(&LightDesc->vDiffuse, XMVectorLerp(XMLoadFloat4(&m_OriginMainLight.vDiffuse), XMVectorSet(0.2f, 0.2f, 0.2f, 1.f), clamp(m_fTimer * 2.f, 0.f, 1.f)));
 
-	m_vUVTransform.x -= fTimeDelta * 8.f;
+	LightDesc = {};
+	LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Chidori"));
+	XMStoreFloat4(&LightDesc->vDiffuse, XMVectorLerp(XMVectorSet(0.f, 0.f, 0.f, 0.f), XMVectorSet(0.3f, 0.7f, 1.f, 1.f), clamp(m_fTimer * 2.f, 0.f, 1.f)));
+
+	m_vUVTransform.x -= fTimeDelta * 4.f;
+	m_vUVTransform.y -= fTimeDelta * 4.f;
+	m_vUVTransform.z -= fTimeDelta * 4.f;
 	if (m_vUVTransform.x < -2.f)
 	{
 		m_vUVTransform.x = 1.f;
 	}
+	if (m_vUVTransform.y < -2.f)
+	{
+		m_vUVTransform.y = 1.f;
+	}
+	if (m_vUVTransform.z < -2.f)
+	{
+		m_vUVTransform.z = 1.f;
+	}
+
+	m_fTimer += fTimeDelta;
 }
 
 void CChidori::Late_Tick(_float fTimeDelta)
 {
+	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixScaling(1.5f, 1.5f, 1.5f) * XMMatrixTranslation(m_pSocketMatrix->_41, m_pSocketMatrix->_42, m_pSocketMatrix->_43) * m_pPlayerTransform->Get_World_Matrix());
+
+	LIGHT_DESC* LightDesc{};
+	LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Chidori"));
+	LightDesc->vPosition = _float4(m_WorldMatrix._41, m_WorldMatrix._42, m_WorldMatrix._43, 1.f);
+
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 }
 
@@ -60,7 +102,92 @@ HRESULT CChidori::Render()
 
 	for (size_t i = 0; i < iNumModels; i++)
 	{
-		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
+		if (i > 0 and static_cast<_float>(i) > m_fTimer * iNumModels)
+		{
+			break;
+		}
+		if (i == 5)
+		{
+			_float44 RotatedWorld{};
+			XMStoreFloat4x4(&RotatedWorld, XMMatrixRotationAxis(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(100.f)) * XMLoadFloat4x4(&m_WorldMatrix));
+			if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", RotatedWorld)))
+			{
+				return E_FAIL;
+			}
+
+			//_float4 vColor{ 0.f, 0.f, 1.f, 1.f };
+			//if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
+			//{
+			//	return E_FAIL;
+			//}
+		}
+
+		if (i == 6)
+		{
+			_float44 RotatedWorld{};
+			XMStoreFloat4x4(&RotatedWorld, XMMatrixScaling(1.5f, 1.5f, 1.5f) * XMMatrixRotationAxis(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(0.f)) * XMLoadFloat4x4(&m_WorldMatrix));
+			if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", RotatedWorld)))
+			{
+				return E_FAIL;
+			}
+			
+			//_float4 vColor{ 1.f, 0.f, 0.f, 1.f };
+			//if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
+			//{
+			//	return E_FAIL;
+			//}
+		}
+		if (i == 7)
+		{
+			_float44 RotatedWorld{};
+			XMStoreFloat4x4(&RotatedWorld, XMMatrixScaling(1.5f, 1.5f, 1.5f) * XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.3f, 0.f), XMConvertToRadians(90.f)) * XMLoadFloat4x4(&m_WorldMatrix));
+			if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", RotatedWorld)))
+			{
+				return E_FAIL;
+			}
+
+			//_float4 vColor{ 0.f, 1.f, 0.f, 1.f };
+			//if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
+			//{
+			//	return E_FAIL;
+			//}
+		}
+		if (i == 8)
+		{
+			_float44 RotatedWorld{};
+			XMStoreFloat4x4(&RotatedWorld, XMMatrixScaling(1.3f, 1.3f, 1.3f) * XMMatrixRotationAxis(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(70.f)) * XMLoadFloat4x4(&m_WorldMatrix));
+			if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", RotatedWorld)))
+			{
+				return E_FAIL;
+			}
+
+			//_float4 vColor{ 1.f, 1.f, 0.f, 1.f };
+			//if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
+			//{
+			//	return E_FAIL;
+			//}
+		}
+
+		_float2 vUVTransform{};
+		if (i % 3 == 0)
+		{
+			vUVTransform.x = m_vUVTransform.x;
+		}
+		else if (i % 3 == 1)
+		{
+			vUVTransform.x = m_vUVTransform.y;
+		}
+		else if (i % 3 == 2)
+		{
+			vUVTransform.x = m_vUVTransform.z;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &vUVTransform, sizeof(_float2))))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffectClamp)))
 		{
 			return E_FAIL;
 		}
@@ -86,42 +213,49 @@ HRESULT CChidori::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningC1"), TEXT("Com_Model_1"), reinterpret_cast<CComponent**>(&m_pModelCom[0]))))
+	_uint iModelIndex{};
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB3"), TEXT("Com_Model_2"), reinterpret_cast<CComponent**>(&m_pModelCom[iModelIndex++]))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB1"), TEXT("Com_Model_2"), reinterpret_cast<CComponent**>(&m_pModelCom[1]))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB2"), TEXT("Com_Model_3"), reinterpret_cast<CComponent**>(&m_pModelCom[iModelIndex++]))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB2"), TEXT("Com_Model_3"), reinterpret_cast<CComponent**>(&m_pModelCom[2]))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB1"), TEXT("Com_Model_4"), reinterpret_cast<CComponent**>(&m_pModelCom[iModelIndex++]))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB3"), TEXT("Com_Model_4"), reinterpret_cast<CComponent**>(&m_pModelCom[3]))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB4"), TEXT("Com_Model_5"), reinterpret_cast<CComponent**>(&m_pModelCom[iModelIndex++]))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningB4"), TEXT("Com_Model_5"), reinterpret_cast<CComponent**>(&m_pModelCom[4]))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningC1"), TEXT("Com_Model_1"), reinterpret_cast<CComponent**>(&m_pModelCom[iModelIndex++]))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Chidori"), TEXT("Com_Model_6"), reinterpret_cast<CComponent**>(&m_pModelCom[5]))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningC1"), TEXT("Com_Model_9"), reinterpret_cast<CComponent**>(&m_pModelCom[iModelIndex++]))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Chidori"), TEXT("Com_Model_7"), reinterpret_cast<CComponent**>(&m_pModelCom[6]))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Chidori"), TEXT("Com_Model_6"), reinterpret_cast<CComponent**>(&m_pModelCom[iModelIndex++]))))
 	{
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Chidori"), TEXT("Com_Model_8"), reinterpret_cast<CComponent**>(&m_pModelCom[7]))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Chidori"), TEXT("Com_Model_7"), reinterpret_cast<CComponent**>(&m_pModelCom[iModelIndex++]))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_Chidori"), TEXT("Com_Model_8"), reinterpret_cast<CComponent**>(&m_pModelCom[iModelIndex++]))))
 	{
 		return E_FAIL;
 	}
@@ -131,12 +265,20 @@ HRESULT CChidori::Add_Components()
 		return E_FAIL;
 	}
 
+	m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+	Safe_AddRef(m_pPlayerTransform);
+
 	return S_OK;
 }
 
 HRESULT CChidori::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	//if (FAILED(m_pTransformCom->Bind_WorldMatrix(m_pShaderCom, "g_WorldMatrix")))
+	//{
+	//	return E_FAIL;
+	//}
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", m_WorldMatrix)))
 	{
 		return E_FAIL;
 	}
@@ -158,11 +300,6 @@ HRESULT CChidori::Bind_ShaderResources()
 	//Colors::LightSkyBlue
 	_float4 vColor{ 0.6f, 0.8f, 1.f, 1.f };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &m_vUVTransform, sizeof(_float2))))
 	{
 		return E_FAIL;
 	}
@@ -198,6 +335,16 @@ CGameObject* CChidori::Clone(void* pArg)
 
 void CChidori::Free()
 {
+	LIGHT_DESC* pDesc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
+	*pDesc = m_OriginMainLight;
+	pDesc = nullptr;
+
+	pDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Player"));
+	*pDesc = m_OriginPlayerLight;
+	pDesc = nullptr;
+
+	m_pGameInstance->Delete_Light(LEVEL_STATIC, TEXT("Light_Chidori"));
+
 	__super::Free();
 
 	Safe_Release(m_pRendererCom);

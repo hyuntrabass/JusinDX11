@@ -425,6 +425,10 @@ HRESULT CRenderer::Render_Deferred()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_NormalTexture", TEXT("Target_Normal"))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_ShadeTexture", TEXT("Target_Shade"))))
 	{
 		return E_FAIL;
@@ -438,6 +442,22 @@ HRESULT CRenderer::Render_Deferred()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_LightDepthTexture", TEXT("Target_LightDepth"))))
+	{
+		return E_FAIL;
+	}
+
+	_uint iNumViewPorts{ 1 };
+
+	D3D11_VIEWPORT ViewportDesc{};
+
+	m_pContext->RSGetViewports(&iNumViewPorts, &ViewportDesc);
+
+
+	if (FAILED(m_pShader->Bind_RawValue("g_fScreenWidth", &ViewportDesc.Width, sizeof _float)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pShader->Bind_RawValue("g_fScreenHeight", &ViewportDesc.Height, sizeof _float)))
 	{
 		return E_FAIL;
 	}

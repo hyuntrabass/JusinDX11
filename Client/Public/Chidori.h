@@ -19,15 +19,20 @@ public:
 	HRESULT Render() override;
 
 private:
-	static const _uint iNumModels{ 8 };
+	static const _uint iNumModels{ 9 };
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom[iNumModels]{ nullptr };
 	CTexture* m_pMaskTextureCom{ nullptr };
+	CTransform* m_pPlayerTransform{ nullptr };
 
 private:
-	_float3* m_pPos{};
-	_float2 m_vUVTransform{ 1.f, 0.f };
+	_float44* m_pSocketMatrix{};
+	_float44 m_WorldMatrix{};
+	_float3 m_vUVTransform{ 1.f, 0.f , -1.f };
+	_float m_fTimer{};
+	LIGHT_DESC m_OriginMainLight{};
+	LIGHT_DESC m_OriginPlayerLight{};
 
 private:
 	HRESULT Add_Components();

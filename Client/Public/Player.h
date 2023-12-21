@@ -67,6 +67,10 @@ private:
 		Aerial_RecoveryChakra_Loop,
 		Aerial_RecoveryChakra_Start,
 		Aerial_TakeMedicine,
+		Beaten_Aerial_UniversalPull_Behind_End,
+		Beaten_Aerial_UniversalPull_Front_End,
+		Beaten_Aerial_UniversalPull_Loop,
+		Beaten_Aerial_UniversalPull_Start,
 		Beaten_BellyDown_Small_End,
 		Beaten_BellyDown_Small_Loop,
 		Beaten_BellyDown_Small_Start,
@@ -132,12 +136,25 @@ private:
 		Land_toD23NJ4Charge,
 		Land_toRasengunCharge,
 		Land_toRecoveryChakra,
+		Ninjutsu_Aerial_Chidori_Attack_End,
+		Ninjutsu_Aerial_Chidori_Charge_Conect_toRun,
+		Ninjutsu_Aerial_Chidori_Charge_Lv1,
+		Ninjutsu_Aerial_Chidori_Charge_Lv2toLv3,
+		Ninjutsu_Aerial_Chidori_Charge_Lv2toLv3_Loop,
+		Ninjutsu_Aerial_Chidori_Run_Loop,
 		Ninjutsu_Aerial_LaughingMonk,
 		Ninjutsu_Aerial_LightningBlade_Charge_Loop,
 		Ninjutsu_Aerial_LightningBlade_Charge_Start,
 		Ninjutsu_Aerial_LightningBlade_End,
 		Ninjutsu_Aerial_LightningBlade_Loop,
 		Ninjutsu_Aerial_LightningBlade_Start,
+		Ninjutsu_Aerial_TrueRasenShuriken,
+		Ninjutsu_Chidori_Attack_Lv3_End,
+		Ninjutsu_Chidori_Charge_Conect_toRun,
+		Ninjutsu_Chidori_Charge_Lv1,
+		Ninjutsu_Chidori_Charge_Lv2toLv3,
+		Ninjutsu_Chidori_Charge_Lv2toLv3_Loop,
+		Ninjutsu_Chidori_Run_Lv3_Loop,
 		Ninjutsu_LightningBlade_Attack_End,
 		Ninjutsu_LightningBlade_Charge_Lv2toLv3,
 		Ninjutsu_LightningBlade_Charge_Lv2toLv3_Conect_toRun,
@@ -169,6 +186,10 @@ private:
 		Sasuke_Attack_SlashingUp_Right,
 		Sasuke_Attack_TurnKick_Right,
 		Sasuke_Attack_TurnSlashingShoulder_Right,
+		ShadowClone_Ninjutsu_Aerial_TrueRasenShuriken_Left,
+		ShadowClone_Ninjutsu_Aerial_TrueRasenShuriken_Right,
+		ShadowClone_Ninjutsu_TrueRasenShuriken_Left,
+		ShadowClone_Ninjutsu_TrueRasenShuriken_Right,
 		TakeMedicine,
 		Throw_Aerial_Kunai_Left,
 		Throw_Aerial_Kunai_Right,
@@ -185,6 +206,9 @@ private:
 		WallJump_Loop,
 		WallStop,
 		WireJump_Ready,
+		Ninjutsu_Aerial_Fireball_Lv2,
+		Ninjutsu_Aerial_Fireball_Lv3,
+		Ninjutsu_Fireball_Lv3,
 		End
 	};
 
@@ -234,11 +258,10 @@ private:
 	_float3 m_vWireTargetPos{};
 	class CKunai* m_pKunai { nullptr };
 	_float3 m_vRightHandPos{};
+	_float44 m_LeftHandMatrix{};
 	CGameObject* m_pSkillEffect{ nullptr };
 
 	_float m_fTimer{};
-
-	_float4 m_OriginMainLightDiff{};
 
 	CCollider* m_pCollider_Att{ nullptr };
 	CCollider* m_pCollider_Hit{ nullptr };

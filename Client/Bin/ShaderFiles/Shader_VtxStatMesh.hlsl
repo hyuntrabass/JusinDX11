@@ -296,6 +296,22 @@ PS_OUT PS_Main_MaskEffect_Dissolve(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_MaskEffect_Clamp(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+
+    vector vMask = g_MaskTexture.Sample(LinearClampSampler, Input.vTex + g_vUVTransform);
+    if (vMask.r < 0.1f)
+    {
+        discard;
+    }
+    
+    Output.vColor = g_vColor;
+    Output.vColor.a = vMask.r;
+    
+    return Output;
+}
+
 vector PS_Main_Shadow(PS_IN Input) : SV_Target0
 {
     vector Output = (vector) 0;
@@ -422,6 +438,19 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_MaskEffect_Dissolve();
+    }
+
+    pass MaskEffectClamp
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_MaskEffect_Clamp();
     }
 
     pass SingleColoredEffectFrontCull

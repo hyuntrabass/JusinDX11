@@ -45,7 +45,7 @@ HRESULT CPlayer::Init(void* pArg)
 	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit, true);
 	CTrigger_Manager::Get_Instance()->Register_PlayerCollider(m_pCollider_Hit);
 
-	
+
 	m_iMaxHP = 100;
 	m_iHP = m_iMaxHP;
 
@@ -98,6 +98,8 @@ void CPlayer::Tick(_float fTimeDelta)
 		Tick_State(fTimeDelta);
 
 		XMStoreFloat3(&m_vRightHandPos, XMVector4Transform(XMLoadFloat4x4(m_pBodyParts[PT_FACE]->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
+		m_LeftHandMatrix = *m_pBodyParts[PT_FACE]->Get_BoneMatrix("L_Hand_Weapon_cnt_tr");
+
 
 		if (m_pFootEffect[Foot_Left])
 		{
@@ -108,6 +110,15 @@ void CPlayer::Tick(_float fTimeDelta)
 
 			m_pFootEffect[Foot_Left]->Tick(vFootPos[Foot_Left], fTimeDelta);
 			m_pFootEffect[Foot_Right]->Tick(vFootPos[Foot_Right], fTimeDelta);
+		}
+
+		if (m_pGameInstance->Key_Down(DIK_UP, InputChannel::GamePlay))
+		{
+			Set_Damage(-10);
+		}
+		if (m_pGameInstance->Key_Down(DIK_DOWN, InputChannel::GamePlay))
+		{
+			Set_Damage(10);
 		}
 	}
 	else
@@ -139,14 +150,6 @@ void CPlayer::Tick(_float fTimeDelta)
 	m_pCollider_Hit->Update(m_pTransformCom->Get_World_Matrix());
 
 	CUI_Manager::Get_Instance()->Set_HP(TEXT("Player"), m_iMaxHP, m_iHP);
-	if (m_pGameInstance->Key_Down(DIK_UP, InputChannel::GamePlay))
-	{
-		Set_Damage(-10);
-	}
-	if (m_pGameInstance->Key_Down(DIK_DOWN, InputChannel::GamePlay))
-	{
-		Set_Damage(10);
-	}
 }
 
 void CPlayer::Late_Tick(_float fTimeDelta)
@@ -496,8 +499,6 @@ void CPlayer::Init_State()
 		}
 		else if (m_ePrevState == Player_State::Chidori)
 		{
-			LIGHT_DESC* Desc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
-			Desc->vDiffuse = m_OriginMainLightDiff;
 			Safe_Release(m_pSkillEffect);
 		}
 
@@ -574,7 +575,14 @@ void CPlayer::Init_State()
 		case Client::Player_State::Attack:
 			break;
 		case Client::Player_State::RasenShuriken:
-			m_Animation.iAnimIndex = Ninjutsu_TrueRasenShuriken;
+			if (m_pTransformCom->Is_OnGround())
+			{
+				m_Animation.iAnimIndex = Ninjutsu_TrueRasenShuriken;
+			}
+			else
+			{
+				m_Animation.iAnimIndex = Ninjutsu_Aerial_TrueRasenShuriken;
+			}
 			m_pTransformCom->Reset_Gravity();
 			m_fTimer = {};
 			m_bAttacked = false;
@@ -585,16 +593,19 @@ void CPlayer::Init_State()
 			CUI_Manager::Get_Instance()->Create_Aim();
 			break;
 		case Client::Player_State::Chidori:
-			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Charge_Lv2toLv3;
+			if (m_pTransformCom->Is_OnGround())
+			{
+				m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Lv2toLv3;
+			}
+			else
+			{
+				m_Animation.iAnimIndex = Ninjutsu_Aerial_Chidori_Charge_Lv2toLv3;
+			}
 
 			m_fTimer = {};
 
-			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Chidori"), &m_vRightHandPos);
+			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Chidori"), &m_LeftHandMatrix);
 			//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"));
-
-			LIGHT_DESC* Desc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
-			m_OriginMainLightDiff = Desc->vDiffuse;
-			Desc->vDiffuse = _float4(0.2f, 0.2f, 0.2f, 1.f);
 			break;
 		}
 
@@ -848,54 +859,58 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		m_fTimer += fTimeDelta;
 
-		if (m_bAttacked)
-		{
-			m_pTransformCom->Gravity(fTimeDelta);
-		}
-		else
+		if (not m_bAttacked)
 		{
 			m_pTransformCom->LookAt_Dir(XMVectorSetY(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 0.f));
 		}
 
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(m_Animation.iAnimIndex))
 		{
-			m_eState = Player_State::Idle;
+			if (m_Animation.iAnimIndex == Ninjutsu_Aerial_TrueRasenShuriken)
+			{
+				m_eState = Player_State::Fall_Front;
+			}
+			else
+			{
+				m_eState = Player_State::Idle;
+			}
 		}
 		break;
 	case Client::Player_State::Chidori:
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_LightningBlade_Charge_Lv2toLv3))
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Chidori_Charge_Lv2toLv3))
 		{
 			m_Animation = {};
-			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Charge_Lv2toLv3_Loop;
+			m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Lv2toLv3_Loop;
 			m_Animation.isLoop = true;
 		}
 		m_fTimer += fTimeDelta;
 
-		if (m_fTimer > 2.f and m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_LightningBlade_Charge_Lv2toLv3_Loop)
+		if (m_fTimer > 2.f and m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Chidori_Charge_Lv2toLv3_Loop)
 		{
 			m_Animation = {};
-			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Charge_Lv2toLv3_Conect_toRun;
+			m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Conect_toRun;
 			m_Animation.bSkipInterpolation = true;
 		}
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_LightningBlade_Charge_Lv2toLv3_Conect_toRun))
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Chidori_Charge_Conect_toRun))
 		{
 			m_Animation = {};
-			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Run_Loop;
+			m_Animation.iAnimIndex = Ninjutsu_Chidori_Run_Lv3_Loop;
 			m_Animation.bSkipInterpolation = true;
 			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 3.f;
 		}
-		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_LightningBlade_Run_Loop)
+		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Chidori_Run_Lv3_Loop)
 		{
-			m_pTransformCom->Set_Speed(m_fRunSpeed * 3.f);
+			m_pTransformCom->Set_Speed(m_fRunSpeed * 6.f);
 			m_pTransformCom->Go_To_Dir(m_pTransformCom->Get_State(State::Look), fTimeDelta);
 		}
-		if (m_fTimer > 3.f)
+		if (m_fTimer > 2.5f)
 		{
 			m_Animation = {};
-			m_Animation.iAnimIndex = Ninjutsu_LightningBlade_Attack_End;
+			m_Animation.iAnimIndex = Ninjutsu_Chidori_Attack_Lv3_End;
 			m_Animation.bSkipInterpolation = true;
 		}
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_LightningBlade_Attack_End))
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Chidori_Attack_Lv3_End))
 		{
 			m_fTimer = {};
 			m_eState = Player_State::Idle;

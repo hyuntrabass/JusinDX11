@@ -166,6 +166,9 @@
     <Filter Include="02.GameObjects\00.GUI\02.Hud\Aim">
       <UniqueIdentifier>{bb89b3d2-317f-4b80-8112-370c861a649d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\01.Cameras\Manager">
+      <UniqueIdentifier>{66962d3d-ef6d-4f7a-8298-424850d02a40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">

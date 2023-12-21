@@ -55,7 +55,7 @@ void CHpBar_Player::Late_Tick(_float fTimeDelta)
 		XMStoreFloat4(&m_vColor, XMVectorLerp(vSrcColor, vMiddleColor, fHPRatio * 2.f));
 	}
 
-	fHPRatio = fHPRatio * (0.83333f - 0.16666f) + 0.16666f;
+	fHPRatio = fHPRatio * (0.82f - 0.15f) + 0.15f;
 
 	if (fabs(m_fHPRatio - fHPRatio) > 0.01f)
 	{

@@ -120,15 +120,15 @@ HRESULT CKakashi::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(AnimPass_OutLine)))
-		{
-			return E_FAIL;
-		}
+		//if (FAILED(m_pShaderCom->Begin(AnimPass_OutLine)))
+		//{
+		//	return E_FAIL;
+		//}
 
-		if (FAILED(m_pModelCom->Render(i)))
-		{
-			return E_FAIL;
-		}
+		//if (FAILED(m_pModelCom->Render(i)))
+		//{
+		//	return E_FAIL;
+		//}
 
 		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
 		{

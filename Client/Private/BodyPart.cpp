@@ -122,15 +122,15 @@ HRESULT CBodyPart::Render()
 			return E_FAIL;
 		}
 
-		if (FAILED(m_pShaderCom->Begin(AnimPass_OutLine)))
-		{
-			return E_FAIL;
-		}
+		//if (FAILED(m_pShaderCom->Begin(AnimPass_OutLine)))
+		//{
+		//	return E_FAIL;
+		//}
 
-		if (FAILED(m_Models[m_iSelectedModelIndex]->Render(i)))
-		{
-			return E_FAIL;
-		}
+		//if (FAILED(m_Models[m_iSelectedModelIndex]->Render(i)))
+		//{
+		//	return E_FAIL;
+		//}
 
 		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
 		{
