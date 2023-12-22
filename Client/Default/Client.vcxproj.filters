@@ -169,6 +169,9 @@
     <Filter Include="02.GameObjects\01.Cameras\Manager">
       <UniqueIdentifier>{66962d3d-ef6d-4f7a-8298-424850d02a40}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\Hit">
+      <UniqueIdentifier>{925a58ea-c449-4af8-ae48-cc87afb833b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -321,6 +324,9 @@
     <ClInclude Include="..\Public\HpBar_Player_Base.h">
       <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player\Base</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Hit.h">
+      <Filter>02.GameObjects\00.GUI\02.Hud\Hit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -470,6 +476,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Aim.cpp">
       <Filter>02.GameObjects\00.GUI\02.Hud\Aim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Hit.cpp">
+      <Filter>02.GameObjects\00.GUI\02.Hud\Hit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

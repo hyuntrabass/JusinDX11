@@ -179,6 +179,7 @@
     <ClInclude Include="..\public\Effect_Warp.h" />
     <ClInclude Include="..\Public\Fireball.h" />
     <ClInclude Include="..\public\FootEffect.h" />
+    <ClInclude Include="..\public\Hit.h" />
     <ClInclude Include="..\public\HpBar_Player.h" />
     <ClInclude Include="..\Public\HpBar_Player_Base.h" />
     <ClInclude Include="..\public\Kakashi.h" />
@@ -230,6 +231,7 @@
     <ClCompile Include="..\private\Effect_Warp.cpp" />
     <ClCompile Include="..\Private\Fireball.cpp" />
     <ClCompile Include="..\private\FootEffect.cpp" />
+    <ClCompile Include="..\private\Hit.cpp" />
     <ClCompile Include="..\private\HpBar_Player.cpp" />
     <ClCompile Include="..\Private\HpBar_Player_Base.cpp" />
     <ClCompile Include="..\private\Kakashi.cpp" />

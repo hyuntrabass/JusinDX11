@@ -204,37 +204,37 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     
     vector vDepthDesc = g_DepthTexture.Sample(LinearSampler, Input.vTexcoord);
     float fViewZ = vDepthDesc.y * g_vCamNF.y;
-    float fViewRealZ = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * vDepthDesc.x - g_vCamNF.y);
+    //float fViewRealZ = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * vDepthDesc.x - g_vCamNF.y);
     
     vector vFogColor = vector(0.9f, 0.9f, 0.9f, 1.f);
     float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
     
-    float fNearViewZ1 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord1).x;
-    float fNearViewZ2 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord2).x;
-    float fNearViewZ3 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord3).x;
-    float fNearViewZ4 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord4).x;
-    float fNearViewZ5 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord5).x;
-    float fNearViewZ6 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord6).x;
-    float fNearViewZ7 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord7).x;
-    float fNearViewZ8 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord8).x;
+    float fNearViewZ1 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord1).y * g_vCamNF.y;
+    float fNearViewZ2 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord2).y * g_vCamNF.y;
+    float fNearViewZ3 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord3).y * g_vCamNF.y;
+    float fNearViewZ4 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord4).y * g_vCamNF.y;
+    float fNearViewZ5 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord5).y * g_vCamNF.y;
+    float fNearViewZ6 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord6).y * g_vCamNF.y;
+    float fNearViewZ7 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord7).y * g_vCamNF.y;
+    float fNearViewZ8 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord8).y * g_vCamNF.y;
     
-    fNearViewZ1 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ1 - g_vCamNF.y);
-    fNearViewZ2 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ2 - g_vCamNF.y);
-    fNearViewZ3 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ3 - g_vCamNF.y);
-    fNearViewZ4 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ4 - g_vCamNF.y);
-    fNearViewZ5 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ5 - g_vCamNF.y);
-    fNearViewZ6 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ6 - g_vCamNF.y);
-    fNearViewZ7 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ7 - g_vCamNF.y);
-    fNearViewZ8 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ8 - g_vCamNF.y);
+    //fNearViewZ1 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ1 - g_vCamNF.y);
+    //fNearViewZ2 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ2 - g_vCamNF.y);
+    //fNearViewZ3 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ3 - g_vCamNF.y);
+    //fNearViewZ4 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ4 - g_vCamNF.y);
+    //fNearViewZ5 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ5 - g_vCamNF.y);
+    //fNearViewZ6 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x)5 * fNearViewZ6 - g_vCamNF.y);
+    //fNearViewZ7 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ7 - g_vCamNF.y);
+    //fNearViewZ8 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ8 - g_vCamNF.y);
     
-    if (abs(fViewRealZ - fNearViewZ1) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ1 / g_vCamNF.y)*/ ||
-        abs(fViewRealZ - fNearViewZ2) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ2 / g_vCamNF.y)*/ ||
-        abs(fViewRealZ - fNearViewZ3) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ3 / g_vCamNF.y)*/ ||
-        abs(fViewRealZ - fNearViewZ4) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ4 / g_vCamNF.y)*/ ||
-        abs(fViewRealZ - fNearViewZ5) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ5 / g_vCamNF.y)*/ ||
-        abs(fViewRealZ - fNearViewZ6) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ6 / g_vCamNF.y)*/ ||
-        abs(fViewRealZ - fNearViewZ7) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ7 / g_vCamNF.y)*/ ||
-        abs(fViewRealZ - fNearViewZ8) > 1.f/*lerp(0.5f, 1.5f, fNearViewZ8 / g_vCamNF.y)*/)
+    if (abs(fViewZ - fNearViewZ1) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
+        abs(fViewZ - fNearViewZ2) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
+        abs(fViewZ - fNearViewZ3) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
+        abs(fViewZ - fNearViewZ4) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
+        abs(fViewZ - fNearViewZ5) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
+        abs(fViewZ - fNearViewZ6) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
+        abs(fViewZ - fNearViewZ7) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
+        abs(fViewZ - fNearViewZ8) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/)
     {
         Output.vColor = fFogFactor * (vector) 0 + (1.f - fFogFactor) * vFogColor;
         return Output;

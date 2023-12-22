@@ -102,7 +102,9 @@ namespace Client
 		VTPass_Button,
 		VTPass_Background,
 		VTPass_Mask_Color,
+		VTPass_Mask_ColorAlpha,
 		VTPass_HP,
+		VTPass_Hit,
 	};
 
 	enum InstancingPass

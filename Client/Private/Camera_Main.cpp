@@ -155,7 +155,7 @@ void CCamera_Main::Tick(_float fTimeDelta)
 
 	PxRaycastBuffer Buffer{};
 	_vector vRayDir = m_pTransformCom->Get_State(State::Pos) - m_pPlayerTransform->Get_CenterPos();
-	_float fDist = XMVectorGetX(XMVector3Length(vRayDir)) - .4f;
+	_float fDist = XMVectorGetX(XMVector3Length(vRayDir)) - 0.4f;
 	if (m_pGameInstance->Raycast(m_pPlayerTransform->Get_CenterPos() + XMVector3Normalize(vRayDir) * .5f, XMVector3Normalize(vRayDir), fDist, Buffer))
 	{
 		m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));

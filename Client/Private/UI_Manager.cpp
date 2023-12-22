@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Button_Common.h"
 #include "Aim.h"
+#include "Hit.h"
 
 IMPLEMENT_SINGLETON(CUI_Manager)
 
@@ -45,6 +46,18 @@ void CUI_Manager::Delete_Aim()
 	if (m_pAim)
 	{
 		m_pAim->Set_Damage(10);
+	}
+}
+
+void CUI_Manager::Create_Hit()
+{
+	if (m_pHit)
+	{
+		m_pHit->Add_Hit();
+	}
+	else
+	{
+		m_pHit = dynamic_cast<CHit*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_UI_Hit")));
 	}
 }
 
@@ -194,6 +207,15 @@ void CUI_Manager::Tick(_float fTimeDelta)
 		}
 
 	}
+	if (m_pHit)
+	{
+		m_pHit->Tick(fTimeDelta);
+		if (m_pHit->isDead())
+		{
+			Safe_Release(m_pHit);
+		}
+
+	}
 }
 
 void CUI_Manager::Late_Tick(_float fTimeDelta)
@@ -201,6 +223,10 @@ void CUI_Manager::Late_Tick(_float fTimeDelta)
 	if (m_pAim)
 	{
 		m_pAim->Late_Tick(fTimeDelta);
+	}
+	if (m_pHit)
+	{
+		m_pHit->Late_Tick(fTimeDelta);
 	}
 }
 

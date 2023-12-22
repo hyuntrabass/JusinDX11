@@ -20,6 +20,7 @@ public:
 	void Set_HP(const wstring& strHPTag, _uint iMaxHP, _uint iCurrHP);
 	void Create_Aim();
 	void Delete_Aim();
+	void Create_Hit();
 
 	const _bool Is_ButtonPushed(_uint iIndex) const;
 	const _bool is_Activated(_uint iIndex) const;
@@ -42,6 +43,7 @@ private:
 	CGameInstance* m_pGameInstance{ nullptr };
 
 	class CAim* m_pAim{ nullptr };
+	class CHit* m_pHit{ nullptr };
 	map<const wstring, _float> m_HPs{};
 	vector<class CButton_Common*> m_Buttons{};
 	_uint m_iButtonIndex{};

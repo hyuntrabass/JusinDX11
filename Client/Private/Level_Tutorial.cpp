@@ -56,7 +56,7 @@ void CLevel_Tutorial::Tick(_float fTimeDelta)
 		return;
 	}
 
-	m_pGameInstance->PhysXTick(fTimeDelta);
+	//m_pGameInstance->PhysXTick(fTimeDelta);
 	CTrigger_Manager::Get_Instance()->Tick(fTimeDelta);
 }
 

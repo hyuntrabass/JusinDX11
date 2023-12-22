@@ -831,6 +831,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			}
 			if (m_fAttTimer > 0.5f)
 			{
+				CUI_Manager::Get_Instance()->Create_Hit();
 				m_pGameInstance->Attack_Monster(m_pCollider_Att, 10);
 				m_bAttacked = true;
 				if (m_pGameInstance->CheckCollision_Monster(m_pCollider_Att))
