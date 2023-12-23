@@ -145,6 +145,7 @@ namespace Engine
 		DefPass_Light_Directional,
 		DefPass_Light_Point,
 		DefPass_Deferred,
+		DefPass_Blur,
 	};
 }
 

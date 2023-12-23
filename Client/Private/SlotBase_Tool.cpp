@@ -22,8 +22,8 @@ HRESULT CSlotBase_Tool::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_fSizeX = 76.f;
-	m_fSizeY = 76.f;
+	m_fSizeX = 76.f * 0.8f;
+	m_fSizeY = 76.f * 0.8f;
 
 	m_fX = 960.f;
 	m_fY = 640.f;

@@ -67,6 +67,18 @@ PS_OUT PS_Main_Button(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_MasKTexture(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = g_Texture.Sample(LinearSampler, Input.vTex);
+    vector vMask = g_MaskTexture.Sample(LinearSampler, Input.vTex);
+    
+    Output.vColor.a = Output.vColor.a * 1.f - vMask.r;
+    
+    return Output;
+}
+
 PS_OUT PS_MasKColor(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
@@ -156,6 +168,19 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
+    }
+
+    pass Mask_Texture
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MasKTexture();
     }
 
     pass Mask_Color

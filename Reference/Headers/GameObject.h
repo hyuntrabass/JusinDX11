@@ -25,6 +25,7 @@ public:
 	virtual void Late_Tick(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT Render_Shadow();
+
 public:
 	class CComponent* Find_Component(const wstring& strComTag);
 

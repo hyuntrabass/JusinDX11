@@ -23,11 +23,11 @@ HRESULT CHpBar_Player::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_fSizeX = 512.f;
-	m_fSizeY = 64.f;
+	m_fSizeX = 512.f * 0.81f;
+	m_fSizeY = 64.f * 0.77f;
 
-	m_fX = 305.f;
-	m_fY = 645.f;
+	m_fX = 294.f;
+	m_fY = 640.f;
 
 	m_fDepth = 0.8f;
 

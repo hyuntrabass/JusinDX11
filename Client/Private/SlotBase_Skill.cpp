@@ -37,6 +37,13 @@ HRESULT CSlotBase_Skill::Init(void* pArg)
 
 void CSlotBase_Skill::Tick(_float fTimeDelta)
 {
+	m_fSizeX = 94.f * 0.8f;
+	m_fSizeY = 94.f * 0.8f;
+
+	m_fX = 1180.f;
+	m_fY = 630.f;
+
+	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
 void CSlotBase_Skill::Late_Tick(_float fTimeDelta)
@@ -66,12 +73,32 @@ HRESULT CSlotBase_Skill::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	if (FAILED(m_pBaseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
 	{
 		return E_FAIL;
 	}
 
 	if (FAILED(m_pShaderCom->Begin(VTPass_UI)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pVIBufferCom->Render()))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pSkillTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Begin(VTPass_Mask_Texture)))
 	{
 		return E_FAIL;
 	}
@@ -101,12 +128,22 @@ HRESULT CSlotBase_Skill::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SlotBase_Skill"), TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SlotBase_Skill"), TEXT("Com_BaseTexture"), reinterpret_cast<CComponent**>(&m_pBaseTextureCom))))
 	{
 		return E_FAIL;
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SlotBase_Skill_Frame"), TEXT("Com_Texture_Frame"), reinterpret_cast<CComponent**>(&m_pFrameTextureCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_Mask"), TEXT("Com_Texture_Mask"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_Chidori"), TEXT("Com_Texture_Skill"), reinterpret_cast<CComponent**>(&m_pSkillTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -166,7 +203,7 @@ void CSlotBase_Skill::Free()
 	__super::Free();
 
 	Safe_Release(m_pFrameTextureCom);
-	Safe_Release(m_pTextureCom);
+	Safe_Release(m_pBaseTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);

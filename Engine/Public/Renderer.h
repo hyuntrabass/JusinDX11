@@ -8,8 +8,10 @@ enum RenderGroup
 	RG_Priority,
 	RG_Shadow,
 	RG_NonBlend,
+	RG_Blur,
 	RG_NonLight,
 	RG_Blend,
+	RG_BlendBlur,
 	RG_UI,
 	RG_Cursor,
 	RG_End
@@ -50,6 +52,7 @@ private:
 	_float44 m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 
 	ID3D11DepthStencilView* m_pShadowDSV{ nullptr };
+	ID3D11DepthStencilView* m_pBlurDSV{ nullptr };
 
 private:
 	HRESULT Ready_ShadowDSV();
@@ -57,10 +60,12 @@ private:
 	HRESULT Render_Priority();
 	HRESULT Render_Shadow();
 	HRESULT Render_NonBlend();
+	HRESULT Render_Blur();
 	HRESULT Render_LightAcc();
 	HRESULT Render_Deferred();
 	HRESULT Render_NonLight();
 	HRESULT Render_Blend();
+	HRESULT Render_BlendBlur();
 	HRESULT Render_UI();
 #ifdef _DEBUG
 private:

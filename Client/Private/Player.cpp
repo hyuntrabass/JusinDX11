@@ -229,33 +229,35 @@ void CPlayer::Move(_float fTimeDelta)
 	_vector vRightDir = XMVector3Cross(m_pTransformCom->Get_State(State::Up), vForwardDir);
 	_vector vDirection{};
 
-	_float3 vFootPos{};
-	_float3 vRayOrigin{};
-	_float3 vLookDir{};
-	_float3 vDownDir{};
+#pragma region 벽 붙기 테스트
+	//_float3 vFootPos{};
+//_float3 vRayOrigin{};
+//_float3 vLookDir{};
+//_float3 vDownDir{};
 
-	XMStoreFloat3(&vFootPos, m_pTransformCom->Get_State(State::Pos));
-	XMStoreFloat3(&vRayOrigin, m_pTransformCom->Get_CenterPos() + XMVector3Normalize(m_pTransformCom->Get_State(State::Look)) * 0.36f);
-	XMStoreFloat3(&vLookDir, XMVector3Normalize(m_pTransformCom->Get_State(State::Look)));
-	XMStoreFloat3(&vDownDir, XMVector3Normalize(m_pTransformCom->Get_State(State::Up) * -1.f));
-	PxRaycastBuffer RaycastBuffer{};
+//XMStoreFloat3(&vFootPos, m_pTransformCom->Get_State(State::Pos));
+//XMStoreFloat3(&vRayOrigin, m_pTransformCom->Get_CenterPos() + XMVector3Normalize(m_pTransformCom->Get_State(State::Look)) * 0.36f);
+//XMStoreFloat3(&vLookDir, XMVector3Normalize(m_pTransformCom->Get_State(State::Look)));
+//XMStoreFloat3(&vDownDir, XMVector3Normalize(m_pTransformCom->Get_State(State::Up) * -1.f));
+//PxRaycastBuffer RaycastBuffer{};
 
-	//if (not m_isOnWall and m_pGameInstance->Raycast(vRayOrigin, vLookDir, 1.f, RaycastBuffer))
-	//{
-	//	m_isOnWall = true;
-	//	m_pTransformCom->Get_Controller()->setUpDirection(RaycastBuffer.block.normal);
-	//	m_pTransformCom->Set_FootPosition(RaycastBuffer.block.position);
-	//	m_pTransformCom->LookAt_Dir(XMVector3Cross(m_pTransformCom->Get_State(State::Right), PxVec3ToVector(RaycastBuffer.block.normal)));
-	//}
+//if (not m_isOnWall and m_pGameInstance->Raycast(vRayOrigin, vLookDir, 1.f, RaycastBuffer))
+//{
+//	m_isOnWall = true;
+//	m_pTransformCom->Get_Controller()->setUpDirection(RaycastBuffer.block.normal);
+//	m_pTransformCom->Set_FootPosition(RaycastBuffer.block.position);
+//	m_pTransformCom->LookAt_Dir(XMVector3Cross(m_pTransformCom->Get_State(State::Right), PxVec3ToVector(RaycastBuffer.block.normal)));
+//}
 
-	//if (m_isOnWall)
-	//{
-	//	if (m_pGameInstance->Raycast(vFootPos, vDownDir, 1.f, RaycastBuffer))
-	//	{
-	//		m_pTransformCom->LookAt_Dir(XMVector3Cross(m_pTransformCom->Get_State(State::Right), PxVec3ToVector(RaycastBuffer.block.normal)));
-	//		m_pTransformCom->Get_Controller()->setUpDirection(RaycastBuffer.block.normal);
-	//	}
-	//}
+//if (m_isOnWall)
+//{
+//	if (m_pGameInstance->Raycast(vFootPos, vDownDir, 1.f, RaycastBuffer))
+//	{
+//		m_pTransformCom->LookAt_Dir(XMVector3Cross(m_pTransformCom->Get_State(State::Right), PxVec3ToVector(RaycastBuffer.block.normal)));
+//		m_pTransformCom->Get_Controller()->setUpDirection(RaycastBuffer.block.normal);
+//	}
+//}  
+#pragma endregion
 
 	if (m_pGameInstance->Key_Pressing(DIK_W))
 	{
@@ -281,7 +283,7 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_SPACE) && m_eState != Player_State::DoubleJump)
 	{
-		m_isOnWall = false;
+		//m_isOnWall = false;
 		m_pTransformCom->Get_Controller()->setUpDirection(PxVec3(0.f, 1.f, 0.f));
 
 		if (m_hasJumped)

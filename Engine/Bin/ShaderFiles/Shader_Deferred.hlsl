@@ -25,6 +25,7 @@ Texture2D g_ShadeTexture;
 Texture2D g_SpecularTexture;
 Texture2D g_DepthTexture;
 Texture2D g_LightDepthTexture;
+Texture2D g_BlurTexture;
 Texture2D g_Texture;
 
 struct VS_IN
@@ -218,23 +219,14 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     float fNearViewZ7 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord7).y * g_vCamNF.y;
     float fNearViewZ8 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord8).y * g_vCamNF.y;
     
-    //fNearViewZ1 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ1 - g_vCamNF.y);
-    //fNearViewZ2 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ2 - g_vCamNF.y);
-    //fNearViewZ3 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ3 - g_vCamNF.y);
-    //fNearViewZ4 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ4 - g_vCamNF.y);
-    //fNearViewZ5 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ5 - g_vCamNF.y);
-    //fNearViewZ6 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x)5 * fNearViewZ6 - g_vCamNF.y);
-    //fNearViewZ7 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ7 - g_vCamNF.y);
-    //fNearViewZ8 = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * fNearViewZ8 - g_vCamNF.y);
-    
-    if (abs(fViewZ - fNearViewZ1) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
-        abs(fViewZ - fNearViewZ2) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
-        abs(fViewZ - fNearViewZ3) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
-        abs(fViewZ - fNearViewZ4) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
-        abs(fViewZ - fNearViewZ5) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
-        abs(fViewZ - fNearViewZ6) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
-        abs(fViewZ - fNearViewZ7) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/ ||
-        abs(fViewZ - fNearViewZ8) > 0.03f * fViewZ /*lerp(0.01f, 1100.f, fViewZ / g_vCamNF.y)*/)
+    if (abs(fViewZ - fNearViewZ1) > 0.03f * fViewZ ||
+        abs(fViewZ - fNearViewZ2) > 0.03f * fViewZ ||
+        abs(fViewZ - fNearViewZ3) > 0.03f * fViewZ ||
+        abs(fViewZ - fNearViewZ4) > 0.03f * fViewZ ||
+        abs(fViewZ - fNearViewZ5) > 0.03f * fViewZ ||
+        abs(fViewZ - fNearViewZ6) > 0.03f * fViewZ ||
+        abs(fViewZ - fNearViewZ7) > 0.03f * fViewZ ||
+        abs(fViewZ - fNearViewZ8) > 0.03f * fViewZ)
     {
         Output.vColor = fFogFactor * (vector) 0 + (1.f - fFogFactor) * vFogColor;
         return Output;
@@ -299,6 +291,54 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     return Output;
 }
 
+float Gaussian(float x, float sigma)
+{
+    return exp(-(x * x) / (2 * sigma * sigma)) / (sigma * sqrt(2 * 3.1415926));
+}
+
+PS_OUT PS_Main_Blur(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor = vector(0.f, 0.f, 0.f, 0.f);
+    
+    float2 fTexelSize = 1.f / float2(g_fScreenWidth, g_fScreenHeight);
+    
+    //float weight;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 1) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 2) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 3) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 4) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 5) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 6) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 7) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 8) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 9) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 10) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 11) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 12) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 13) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 14) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 15) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 16) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 17) * 1.f / 19.f;
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + fTexelSize * 18) * 1.f / 19.f;
+    
+    //weight = Gaussian(0, 2.0) * Gaussian(0, 2.0); // 가우시안 함수를 사용한 가중치
+    //Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord) * 1.f / 19.f;
+    
+    for (int y = -10; y <= 10; ++y)
+    {
+        for (int x = -10; x <= 10; ++x)
+        {
+            //float weight = Gaussian(x, 2.0) * Gaussian(y, 2.0); // 가우시안 함수를 사용한 가중치
+            Output.vColor += g_BlurTexture.Sample(LinearSampler, Input.vTexcoord + float2(x, y) * fTexelSize) * 1.f / 400.f;
+        }
+    }
+    
+    return Output;
+}
+
 technique11 DefaultTechnique
 {
     pass Debug
@@ -351,5 +391,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Deferred();
+    }
+
+    pass Blur
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_OnebyOne, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Blur();
     }
 };

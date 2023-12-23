@@ -42,6 +42,16 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Bloom"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_BlurTest"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	{
+		return E_FAIL;
+	}
+
 	//if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_LightDepth"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
 	//{
 	//	return E_FAIL;
@@ -77,6 +87,16 @@ HRESULT CRenderer::Init_Prototype()
 	}
 
 	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Shadow"), TEXT("Target_LightDepth"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_Blur"), TEXT("Target_Bloom"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_BlurTest"), TEXT("Target_BlurTest"))))
 	{
 		return E_FAIL;
 	}
@@ -126,6 +146,14 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_LightDepth"), _float2(ViewportDesc.Width - 50.f, 50.f), _float2(100.f, 100.f))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Bloom"), _float2(ViewportDesc.Width - 50.f, 150.f), _float2(100.f, 100.f))))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_BlurTest"), _float2(ViewportDesc.Width - 50.f, 250.f), _float2(100.f, 100.f))))
 	{
 		return E_FAIL;
 	}
@@ -192,6 +220,16 @@ HRESULT CRenderer::Draw_RenderGroup()
 		MSG_BOX("Failed to Render : Blend");
 		return E_FAIL;
 	}
+	if (FAILED(Render_Blur()))
+	{
+		MSG_BOX("Failed to Render : Blur");
+		return E_FAIL;
+	}
+	if (FAILED(Render_BlendBlur()))
+	{
+		MSG_BOX("Failed to Render : BlenderBlur");
+		return E_FAIL;
+	}
 	if (FAILED(Render_UI()))
 	{
 		MSG_BOX("Failed to Render : UI");
@@ -223,39 +261,77 @@ HRESULT CRenderer::Ready_ShadowDSV()
 	if (nullptr == m_pDevice)
 		return E_FAIL;
 
-	ID3D11Texture2D* pDepthStencilTexture = nullptr;
+	{
+		ID3D11Texture2D* pDepthStencilTexture = nullptr;
 
-	D3D11_TEXTURE2D_DESC	TextureDesc;
-	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+		D3D11_TEXTURE2D_DESC	TextureDesc;
+		ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 
-	TextureDesc.Width = D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION;
-	TextureDesc.Height = D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION / 2;
-	TextureDesc.MipLevels = 1;
-	TextureDesc.ArraySize = 1;
-	TextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		TextureDesc.Width = D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION;
+		TextureDesc.Height = D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION / 2;
+		TextureDesc.MipLevels = 1;
+		TextureDesc.ArraySize = 1;
+		TextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-	TextureDesc.SampleDesc.Quality = 0;
-	TextureDesc.SampleDesc.Count = 1;
+		TextureDesc.SampleDesc.Quality = 0;
+		TextureDesc.SampleDesc.Count = 1;
 
-	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
-	TextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL
-		/*| D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE*/;
-	TextureDesc.CPUAccessFlags = 0;
-	TextureDesc.MiscFlags = 0;
+		TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+		TextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL
+			/*| D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE*/;
+		TextureDesc.CPUAccessFlags = 0;
+		TextureDesc.MiscFlags = 0;
 
-	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr,
-										  &pDepthStencilTexture)))
-		return E_FAIL;
+		if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr,
+											  &pDepthStencilTexture)))
+			return E_FAIL;
 
-	/* RenderTarget */
-	/* ShaderResource */
-	/* DepthStencil */
+		/* RenderTarget */
+		/* ShaderResource */
+		/* DepthStencil */
 
-	if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr,
-												 &m_pShadowDSV)))
-		return E_FAIL;
+		if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr,
+													 &m_pShadowDSV)))
+			return E_FAIL;
 
-	Safe_Release(pDepthStencilTexture);
+		Safe_Release(pDepthStencilTexture);
+	}
+
+	{
+		ID3D11Texture2D* pDepthStencilTexture = nullptr;
+
+		D3D11_TEXTURE2D_DESC	TextureDesc;
+		ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+
+		TextureDesc.Width = 1280;
+		TextureDesc.Height = 720;
+		TextureDesc.MipLevels = 1;
+		TextureDesc.ArraySize = 1;
+		TextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+		TextureDesc.SampleDesc.Quality = 0;
+		TextureDesc.SampleDesc.Count = 1;
+
+		TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+		TextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL
+			/*| D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE*/;
+		TextureDesc.CPUAccessFlags = 0;
+		TextureDesc.MiscFlags = 0;
+
+		if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr,
+											  &pDepthStencilTexture)))
+			return E_FAIL;
+
+		/* RenderTarget */
+		/* ShaderResource */
+		/* DepthStencil */
+
+		if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr,
+													 &m_pBlurDSV)))
+			return E_FAIL;
+
+		Safe_Release(pDepthStencilTexture);
+	}
 
 	return S_OK;
 }
@@ -508,6 +584,60 @@ HRESULT CRenderer::Render_Deferred()
 	return S_OK;
 }
 
+HRESULT CRenderer::Render_Blur()
+{
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
+	{
+		return E_FAIL;
+	}
+
+	for (auto& pGameObject : m_RenderObjects[RG_Blur])
+	{
+		if (pGameObject)
+		{
+			if (FAILED(pGameObject->Render()))
+			{
+				MSG_BOX("Failed to Render");
+			}
+		}
+
+		Safe_Release(pGameObject);
+	}
+
+	m_RenderObjects[RG_Blur].clear();
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+	{
+		return E_FAIL;
+	}
+
+	//if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_BlurTest"))))
+	//{
+	//	return E_FAIL;
+	//}
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_Bloom"))))
+	{
+		return E_FAIL;
+	}
+	
+	if (FAILED(m_pShader->Begin(DefPass_Blur)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pVIBuffer->Render()))
+	{
+		return E_FAIL;
+	}
+
+	//if (FAILED(m_pGameInstance->End_MRT()))
+	//{
+	//	return E_FAIL;
+	//}
+
+	return S_OK;
+}
+
 HRESULT CRenderer::Render_NonLight()
 {
 	for (auto& pGameObject : m_RenderObjects[RG_NonLight])
@@ -549,6 +679,65 @@ HRESULT CRenderer::Render_Blend()
 	}
 
 	m_RenderObjects[RG_Blend].clear();
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_BlendBlur()
+{
+	if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_Blur"))))
+	{
+		return E_FAIL;
+	}
+
+	m_RenderObjects[RG_BlendBlur].sort([](CGameObject* pSrc, CGameObject* pDst)
+	{
+		return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
+	});
+
+	for (auto& pGameObject : m_RenderObjects[RG_BlendBlur])
+	{
+		if (pGameObject)
+		{
+			if (FAILED(pGameObject->Render()))
+			{
+				MSG_BOX("Failed to Render");
+			}
+		}
+
+		Safe_Release(pGameObject);
+	}
+
+	m_RenderObjects[RG_BlendBlur].clear();
+
+	if (FAILED(m_pGameInstance->End_MRT()))
+	{
+		return E_FAIL;
+	}
+
+	//if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_BlurTest"))))
+	//{
+	//	return E_FAIL;
+	//}
+
+	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_Bloom"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShader->Begin(DefPass_Blur)))
+	{
+		return E_FAIL;
+	}
+	if (FAILED(m_pVIBuffer->Render()))
+	{
+		return E_FAIL;
+	}
+
+	//if (FAILED(m_pGameInstance->End_MRT()))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }
@@ -609,6 +798,16 @@ HRESULT CRenderer::Render_Debug()
 	}
 
 	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Shadow"), m_pShader, m_pVIBuffer)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_Blur"), m_pShader, m_pVIBuffer)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Render_Debug_RT(TEXT("MRT_BlurTest"), m_pShader, m_pVIBuffer)))
 	{
 		return E_FAIL;
 	}

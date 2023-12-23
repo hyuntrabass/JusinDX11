@@ -103,6 +103,7 @@ void CKunai::Late_Tick(_float fTimeDelta)
 	__super::Compute_CamDistance();
 
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blend, this);
+	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_Blur, this);
 }
 
 HRESULT CKunai::Render()

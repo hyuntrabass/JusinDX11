@@ -91,6 +91,7 @@ void CChidori::Late_Tick(_float fTimeDelta)
 	LightDesc->vPosition = _float4(m_WorldMatrix._41, m_WorldMatrix._42, m_WorldMatrix._43, 1.f);
 
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
 }
 
 HRESULT CChidori::Render()
