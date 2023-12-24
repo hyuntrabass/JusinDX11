@@ -42,7 +42,7 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Bloom"), static_cast<_uint>(ViewportDesc.Width), static_cast<_uint>(ViewportDesc.Height), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Bloom"), static_cast<_uint>(ViewportDesc.Width/* * 0.5f*/), static_cast<_uint>(ViewportDesc.Height /** 0.5f*/), DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 	{
 		return E_FAIL;
 	}
@@ -298,39 +298,39 @@ HRESULT CRenderer::Ready_ShadowDSV()
 	}
 
 	{
-		ID3D11Texture2D* pDepthStencilTexture = nullptr;
+		//ID3D11Texture2D* pDepthStencilTexture = nullptr;
 
-		D3D11_TEXTURE2D_DESC	TextureDesc;
-		ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+		//D3D11_TEXTURE2D_DESC	TextureDesc;
+		//ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 
-		TextureDesc.Width = 1280;
-		TextureDesc.Height = 720;
-		TextureDesc.MipLevels = 1;
-		TextureDesc.ArraySize = 1;
-		TextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		//TextureDesc.Width = 1280;
+		//TextureDesc.Height = 720;
+		//TextureDesc.MipLevels = 1;
+		//TextureDesc.ArraySize = 1;
+		//TextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-		TextureDesc.SampleDesc.Quality = 0;
-		TextureDesc.SampleDesc.Count = 1;
+		//TextureDesc.SampleDesc.Quality = 0;
+		//TextureDesc.SampleDesc.Count = 1;
 
-		TextureDesc.Usage = D3D11_USAGE_DEFAULT;
-		TextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL
-			/*| D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE*/;
-		TextureDesc.CPUAccessFlags = 0;
-		TextureDesc.MiscFlags = 0;
+		//TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+		//TextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL
+		//	/*| D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE*/;
+		//TextureDesc.CPUAccessFlags = 0;
+		//TextureDesc.MiscFlags = 0;
 
-		if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr,
-											  &pDepthStencilTexture)))
-			return E_FAIL;
+		//if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr,
+		//									  &pDepthStencilTexture)))
+		//	return E_FAIL;
 
-		/* RenderTarget */
-		/* ShaderResource */
-		/* DepthStencil */
+		///* RenderTarget */
+		///* ShaderResource */
+		///* DepthStencil */
 
-		if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr,
-													 &m_pBlurDSV)))
-			return E_FAIL;
+		//if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr,
+		//											 &m_pBlurDSV)))
+		//	return E_FAIL;
 
-		Safe_Release(pDepthStencilTexture);
+		//Safe_Release(pDepthStencilTexture);
 	}
 
 	return S_OK;
@@ -591,6 +591,22 @@ HRESULT CRenderer::Render_Blur()
 		return E_FAIL;
 	}
 
+	//_uint iNumViewPorts{ 1 };
+
+	//D3D11_VIEWPORT OldViewportDesc{};
+
+	//m_pContext->RSGetViewports(&iNumViewPorts, &OldViewportDesc);
+	//
+	//D3D11_VIEWPORT TempViewPortDesc{};
+	//TempViewPortDesc.TopLeftX = 0;
+	//TempViewPortDesc.TopLeftY = 0;
+	//TempViewPortDesc.Width = OldViewportDesc.Width * 0.5f;
+	//TempViewPortDesc.Height = OldViewportDesc.Height * 0.5f;
+	//TempViewPortDesc.MinDepth = 0.f;
+	//TempViewPortDesc.MaxDepth = 1.f;
+
+	//m_pContext->RSSetViewports(iNumViewPorts, &TempViewPortDesc);
+
 	for (auto& pGameObject : m_RenderObjects[RG_Blur])
 	{
 		if (pGameObject)
@@ -616,6 +632,8 @@ HRESULT CRenderer::Render_Blur()
 	//	return E_FAIL;
 	//}
 
+	//m_pContext->RSSetViewports(iNumViewPorts, &OldViewportDesc);
+	
 	if (FAILED(m_pGameInstance->Bind_ShaderResourceView(m_pShader, "g_BlurTexture", TEXT("Target_Bloom"))))
 	{
 		return E_FAIL;
@@ -690,6 +708,22 @@ HRESULT CRenderer::Render_BlendBlur()
 		return E_FAIL;
 	}
 
+	//_uint iNumViewPorts{ 1 };
+
+	//D3D11_VIEWPORT OldViewportDesc{};
+
+	//m_pContext->RSGetViewports(&iNumViewPorts, &OldViewportDesc);
+
+	//D3D11_VIEWPORT TempViewPortDesc{};
+	//TempViewPortDesc.TopLeftX = 0;
+	//TempViewPortDesc.TopLeftY = 0;
+	//TempViewPortDesc.Width = OldViewportDesc.Width * 0.5f;
+	//TempViewPortDesc.Height = OldViewportDesc.Height * 0.5f;
+	//TempViewPortDesc.MinDepth = 0.f;
+	//TempViewPortDesc.MaxDepth = 1.f;
+
+	//m_pContext->RSSetViewports(iNumViewPorts, &TempViewPortDesc);
+
 	m_RenderObjects[RG_BlendBlur].sort([](CGameObject* pSrc, CGameObject* pDst)
 	{
 		return dynamic_cast<CBlendObject*>(pSrc)->Get_CamDistance() > dynamic_cast<CBlendObject*>(pDst)->Get_CamDistance();
@@ -715,6 +749,8 @@ HRESULT CRenderer::Render_BlendBlur()
 		return E_FAIL;
 	}
 
+	//m_pContext->RSSetViewports(iNumViewPorts, &OldViewportDesc);
+	
 	//if (FAILED(m_pGameInstance->Begin_MRT(TEXT("MRT_BlurTest"))))
 	//{
 	//	return E_FAIL;

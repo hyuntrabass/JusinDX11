@@ -50,6 +50,7 @@ void CEffect_Warp::Late_Tick(_float fTimeDelta)
 {
 	__super::Compute_CamDistance();
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
+	m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
 }
 
 HRESULT CEffect_Warp::Render()

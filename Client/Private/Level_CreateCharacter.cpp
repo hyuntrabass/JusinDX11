@@ -29,7 +29,7 @@ HRESULT CLevel_CreateCharacter::Init()
 
 	if (FAILED(CUI_Manager::Get_Instance()->Ready_UI_Custom()))
 	{
-		MSG_BOX("Failed to Ready UI_Tuto");
+		MSG_BOX("Failed to Ready UI_CreateCharacter");
 	}
 
 	m_pGameInstance->StopAll();

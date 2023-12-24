@@ -26,6 +26,12 @@ private:
 	CTexture* m_pFrameTextureCom{ nullptr };
 	CTexture* m_pSkillTextureCom{ nullptr };
 	CTexture* m_pMaskTextureCom{ nullptr };
+	CTexture* m_pGaugeMaskTextureCom{ nullptr };
+	class CUI_Manager* m_pUIManager{ nullptr };
+
+private:
+	_uint m_iSkillNumber{};
+	_float m_fReadyRatio{ 0.5f };
 
 private:
 	HRESULT Add_Components();

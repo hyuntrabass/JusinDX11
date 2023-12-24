@@ -1,6 +1,7 @@
 #include "Level_Tutorial.h"
 #include "Level_Loading.h"
 #include "Trigger_Manager.h"
+#include "UI_Manager.h"
 
 CLevel_Tutorial::CLevel_Tutorial(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -180,24 +181,9 @@ HRESULT CLevel_Tutorial::Ready_Lights()
 
 HRESULT CLevel_Tutorial::Ready_UIs()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI_HpBar"), TEXT("Prototype_GameObject_UI_HpBar"))))
+	if (FAILED(CUI_Manager::Get_Instance()->Ready_UI_Tuto()))
 	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_HpBar_Base"))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_SlotBase_Skill"))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_HpBar_SlotBase_Tool"))))
-	{
-		return E_FAIL;
+		MSG_BOX("Failed to Ready UI_Tuto");
 	}
 
 	return S_OK;

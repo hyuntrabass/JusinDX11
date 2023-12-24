@@ -102,6 +102,7 @@ namespace Client
 		VTPass_Button,
 		VTPass_Background,
 		VTPass_Mask_Texture,
+		VTPass_Inv_Mask_Texture,
 		VTPass_Mask_Color,
 		VTPass_Mask_ColorAlpha,
 		VTPass_HP,

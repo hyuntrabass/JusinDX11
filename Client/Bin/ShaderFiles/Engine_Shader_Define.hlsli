@@ -86,3 +86,12 @@ BlendState BS_OnebyOne
     DestBlend = One;
     BlendOp = Add;
 };
+
+BlendState BS_Half
+{
+    BlendEnable[0] = true;
+
+    SrcBlend = Inv_Dest_Alpha;
+    DestBlend = Dest_Alpha;
+    BlendOp = Add;
+};

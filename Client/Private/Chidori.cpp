@@ -10,6 +10,11 @@ CChidori::CChidori(const CChidori& rhs)
 {
 }
 
+void CChidori::Set_RushingState(const _bool isRushing)
+{
+	m_isRushing = isRushing;
+}
+
 HRESULT CChidori::Init_Prototype()
 {
 	return S_OK;
@@ -86,6 +91,15 @@ void CChidori::Late_Tick(_float fTimeDelta)
 {
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixScaling(1.5f, 1.5f, 1.5f) * XMMatrixTranslation(m_pSocketMatrix->_41, m_pSocketMatrix->_42, m_pSocketMatrix->_43) * m_pPlayerTransform->Get_World_Matrix());
 
+	//if (m_fTraceTimer > 0.1f)
+	if (m_isRushing)
+	{
+		_float3 vPos{ m_WorldMatrix._41, m_WorldMatrix._42, m_WorldMatrix._43 };
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_LeftCidori"), TEXT("Prototype_GameObject_LeftChidori"), &vPos);
+		m_fTraceTimer = {};
+	}
+	m_fTraceTimer += fTimeDelta;
+
 	LIGHT_DESC* LightDesc{};
 	LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Chidori"));
 	LightDesc->vPosition = _float4(m_WorldMatrix._41, m_WorldMatrix._42, m_WorldMatrix._43, 1.f);
@@ -131,7 +145,7 @@ HRESULT CChidori::Render()
 			{
 				return E_FAIL;
 			}
-			
+
 			//_float4 vColor{ 1.f, 0.f, 0.f, 1.f };
 			//if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 			//{

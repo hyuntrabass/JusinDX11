@@ -4,15 +4,12 @@
 
 BEGIN(Client)
 
-class CChidori : public CBlendObject
+class CLeftChidori : public CBlendObject
 {
 private:
-	CChidori(_dev pDevice, _context pContext);
-	CChidori(const CChidori& rhs);
-	virtual ~CChidori() = default;
-
-public:
-	void Set_RushingState(const _bool isRushing);
+	CLeftChidori(_dev pDevice, _context pContext);
+	CLeftChidori(const CLeftChidori& rhs);
+	virtual ~CLeftChidori() = default;
 
 public:
 	HRESULT Init_Prototype() override;
@@ -22,29 +19,24 @@ public:
 	HRESULT Render() override;
 
 private:
-	static const _uint iNumModels{ 9 };
+	static const _uint m_iNumModels{ 4 };
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	CModel* m_pModelCom[iNumModels]{ nullptr };
+	CModel* m_pModelCom[m_iNumModels]{ nullptr };
 	CTexture* m_pMaskTextureCom{ nullptr };
-	CTransform* m_pPlayerTransform{ nullptr };
 
 private:
-	_float44* m_pSocketMatrix{};
-	_float44 m_WorldMatrix{};
-	_float3 m_vUVTransform{ 1.f, 0.f , -1.f };
+	_float3 m_vPos{};
+	_float m_fUVTransform{};
 	_float m_fTimer{};
-	_float m_fTraceTimer{};
-	LIGHT_DESC m_OriginMainLight{};
-	LIGHT_DESC m_OriginPlayerLight{};
-	_bool m_isRushing{};
+	_uint m_iModelNumber{};
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CChidori* Create(_dev pDevice, _context pContext);
+	static CLeftChidori* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

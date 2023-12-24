@@ -32,3 +32,4 @@
 #include "Effect_Warp.h"
 #include "Aim.h"
 #include "Hit.h"
+#include "LeftChidori.h"

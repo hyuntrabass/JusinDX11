@@ -1,4 +1,5 @@
 #include "SlotBase_Skill.h"
+#include "UI_Manager.h"
 
 CSlotBase_Skill::CSlotBase_Skill(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -22,10 +23,20 @@ HRESULT CSlotBase_Skill::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_fSizeX = 94.f;
-	m_fSizeY = 94.f;
+	if (not pArg)
+	{
+		MSG_BOX("No Argument!");
+	}
 
-	m_fX = 1180.f;
+	m_pUIManager = CUI_Manager::Get_Instance();
+	Safe_AddRef(m_pUIManager);
+
+	m_iSkillNumber = *reinterpret_cast<_uint*>(pArg);
+
+	m_fSizeX = 94.f * 0.8f;
+	m_fSizeY = 94.f * 0.8f;
+
+	m_fX = 1180.f - m_fSizeX * m_iSkillNumber;
 	m_fY = 630.f;
 
 	m_fDepth = 1.f;
@@ -37,13 +48,19 @@ HRESULT CSlotBase_Skill::Init(void* pArg)
 
 void CSlotBase_Skill::Tick(_float fTimeDelta)
 {
-	m_fSizeX = 94.f * 0.8f;
-	m_fSizeY = 94.f * 0.8f;
-
-	m_fX = 1180.f;
-	m_fY = 630.f;
-
-	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+	if (not m_pUIManager->Is_SkillUsable(m_iSkillNumber))
+	{
+		if (m_fReadyRatio < -0.5f)
+		{
+			m_fReadyRatio = 0.5f;
+		}
+		m_fReadyRatio -= fTimeDelta / 10.f;
+	}
+	
+	if (m_fReadyRatio < - 0.5f)
+	{
+		m_pUIManager->Skill_Ready(m_iSkillNumber);
+	}
 }
 
 void CSlotBase_Skill::Late_Tick(_float fTimeDelta)
@@ -98,7 +115,17 @@ HRESULT CSlotBase_Skill::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(VTPass_Mask_Texture)))
+	if (FAILED(m_pGaugeMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_SkillReadyTexture")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fHpRatio", &m_fReadyRatio, sizeof m_fReadyRatio)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pShaderCom->Begin(VTPass_Inv_Mask_Texture)))
 	{
 		return E_FAIL;
 	}
@@ -139,6 +166,11 @@ HRESULT CSlotBase_Skill::Add_Components()
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_Mask"), TEXT("Com_Texture_Mask"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_GaugeMask"), TEXT("Com_Texture_GaugeMask"), reinterpret_cast<CComponent**>(&m_pGaugeMaskTextureCom))))
 	{
 		return E_FAIL;
 	}
@@ -202,8 +234,11 @@ void CSlotBase_Skill::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pUIManager);
 	Safe_Release(m_pFrameTextureCom);
 	Safe_Release(m_pBaseTextureCom);
+	Safe_Release(m_pSkillTextureCom);
+	Safe_Release(m_pMaskTextureCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pVIBufferCom);

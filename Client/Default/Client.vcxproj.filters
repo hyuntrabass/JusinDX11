@@ -172,6 +172,9 @@
     <Filter Include="02.GameObjects\00.GUI\02.Hud\Hit">
       <UniqueIdentifier>{925a58ea-c449-4af8-ae48-cc87afb833b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\03.Player\Projectile\Chidori\Leftover">
+      <UniqueIdentifier>{d3857c92-ee2e-4801-9d4a-190215beb284}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -327,6 +330,9 @@
     <ClInclude Include="..\public\Hit.h">
       <Filter>02.GameObjects\00.GUI\02.Hud\Hit</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\LeftChidori.h">
+      <Filter>02.GameObjects\03.Player\Projectile\Chidori\Leftover</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -479,6 +485,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Hit.cpp">
       <Filter>02.GameObjects\00.GUI\02.Hud\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\LeftChidori.cpp">
+      <Filter>02.GameObjects\03.Player\Projectile\Chidori\Leftover</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 #include "Kurama.h"
 #include "CommonTrail.h"
+#include "UI_Manager.h"
 
 CKurama::CKurama(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -189,6 +190,7 @@ void CKurama::Set_Damage(_int iDamage)
 		
 		m_iSuperArmor = {};
 	}
+	CUI_Manager::Get_Instance()->Create_Hit();
 }
 
 HRESULT CKurama::Add_Components()

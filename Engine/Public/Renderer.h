@@ -52,7 +52,7 @@ private:
 	_float44 m_WorldMatrix{}, m_ViewMatrix{}, m_ProjMatrix{};
 
 	ID3D11DepthStencilView* m_pShadowDSV{ nullptr };
-	ID3D11DepthStencilView* m_pBlurDSV{ nullptr };
+	//ID3D11DepthStencilView* m_pBlurDSV{ nullptr };
 
 private:
 	HRESULT Ready_ShadowDSV();

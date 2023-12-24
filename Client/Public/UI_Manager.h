@@ -21,6 +21,8 @@ public:
 	void Create_Aim();
 	void Delete_Aim();
 	void Create_Hit();
+	_bool Use_Skill(_uint iSkillNumber);
+	void Skill_Ready(_uint iSkillNumber);
 
 	const _bool Is_ButtonPushed(_uint iIndex) const;
 	const _bool is_Activated(_uint iIndex) const;
@@ -28,6 +30,7 @@ public:
 	const _uint& Get_PageIndex() const;
 	const _uint Get_sizeofButtons() const;
 	const _float& Get_HPRatio(const wstring& strHPTag);
+	const _bool& Is_SkillUsable(const _uint iSkillNumber);
 
 public:
 	HRESULT Init();
@@ -38,12 +41,14 @@ public:
 public:
 	HRESULT Ready_UI_Logo();
 	HRESULT Ready_UI_Custom();
+	HRESULT Ready_UI_Tuto();
 
 private:
 	CGameInstance* m_pGameInstance{ nullptr };
 
 	class CAim* m_pAim{ nullptr };
 	class CHit* m_pHit{ nullptr };
+	_bool m_isSkillUsable[3]{};
 	map<const wstring, _float> m_HPs{};
 	vector<class CButton_Common*> m_Buttons{};
 	_uint m_iButtonIndex{};

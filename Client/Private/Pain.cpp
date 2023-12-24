@@ -1,4 +1,5 @@
 #include "Pain.h"
+#include "UI_Manager.h"
 
 CPain::CPain(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -141,6 +142,7 @@ void CPain::Set_Damage(_int iDamage)
 	m_AnimationDesc.bRestartAnimation = true;
 	m_pModelCom->Set_Animation(m_AnimationDesc);
 	m_AnimationDesc.bRestartAnimation = false;
+	CUI_Manager::Get_Instance()->Create_Hit();
 }
 
 HRESULT CPain::Add_Components()

@@ -6,6 +6,7 @@
 #include "FootEffect.h"
 #include "Trigger_Manager.h"
 #include "RasenShuriken.h"
+#include "Chidori.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
@@ -400,11 +401,15 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_2))
 	{
-		m_eState = Player_State::Chidori;
+		if (CUI_Manager::Get_Instance()->Use_Skill(0))
+		{
+			m_eState = Player_State::Chidori;
+		}
 	}
 
 	if (not (m_eState == Player_State::Wire and m_pKunai) and
-		m_eState != Player_State::RasenShuriken)
+		m_eState != Player_State::RasenShuriken or
+		m_eState != Player_State::Chidori)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
 	}
@@ -833,7 +838,6 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			}
 			if (m_fAttTimer > 0.5f)
 			{
-				CUI_Manager::Get_Instance()->Create_Hit();
 				m_pGameInstance->Attack_Monster(m_pCollider_Att, 10);
 				m_bAttacked = true;
 				if (m_pGameInstance->CheckCollision_Monster(m_pCollider_Att))
@@ -882,7 +886,8 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		break;
 	case Client::Player_State::Chidori:
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Chidori_Charge_Lv2toLv3))
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Chidori_Charge_Lv2toLv3) or
+			m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Aerial_Chidori_Charge_Lv2toLv3))
 		{
 			m_Animation = {};
 			m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Lv2toLv3_Loop;
@@ -890,7 +895,12 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		m_fTimer += fTimeDelta;
 
-		if (m_fTimer > 2.f and m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Chidori_Charge_Lv2toLv3_Loop)
+		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Chidori_Charge_Lv2toLv3_Loop)
+		{
+			m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()));
+		}
+
+		if (m_fTimer > 2.f and m_pGameInstance->Key_Up(DIK_2))
 		{
 			m_Animation = {};
 			m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Conect_toRun;
@@ -908,12 +918,14 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		{
 			m_pTransformCom->Set_Speed(m_fRunSpeed * 6.f);
 			m_pTransformCom->Go_To_Dir(m_pTransformCom->Get_State(State::Look), fTimeDelta);
+			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(true);
 		}
 		if (m_fTimer > 2.5f)
 		{
 			m_Animation = {};
 			m_Animation.iAnimIndex = Ninjutsu_Chidori_Attack_Lv3_End;
 			m_Animation.bSkipInterpolation = true;
+			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(false);
 		}
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Chidori_Attack_Lv3_End))
 		{

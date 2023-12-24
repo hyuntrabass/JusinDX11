@@ -49,6 +49,7 @@ void CEffect_Hit::Tick(_float fTimeDelta)
 void CEffect_Hit::Late_Tick(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonLight, this);
+	m_pRendererCom->Add_RenderGroup(RG_Blur, this);
 }
 
 HRESULT CEffect_Hit::Render()

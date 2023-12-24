@@ -61,6 +61,19 @@ void CUI_Manager::Create_Hit()
 	}
 }
 
+_bool CUI_Manager::Use_Skill(_uint iSkillNumber)
+{
+	_bool UseSkill{ m_isSkillUsable[iSkillNumber] };
+	m_isSkillUsable[iSkillNumber] = false;
+	
+	return UseSkill;
+}
+
+void CUI_Manager::Skill_Ready(_uint iSkillNumber)
+{
+	m_isSkillUsable[iSkillNumber] = true;
+}
+
 const _bool CUI_Manager::Is_ButtonPushed(_uint iIndex) const
 {
 	return m_Buttons[iIndex]->Is_Pushed();
@@ -96,6 +109,11 @@ const _float& CUI_Manager::Get_HPRatio(const wstring& strHPTag)
 	}
 
 	return iter->second;
+}
+
+const _bool& CUI_Manager::Is_SkillUsable(const _uint iSkillNumber)
+{
+	return m_isSkillUsable[iSkillNumber];
 }
 
 HRESULT CUI_Manager::Init()
@@ -375,6 +393,40 @@ HRESULT CUI_Manager::Ready_UI_Custom()
 	}
 	m_Buttons.emplace_back(pButton);
 	Safe_AddRef(pButton);
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::Ready_UI_Tuto()
+{
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI_HpBar"), TEXT("Prototype_GameObject_UI_HpBar"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_HpBar_Base"))))
+	{
+		return E_FAIL;
+	}
+
+	_uint iSkillNum{};
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_SlotBase_Skill"), &iSkillNum)))
+	{
+		return E_FAIL;
+	}
+
+	iSkillNum++;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_SlotBase_Skill"), &iSkillNum)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_HpBar_SlotBase_Tool"))))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }

@@ -1,4 +1,5 @@
 #include "Sandman.h"
+#include "UI_Manager.h"
 
 CSandman::CSandman(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -210,6 +211,7 @@ void CSandman::Set_Damage(_int iDamage)
 	Anim.bRestartAnimation = true;
 	m_pModelCom->Set_Animation(Anim);
 	m_Hit = true;
+	CUI_Manager::Get_Instance()->Create_Hit();
 }
 
 HRESULT CSandman::Add_Components()

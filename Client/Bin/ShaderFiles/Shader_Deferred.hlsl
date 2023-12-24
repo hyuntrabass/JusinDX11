@@ -336,6 +336,8 @@ PS_OUT PS_Main_Blur(PS_IN Input)
         }
     }
     
+    //Output.vColor = g_BlurTexture.Sample(LinearSampler, Input.vTexcoord);
+    
     return Output;
 }
 
