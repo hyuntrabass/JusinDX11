@@ -147,9 +147,13 @@ private:
 
 	enum State_Char
 	{
+		State_None,
+		State_Appear,
 		State_Idle,
-		State_Run,
-		State_Walk,
+		State_Chase,
+		State_GoHome,
+		State_Beaten,
+		State_Beaten_Electiric,
 		State_Attack,
 		State_Die,
 	};
@@ -164,17 +168,20 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
-	virtual void Set_Damage(_int iDamage) override;
+	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
 	CCollider* m_pCollider_Hit{ nullptr };
+	CCollider* m_pCollider_Att{ nullptr };
+	CTexture* m_pDissolveTextureCom{ nullptr };
 
 private:
 	State_Char m_eCurrState{};
 	State_Char m_ePrevState{};
+	CTransform* m_pPlayerTransform{ nullptr };
 
 	_float4 m_vOriginPos{};
 	_float4 m_vTargetDir{};
@@ -183,23 +190,21 @@ private:
 	_float m_fRunSpeed{};
 	_float m_fAttackRange{};
 	_float m_fSearchRange{};
-	_float m_fAttTime{};
+	_float m_fTimer{};
 
 	_uint m_iPrevAnimIndex{};
 	_bool m_isRunning{};
 	_float m_fSliding{ 1.f };
-
-	_bool m_Hit{};
+	_float m_fDissolveRatio{};
 
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();
 
 	void Artificial_Intelligence(_float fTimeDelta);
-	void Idle(_float fTimeDelta);
-	void Move(_float fTimeDelta);
+	void Init_State();
+	void Tick_State(_float fTimeDelta);
 
-	void Change_State();
 
 public:
 	static CSandman* Create(_dev pDevice, _context pContext);

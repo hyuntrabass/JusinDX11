@@ -132,7 +132,7 @@ HRESULT CPain::Render()
 	return S_OK;
 }
 
-void CPain::Set_Damage(_int iDamage)
+void CPain::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
 

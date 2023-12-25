@@ -53,6 +53,7 @@ enum class Player_State
 	Attack,
 	RasenShuriken,
 	Chidori,
+	Aerial_Chidori,
 };
 
 class CPlayer final : public CBlendObject
@@ -223,7 +224,7 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
-	virtual void Set_Damage(_int iDamage) override;
+	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
 
 private:
 	Player_State m_eState{};

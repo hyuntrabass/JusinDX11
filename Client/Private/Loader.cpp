@@ -206,6 +206,21 @@ HRESULT CLoader::Load_Logo()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_01"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_01_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_08"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_08_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_16"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_16_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gradation_Rainbow_04"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/GradationMap/T_EFF_GMS_Rainbow_04_BC.png")))))
 	{
 		return E_FAIL;

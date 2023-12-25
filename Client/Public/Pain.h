@@ -217,7 +217,8 @@ public:
 	void Tick(_float fTimeDelta) override;
 	void Late_Tick(_float fTimeDelta) override;
 	HRESULT Render() override;
-	virtual void Set_Damage(_int iDamage) override;
+	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) override;
+
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };

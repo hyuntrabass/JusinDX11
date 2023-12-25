@@ -95,7 +95,7 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	virtual void Set_Damage(_int iDamage) override;
+	virtual void Set_Damage(_int iDamage, _uint iDamageType) override;
 
 private:
 	CRenderer* m_pRendererCom{ nullptr };

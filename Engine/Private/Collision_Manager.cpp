@@ -61,13 +61,13 @@ void CCollision_Manager::Delete_CollisionObject(CGameObject* pObject, _bool IsPl
 	}
 }
 
-void CCollision_Manager::Attack_Monster(CCollider* pCollider, _uint iDamage)
+void CCollision_Manager::Attack_Monster(CCollider* pCollider, _uint iDamage, _uint iDamageType)
 {
 	for (auto& Monster : m_Monsters)
 	{
 		if (Monster.second->Intersect(pCollider))
 		{
-			Monster.first->Set_Damage(iDamage);
+			Monster.first->Set_Damage(iDamage, iDamageType);
 		}
 	}
 }
@@ -85,11 +85,11 @@ _bool CCollision_Manager::CheckCollision_Monster(CCollider* pCollider)
 	return false;
 }
 
-void CCollision_Manager::Attack_Player(CCollider* pCollider, _uint iDamage)
+void CCollision_Manager::Attack_Player(CCollider* pCollider, _uint iDamage, _uint iDamageType)
 {
 	if (pCollider->Intersect(m_pPlayerHitCollider))
 	{
-		m_pPlayer->Set_Damage(iDamage);
+		m_pPlayer->Set_Damage(iDamage, iDamageType);
 	}
 }
 

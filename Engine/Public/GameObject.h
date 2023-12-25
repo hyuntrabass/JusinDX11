@@ -16,7 +16,7 @@ public:
 	const _int& Get_HP() const { return m_iHP; }
 
 	void Kill() { m_isDead = true; }
-	virtual void Set_Damage(_int iDamage) { m_iHP -= iDamage; }
+	virtual void Set_Damage(_int iDamage, _uint iDamageType = 0) { m_iHP -= iDamage; }
 
 public:
 	virtual HRESULT Init_Prototype();

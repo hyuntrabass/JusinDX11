@@ -174,7 +174,7 @@ HRESULT CKurama::Render()
 	return S_OK;
 }
 
-void CKurama::Set_Damage(_int iDamage)
+void CKurama::Set_Damage(_int iDamage, _uint iDamageType = 0)
 {
 	m_iHP -= iDamage;
 

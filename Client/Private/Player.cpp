@@ -208,7 +208,7 @@ HRESULT CPlayer::Render()
 	return S_OK;
 }
 
-void CPlayer::Set_Damage(_int iDamage)
+void CPlayer::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
 
@@ -403,13 +403,20 @@ void CPlayer::Move(_float fTimeDelta)
 	{
 		if (CUI_Manager::Get_Instance()->Use_Skill(0))
 		{
-			m_eState = Player_State::Chidori;
+			if (m_pTransformCom->Is_OnGround())
+			{
+				m_eState = Player_State::Chidori;
+			}
+			else
+			{
+				m_eState = Player_State::Aerial_Chidori;
+			}
 		}
 	}
 
 	if (not (m_eState == Player_State::Wire and m_pKunai) and
-		m_eState != Player_State::RasenShuriken or
-		m_eState != Player_State::Chidori)
+		m_eState != Player_State::RasenShuriken and
+		m_eState != Player_State::Aerial_Chidori)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
 	}
@@ -504,7 +511,7 @@ void CPlayer::Init_State()
 			Safe_Release(m_pKunai);
 			CUI_Manager::Get_Instance()->Delete_Aim();
 		}
-		else if (m_ePrevState == Player_State::Chidori)
+		else if (m_ePrevState == Player_State::Chidori or m_ePrevState == Player_State::Aerial_Chidori)
 		{
 			Safe_Release(m_pSkillEffect);
 		}
@@ -601,19 +608,22 @@ void CPlayer::Init_State()
 			CUI_Manager::Get_Instance()->Create_Aim();
 			break;
 		case Client::Player_State::Chidori:
-			if (m_pTransformCom->Is_OnGround())
-			{
-				m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Lv2toLv3;
-			}
-			else
-			{
-				m_Animation.iAnimIndex = Ninjutsu_Aerial_Chidori_Charge_Lv2toLv3;
-			}
-
+			m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Lv2toLv3;
 			m_fTimer = {};
+			m_bAttacked = false;
 
 			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Chidori"), &m_LeftHandMatrix);
 			//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"));
+			CUI_Manager::Get_Instance()->Create_Aim();
+			break;
+		case Client::Player_State::Aerial_Chidori:
+			m_Animation.iAnimIndex = Ninjutsu_Aerial_Chidori_Charge_Lv2toLv3;
+			m_fTimer = {};
+			m_bAttacked = false;
+
+			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Chidori"), &m_LeftHandMatrix);
+			//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"));
+			CUI_Manager::Get_Instance()->Create_Aim();
 			break;
 		}
 
@@ -886,8 +896,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		break;
 	case Client::Player_State::Chidori:
-		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Chidori_Charge_Lv2toLv3) or
-			m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Aerial_Chidori_Charge_Lv2toLv3))
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Chidori_Charge_Lv2toLv3))
 		{
 			m_Animation = {};
 			m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Lv2toLv3_Loop;
@@ -895,12 +904,12 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		m_fTimer += fTimeDelta;
 
-		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Chidori_Charge_Lv2toLv3_Loop)
+		if (not m_bAttacked)
 		{
 			m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()));
 		}
 
-		if (m_fTimer > 2.f and m_pGameInstance->Key_Up(DIK_2))
+		if (m_fTimer > 2.f and not m_pGameInstance->Key_Pressing(DIK_2))
 		{
 			m_Animation = {};
 			m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Conect_toRun;
@@ -913,6 +922,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			m_Animation.bSkipInterpolation = true;
 			m_Animation.isLoop = true;
 			m_Animation.fAnimSpeedRatio = 3.f;
+			m_fTimer = {};
 		}
 		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Chidori_Run_Lv3_Loop)
 		{
@@ -920,14 +930,67 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			m_pTransformCom->Go_To_Dir(m_pTransformCom->Get_State(State::Look), fTimeDelta);
 			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(true);
 		}
-		if (m_fTimer > 2.5f)
+		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Chidori_Run_Lv3_Loop and m_fTimer > 0.5f)
 		{
 			m_Animation = {};
 			m_Animation.iAnimIndex = Ninjutsu_Chidori_Attack_Lv3_End;
 			m_Animation.bSkipInterpolation = true;
 			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(false);
+			CUI_Manager::Get_Instance()->Delete_Aim();
+			m_bAttacked = true;
 		}
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Chidori_Attack_Lv3_End))
+		{
+			m_fTimer = {};
+			m_eState = Player_State::Idle;
+		}
+		break;
+	case Client::Player_State::Aerial_Chidori:
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Aerial_Chidori_Charge_Lv2toLv3))
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Ninjutsu_Aerial_Chidori_Charge_Lv2toLv3_Loop;
+			m_Animation.isLoop = true;
+		}
+		m_fTimer += fTimeDelta;
+
+		if (not m_bAttacked)
+		{
+			m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()));
+		}
+
+		if (m_fTimer > 2.f and not m_pGameInstance->Key_Pressing(DIK_2))
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Ninjutsu_Aerial_Chidori_Charge_Conect_toRun;
+			m_Animation.bSkipInterpolation = true;
+		}
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Aerial_Chidori_Charge_Conect_toRun))
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Ninjutsu_Aerial_Chidori_Run_Loop;
+			m_Animation.bSkipInterpolation = true;
+			m_Animation.isLoop = true;
+			m_Animation.fAnimSpeedRatio = 3.f;
+			m_fTimer = {};
+		}
+		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Aerial_Chidori_Run_Loop)
+		{
+			m_pTransformCom->Set_Speed(m_fRunSpeed * 6.f);
+			m_pTransformCom->Go_To_Dir(m_pTransformCom->Get_State(State::Look), fTimeDelta);
+			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(true);
+			m_pGameInstance->Attack_Monster(m_pCollider_Att, 30.f, DAM_ELECTRIC);
+		}
+		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Aerial_Chidori_Run_Loop and m_fTimer > 0.5f)
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Ninjutsu_Aerial_Chidori_Attack_End;
+			m_Animation.bSkipInterpolation = true;
+			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(false);
+			CUI_Manager::Get_Instance()->Delete_Aim();
+			m_bAttacked = true;
+		}
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Aerial_Chidori_Attack_End))
 		{
 			m_fTimer = {};
 			m_eState = Player_State::Idle;

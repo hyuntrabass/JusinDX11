@@ -84,14 +84,14 @@ void CRasenShuriken::Tick(_float fTimeDelta)
 		m_fCoreAlpha = Lerp(0.7f, 0.2f, m_fTimer);
 		m_fScaleRatio += fTimeDelta;
 
-		if (m_fTimer > 0.5)
+		if (m_fTimer > 0.25)
 		{
-			m_pGameInstance->Attack_Monster(m_pColliderCom, 20);
+			m_pGameInstance->Attack_Monster(m_pColliderCom, 10);
 			m_fTimer = {};
 			m_iAttCount++;
 		}
 
-		if (m_iAttCount >= 5)
+		if (m_iAttCount >= 10)
 		{
 			m_eState = State_Dissolve;
 			m_fScaleRatio = {};

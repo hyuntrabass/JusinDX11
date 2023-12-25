@@ -43,6 +43,14 @@ namespace Client
 		End
 	};
 
+	enum DAMAGE_TYPE
+	{
+		DAM_NORMAL,
+		DAM_ELECTRIC,
+		DAM_FIRE,
+		DAM_END
+	};
+	
 	struct ObjectInfo
 	{
 		wstring strPrototypeTag{};

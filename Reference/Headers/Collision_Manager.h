@@ -12,9 +12,9 @@ private:
 public:
 	HRESULT Register_CollisionObject(class CGameObject* pObject, class CCollider* pHitCollider, _bool IsPlayer = false);
 	void Delete_CollisionObject(class CGameObject* pObject, _bool IsPlayer);
-	void Attack_Monster(class CCollider* pCollider, _uint iDamage);
+	void Attack_Monster(class CCollider* pCollider, _uint iDamage, _uint iDamageType);
 	_bool CheckCollision_Monster(class CCollider* pCollider);
-	void Attack_Player(class CCollider* pCollider, _uint iDamage);
+	void Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType);
 	_bool CheckCollision_Player(class CCollider* pCollider);
 
 private:

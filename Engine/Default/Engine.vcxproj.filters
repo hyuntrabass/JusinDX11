@@ -148,9 +148,6 @@
     <Filter Include="01.Utility\03.Components\Collider\Collision_Manager">
       <UniqueIdentifier>{5c201deb-e8f2-4c4c-9af0-2dc3dffe596e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\03.Components\Collider\Manager">
-      <UniqueIdentifier>{cd90110f-585d-4463-b088-c223622db4ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\11.RenderTargets">
       <UniqueIdentifier>{f33005ba-e773-4b4f-86c2-750f7a773314}</UniqueIdentifier>
     </Filter>
@@ -297,9 +294,6 @@
     <ClCompile Include="..\private\Collider.cpp">
       <Filter>01.Utility\03.Components\Collider</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Collision_Manager.cpp">
-      <Filter>01.Utility\03.Components\Collider\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\RenderTarget.cpp">
       <Filter>01.Utility\11.RenderTargets</Filter>
     </ClCompile>
@@ -314,6 +308,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sound_Manager.cpp">
       <Filter>01.Utility\08.Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Collision_Manager.cpp">
+      <Filter>01.Utility\03.Components\Collider\Collision_Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -461,9 +458,6 @@
     <ClInclude Include="..\public\Collider.h">
       <Filter>01.Utility\03.Components\Collider</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Collision_Manager.h">
-      <Filter>01.Utility\03.Components\Collider\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\RenderTarget.h">
       <Filter>01.Utility\11.RenderTargets</Filter>
     </ClInclude>
@@ -475,6 +469,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Sound_Manager.h">
       <Filter>01.Utility\08.Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Collision_Manager.h">
+      <Filter>01.Utility\03.Components\Collider\Collision_Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

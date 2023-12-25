@@ -23,18 +23,9 @@ HRESULT CSandman::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	if (rand() & 2)
-	{
-		ANIM_DESC Anim{};
-		Anim.iAnimIndex = Anim_etc_Appearance_Type01;
-		m_pModelCom->Set_Animation(Anim);
-	}
-	else
-	{
-		ANIM_DESC Anim{};
-		Anim.iAnimIndex = Anim_etc_Appearance_Type02;
-		m_pModelCom->Set_Animation(Anim);
-	}
+	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
+	
+	m_eCurrState = State_Appear;
 
 	if (pArg)
 	{
@@ -42,15 +33,13 @@ HRESULT CSandman::Init(void* pArg)
 
 		m_vOriginPos = Info.vPos;
 
-		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_vOriginPos));
+		m_pTransformCom->Set_Position(_float3(m_vOriginPos.x, m_vOriginPos.y, m_vOriginPos.z));
 		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&Info.vLook));
 	}
 
-	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
-
 	m_fWalkSpeed = 2.f;
 	m_fRunSpeed = 5.f;
-	m_fAttackRange = 3.f;
+	m_fAttackRange = 2.f;
 	m_fSearchRange = 20.f;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit);
@@ -66,15 +55,6 @@ void CSandman::Tick(_float fTimeDelta)
 	//	return;
 	//}
 
-	if (m_iHP < 0)
-	{
-		m_isDead = true;
-		m_pGameInstance->Delete_CollisionObject(this);
-		_float4 vPos{};
-		XMStoreFloat4(&vPos, m_pTransformCom->Get_CenterPos());
-		//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"), &vPos);
-	}
-
 #ifdef _DEBUG
 	if (m_pGameInstance->Key_Down(DIK_U))
 	{
@@ -83,11 +63,6 @@ void CSandman::Tick(_float fTimeDelta)
 		m_pTransformCom->Set_Position(vNewPos);
 	}
 #endif // DEBUG
-
-	if (m_pModelCom->Get_CurrentAnimationIndex() != Anim_Beaten_Left && m_pModelCom->IsAnimationFinished(Anim_Beaten_Left))
-	{
-		m_Hit = false;
-	}
 
 	//if (m_pTransformCom->Get_State(State::Pos).m128_f32[1] < 20.f)
 	//{
@@ -104,23 +79,13 @@ void CSandman::Tick(_float fTimeDelta)
 	//	return;
 	//}
 
-	if (m_pModelCom->IsAnimationFinished(Anim_etc_Appearance_Type01) or m_pModelCom->IsAnimationFinished(Anim_etc_Appearance_Type02))
-	{
-		ANIM_DESC Anim{};
-		Anim.iAnimIndex = Anim_Idle_Type02_Loop;
-		Anim.isLoop = true;
-		m_pModelCom->Set_Animation(Anim);
-	}
 
 	Artificial_Intelligence(fTimeDelta);
 
-	Change_State();
-
-	Idle(fTimeDelta);
-	Move(fTimeDelta);
-
 	m_pTransformCom->Gravity(fTimeDelta);
 
+	_matrix ColliderOffset = XMMatrixTranslation(0.f, 0.8f, 0.f);
+	m_pCollider_Att->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
 	m_pCollider_Hit->Update(m_pTransformCom->Get_World_Matrix());
 }
 
@@ -136,6 +101,7 @@ void CSandman::Late_Tick(_float fTimeDelta)
 
 	#ifdef _DEBUG
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
+		m_pRendererCom->Add_DebugComponent(m_pCollider_Att);
 	#endif // _DEBUG
 	}
 	else
@@ -187,7 +153,24 @@ HRESULT CSandman::Render()
 		//	return E_FAIL;
 		//}
 
-		if (FAILED(m_pShaderCom->Begin(AnimPass_Default)))
+		_uint iPassIndex{ AnimPass_Default };
+
+		if (m_eCurrState == State_Die)
+		{
+			iPassIndex = AnimPass_Dissolve;
+
+			if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveRatio", &m_fDissolveRatio, sizeof m_fDissolveRatio)))
+			{
+				return E_FAIL;
+			}
+
+			if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_NoiseTexture")))
+			{
+				return E_FAIL;
+			}
+		}
+
+		if (FAILED(m_pShaderCom->Begin(iPassIndex)))
 		{
 			return E_FAIL;
 		}
@@ -201,16 +184,20 @@ HRESULT CSandman::Render()
 	return S_OK;
 }
 
-void CSandman::Set_Damage(_int iDamage)
+void CSandman::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
 
-	ANIM_DESC Anim{};
-	Anim.iAnimIndex = Anim_Beaten_Left;
-	Anim.bSkipInterpolation = true;
-	Anim.bRestartAnimation = true;
-	m_pModelCom->Set_Animation(Anim);
-	m_Hit = true;
+	m_ePrevState = State_None;
+	if (iDamageType == DAM_ELECTRIC)
+	{
+		m_eCurrState = State_Beaten_Electiric;
+	}
+	else
+	{
+		m_eCurrState = State_Beaten;
+	}
+
 	CUI_Manager::Get_Instance()->Create_Hit();
 }
 
@@ -231,6 +218,11 @@ HRESULT CSandman::Add_Components()
 		return E_FAIL;
 	}
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_08"), TEXT("Com_DissolveTexture"), reinterpret_cast<CComponent**>(&m_pDissolveTextureCom))))
+	{
+		return E_FAIL;
+	}
+
 	Collider_Desc ColDesc{};
 	ColDesc.eType = ColliderType::OBB;
 	ColDesc.vExtents = _float3(0.7f, 0.7f, 0.35f);
@@ -240,6 +232,21 @@ HRESULT CSandman::Add_Components()
 	{
 		return E_FAIL;
 	}
+
+	ColDesc = {};
+	ColDesc.eType = ColliderType::Frustum;
+	_vector vPos = m_pTransformCom->Get_State(State::Pos);
+	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), 2.f, 0.01f, 2.f);
+	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pCollider_Att), &ColDesc)))
+	{
+		return E_FAIL;
+	}
+
+	m_pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+	Safe_AddRef(m_pPlayerTransform);
 
 	return S_OK;
 }
@@ -281,138 +288,216 @@ HRESULT CSandman::Bind_ShaderResources()
 
 void CSandman::Artificial_Intelligence(_float fTimeDelta)
 {
-	if (m_pModelCom->Get_CurrentAnimationIndex() == Anim_Attack_SideDoubleSlashing and
-		not m_pModelCom->IsAnimationFinished(Anim_Attack_SideDoubleSlashing))
-	{
-		return;
-	}
-	CTransform* pPlayerTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform")));
+	Init_State();
+	Tick_State(fTimeDelta);
 
-	_vector vPlayerPos = pPlayerTransform->Get_State(State::Pos);
-	_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
-	m_vOriginPos.y = vMyPos.m128_f32[1];
-	_vector vDirToPlayer = vPlayerPos - vMyPos;
-	_float fDist = XMVectorGetX(XMVector3Length(vDirToPlayer));
-	_uint iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
-
-	if (fDist < m_fAttackRange)
-	{
-		XMStoreFloat4(&m_vTargetDir, vDirToPlayer);
-		m_vTargetDir.y = 0.f;
-
-		m_eCurrState = State_Attack;
-	}
-	else if (fDist > m_fSearchRange)
-	{
-		fDist = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_vOriginPos) - vMyPos));
-		if (fDist > 1.f)
-		{
-			XMStoreFloat4(&m_vTargetDir, XMLoadFloat4(&m_vOriginPos) - vMyPos);
-			m_vTargetDir.y = 0.f;
-			m_eCurrState = State_Walk;
-		}
-		else
-		{
-			m_eCurrState = State_Idle;
-
-			if (iCurrentAnimIndex == Anim_Run_Loop)
-			{
-				ANIM_DESC Anim{};
-				Anim.iAnimIndex = Anim_Run_End;
-				m_pModelCom->Set_Animation(Anim);
-			}
-			else if (iCurrentAnimIndex == Anim_Walk_Loop)
-			{
-				ANIM_DESC Anim{};
-				Anim.iAnimIndex = Anim_Walk_End;
-				m_pModelCom->Set_Animation(Anim);
-			}
-
-			if (m_pModelCom->IsAnimationFinished(Anim_Run_End) or m_pModelCom->IsAnimationFinished(Anim_Walk_End))
-			{
-				ANIM_DESC Anim{};
-				Anim.iAnimIndex = Anim_Idle_Type02_Loop;
-				Anim.isLoop = true;
-				m_pModelCom->Set_Animation(Anim);
-			}
-		}
-	}
-	else
-	{
-		XMStoreFloat4(&m_vTargetDir, vDirToPlayer);
-		m_vTargetDir.y = 0.f;
-		m_eCurrState = State_Run;
-	}
-
-	m_fAttTime += fTimeDelta;
-
-	if (m_eCurrState == State_Attack)
-	{
-		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vTargetDir));
-
-		if (m_fAttTime > 2.f)
-		{
-			ANIM_DESC Anim{};
-			Anim.iAnimIndex = Anim_Attack_SideDoubleSlashing;
-			m_pModelCom->Set_Animation(Anim);
-			m_fAttTime = 0.f;
-		}
-		else if (m_pModelCom->IsAnimationFinished(Anim_Attack_SideDoubleSlashing))
-		{
-			ANIM_DESC Anim{};
-			Anim.iAnimIndex = Anim_Idle_Type02_Loop;
-			Anim.isLoop = true;
-			m_pModelCom->Set_Animation(Anim);
-		}
-	}
+	m_fTimer += fTimeDelta;
 }
 
-void CSandman::Idle(_float fTimeDelta)
+void CSandman::Init_State()
 {
-}
-
-void CSandman::Move(_float fTimeDelta)
-{
-	if (m_eCurrState == State_Run)
-	{
-		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vTargetDir));
-		m_pTransformCom->Go_Straight(fTimeDelta);
-	}
-	else if (m_eCurrState == State_Walk)
-	{
-		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vTargetDir));
-		m_pTransformCom->Go_Straight(fTimeDelta);
-	}
-}
-
-void CSandman::Change_State()
-{
-	if (m_eCurrState not_eq m_ePrevState)
+	if (m_eCurrState != m_ePrevState)
 	{
 		ANIM_DESC Anim{};
 		switch (m_eCurrState)
 		{
-		case Client::CSandman::State_Idle:
+		case Client::CSandman::State_Appear:
+			if (rand() & 2)
+			{
+				Anim.iAnimIndex = Anim_etc_Appearance_Type01;
+			}
+			else
+			{
+				Anim.iAnimIndex = Anim_etc_Appearance_Type02;
+			}
+
 			break;
-		case Client::CSandman::State_Run:
+		case Client::CSandman::State_Idle:
+			Anim.iAnimIndex = Anim_Idle_Type02_Loop;
+			Anim.isLoop = true;
+			break;
+		case Client::CSandman::State_Chase:
 			m_pTransformCom->Set_Speed(m_fRunSpeed);
 			Anim.iAnimIndex = Anim_Run_Loop;
 			Anim.isLoop = true;
-			m_pModelCom->Set_Animation(Anim);
 			break;
-		case Client::CSandman::State_Walk:
+		case Client::CSandman::State_GoHome:
 			m_pTransformCom->Set_Speed(m_fWalkSpeed);
 			Anim.iAnimIndex = Anim_Walk_Loop;
 			Anim.isLoop = true;
-			m_pModelCom->Set_Animation(Anim);
 			break;
+		case Client::CSandman::State_Beaten:
+			Anim.iAnimIndex = Anim_Beaten_Left;
+			Anim.bSkipInterpolation = true;
+			Anim.bRestartAnimation = true;
+
+			break;
+		case Client::CSandman::State_Beaten_Electiric:
+		{
+			Anim.iAnimIndex = Anim_Beaten_ElectricShock_Loop;
+			Anim.isLoop = true;
+			Anim.bSkipInterpolation = true;
+			Anim.bRestartAnimation = true;
+
+			_float3 vPos{};
+			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(State::Pos));
+			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_LeftCidori"), TEXT("Prototype_GameObject_LeftChidori"), &vPos);
+
+			m_fTimer = {};
+			break;
+		}
 		case Client::CSandman::State_Attack:
+			Anim.iAnimIndex = Anim_Attack_SideDoubleSlashing;
+			m_fTimer = {};
 			break;
 		case Client::CSandman::State_Die:
+			Anim.iAnimIndex = Anim_Dying_Type01;
+			Anim.bSkipInterpolation = true;
+
+			m_pGameInstance->Delete_CollisionObject(this);
+			_float4 vPos{};
+			XMStoreFloat4(&vPos, m_pTransformCom->Get_CenterPos());
+
+			m_fTimer = {};
 			break;
 		}
 
+		m_pModelCom->Set_Animation(Anim);
 		m_ePrevState = m_eCurrState;
+	}
+}
+
+void CSandman::Tick_State(_float fTimeDelta)
+{
+	switch (m_eCurrState)
+	{
+	case Client::CSandman::State_Appear:
+		if (m_pModelCom->IsAnimationFinished(Anim_etc_Appearance_Type01) or m_pModelCom->IsAnimationFinished(Anim_etc_Appearance_Type02))
+		{
+			m_eCurrState = State_Idle;
+		}
+		break;
+	case Client::CSandman::State_Idle:
+	{
+		_vector vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+		_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
+		m_vOriginPos.y = vMyPos.m128_f32[1];
+		_vector vDirToPlayer = vPlayerPos - vMyPos;
+		_float fPlayerDist = XMVectorGetX(XMVector3Length(vDirToPlayer));
+		_uint iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
+
+		if (fPlayerDist < m_fSearchRange)
+		{
+			m_eCurrState = State_Chase;
+		}
+		break;
+	}
+	case Client::CSandman::State_Chase:
+	{
+		_vector vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+		_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
+		m_vOriginPos.y = vMyPos.m128_f32[1];
+		_vector vDirToPlayer = vPlayerPos - vMyPos;
+		_float fTargetDist = XMVectorGetX(XMVector3Length(vDirToPlayer));
+
+		XMStoreFloat4(&m_vTargetDir, vDirToPlayer);
+		m_vTargetDir.y = 0.f;
+
+		if (fTargetDist > m_fSearchRange)
+		{
+			ANIM_DESC Anim{};
+			Anim.iAnimIndex = Anim_Run_End;
+			m_pModelCom->Set_Animation(Anim);
+
+		}
+		else if (fTargetDist < m_fAttackRange and m_fTimer > 2.f)
+		{
+			XMStoreFloat4(&m_vTargetDir, vDirToPlayer);
+			m_vTargetDir.y = 0.f;
+
+			m_eCurrState = State_Attack;
+		}
+		else
+		{
+			m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vTargetDir));
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
+
+		if (m_pModelCom->IsAnimationFinished(Anim_Run_End))
+		{
+			m_eCurrState = State_GoHome;
+		}
+		break;
+	}
+	case Client::CSandman::State_GoHome:
+	{
+		m_pTransformCom->LookAt(XMVectorSetY(XMLoadFloat4(&m_vOriginPos), m_pTransformCom->Get_State(State::Pos).m128_f32[1]));
+		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		_float fHomeDist = XMVectorGetX(XMVector3Length(XMVectorSetY(XMLoadFloat4(&m_vOriginPos), 0.f) - XMVectorSetY(m_pTransformCom->Get_State(State::Pos), 0.f)));
+
+		if (fHomeDist < 1.f)
+		{
+			ANIM_DESC Anim{};
+			Anim.iAnimIndex = Anim_Walk_End;
+			m_pModelCom->Set_Animation(Anim);
+		}
+		if (m_pModelCom->IsAnimationFinished(Anim_Walk_End))
+		{
+			m_eCurrState = State_Idle;
+		}
+		break;
+	}
+	case Client::CSandman::State_Beaten:
+		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Left))
+		{
+			m_eCurrState = State_Idle;
+		}
+
+		if (m_iHP < 0)
+		{
+			m_eCurrState = State_Die;
+		}
+		break;
+	case Client::CSandman::State_Beaten_Electiric:
+		if (m_fTimer > 1.f)
+		{
+			ANIM_DESC Anim{};
+			Anim.iAnimIndex = Anim_Beaten_ElectricShock_End;
+			m_pModelCom->Set_Animation(Anim);
+
+			if (m_iHP < 0)
+			{
+				m_eCurrState = State_Die;
+			}
+		}
+		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_ElectricShock_End))
+		{
+			m_eCurrState = State_Idle;
+		}
+		break;
+	case Client::CSandman::State_Attack:
+		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vTargetDir));
+
+		if (m_pModelCom->IsAnimationFinished(Anim_Attack_SideDoubleSlashing))
+		{
+			m_eCurrState = State_Idle;
+		}
+
+		break;
+	case Client::CSandman::State_Die:
+		if (m_fTimer > 10.f)
+		{
+			m_fDissolveRatio += fTimeDelta / 5.f;
+		}
+		if (m_fDissolveRatio > 1.f)
+		{
+			m_isDead = true;
+		}
+
+		break;
+	default:
+		break;
 	}
 }
 
@@ -446,8 +531,11 @@ void CSandman::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pDissolveTextureCom);
+	Safe_Release(m_pPlayerTransform);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pCollider_Hit);
+	Safe_Release(m_pCollider_Att);
 }
