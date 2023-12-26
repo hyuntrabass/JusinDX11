@@ -125,6 +125,7 @@ HRESULT CLoader::Load_Logo()
 
 	m_strLoadingText = L"Logo : Loading Texture";
 #pragma region Texture
+#pragma region UI
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_BackGround"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MainMenu/BackGround.jpg")))))
 	{
 		return E_FAIL;
@@ -141,87 +142,6 @@ HRESULT CLoader::Load_Logo()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_SubTitle"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MainMenu/T_UI_TitleMenu_Overlay_BC.png")))))
-	{
-		return E_FAIL;
-	}
-
-	// Effect Textures
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Sphere01"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/T_EFF_Sphere_01_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Sphere02"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/T_EFF_Sphere_02_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Sphere07"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/T_EFF_Sphere_07_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Dust"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/T_EFF_Dust_02_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Star04"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/T_EFF_Star_04_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Lightning06"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Lightning/T_EFF_Lightning_06_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gradient_Wave_03"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Gradient/T_EFF_Wave_03_BC.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Rasengan_04"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Rasengan_04_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Line_03"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_Line_03_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Line_05"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_Line_05_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Line_06"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_Line_06_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Line_07"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_Line_07_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_01"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_01_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_08"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_08_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_16"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_16_M.dds")))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gradation_Rainbow_04"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/GradationMap/T_EFF_GMS_Rainbow_04_BC.png")))))
 	{
 		return E_FAIL;
 	}
@@ -291,6 +211,11 @@ HRESULT CLoader::Load_Logo()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_Fireball"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/Skill_Icon/T_UI_Skill_FireBall_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Tool_Mask"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/T_UI_Tool_Gauge_M1.png")))))
 	{
 		return E_FAIL;
@@ -300,7 +225,155 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
+#pragma endregion
 
+#pragma region Effect
+	// Effect Textures
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Sphere01"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/T_EFF_Sphere_01_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Sphere02"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/T_EFF_Sphere_02_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Sphere07"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/T_EFF_Sphere_07_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Dust"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/T_EFF_Dust_02_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Star04"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/T_EFF_Star_04_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Lightning06"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Lightning/T_EFF_Lightning_06_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Hit_07"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Hit/T_EFF_Hit_07_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Hit_09"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Hit/T_EFF_Hit_09_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Hit_13"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Hit/T_EFF_Hit_13_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gradient_Wave_01"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Gradient/T_EFF_Wave_01_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gradient_Wave_02"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Gradient/T_EFF_Wave_02_BC.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gradient_Wave_03"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Gradient/T_EFF_Wave_03_BC.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Rasengan_04"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Rasengan_04_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Fire_05"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Fire/T_EFF_Fire_05_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Fire_07"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Fire/T_EFF_Fire_07_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Smoke_11"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Smoke/T_EFF_Smoke_11_02_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Smoke_12"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Smoke/T_EFF_Smoke_12_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Smoke_21"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Smoke/T_EFF_Smoke_21_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Line_03"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_Line_03_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Line_05"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_Line_05_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Line_06"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_Line_06_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_Line_07"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_Line_07_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_01"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_01_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_06"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_06_BC.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_08"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_08_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Noise_16"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/Noise/T_EFF_Noise_16_M.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gradation_Rainbow_04"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/GradationMap/T_EFF_GMS_Rainbow_04_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gradation_Fireball_01"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/GradationMap/T_EFF_GMT_Fireball_01_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gradation_Fireball_03"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/GradationMap/T_EFF_GMT_Fireball_03_BC.png")))))
+	{
+		return E_FAIL;
+	}
+#pragma endregion
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Model";
@@ -339,6 +412,21 @@ HRESULT CLoader::Load_Logo()
 	//{
 	//	return E_FAIL;
 	//}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Fireball_01"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/fireball/SM_EFF_Fireball_A_01.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Fireball_02"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/fireball/SM_EFF_Fireball_B_01.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Fireball_03"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/fireball/SM_EFF_Fireball_D_01.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_LightningC1"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/Lightning/SM_EFF_Lightning_C_01.mo.hyuntrastatmesh"))))
 	{
@@ -793,7 +881,12 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Effect"), CEffect_Hit::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Effect_Hit"), CEffect_Hit::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Effect_Fire"), CEffect_Fire::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}
@@ -814,6 +907,11 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_LeftChidori"), CLeftChidori::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Fireball"), CFireball::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

@@ -23,7 +23,7 @@ protected:
 public:
 	virtual HRESULT Init_Prototype() override;
 	virtual HRESULT Init(void* pArg) override;
-	virtual void Update(_float fTimeDelta);
+	virtual void Update(_float fTimeDelta, _int iNumUse = -1);
 	virtual HRESULT Render() override;
 
 protected:

@@ -18,11 +18,6 @@ HRESULT CSlotBase_Skill::Init_Prototype()
 
 HRESULT CSlotBase_Skill::Init(void* pArg)
 {
-	if (FAILED(Add_Components()))
-	{
-		return E_FAIL;
-	}
-
 	if (not pArg)
 	{
 		MSG_BOX("No Argument!");
@@ -32,6 +27,11 @@ HRESULT CSlotBase_Skill::Init(void* pArg)
 	Safe_AddRef(m_pUIManager);
 
 	m_iSkillNumber = *reinterpret_cast<_uint*>(pArg);
+
+	if (FAILED(Add_Components()))
+	{
+		return E_FAIL;
+	}
 
 	m_fSizeX = 94.f * 0.8f;
 	m_fSizeY = 94.f * 0.8f;
@@ -54,7 +54,7 @@ void CSlotBase_Skill::Tick(_float fTimeDelta)
 		{
 			m_fReadyRatio = 0.5f;
 		}
-		m_fReadyRatio -= fTimeDelta / 10.f;
+		m_fReadyRatio -= fTimeDelta / 7.f;
 	}
 	
 	if (m_fReadyRatio < - 0.5f)
@@ -175,9 +175,19 @@ HRESULT CSlotBase_Skill::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_Chidori"), TEXT("Com_Texture_Skill"), reinterpret_cast<CComponent**>(&m_pSkillTextureCom))))
+	if (m_iSkillNumber == 0)
 	{
-		return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_Chidori"), TEXT("Com_Texture_Skill"), reinterpret_cast<CComponent**>(&m_pSkillTextureCom))))
+		{
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_Fireball"), TEXT("Com_Texture_Skill"), reinterpret_cast<CComponent**>(&m_pSkillTextureCom))))
+		{
+			return E_FAIL;
+		}
 	}
 
 	return S_OK;

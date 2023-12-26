@@ -79,6 +79,8 @@ private:
 		State_Roar,
 		State_Warp,
 		State_Beaten,
+		State_Beaten_Electric,
+		State_Beaten_Fire,
 		State_Die,
 	};
 

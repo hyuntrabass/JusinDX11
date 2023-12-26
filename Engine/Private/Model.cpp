@@ -98,6 +98,11 @@ void CModel::Set_Animation(ANIM_DESC Animation_Desc)
 		{
 			pAnim->ResetFinished();
 		}
+
+		if (m_AnimDesc.iAnimIndex >= m_iNumAnimations)
+		{
+			m_AnimDesc.iAnimIndex = m_iNumAnimations - 1;
+		}
 	}
 	
 	m_AnimDesc = Animation_Desc;

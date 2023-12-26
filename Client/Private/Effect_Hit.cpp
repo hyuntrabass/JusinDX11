@@ -59,7 +59,7 @@ HRESULT CEffect_Hit::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Begin(InstPass_Particle_Color)))
+	if (FAILED(m_pShaderCom->Begin(InstPass_Particle_MaskColor)))
 	{
 		return E_FAIL;
 	}

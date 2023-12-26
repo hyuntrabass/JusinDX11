@@ -60,8 +60,8 @@ namespace MapEditor
 
 	enum InstancingPass
 	{
-		InstPass_Particle_Texture,
-		InstPass_Particle_Color,
+		InstPass_Particle_TextureMask,
+		InstPass_Particle_MaskColor,
 	};
 }
 

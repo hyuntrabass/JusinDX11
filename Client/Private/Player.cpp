@@ -136,6 +136,7 @@ void CPlayer::Tick(_float fTimeDelta)
 	{
 		m_pBodyParts[i]->Tick(fTimeDelta);
 	}
+	m_Animation.bRestartAnimation = false;
 
 	if (m_pKunai)
 	{
@@ -414,6 +415,21 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 	}
 
+	if (m_pGameInstance->Key_Down(DIK_3))
+	{
+		//if (CUI_Manager::Get_Instance()->Use_Skill(0))
+		{
+			if (m_pTransformCom->Is_OnGround())
+			{
+				m_eState = Player_State::Fireball;
+			}
+			else
+			{
+				m_eState = Player_State::Fireball;
+			}
+		}
+	}
+
 	if (not (m_eState == Player_State::Wire and m_pKunai) and
 		m_eState != Player_State::RasenShuriken and
 		m_eState != Player_State::Aerial_Chidori)
@@ -568,7 +584,6 @@ void CPlayer::Init_State()
 		case Client::Player_State::Fall_Front:
 			m_Animation.iAnimIndex = Fall_Front_Loop;
 			m_Animation.isLoop = true;
-			m_Animation.bRestartAnimation;
 			break;
 		case Client::Player_State::Land:
 			m_Animation.iAnimIndex = Land;
@@ -623,6 +638,20 @@ void CPlayer::Init_State()
 
 			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Chidori"), &m_LeftHandMatrix);
 			//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"));
+			CUI_Manager::Get_Instance()->Create_Aim();
+			break;
+		case Client::Player_State::Fireball:
+			if (m_pTransformCom->Is_OnGround())
+			{
+				m_Animation.iAnimIndex = Ninjutsu_Fireball_Lv3;
+			}
+			else
+			{
+				m_Animation.iAnimIndex = Ninjutsu_Aerial_Fireball_Lv3;
+			}
+			m_pTransformCom->Reset_Gravity();
+			m_fTimer = {};
+			m_bAttacked = false;
 			CUI_Manager::Get_Instance()->Create_Aim();
 			break;
 		}
@@ -852,7 +881,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 				m_bAttacked = true;
 				if (m_pGameInstance->CheckCollision_Monster(m_pCollider_Att))
 				{
-					m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"), &m_vRightHandPos);
+					m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Hit"), &m_vRightHandPos);
 				}
 			}
 			else
@@ -907,14 +936,16 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		if (not m_bAttacked)
 		{
 			m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()));
+
+			if (m_fTimer > 2.f and not m_pGameInstance->Key_Pressing(DIK_2))
+			{
+				m_Animation = {};
+				m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Conect_toRun;
+				m_Animation.bSkipInterpolation = true;
+				m_bAttacked = true;
+			}
 		}
 
-		if (m_fTimer > 2.f and not m_pGameInstance->Key_Pressing(DIK_2))
-		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Conect_toRun;
-			m_Animation.bSkipInterpolation = true;
-		}
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Chidori_Charge_Conect_toRun))
 		{
 			m_Animation = {};
@@ -929,6 +960,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			m_pTransformCom->Set_Speed(m_fRunSpeed * 6.f);
 			m_pTransformCom->Go_To_Dir(m_pTransformCom->Get_State(State::Look), fTimeDelta);
 			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(true);
+			m_pGameInstance->Attack_Monster(m_pCollider_Att, 30.f, DAM_ELECTRIC);
 		}
 		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Chidori_Run_Lv3_Loop and m_fTimer > 0.5f)
 		{
@@ -937,7 +969,6 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			m_Animation.bSkipInterpolation = true;
 			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(false);
 			CUI_Manager::Get_Instance()->Delete_Aim();
-			m_bAttacked = true;
 		}
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Chidori_Attack_Lv3_End))
 		{
@@ -957,14 +988,16 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		if (not m_bAttacked)
 		{
 			m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()));
+
+			if (m_fTimer > 2.f and not m_pGameInstance->Key_Pressing(DIK_2))
+			{
+				m_Animation = {};
+				m_Animation.iAnimIndex = Ninjutsu_Aerial_Chidori_Charge_Conect_toRun;
+				m_Animation.bSkipInterpolation = true;
+				m_bAttacked = true;
+			}
 		}
 
-		if (m_fTimer > 2.f and not m_pGameInstance->Key_Pressing(DIK_2))
-		{
-			m_Animation = {};
-			m_Animation.iAnimIndex = Ninjutsu_Aerial_Chidori_Charge_Conect_toRun;
-			m_Animation.bSkipInterpolation = true;
-		}
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Aerial_Chidori_Charge_Conect_toRun))
 		{
 			m_Animation = {};
@@ -979,7 +1012,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			m_pTransformCom->Set_Speed(m_fRunSpeed * 6.f);
 			m_pTransformCom->Go_To_Dir(m_pTransformCom->Get_State(State::Look), fTimeDelta);
 			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(true);
-			m_pGameInstance->Attack_Monster(m_pCollider_Att, 30.f, DAM_ELECTRIC);
+			m_pGameInstance->Attack_Monster(m_pCollider_Att, 60, DAM_ELECTRIC);
 		}
 		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Aerial_Chidori_Run_Loop and m_fTimer > 0.5f)
 		{
@@ -988,12 +1021,33 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			m_Animation.bSkipInterpolation = true;
 			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(false);
 			CUI_Manager::Get_Instance()->Delete_Aim();
-			m_bAttacked = true;
 		}
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Ninjutsu_Aerial_Chidori_Attack_End))
 		{
 			m_fTimer = {};
 			m_eState = Player_State::Idle;
+		}
+		break;
+	case Client::Player_State::Fireball:
+		if (not m_bAttacked and m_fTimer > 0.6f)
+		{
+			Safe_Release(m_pSkillEffect);
+			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Fireball"), &m_vRightHandPos);
+			CUI_Manager::Get_Instance()->Delete_Aim();
+			m_bAttacked = true;
+		}
+		m_fTimer += fTimeDelta;
+
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(m_Animation.iAnimIndex))
+		{
+			if (m_Animation.iAnimIndex == Ninjutsu_Aerial_Fireball_Lv3)
+			{
+				m_eState = Player_State::Fall_Front;
+			}
+			else
+			{
+				m_eState = Player_State::Idle;
+			}
 		}
 		break;
 	}

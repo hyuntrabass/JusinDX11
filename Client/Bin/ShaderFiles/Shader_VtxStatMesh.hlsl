@@ -5,6 +5,7 @@ texture2D g_DiffuseTexture;
 texture2D g_NormalTexture;
 texture2D g_MaskTexture;
 texture2D g_NoiseTexture;
+texture2D g_GradationTexture;
 
 vector g_vColor;
 
@@ -257,6 +258,16 @@ PS_OUT PS_Main_Effect_Dissolve(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_Fireball(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+
+    float fUV = 1.f - g_MaskTexture.Sample(LinearSampler, Input.vTex).x;
+    Output.vColor = g_GradationTexture.Sample(LinearSampler, float2(fUV, 0.4f));
+    
+    return Output;
+}
+
 PS_OUT PS_Main_MaskEffect(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
@@ -268,7 +279,7 @@ PS_OUT PS_Main_MaskEffect(PS_IN Input)
     }
     
     Output.vColor = g_vColor;
-    Output.vColor.a = vMask.r;
+    Output.vColor.a *= vMask.r;
     
     return Output;
 }
@@ -412,6 +423,19 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Effect_Dissolve();
+    }
+
+    pass Fireball
+    {
+        SetRasterizerState(RS_None);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Fireball();
     }
 
     pass MaskEffect

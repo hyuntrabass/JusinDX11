@@ -41,9 +41,6 @@ void CPain::Tick(_float fTimeDelta)
 {
 	Artificial_Intelligence(fTimeDelta);
 
-	Init_State();
-	Tick_State(fTimeDelta);
-
 	//if (m_pModelCom->IsAnimationFinished(m_AnimationDesc.iAnimIndex))
 	//{
 	//    m_AnimationDesc.iAnimIndex++;
@@ -52,6 +49,7 @@ void CPain::Tick(_float fTimeDelta)
 	//        m_AnimationDesc.iAnimIndex = 0;
 	//    }
 	m_pModelCom->Set_Animation(m_AnimationDesc);
+	m_AnimationDesc.bRestartAnimation = false;
 	//}
 
 
@@ -134,15 +132,26 @@ HRESULT CPain::Render()
 
 void CPain::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	if (m_eState == State_Beaten_Electric and iDamageType == DAM_ELECTRIC)
+	{
+		return;
+	}
 	m_iHP -= iDamage;
 
-	m_eState = State_Beaten;
-	m_AnimationDesc.iAnimIndex = Anim_Beaten_Right;
-	m_AnimationDesc.bSkipInterpolation = true;
-	m_AnimationDesc.bRestartAnimation = true;
-	m_pModelCom->Set_Animation(m_AnimationDesc);
-	m_AnimationDesc.bRestartAnimation = false;
-	CUI_Manager::Get_Instance()->Create_Hit();
+	if (iDamageType == DAM_ELECTRIC)
+	{
+		m_eState = State_Beaten_Electric;
+	}
+	else
+	{
+		m_eState = State_Beaten;
+	}
+
+	if (m_ePrevState == State_Push)
+	{
+		m_pGameInstance->Set_TimeRatio(1.f);
+	}
+	m_ePrevState = State_None;
 }
 
 HRESULT CPain::Add_Components()
@@ -209,15 +218,8 @@ HRESULT CPain::Bind_ShaderResources()
 
 void CPain::Artificial_Intelligence(_float fTimeDelta)
 {
-	_vector vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
-	_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
-	_float fDistToPlayer = XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos));
-
-	if (fDistToPlayer < 10.f)
-	{
-		m_eState = State_Push;
-	}
-
+	Init_State();
+	Tick_State(fTimeDelta);
 }
 
 void CPain::Init_State()
@@ -256,6 +258,17 @@ void CPain::Init_State()
 		case Client::CPain::State_Beaten:
 			m_AnimationDesc.iAnimIndex = Anim_Beaten_Right;
 			m_AnimationDesc.bSkipInterpolation = true;
+			m_AnimationDesc.bRestartAnimation = true;
+			CUI_Manager::Get_Instance()->Create_Hit();
+			break;
+		case Client::CPain::State_Beaten_Electric:
+			m_AnimationDesc.iAnimIndex = Anim_Beaten_ElectricShock_Loop;
+			m_AnimationDesc.isLoop = true;
+			m_AnimationDesc.bSkipInterpolation = true;
+			m_AnimationDesc.bRestartAnimation = true;
+			CUI_Manager::Get_Instance()->Create_Hit();
+
+			m_fTimer = {};
 			break;
 		case Client::CPain::State_Die:
 			break;
@@ -277,7 +290,18 @@ void CPain::Tick_State(_float fTimeDelta)
 	case Client::CPain::State_Initiation:
 		break;
 	case Client::CPain::State_Idle:
+	{
+		_vector vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+		_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
+		_float fDistToPlayer = XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos));
+
+		if (fDistToPlayer < 10.f)
+		{
+			m_eState = State_Push;
+		}
+
 		break;
+	}
 	case Client::CPain::State_LookAt:
 		break;
 	case Client::CPain::State_ComboAttack:
@@ -313,6 +337,18 @@ void CPain::Tick_State(_float fTimeDelta)
 		break;
 	case Client::CPain::State_Beaten:
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Right))
+		{
+			m_eState = State_Idle;
+		}
+		break;
+	case Client::CPain::State_Beaten_Electric:
+		if (m_fTimer > 1.5f)
+		{
+			m_AnimationDesc = {};
+			m_AnimationDesc.iAnimIndex = Anim_Beaten_ElectricShock_End;
+		}
+
+		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_ElectricShock_End))
 		{
 			m_eState = State_Idle;
 		}

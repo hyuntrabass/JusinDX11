@@ -175,6 +175,9 @@
     <Filter Include="02.GameObjects\03.Player\Projectile\Chidori\Leftover">
       <UniqueIdentifier>{d3857c92-ee2e-4801-9d4a-190215beb284}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07.Effects\Particle\Fire">
+      <UniqueIdentifier>{9d0e0c7d-f8cc-49ac-bb13-37b20e1ee065}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -333,6 +336,9 @@
     <ClInclude Include="..\public\LeftChidori.h">
       <Filter>02.GameObjects\03.Player\Projectile\Chidori\Leftover</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Effect_Fire.h">
+      <Filter>02.GameObjects\07.Effects\Particle\Fire</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -488,6 +494,9 @@
     </ClCompile>
     <ClCompile Include="..\private\LeftChidori.cpp">
       <Filter>02.GameObjects\03.Player\Projectile\Chidori\Leftover</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Effect_Fire.cpp">
+      <Filter>02.GameObjects\07.Effects\Particle\Fire</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

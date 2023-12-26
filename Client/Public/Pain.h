@@ -204,6 +204,7 @@ private:
 		State_Pull,
 		State_Sommon,
 		State_Beaten,
+		State_Beaten_Electric,
 		State_Die,
 	};
 private:
@@ -230,6 +231,8 @@ private:
 	ANIM_DESC m_AnimationDesc{};
 
 	_float3 m_vOriginalLook{};
+
+	_uint m_iSuperArmor{};
 
 	_bool m_hasInitiated{};
 	_bool m_hasPushed{};

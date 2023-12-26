@@ -31,7 +31,7 @@ private:
 
 private:
 	_uint m_iSkillNumber{};
-	_float m_fReadyRatio{ 0.5f };
+	_float m_fReadyRatio{ -0.5f };
 
 private:
 	HRESULT Add_Components();

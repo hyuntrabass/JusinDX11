@@ -26,6 +26,12 @@ namespace Engine
 
 	using _lint = LARGE_INTEGER;
 
+	using _int2 = XMINT2;
+	using _int3 = XMINT3;
+	using _int4 = XMINT4; 
+	using _uint2 = XMUINT2;
+	using _uint3 = XMUINT3;
+	using _uint4 = XMUINT4;
 	using _float2 = XMFLOAT2;
 	using _float3 = XMFLOAT3;
 	using _float4 = XMFLOAT4;

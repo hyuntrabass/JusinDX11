@@ -33,3 +33,5 @@
 #include "Aim.h"
 #include "Hit.h"
 #include "LeftChidori.h"
+#include "Fireball.h"
+#include "Effect_Fire.h"

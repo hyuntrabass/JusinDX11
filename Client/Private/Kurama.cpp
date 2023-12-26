@@ -69,6 +69,7 @@ void CKurama::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Gravity(fTimeDelta);
 	m_pModelCom->Set_Animation(m_AnimationDesc);
+	m_AnimationDesc.bRestartAnimation = false;
 
 	_float3 vEyePos[2]{};
 	XMStoreFloat3(&vEyePos[0], (XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("EyeUpLeft1")) * m_pModelCom->Get_PivotMatrix() * m_pTransformCom->Get_World_Matrix()).r[3]);
@@ -365,7 +366,7 @@ void CKurama::Init_State()
 			m_AnimationDesc = {};
 			m_AnimationDesc.iAnimIndex = Anim_Ninjutsu_ConsecutiveTailedBeastBomb;
 			
-			m_iSuperArmor = 15;
+			m_iSuperArmor = 12;
 			break;
 		case Client::CKurama::State_Roar:
 			break;

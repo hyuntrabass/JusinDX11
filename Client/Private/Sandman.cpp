@@ -186,6 +186,10 @@ HRESULT CSandman::Render()
 
 void CSandman::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	if (m_eCurrState == State_Beaten_Electiric and iDamageType == DAM_ELECTRIC)
+	{
+		return;
+	}
 	m_iHP -= iDamage;
 
 	m_ePrevState = State_None;

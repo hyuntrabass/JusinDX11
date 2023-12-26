@@ -91,6 +91,7 @@ namespace Client
 		StaticPass_COLMesh,
 		StaticPass_SingleColorFx,
 		StaticPass_SingleColorDissolve,
+		StaticPass_Fireball,
 		StaticPass_MaskEffect,
 		StaticPass_MaskDissolve,
 		StaticPass_MaskEffectClamp,
@@ -115,12 +116,14 @@ namespace Client
 		VTPass_Mask_ColorAlpha,
 		VTPass_HP,
 		VTPass_Hit,
+		VTPass_Sprite,
 	};
 
 	enum InstancingPass
 	{
-		InstPass_Particle_Texture,
-		InstPass_Particle_Color,
+		InstPass_Particle_TextureMask,
+		InstPass_Particle_Sprite,
+		InstPass_Particle_MaskColor,
 	};
 }
 

@@ -86,12 +86,12 @@ void CRasenShuriken::Tick(_float fTimeDelta)
 
 		if (m_fTimer > 0.25)
 		{
-			m_pGameInstance->Attack_Monster(m_pColliderCom, 10);
+			m_pGameInstance->Attack_Monster(m_pColliderCom, 13);
 			m_fTimer = {};
 			m_iAttCount++;
 		}
 
-		if (m_iAttCount >= 10)
+		if (m_iAttCount >= 8)
 		{
 			m_eState = State_Dissolve;
 			m_fScaleRatio = {};
@@ -163,7 +163,7 @@ HRESULT CRasenShuriken::Render()
 		return E_FAIL;
 	}
 
-	vColor = { 0.5f, 0.9f, 1.f, m_fCoreAlpha };
+	vColor = { 0.25f * 1.5f, 0.45f * 1.5f, 0.5f * 1.5f, m_fCoreAlpha };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
 		return E_FAIL;
@@ -188,7 +188,7 @@ HRESULT CRasenShuriken::Render()
 		return E_FAIL;
 	}
 
-	vColor = { 0.8f, 1.f, 1.f, 1.f };
+	vColor = { 0.4f * 1.5f, 0.5f * 1.5f, 0.5f * 1.5f, 1.f };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
 		return E_FAIL;
@@ -231,7 +231,7 @@ HRESULT CRasenShuriken::Render()
 	}
 
 #pragma region Wing
-	vColor = { 0.4f, 0.7f, 1.f, 0.7f };
+	vColor = { 0.2f * 1.5f, 0.35f * 1.5f, 0.5f * 1.5f, 0.7f };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
 		return E_FAIL;
@@ -250,7 +250,7 @@ HRESULT CRasenShuriken::Render()
 
 
 #pragma region Wing Trail
-	vColor = { 0.5f, 0.9f, 1.f, 1.f };
+	vColor = { 0.25f * 1.5f, 0.45f * 1.5f, 0.5f * 1.5f, 1.f };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
 		return E_FAIL;
@@ -274,7 +274,7 @@ HRESULT CRasenShuriken::Render()
 
 
 #pragma region Circle
-	vColor = { 0.5f, 0.9f, 1.f, 1.f };
+	vColor = { 0.25f, 0.45f, 0.5f, 1.f };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
 		return E_FAIL;

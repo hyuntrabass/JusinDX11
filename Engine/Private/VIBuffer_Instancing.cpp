@@ -25,8 +25,12 @@ HRESULT CVIBuffer_Instancing::Init(void* pArg)
 	return S_OK;
 }
 
-void CVIBuffer_Instancing::Update(_float fTimeDelta)
+void CVIBuffer_Instancing::Update(_float fTimeDelta, _int iNumUse)
 {
+	if (iNumUse == -1)
+	{
+		iNumUse = m_iNumInstances;
+	}
 	D3D11_MAPPED_SUBRESOURCE SubResource{};
 
 	m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
@@ -37,6 +41,12 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta)
 		//pVertex->vPos.y += pVertex->fSpeed * fTimeDelta;
 		XMStoreFloat4(&pVertex->vPos, XMLoadFloat4(&pVertex->vPos) + XMLoadFloat4(&pVertex->vDirection) * pVertex->fSpeed * fTimeDelta);
 		pVertex->vLifeTime.x += fTimeDelta;
+
+		if (i >= iNumUse)
+		{
+			pVertex->vPos = _float4(-100.f, -100.f, -100.f, 1.f);
+			continue;
+		}
 
 		if (pVertex->vLifeTime.x > pVertex->vLifeTime.y)
 		{

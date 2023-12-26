@@ -9,7 +9,6 @@ class CFireball : public CBlendObject
 private:
 	enum FireballState
 	{
-		State_Charge,
 		State_Shoot,
 		State_Explode,
 		State_Dissolve,
@@ -30,14 +29,15 @@ public:
 	void Shoot();
 
 private:
-	static const _uint iNumModels{ 5 };
+	static const _uint m_iNumModels{ 3 };
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	CModel* m_pModelCom[iNumModels]{ nullptr };
+	CModel* m_pModelCom[m_iNumModels]{ nullptr };
+
 	CTexture* m_pCoreMaskTextureCom{ nullptr };
 	CTexture* m_pCircleMaskTextureCom{ nullptr };
 	CTexture* m_pWingTrailMaskTextureCom{ nullptr };
-	CTexture* m_pNoiseTextureCom{ nullptr };
+	CTexture* m_pGradationTextureCom{ nullptr };
 	CCollider* m_pColliderCom{ nullptr };
 
 private:
@@ -46,13 +46,8 @@ private:
 
 	FireballState m_eState{};
 	_float m_fTimer{};
-	_float m_fScaleRatio{};
-	_float m_fCoreAlpha{};
-	_uint m_iAttCount{};
 	_float3 m_vTargetPos{};
 	_bool m_hasTarget{};
-	_float m_fCoreScale{};
-	_float m_fDissolveRatio{};
 
 private:
 	HRESULT Add_Components();
