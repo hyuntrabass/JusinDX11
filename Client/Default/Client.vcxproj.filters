@@ -178,6 +178,15 @@
     <Filter Include="02.GameObjects\07.Effects\Particle\Fire">
       <UniqueIdentifier>{9d0e0c7d-f8cc-49ac-bb13-37b20e1ee065}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\07.Effects\Impact">
+      <UniqueIdentifier>{ba6dc562-94a6-454b-aa36-a71c7cd85786}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\07.Effects\Particle\Smoke">
+      <UniqueIdentifier>{a048ec98-375b-4b27-b7eb-fbeed02fefc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\03.Player\Projectile\Meteor">
+      <UniqueIdentifier>{6f9fe6aa-8125-4e23-b980-2e5dd16e0012}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -339,6 +348,15 @@
     <ClInclude Include="..\public\Effect_Fire.h">
       <Filter>02.GameObjects\07.Effects\Particle\Fire</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Effect_Impact.h">
+      <Filter>02.GameObjects\07.Effects\Impact</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect_Smoke.h">
+      <Filter>02.GameObjects\07.Effects\Particle\Smoke</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Meteor.h">
+      <Filter>02.GameObjects\03.Player\Projectile\Meteor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -497,6 +515,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Effect_Fire.cpp">
       <Filter>02.GameObjects\07.Effects\Particle\Fire</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Effect_Impact.cpp">
+      <Filter>02.GameObjects\07.Effects\Impact</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect_Smoke.cpp">
+      <Filter>02.GameObjects\07.Effects\Particle\Smoke</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Meteor.cpp">
+      <Filter>02.GameObjects\03.Player\Projectile\Meteor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

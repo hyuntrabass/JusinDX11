@@ -191,7 +191,7 @@ HRESULT CLoader::Load_Logo()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SP_RasenShuri"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/Skill_Icon/T_UI_Skill_TrueRasenShuriken_BC.png")))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SP_Meteor"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/SP_Icon/T_UI_SP_ShatteredHeaven_BC.png")))))
 	{
 		return E_FAIL;
 	}
@@ -202,6 +202,11 @@ HRESULT CLoader::Load_Logo()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_GaugeMask"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/Skill_Gauge_Effect_Mask.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_RasenShuri"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/Skill_Icon/T_UI_Skill_TrueRasenShuriken_BC.png")))))
 	{
 		return E_FAIL;
 	}
@@ -228,6 +233,19 @@ HRESULT CLoader::Load_Logo()
 #pragma endregion
 
 #pragma region Effect
+	string strInputFilePath = "../Bin/Resources/Textures/Effect/";
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(strInputFilePath))
+	{
+		if (entry.is_regular_file())
+		{
+			wstring strPrototypeTag = TEXT("Prototype_Component_Texture_Effect_") + entry.path().parent_path().stem().wstring() + TEXT("_") + entry.path().stem().wstring();
+
+			if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, strPrototypeTag, CTexture::Create(m_pDevice, m_pContext, entry.path().wstring()))))
+			{
+				return E_FAIL;
+			}
+		}
+	}
 	// Effect Textures
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Sphere01"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Effect/T_EFF_Sphere_01_M.dds")))))
 	{
@@ -378,7 +396,8 @@ HRESULT CLoader::Load_Logo()
 
 	m_strLoadingText = L"Logo : Loading Model";
 #pragma region Model
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_Sphere_02.mo.hyuntrastatmesh"))))
+	_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(90.f));
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_Sphere_02.mo.hyuntrastatmesh", false, Pivot))))
 	{
 		return E_FAIL;
 	}
@@ -398,7 +417,7 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
-	_matrix Pivot = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.f));
+	Pivot = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.f));
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_FlyingSphere"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_FlyingSphere.hyuntrastatmesh", false, Pivot))))
 	{
 		return E_FAIL;
@@ -891,6 +910,16 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Effect_Smoke"), CEffect_Smoke::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Effect_Impact"), CEffect_Impact::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Kunai"), CKunai::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -917,6 +946,11 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Rasenshuriken"), CRasenShuriken::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Meteor"), CMeteor::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

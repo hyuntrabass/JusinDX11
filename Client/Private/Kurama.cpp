@@ -511,6 +511,13 @@ void CKurama::Tick_State(_float fTimeDelta)
 				XMStoreFloat4(&Info.vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("LipMouthDownCenter")).r[3], m_pTransformCom->Get_World_Matrix()));
 				XMStoreFloat4(&Info.vLook, m_pPlayerTransform->Get_CenterPos());
 				m_pGameInstance->Add_Layer(LEVEL_CLOUD, TEXT("Layer_MiniBomb"), TEXT("Prototype_GameObject_MiniBomb"), &Info);
+				
+				EffectInfo EffectInfo{};
+				EffectInfo.vColor = _float4(0.175f, 0.175f, 0.35f, 1.f);
+				EffectInfo.fScale = 15.f;
+				EffectInfo.vPos = _float4(Info.vPos.x, Info.vPos.y, Info.vPos.z, 1.f);
+				EffectInfo.iType = 1;
+				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
 				m_hasShot = true;
 			}
 		}

@@ -423,6 +423,13 @@ HRESULT CUI_Manager::Ready_UI_Tuto()
 		return E_FAIL;
 	}
 
+	iSkillNum++;
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_SlotBase_Skill"), &iSkillNum)))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_HpBar_SlotBase_Tool"))))
 	{
 		return E_FAIL;

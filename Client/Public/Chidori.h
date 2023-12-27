@@ -22,10 +22,10 @@ public:
 	HRESULT Render() override;
 
 private:
-	static const _uint iNumModels{ 9 };
+	static const _uint m_iNumModels{ 9 };
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	CModel* m_pModelCom[iNumModels]{ nullptr };
+	CModel* m_pModelCom[m_iNumModels]{ nullptr };
 	CTexture* m_pMaskTextureCom{ nullptr };
 	CTransform* m_pPlayerTransform{ nullptr };
 

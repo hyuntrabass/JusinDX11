@@ -84,7 +84,7 @@ HRESULT CSlotBase_Tool::Render()
 	m_fSizeX = 76.f * 0.8f * 0.95f;
 	m_fSizeY = 76.f * 0.8f * 0.95f;
 
-	m_fX = 1033.f;
+	m_fX = 960.f;
 	m_fY = 640.f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -168,7 +168,7 @@ HRESULT CSlotBase_Tool::Bind_ShaderResources()
 	m_fSizeX = 76.f * 0.8f;
 	m_fSizeY = 76.f * 0.8f;
 
-	m_fX = 1033.f;
+	m_fX = 960.f;
 	m_fY = 640.f;
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);

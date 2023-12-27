@@ -43,18 +43,35 @@ HRESULT CMiniBomb::Init(void* pArg)
 
 void CMiniBomb::Tick(_float fTimeDelta)
 {
-	if (m_fLifeTimer > 10.f)
+	m_vUVTransform.x += fTimeDelta * 2.f;
+	if (m_vUVTransform.x > 2.f)
 	{
-		m_isDead = true;
+		m_vUVTransform.x = 1.f;
 	}
 
-	m_pTransformCom->Turn(XMVector3Normalize(m_pTransformCom->Get_State(State::Look) * -1.f), fTimeDelta);
+	if (m_fLifeTimer > 1.f)
+	{
+		m_isDead = true;
+		return;
+	}
+
+	//m_pTransformCom->Turn(XMVector3Normalize(m_pTransformCom->Get_State(State::Look) * -1.f), fTimeDelta);
 
 	m_fLifeTimer += fTimeDelta;
 
 	m_pTransformCom->Go_Straight(fTimeDelta);
 
 	m_pGameInstance->Attack_Player(m_pColliderCom, 10);
+	if (m_pGameInstance->CheckCollision_Player(m_pColliderCom))
+	{
+		m_isDead = true;
+
+		EffectInfo EffectInfo{};
+		EffectInfo.vColor = _float4(0.175f, 0.175f, 0.35f, 1.f);
+		EffectInfo.fScale = 10.f;
+		XMStoreFloat4(&EffectInfo.vPos, m_pTransformCom->Get_State(State::Pos));
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
+	}
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }
 
@@ -75,9 +92,33 @@ HRESULT CMiniBomb::Render()
 		return E_FAIL;
 	}
 
-	m_pShaderCom->Begin(StaticPass_SingleColorFx);
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &m_vUVTransform, sizeof(_float2))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pCoreMaskTexture->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+	{
+		return E_FAIL;
+	}
+
+	m_pShaderCom->Begin(StaticPass_MaskEffect);
 
 	m_pModelCom->Render(0);
+
+	if (FAILED(m_pMaskTexture->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+	{
+		return E_FAIL;
+	}
+
+	_float4 vBaseColor{ 0.175f, 0.175f, 0.35f, 0.8f };
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vBaseColor, sizeof _float4)))
+	{
+		return E_FAIL;
+	}
+
+	m_pShaderCom->Begin(StaticPass_MaskEffect);
+	
 	m_pEffectModelCom->Render(0);
 
 	return S_OK;
@@ -111,6 +152,16 @@ HRESULT CMiniBomb::Add_Components()
 	ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider"), reinterpret_cast<CComponent**>(&m_pColliderCom), &ColDesc)))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise_T_EFF_Noise_23_M"), TEXT("Com_CoreMaskTexture"), reinterpret_cast<CComponent**>(&m_pCoreMaskTexture))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Fire_07"), TEXT("Com_WingTrailMaskTexture"), reinterpret_cast<CComponent**>(&m_pMaskTexture))))
 	{
 		return E_FAIL;
 	}
@@ -174,6 +225,8 @@ void CMiniBomb::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pCoreMaskTexture);
+	Safe_Release(m_pMaskTexture);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);

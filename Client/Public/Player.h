@@ -51,6 +51,7 @@ enum class Player_State
 	Wire,
 	Beaten,
 	Attack,
+	Meteor,
 	RasenShuriken,
 	Chidori,
 	Aerial_Chidori,

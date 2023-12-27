@@ -66,12 +66,12 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 		{
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * m_fMouseSensor);
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
 		}
 
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
 		{
-			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta * dwMouseMove * m_fMouseSensor);
+			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
 		}
 
 	}

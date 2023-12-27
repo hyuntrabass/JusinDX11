@@ -28,22 +28,30 @@ HRESULT CFireball::Init(void* pArg)
 		return E_FAIL;
 	}
 
-	m_pPos = reinterpret_cast<_float3*>(pArg);
+	ObjectInfo Info = *reinterpret_cast<ObjectInfo*>(pArg);
+	m_strType = Info.strPrototypeTag;
 
-	m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(m_pPos), 1.f));
-
-	m_pTransformCom->Set_Speed(50.f);
-
-	PxRaycastBuffer Buffer{};
-	if (m_pGameInstance->Raycast(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()), XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 50.f, Buffer))
+	if (m_strType == TEXT("Fireball"))
 	{
-		m_vTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
-		m_hasTarget = true;
+		m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&Info.vPos));
+
+		m_pTransformCom->Set_Speed(50.f);
+
+		PxRaycastBuffer Buffer{};
+		if (m_pGameInstance->Raycast(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()), XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 50.f, Buffer))
+		{
+			m_vTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
+			m_hasTarget = true;
+		}
+		else
+		{
+			m_vTargetPos = _float3(reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()));
+			m_hasTarget = false;
+		}
 	}
 	else
 	{
-		m_vTargetPos = _float3(reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()));
-		m_hasTarget = false;
+
 	}
 
 	return S_OK;
@@ -79,13 +87,23 @@ void CFireball::Tick(_float fTimeDelta)
 		}
 		break;
 	case Client::CFireball::State_Explode:
-			m_pGameInstance->Attack_Monster(m_pColliderCom, 40);
-			m_fTimer = {};
-			_float3 vPos{};
-			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(State::Pos));
-			m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Effect"), TEXT("Prototype_GameObject_Effect_Fire"), &vPos);
-			m_isDead = true;
+	{
+		m_pGameInstance->Attack_Monster(m_pColliderCom, 40);
+		m_fTimer = {};
+		_float3 vPos{};
+		XMStoreFloat3(&vPos, m_pTransformCom->Get_State(State::Pos));
+		m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Effect"), TEXT("Prototype_GameObject_Effect_Fire"), &vPos);
+		EffectInfo Info{};
+		Info.vColor = _float4(1.f, 0.3f, 0.f, 1.f);
+		Info.fScale = 20.f;
+		Info.vPos = _float4(vPos.x, vPos.y, vPos.z, 1.f);
+		Info.iType = 1;
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &Info);
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Smoke"));
+
+		m_isDead = true;
 		break;
+	}
 	case Client::CFireball::State_Dissolve:
 		break;
 	}
@@ -125,14 +143,30 @@ HRESULT CFireball::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGradationTextureCom->Bind_ShaderResource(m_pShaderCom, "g_GradationTexture")))
+	if (m_strType == TEXT("Fireball"))
 	{
-		return E_FAIL;
-	}
+		_float4 vColor { 1.f, 0.4f, 0.f, 1.f };
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
+		{
+			return E_FAIL;
+		}
 
-	if (FAILED(m_pShaderCom->Begin(StaticPass_Fireball)))
+		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
+		{
+			return E_FAIL;
+		}
+	}
+	else
 	{
-		return E_FAIL;
+		if (FAILED(m_pGradationTextureCom->Bind_ShaderResource(m_pShaderCom, "g_GradationTexture")))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(StaticPass_Fireball)))
+		{
+			return E_FAIL;
+		}
 	}
 
 	if (FAILED(m_pModelCom[0]->Render(0)))
@@ -150,7 +184,7 @@ HRESULT CFireball::Render()
 		return E_FAIL;
 	}
 
-	_float4 vColor{ 1.f, 0.f, 0.f, 0.5f };
+	_float4 vColor{ 1.f, 0.4f, 0.4f, 0.5f };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 	{
 		return E_FAIL;

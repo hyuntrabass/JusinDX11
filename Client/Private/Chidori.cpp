@@ -114,9 +114,9 @@ HRESULT CChidori::Render()
 		return E_FAIL;
 	}
 
-	for (size_t i = 0; i < iNumModels; i++)
+	for (size_t i = 0; i < m_iNumModels; i++)
 	{
-		if (i > 0 and static_cast<_float>(i) > m_fTimer * iNumModels)
+		if (i > 0 and static_cast<_float>(i) > m_fTimer * m_iNumModels)
 		{
 			break;
 		}
@@ -363,7 +363,7 @@ void CChidori::Free()
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
-	for (size_t i = 0; i < iNumModels; i++)
+	for (size_t i = 0; i < m_iNumModels; i++)
 	{
 		Safe_Release(m_pModelCom[i]);
 	}

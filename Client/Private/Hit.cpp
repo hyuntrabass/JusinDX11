@@ -34,10 +34,6 @@ HRESULT CHit::Init(void* pArg)
 	m_fFxAlpha = 1.f;
 	m_fSizeRatio = 1.f;
 
-	XMStoreFloat4x4(&m_Rotation, XMMatrixTranslation(-320, 0.f, 0.f) *
-		XMMatrixRotationZ(XMConvertToRadians(30.f)) * 
-		XMMatrixTranslation(320.f, 0.f, 0.f));
-
 	return S_OK;
 }
 
@@ -68,6 +64,11 @@ void CHit::Tick(_float fTimeDelta)
 		m_fFxAlpha = Lerp(0.f, 0.7f, m_fAlpha);
 	}
 
+	XMStoreFloat4x4(&m_Rotation, XMMatrixTranslation(-320, 0.f, 0.f) *
+					XMMatrixRotationZ(XMConvertToRadians(30.f)) *
+					XMMatrixScaling(m_fSizeRatio, m_fSizeRatio, m_fSizeRatio) *
+					XMMatrixTranslation(320.f, 0.f, 0.f));
+
 	m_fTimer += fTimeDelta;
 	m_fFxRotation += fTimeDelta;
 }
@@ -86,8 +87,8 @@ HRESULT CHit::Render()
 
 	if (m_iCombo > 1)
 	{
-		m_fSizeX = m_vNumSize.x * m_fSizeRatio;
-		m_fSizeY = m_vNumSize.y * m_fSizeRatio;
+		m_fSizeX = m_vNumSize.x;
+		m_fSizeY = m_vNumSize.y;
 		m_fX = (g_iWinSizeX >> 2) * 3.f - (m_vNumSize.x * 0.5f);
 		m_fY = g_iWinSizeY >> 1;
 		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -140,8 +141,8 @@ HRESULT CHit::Render()
 			}
 		}
 
-		m_fSizeX = m_vSmallHitSize.x * m_fSizeRatio;
-		m_fSizeY = m_vSmallHitSize.y * m_fSizeRatio;
+		m_fSizeX = m_vSmallHitSize.x;
+		m_fSizeY = m_vSmallHitSize.y;
 		m_fX = (g_iWinSizeX >> 2) * 3.f + (m_vSmallHitSize.x * 0.45f);
 		m_fY = (g_iWinSizeY >> 1) + (m_vNumSize.y * 0.65f) - (m_vSmallHitSize.y * 0.5f);
 		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
@@ -158,8 +159,8 @@ HRESULT CHit::Render()
 	}
 	else
 	{
-		m_fSizeX = m_vHitSize.x * m_fSizeRatio;
-		m_fSizeY = m_vHitSize.y * m_fSizeRatio;
+		m_fSizeX = m_vHitSize.x;
+		m_fSizeY = m_vHitSize.y;
 		m_fX = (g_iWinSizeX >> 2) * 3.f;
 		m_fY = g_iWinSizeY >> 1;
 		__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);

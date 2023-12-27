@@ -177,6 +177,8 @@
     <ClInclude Include="..\public\Effect_Fire.h" />
     <ClInclude Include="..\public\Effect_Hit.h" />
     <ClInclude Include="..\public\CommonTrail.h" />
+    <ClInclude Include="..\public\Effect_Impact.h" />
+    <ClInclude Include="..\Public\Effect_Smoke.h" />
     <ClInclude Include="..\public\Effect_Warp.h" />
     <ClInclude Include="..\Public\Fireball.h" />
     <ClInclude Include="..\public\FootEffect.h" />
@@ -200,6 +202,7 @@
     <ClInclude Include="..\public\Logo.h" />
     <ClInclude Include="..\public\MainApp.h" />
     <ClInclude Include="..\public\MapCollider.h" />
+    <ClInclude Include="..\Public\Meteor.h" />
     <ClInclude Include="..\public\MiniBomb.h" />
     <ClInclude Include="..\public\Pain.h" />
     <ClInclude Include="..\public\Parts_Window.h" />
@@ -231,6 +234,8 @@
     <ClCompile Include="..\private\Effect_Fire.cpp" />
     <ClCompile Include="..\private\Effect_Hit.cpp" />
     <ClCompile Include="..\private\CommonTrail.cpp" />
+    <ClCompile Include="..\private\Effect_Impact.cpp" />
+    <ClCompile Include="..\Private\Effect_Smoke.cpp" />
     <ClCompile Include="..\private\Effect_Warp.cpp" />
     <ClCompile Include="..\Private\Fireball.cpp" />
     <ClCompile Include="..\private\FootEffect.cpp" />
@@ -253,6 +258,7 @@
     <ClCompile Include="..\private\Logo.cpp" />
     <ClCompile Include="..\private\MainApp.cpp" />
     <ClCompile Include="..\private\MapCollider.cpp" />
+    <ClCompile Include="..\Private\Meteor.cpp" />
     <ClCompile Include="..\private\MiniBomb.cpp" />
     <ClCompile Include="..\private\Pain.cpp" />
     <ClCompile Include="..\private\Parts_Window.cpp" />

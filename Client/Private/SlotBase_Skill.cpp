@@ -36,7 +36,7 @@ HRESULT CSlotBase_Skill::Init(void* pArg)
 	m_fSizeX = 94.f * 0.8f;
 	m_fSizeY = 94.f * 0.8f;
 
-	m_fX = 1180.f - m_fSizeX * m_iSkillNumber;
+	m_fX = 1030.f + m_fSizeX * m_iSkillNumber;
 	m_fY = 630.f;
 
 	m_fDepth = 1.f;
@@ -175,16 +175,23 @@ HRESULT CSlotBase_Skill::Add_Components()
 		return E_FAIL;
 	}
 
-	if (m_iSkillNumber == 0)
+	if (m_iSkillNumber == 1)
 	{
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_Chidori"), TEXT("Com_Texture_Skill"), reinterpret_cast<CComponent**>(&m_pSkillTextureCom))))
 		{
 			return E_FAIL;
 		}
 	}
-	else
+	else if (m_iSkillNumber == 2)
 	{
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_Fireball"), TEXT("Com_Texture_Skill"), reinterpret_cast<CComponent**>(&m_pSkillTextureCom))))
+		{
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Skill_RasenShuri"), TEXT("Com_Texture_Skill"), reinterpret_cast<CComponent**>(&m_pSkillTextureCom))))
 		{
 			return E_FAIL;
 		}

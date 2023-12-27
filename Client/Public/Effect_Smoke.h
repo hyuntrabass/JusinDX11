@@ -4,12 +4,12 @@
 
 BEGIN(Client)
 
-class CMiniBomb final : public CBlendObject
+class CEffect_Smoke final : public CBlendObject
 {
 private:
-	CMiniBomb(_dev pDevice, _context pContext);
-	CMiniBomb(const CMiniBomb& rhs);
-	virtual ~CMiniBomb() = default;
+	CEffect_Smoke(_dev pDevice, _context pContext);
+	CEffect_Smoke(const CEffect_Smoke& rhs);
+	virtual ~CEffect_Smoke() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -21,22 +21,20 @@ public:
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	CModel* m_pModelCom{ nullptr };
-	CModel* m_pEffectModelCom{ nullptr };
-	CCollider* m_pColliderCom{ nullptr };
-	CTexture* m_pCoreMaskTexture{ nullptr };
-	CTexture* m_pMaskTexture{ nullptr };
+	CTexture* m_pMaskTextureCom{ nullptr };
+	CVIBuffer_Instancing_Point* m_pVIBufferCom{ nullptr };
+
+private:
+	_float m_fLifeTime{};
+	_int m_iSpriteIndex{};
+	_float m_fDissolveRatio{};
 
 private:
 	HRESULT Add_Components();
-	HRESULT Bind_Shader_Resources();
-
-private:
-	_float m_fLifeTimer{};
-	_float2 m_vUVTransform{};
+	HRESULT Bind_ShaderResources();
 
 public:
-	static CMiniBomb* Create(_dev pDevice, _context pContext);
+	static CEffect_Smoke* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

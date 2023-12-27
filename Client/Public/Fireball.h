@@ -41,8 +41,8 @@ private:
 	CCollider* m_pColliderCom{ nullptr };
 
 private:
-	_float3* m_pPos{};
 	_float2 m_vUVTransform{ 1.f, 0.f };
+	wstring m_strType{};
 
 	FireballState m_eState{};
 	_float m_fTimer{};

@@ -7,6 +7,7 @@
 #include "Trigger_Manager.h"
 #include "RasenShuriken.h"
 #include "Chidori.h"
+#include "Meteor.h"
 
 CPlayer::CPlayer(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
@@ -397,12 +398,23 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_1))
 	{
-		m_eState = Player_State::RasenShuriken;
+		if (CUI_Manager::Get_Instance()->Use_Skill(0))
+		{
+			m_eState = Player_State::RasenShuriken;
+		}
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_4))
+	{
+		//if (CUI_Manager::Get_Instance()->Use_Skill(4))
+		{
+			m_eState = Player_State::Meteor;
+		}
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_2))
 	{
-		if (CUI_Manager::Get_Instance()->Use_Skill(0))
+		if (CUI_Manager::Get_Instance()->Use_Skill(1))
 		{
 			if (m_pTransformCom->Is_OnGround())
 			{
@@ -417,7 +429,7 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (m_pGameInstance->Key_Down(DIK_3))
 	{
-		//if (CUI_Manager::Get_Instance()->Use_Skill(0))
+		if (CUI_Manager::Get_Instance()->Use_Skill(2))
 		{
 			if (m_pTransformCom->Is_OnGround())
 			{
@@ -432,6 +444,7 @@ void CPlayer::Move(_float fTimeDelta)
 
 	if (not (m_eState == Player_State::Wire and m_pKunai) and
 		m_eState != Player_State::RasenShuriken and
+		m_eState != Player_State::Fireball and
 		m_eState != Player_State::Aerial_Chidori)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
@@ -603,6 +616,24 @@ void CPlayer::Init_State()
 		case Client::Player_State::Beaten:
 			break;
 		case Client::Player_State::Attack:
+			break;
+		case Client::Player_State::Meteor:
+			if (m_pTransformCom->Is_OnGround())
+			{
+				m_Animation.iAnimIndex = Ninjutsu_TrueRasenShuriken;
+			}
+			else
+			{
+				m_Animation.iAnimIndex = Ninjutsu_Aerial_TrueRasenShuriken;
+			}
+			m_pTransformCom->Reset_Gravity();
+			m_fTimer = {};
+			m_bAttacked = false;
+
+			Safe_Release(m_pSkillEffect);
+			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Meteor"), &m_vRightHandPos);
+
+			CUI_Manager::Get_Instance()->Create_Aim();
 			break;
 		case Client::Player_State::RasenShuriken:
 			if (m_pTransformCom->Is_OnGround())
@@ -896,6 +927,34 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			m_bAttacked = false;
 		}
 		break;
+	case Client::Player_State::Meteor:
+		if (not m_bAttacked and m_fTimer > 3.3f)
+		{
+			reinterpret_cast<CMeteor*>(m_pSkillEffect)->Shoot();
+			CUI_Manager::Get_Instance()->Delete_Aim();
+			m_Animation.fAnimSpeedRatio = 3.f;
+
+			m_bAttacked = true;
+		}
+		m_fTimer += fTimeDelta;
+
+		if (not m_bAttacked)
+		{
+			m_pTransformCom->LookAt_Dir(XMVectorSetY(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 0.f));
+		}
+
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(m_Animation.iAnimIndex))
+		{
+			if (m_Animation.iAnimIndex == Ninjutsu_Aerial_TrueRasenShuriken)
+			{
+				m_eState = Player_State::Fall_Front;
+			}
+			else
+			{
+				m_eState = Player_State::Idle;
+			}
+		}
+		break;
 	case Client::Player_State::RasenShuriken:
 		if (not m_bAttacked and m_fTimer > 3.3f)
 		{
@@ -1032,10 +1091,24 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		if (not m_bAttacked and m_fTimer > 0.6f)
 		{
 			Safe_Release(m_pSkillEffect);
-			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Fireball"), &m_vRightHandPos);
+			ObjectInfo ObjectInfo{};
+			ObjectInfo.vPos = _float4(m_vRightHandPos.x, m_vRightHandPos.y, m_vRightHandPos.z, 1.f);
+			ObjectInfo.strPrototypeTag = TEXT("Fireball");
+			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Fireball"), &ObjectInfo);
+			EffectInfo EffectInfo{};
+			EffectInfo.vColor = _float4(0.35f, 0.f, 0.f, 1.f);
+			EffectInfo.fScale = 5.f;
+			EffectInfo.vPos = _float4(m_vRightHandPos.x, m_vRightHandPos.y, m_vRightHandPos.z, 1.f);
+			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
 			CUI_Manager::Get_Instance()->Delete_Aim();
 			m_bAttacked = true;
 		}
+
+		if (not m_bAttacked)
+		{
+			m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()));
+		}
+
 		m_fTimer += fTimeDelta;
 
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(m_Animation.iAnimIndex))

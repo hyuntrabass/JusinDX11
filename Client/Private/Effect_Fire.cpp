@@ -39,7 +39,7 @@ void CEffect_Fire::Tick(_float fTimeDelta)
 	m_pTransformCom->LookAway(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()));
 	m_iSpriteIndex = 30 * m_fLifeTime;
 
-	if (m_iSpriteIndex > 30)
+	if (m_iSpriteIndex > 10)
 	{
 		m_fDissolveRatio += fTimeDelta;
 	}
@@ -143,7 +143,7 @@ HRESULT CEffect_Fire::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBufferRect"), reinterpret_cast<CComponent**>(&m_pVIBufferRectCom), &Desc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBufferRect"), reinterpret_cast<CComponent**>(&m_pVIBufferRectCom))))
 	{
 		return E_FAIL;
 	}

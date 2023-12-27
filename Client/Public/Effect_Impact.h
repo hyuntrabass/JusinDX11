@@ -4,12 +4,12 @@
 
 BEGIN(Client)
 
-class CMiniBomb final : public CBlendObject
+class CEffect_Impact final : public CBlendObject
 {
 private:
-	CMiniBomb(_dev pDevice, _context pContext);
-	CMiniBomb(const CMiniBomb& rhs);
-	virtual ~CMiniBomb() = default;
+	CEffect_Impact(_dev pDevice, _context pContext);
+	CEffect_Impact(const CEffect_Impact& rhs);
+	virtual ~CEffect_Impact() = default;
 
 public:
 	virtual HRESULT Init_Prototype() override;
@@ -21,22 +21,22 @@ public:
 private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
-	CModel* m_pModelCom{ nullptr };
-	CModel* m_pEffectModelCom{ nullptr };
-	CCollider* m_pColliderCom{ nullptr };
-	CTexture* m_pCoreMaskTexture{ nullptr };
-	CTexture* m_pMaskTexture{ nullptr };
+	CVIBuffer_Rect* m_pVIBufferCom{ nullptr };
+	CTexture* m_pMaskTextureCom{ nullptr };
+
+private:
+	_float m_fTimeAcc{};
+	_float m_fMaxSize{};
+	_float4 m_vColor{};	
+	_float m_fAlpha{ 1.f };
+	_uint m_iType{};
 
 private:
 	HRESULT Add_Components();
-	HRESULT Bind_Shader_Resources();
-
-private:
-	_float m_fLifeTimer{};
-	_float2 m_vUVTransform{};
+	HRESULT Bind_ShaderResources();
 
 public:
-	static CMiniBomb* Create(_dev pDevice, _context pContext);
+	static CEffect_Impact* Create(_dev pDevice, _context pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

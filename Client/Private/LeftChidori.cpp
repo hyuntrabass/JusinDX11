@@ -38,8 +38,8 @@ HRESULT CLeftChidori::Init(void* pArg)
 	_randFloat RandomAngle = _randFloat(0.f, 180.f);
 	_randFloat RandomLook = _randFloat(0.f, 1.f);
 	
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), RandomAngle(RandomNumber));
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), RandomAngle(RandomNumber));
+	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), RandomAngle(RandomNumber));
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), RandomAngle(RandomNumber));
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), RandomAngle(RandomNumber));
 	m_pTransformCom->LookAt_Dir(XMVectorSet(RandomLook(RandomNumber), 0.f, RandomLook(RandomNumber), 0.f));
 	

@@ -456,7 +456,7 @@ void CRasenShuriken::Free()
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
-	for (size_t i = 0; i < iNumModels; i++)
+	for (size_t i = 0; i < m_iNumModels; i++)
 	{
 		Safe_Release(m_pModelCom[i]);
 	}

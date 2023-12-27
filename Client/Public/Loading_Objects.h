@@ -35,3 +35,6 @@
 #include "LeftChidori.h"
 #include "Fireball.h"
 #include "Effect_Fire.h"
+#include "Effect_Impact.h"
+#include "Effect_Smoke.h"
+#include "Meteor.h"
