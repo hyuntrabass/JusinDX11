@@ -222,7 +222,10 @@ void CPlayer::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		m_iHP = m_iMaxHP;
 	}
-}
+
+	m_pGameInstance->Set_ShakeCam(true);
+}	
+
 
 void CPlayer::Move(_float fTimeDelta)
 {

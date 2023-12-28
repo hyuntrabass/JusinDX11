@@ -79,6 +79,9 @@ void CRasenShuriken::Tick(_float fTimeDelta)
 		}
 		break;
 	case Client::CRasenShuriken::State_Explode:
+		//if (m_iAttCount == 0)
+		{
+		}
 		m_pTransformCom->LookAt_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
 		m_fCoreScale = Lerp(0.5f, 10.5f, m_fScaleRatio);
 		m_fCoreAlpha = Lerp(0.7f, 0.2f, m_fTimer);
@@ -86,6 +89,7 @@ void CRasenShuriken::Tick(_float fTimeDelta)
 
 		if (m_fTimer > 0.25)
 		{
+			m_pGameInstance->Set_ShakeCam(true);
 			m_pGameInstance->Attack_Monster(m_pColliderCom, 13);
 			m_fTimer = {};
 			m_iAttCount++;

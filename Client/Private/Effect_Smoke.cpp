@@ -17,18 +17,22 @@ HRESULT CEffect_Smoke::Init_Prototype()
 
 HRESULT CEffect_Smoke::Init(void* pArg)
 {
-	if (FAILED(Add_Components()))
+	if (not pArg)
 	{
+		MSG_BOX("No Argument!");
 		return E_FAIL;
 	}
 
-	if (pArg)
+	EffectInfo Info = *reinterpret_cast<EffectInfo*>(pArg);
+
+	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&Info.vPos));
+	m_vColor = Info.vColor;
+	m_fScale = Info.fScale;
+	m_iNumInstance = Info.iType;
+
+	if (FAILED(Add_Components()))
 	{
-		m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(reinterpret_cast<_float3*>(pArg)), 1.f));
-	}
-	else
-	{
-		m_pTransformCom->Set_State(State::Pos, XMVectorSet(17.f, 45.f, 140.f, 1.f));
+		return E_FAIL;
 	}
 
 	return S_OK;
@@ -45,7 +49,7 @@ void CEffect_Smoke::Tick(_float fTimeDelta)
 		m_fLifeTime = {};
 		m_isDead = true;
 	}
-	m_pVIBufferCom->Update(fTimeDelta, 70);
+	m_pVIBufferCom->Update(fTimeDelta, m_iNumInstance);
 }
 
 void CEffect_Smoke::Late_Tick(_float fTimeDelta)
@@ -89,15 +93,14 @@ HRESULT CEffect_Smoke::Add_Components()
 	}
 
 	CVIBuffer_Instancing::ParticleDesc Desc{};
-	Desc.vMinPos = _float3(-2.f, -2.f, -2.f);
-	Desc.vMaxPos = _float3(2.f, 2.f, 2.f);
-	Desc.vScaleRange = _float2(0.5f, 2.f);
+	Desc.vMinPos = _float3(-m_fScale, -m_fScale, -m_fScale);
+	Desc.vMaxPos = _float3(m_fScale, m_fScale, m_fScale);
+	Desc.vScaleRange = _float2(m_fScale * 0.25f, m_fScale);
 	Desc.vSpeedRange = _float2(3.f, 5.f);
 	Desc.vLifeTime = _float2(1.f, 1.f);
 	Desc.vMinDir = _float3(-1.f, 2.f, -1.f);
 	Desc.vMaxDir = _float3(1.f, 2.f, 1.f);
 	Desc.isLoop = false;
-
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Instancing_Point"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom), &Desc)))
 	{
 		return E_FAIL;
@@ -124,8 +127,7 @@ HRESULT CEffect_Smoke::Bind_ShaderResources()
 		return E_FAIL;
 	}
 
-	_float4 vColor{ 1.f, 1.f, 1.f, 1.f };
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof vColor)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_vColor, sizeof m_vColor)))
 	{
 		return E_FAIL;
 	}

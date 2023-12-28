@@ -73,6 +73,7 @@ void CChidori::Tick(_float fTimeDelta)
 	m_vUVTransform.z -= fTimeDelta * 4.f;
 	if (m_vUVTransform.x < -2.f)
 	{
+		m_pGameInstance->Set_ShakeCam(true);
 		m_vUVTransform.x = 1.f;
 	}
 	if (m_vUVTransform.y < -2.f)

@@ -45,6 +45,14 @@ HRESULT CSandman::Init(void* pArg)
 	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit);
 	m_iHP = 50;
 
+	EffectInfo FxInfo{};
+	FxInfo.vColor = _float4(1.f, 1.f, 1.f, 1.f);
+	FxInfo.fScale = 2.f;
+	FxInfo.vPos = _float4(m_vOriginPos.x, m_vOriginPos.y, m_vOriginPos.z, 1.f);
+	FxInfo.iType = 70;
+	m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Smoke"), &FxInfo);
+
+
 	return S_OK;
 }
 

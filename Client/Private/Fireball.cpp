@@ -42,6 +42,7 @@ HRESULT CFireball::Init(void* pArg)
 		{
 			m_vTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
 			m_hasTarget = true;
+			m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&m_vTargetPos), 1.f));
 		}
 		else
 		{
@@ -51,8 +52,26 @@ HRESULT CFireball::Init(void* pArg)
 	}
 	else
 	{
+		_vector vPos = XMLoadFloat4(&Info.vPos) - XMVector3Normalize(XMLoadFloat4(&Info.vLook)) * 60.f;
+		m_pTransformCom->Set_State(State::Pos, vPos);
+		m_pTransformCom->Set_Speed(20.f);
+
+		PxRaycastBuffer Buffer{};
+		if (m_pGameInstance->Raycast(vPos, XMVector3Normalize(XMLoadFloat4(&Info.vLook)), 100.f, Buffer))
+		{
+			m_vTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
+			m_hasTarget = true;
+			m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&m_vTargetPos), 1.f));
+		}
+		else
+		{
+			m_vTargetPos = _float3(Info.vLook.x, Info.vLook.y, Info.vLook.z);
+			m_hasTarget = false;
+		}
 
 	}
+
+	m_pGameInstance->Set_ShakeCam(true);
 
 	return S_OK;
 }
@@ -62,32 +81,48 @@ void CFireball::Tick(_float fTimeDelta)
 	switch (m_eState)
 	{
 	case Client::CFireball::State_Shoot:
+		//m_pTransformCom->Set_RotationPerSec(360.f);
+		//m_pTransformCom->Turn(XMVector3Normalize(m_pTransformCom->Get_State(State::Look)) * -1.f, fTimeDelta);
 		if (m_hasTarget)
 		{
 			if (m_pTransformCom->Go_To(XMVectorSetW(XMLoadFloat3(&m_vTargetPos), 1.f), fTimeDelta))
 			{
+				m_pTransformCom->Set_State(State::Pos, XMVectorSetW(XMLoadFloat3(&m_vTargetPos), 1.f));
 				m_eState = State_Explode;
 			}
-
-			m_pTransformCom->LookAt(XMVectorSetW(XMLoadFloat3(&m_vTargetPos), 1.f));
+			else
+			{
+			}
 		}
 		else
 		{
 			m_pTransformCom->Go_To_Dir(XMLoadFloat3(&m_vTargetPos), fTimeDelta);
-			if (m_fTimer > 1.f)
+			if (m_strType == TEXT("Fireball"))
 			{
-				m_eState = State_Explode;
+				if (m_fTimer > 1.f)
+				{
+					m_eState = State_Explode;
+				}
 			}
-			m_pTransformCom->LookAt_Dir(XMLoadFloat3(&m_vTargetPos));
+			else
+			{
+				if (m_fTimer > 10.f)
+				{
+					m_eState = State_Explode;
+				}
+			}
+			m_pTransformCom->LookAt_Dir(XMVector3Normalize(XMLoadFloat3(&m_vTargetPos)));
 		}
 
 		if (m_pGameInstance->CheckCollision_Monster(m_pColliderCom))
 		{
+			m_pTransformCom->Set_State(State::Pos, m_pTransformCom->Get_State(State::Pos) + XMVector3Normalize(m_pTransformCom->Get_State(State::Look)) * 2.f);
 			m_eState = State_Explode;
 		}
 		break;
 	case Client::CFireball::State_Explode:
 	{
+		m_pGameInstance->Set_ShakeCam(true);
 		m_pGameInstance->Attack_Monster(m_pColliderCom, 40);
 		m_fTimer = {};
 		_float3 vPos{};
@@ -99,7 +134,11 @@ void CFireball::Tick(_float fTimeDelta)
 		Info.vPos = _float4(vPos.x, vPos.y, vPos.z, 1.f);
 		Info.iType = 1;
 		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &Info);
-		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Smoke"));
+		Info.vColor = _float4(0.2f, 0.2f, 0.2f, 1.f);
+		Info.fScale = 2.f;
+		Info.vPos = _float4(vPos.x, vPos.y, vPos.z, 1.f);
+		Info.iType = 70;
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Smoke"), &Info);
 
 		m_isDead = true;
 		break;
@@ -111,13 +150,23 @@ void CFireball::Tick(_float fTimeDelta)
 	m_fTimer += fTimeDelta;
 
 
-	m_vUVTransform.x += fTimeDelta;
+	_float fUVDeltaRatio = 1.f;
+	if (m_strType == TEXT("Meteor"))
+	{
+		fUVDeltaRatio = 3.f;
+	}
+	m_vUVTransform.x += fTimeDelta * fUVDeltaRatio;
 	if (m_vUVTransform.x > 2.f)
 	{
 		m_vUVTransform.x = 1.f;
 	}
 
-	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
+	_float fColliderScale{ 1.f };
+	if (m_eState == State_Explode)
+	{
+		fColliderScale = 1.5f;
+	}
+	m_pColliderCom->Update(XMMatrixScaling(fColliderScale, fColliderScale, fColliderScale) * m_pTransformCom->Get_World_Matrix());
 }
 
 void CFireball::Late_Tick(_float fTimeDelta)
@@ -143,15 +192,48 @@ HRESULT CFireball::Render()
 		return E_FAIL;
 	}
 
+	_float4 vColor{};
+
 	if (m_strType == TEXT("Fireball"))
 	{
-		_float4 vColor { 1.f, 0.4f, 0.f, 1.f };
+		vColor = { 1.f, 0.4f, 0.f, 1.f };
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 		{
 			return E_FAIL;
 		}
 
 		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom[0]->Render(0)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pCircleMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &m_vUVTransform, sizeof(_float2))))
+		{
+			return E_FAIL;
+		}
+
+		vColor = { 1.f, 0.4f, 0.4f, 0.5f };
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pModelCom[1]->Render(0)))
 		{
 			return E_FAIL;
 		}
@@ -167,38 +249,18 @@ HRESULT CFireball::Render()
 		{
 			return E_FAIL;
 		}
+
+		if (FAILED(m_pModelCom[0]->Render(0)))
+		{
+			return E_FAIL;
+		}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &m_vUVTransform, sizeof(_float2))))
+		{
+			return E_FAIL;
+		}
 	}
 
-	if (FAILED(m_pModelCom[0]->Render(0)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pCircleMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &m_vUVTransform, sizeof(_float2))))
-	{
-		return E_FAIL;
-	}
-
-	_float4 vColor{ 1.f, 0.4f, 0.4f, 0.5f };
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pShaderCom->Begin(StaticPass_MaskEffect)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pModelCom[1]->Render(0)))
-	{
-		return E_FAIL;
-	}
 
 	vColor = { 1.f, 0.4f, 0.f, 0.5f };
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
@@ -220,7 +282,6 @@ HRESULT CFireball::Render()
 	{
 		return E_FAIL;
 	}
-#pragma endregion
 
 	return S_OK;
 }

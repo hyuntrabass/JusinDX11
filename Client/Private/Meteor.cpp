@@ -73,6 +73,32 @@ void CMeteor::Tick(_float fTimeDelta)
 		}
 		break;
 	case Client::CMeteor::State_Summon:
+		random_device random;
+		_randNum RandomNumber(random());
+		_randFloat RandomX = _randFloat(-10.f, 10.f);
+		_randFloat RandomZ = _randFloat(-10.f, 10.f);
+		_randFloat RandomLookX = _randFloat(-1.f, 1.f);
+		_randFloat RandomLookZ = _randFloat(-1.f, 1.f);
+
+		_float4 vCurrPos{};
+		XMStoreFloat4(&vCurrPos, m_pTransformCom->Get_State(State::Pos));
+
+		if (m_fTimer > 0.25f)
+		{
+			ObjectInfo Info{};
+			Info.vPos = _float4(vCurrPos.x + RandomX(RandomNumber), vCurrPos.y, vCurrPos.z + RandomZ(RandomNumber), 1.f);
+			Info.vLook = _float4(RandomLookX(RandomNumber), -3.f, RandomLookZ(RandomNumber), 0.f);
+			Info.strPrototypeTag = TEXT("Meteor");
+			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Meteor"), TEXT("Prototype_GameObject_Fireball"), &Info);
+			
+			m_fTimer = {};
+			m_iSummonCount++;
+		}
+
+		if (m_iSummonCount > 40)
+		{
+			m_isDead = true;
+		}
 		break;
 	}
 
@@ -250,7 +276,7 @@ HRESULT CMeteor::Render()
 			return E_FAIL;
 		}
 
-		vColor = { 1.f, 0.25f, 0.f, 1.f };
+		vColor = { 1.f, 0.f, 0.f, 1.f };
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vColor, sizeof(_float4))))
 		{
 			return E_FAIL;

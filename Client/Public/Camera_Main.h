@@ -23,6 +23,7 @@ private:
 	_float m_fMouseSensor{ 0.08f };
 	_float m_fSpeed{ 10.f };
 	_float m_fPlayerDistance{ 4.f };
+	_float m_fShakeAcc{};
 
 private:
 	class CTrigger_Manager* m_pTrigger_Manager{ nullptr };

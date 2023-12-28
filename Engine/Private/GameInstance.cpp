@@ -965,6 +965,11 @@ const _float2& CGameInstance::Get_FogNF() const
 	return m_vFogNF;
 }
 
+const _bool& CGameInstance::Get_ShakeCam() const
+{
+	return m_bShakeCamera;
+}
+
 void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
 {
 	m_iCameraModeIndex = iIndex;
@@ -988,6 +993,11 @@ void CGameInstance::Set_TimeRatio(const _float fRatio)
 void CGameInstance::Set_FogNF(const _float2& vFogNF)
 {
 	m_vFogNF = vFogNF;
+}
+
+void CGameInstance::Set_ShakeCam(const _bool& bShake)
+{
+	m_bShakeCamera = bShake;
 }
 
 void CGameInstance::Clear_Managers()

@@ -28,6 +28,9 @@ private:
 	_float m_fLifeTime{};
 	_int m_iSpriteIndex{};
 	_float m_fDissolveRatio{};
+	_float4 m_vColor{};
+	_float m_fScale{};
+	_uint m_iNumInstance{};
 
 private:
 	HRESULT Add_Components();

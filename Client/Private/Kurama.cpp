@@ -551,6 +551,14 @@ void CKurama::Tick_State(_float fTimeDelta)
 				m_pFingerLights[i]->On();
 			}
 
+			EffectInfo FxInfo{};
+			FxInfo.vColor = _float4(1.f, 1.f, 1.f, 1.f);
+			FxInfo.fScale = 5.f;
+			XMStoreFloat4(&FxInfo.vPos, m_pTransformCom->Get_State(State::Pos));
+			FxInfo.vPos.y += 3.f;
+			FxInfo.iType = 100;
+			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Smoke"), &FxInfo);
+
 			m_pTransformCom->Set_Position(m_vAppearPoints[++m_iPosIndex]);
 
 			m_AnimationDesc = {};

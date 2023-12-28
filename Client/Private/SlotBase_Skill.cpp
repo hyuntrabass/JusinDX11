@@ -54,7 +54,7 @@ void CSlotBase_Skill::Tick(_float fTimeDelta)
 		{
 			m_fReadyRatio = 0.5f;
 		}
-		m_fReadyRatio -= fTimeDelta / 7.f;
+		m_fReadyRatio -= fTimeDelta / m_pGameInstance->Get_TimeRatio() / 7.f;
 	}
 	
 	if (m_fReadyRatio < - 0.5f)

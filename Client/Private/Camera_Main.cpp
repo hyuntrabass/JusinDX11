@@ -146,7 +146,15 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		m_fPlayerDistance += 1.f;
 	}
 
-	// kurama: far ~ near == 4 ~ 15
+	// 	y = sin(x * 10.0f) * powf(0.5f, x)
+
+	if (m_pGameInstance->Get_ShakeCam())
+	{
+		m_fShakeAcc = {0.1f};
+		m_pGameInstance->Set_ShakeCam(false);
+	}
+
+	_float fShakeAmount = sin(m_fShakeAcc * 15.f) * powf(0.5f, m_fShakeAcc) * 0.2f;
 
 	m_pTransformCom->Set_State(State::Pos, 
 							   m_pPlayerTransform->Get_CenterPos() 
@@ -161,6 +169,11 @@ void CCamera_Main::Tick(_float fTimeDelta)
 		m_pTransformCom->Set_State(State::Pos, PxVec3ToVector(Buffer.block.position, 1.f));
 	}
 
+	_vector vShakePos = m_pTransformCom->Get_State(State::Pos);
+	vShakePos += XMVectorSet(fShakeAmount, -fShakeAmount, 0.f, 0.f);
+	m_pTransformCom->Set_State(State::Pos, vShakePos);
+
+	m_fShakeAcc += fTimeDelta * 10.f;
 	__super::Tick(fTimeDelta);
 }
 

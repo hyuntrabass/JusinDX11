@@ -49,6 +49,7 @@ private:
 	_float m_fCoreScale{};
 	_float3 m_vAngle[8]{};
 	_bool m_bRotate[4]{};
+	_uint m_iSummonCount{};
 
 private:
 	HRESULT Add_Components();
