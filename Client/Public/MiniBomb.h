@@ -23,11 +23,9 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
-	CModel* m_pEffectModelCom{ nullptr };
 	CModel* m_pSparkModel[m_iNumSparkModel]{ nullptr };
 	CCollider* m_pColliderCom{ nullptr };
 	CTexture* m_pCoreMaskTexture{ nullptr };
-	CTexture* m_pMaskTexture{ nullptr };
 	CTexture* m_pSparkMaskTextureCom{ nullptr };
 	class CCommonTrail* m_pTrail{ nullptr };
 
@@ -37,7 +35,6 @@ private:
 
 private:
 	_float m_fLifeTimer{};
-	_float2 m_vUVTransform{};
 	_float3 m_vSparkUVTransform{ 1.f, 0.f, -1.f };
 	_float3 m_vAngle[8]{};
 	_bool m_bRotate[4]{};

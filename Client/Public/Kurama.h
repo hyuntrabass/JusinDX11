@@ -128,6 +128,8 @@ private:
 	_float m_fTimer{};
 	_bool m_hasShot{};
 
+	_bool m_hasTakenChidori{};
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

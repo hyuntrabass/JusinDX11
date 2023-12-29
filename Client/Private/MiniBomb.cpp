@@ -65,12 +65,6 @@ HRESULT CMiniBomb::Init(void* pArg)
 
 void CMiniBomb::Tick(_float fTimeDelta)
 {
-	m_vUVTransform.x += fTimeDelta * 2.f;
-	if (m_vUVTransform.x > 2.f)
-	{
-		m_vUVTransform.x = 1.f;
-	}
-
 	m_vSparkUVTransform.x -= fTimeDelta * 4.f;
 	m_vSparkUVTransform.y -= fTimeDelta * 4.f;
 	m_vSparkUVTransform.z -= fTimeDelta * 4.f;
@@ -145,11 +139,6 @@ HRESULT CMiniBomb::Render()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVTransform", &m_vUVTransform, sizeof(_float2))))
-	{
-		return E_FAIL;
-	}
-
 	if (FAILED(m_pCoreMaskTexture->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 	{
 		return E_FAIL;
@@ -158,21 +147,6 @@ HRESULT CMiniBomb::Render()
 	m_pShaderCom->Begin(StaticPass_SingleColorFx);
 
 	m_pModelCom->Render(0);
-
-	//if (FAILED(m_pMaskTexture->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
-	//{
-	//	return E_FAIL;
-	//}
-
-	//_float4 vBaseColor{ 0.175f, 0.175f, 0.35f, 0.8f };
-	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &vBaseColor, sizeof _float4)))
-	//{
-	//	return E_FAIL;
-	//}
-
-	//m_pShaderCom->Begin(StaticPass_MaskEffect);
-	//
-	//m_pEffectModelCom->Render(0);
 
 	if (FAILED(m_pSparkMaskTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 	{
@@ -247,11 +221,6 @@ HRESULT CMiniBomb::Add_Components()
 		return E_FAIL;
 	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Model_FlyingSphere"), TEXT("Com_EffectModel"), reinterpret_cast<CComponent**>(&m_pEffectModelCom))))
-	{
-		return E_FAIL;
-	}
-
 	Collider_Desc ColDesc{};
 	ColDesc.eType = ColliderType::Sphere;
 	ColDesc.fRadius = 0.5f;
@@ -263,11 +232,6 @@ HRESULT CMiniBomb::Add_Components()
 	}
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise_T_EFF_Noise_23_M"), TEXT("Com_CoreMaskTexture"), reinterpret_cast<CComponent**>(&m_pCoreMaskTexture))))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Fire_07"), TEXT("Com_WingTrailMaskTexture"), reinterpret_cast<CComponent**>(&m_pMaskTexture))))
 	{
 		return E_FAIL;
 	}
@@ -363,10 +327,8 @@ void CMiniBomb::Free()
 	}
 	Safe_Release(m_pSparkMaskTextureCom);
 	Safe_Release(m_pCoreMaskTexture);
-	Safe_Release(m_pMaskTexture);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
-	Safe_Release(m_pEffectModelCom);
 	Safe_Release(m_pColliderCom);
 }

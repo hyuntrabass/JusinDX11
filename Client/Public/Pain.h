@@ -205,6 +205,7 @@ private:
 		State_Sommon,
 		State_Beaten,
 		State_Beaten_Electric,
+		State_Beaten_Fire,
 		State_Die,
 	};
 private:

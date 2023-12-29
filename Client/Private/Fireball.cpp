@@ -1,5 +1,7 @@
 #include "Fireball.h"
 
+_uint CFireball::m_iLightIndex{};
+
 CFireball::CFireball(_dev pDevice, _context pContext)
 	: CBlendObject(pDevice, pContext)
 {
@@ -73,6 +75,19 @@ HRESULT CFireball::Init(void* pArg)
 
 	m_pGameInstance->Set_ShakeCam(true);
 
+	LIGHT_DESC LightDesc{};
+
+	LightDesc.eType = LIGHT_DESC::Point;
+	LightDesc.vAttenuation = LIGHT_RANGE_32;
+	LightDesc.vDiffuse = _float4(1.f, 0.3f, 0.f, 1.f);
+	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
+
+	m_iMyLightIndex = m_iLightIndex++;
+	if (FAILED(m_pGameInstance->Add_Light(LEVEL_STATIC, TEXT("Light_Fireball") + to_wstring(m_iMyLightIndex), LightDesc)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -83,6 +98,12 @@ void CFireball::Tick(_float fTimeDelta)
 	case Client::CFireball::State_Shoot:
 		//m_pTransformCom->Set_RotationPerSec(360.f);
 		//m_pTransformCom->Turn(XMVector3Normalize(m_pTransformCom->Get_State(State::Look)) * -1.f, fTimeDelta);
+	{
+		LIGHT_DESC* LightDesc{};
+		LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Fireball") + to_wstring(m_iMyLightIndex));
+		XMStoreFloat4(&LightDesc->vPosition, m_pTransformCom->Get_State(State::Pos));
+	}
+
 		if (m_hasTarget)
 		{
 			if (m_pTransformCom->Go_To(XMVectorSetW(XMLoadFloat3(&m_vTargetPos), 1.f), fTimeDelta))
@@ -123,7 +144,7 @@ void CFireball::Tick(_float fTimeDelta)
 	case Client::CFireball::State_Explode:
 	{
 		m_pGameInstance->Set_ShakeCam(true);
-		m_pGameInstance->Attack_Monster(m_pColliderCom, 40);
+		m_pGameInstance->Attack_Monster(m_pColliderCom, 30, DAM_FIRE);
 		m_fTimer = {};
 		_float3 vPos{};
 		XMStoreFloat3(&vPos, m_pTransformCom->Get_State(State::Pos));
@@ -400,6 +421,8 @@ CGameObject* CFireball::Clone(void* pArg)
 
 void CFireball::Free()
 {
+	m_pGameInstance->Delete_Light(LEVEL_STATIC, TEXT("Light_Fireball") + to_wstring(m_iMyLightIndex));
+
 	__super::Free();
 
 	Safe_Release(m_pRendererCom);

@@ -187,6 +187,12 @@
     <Filter Include="02.GameObjects\03.Player\Projectile\Meteor">
       <UniqueIdentifier>{6f9fe6aa-8125-4e23-b980-2e5dd16e0012}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Sandman\Sandman">
+      <UniqueIdentifier>{df8398e9-d3c1-4e6f-8520-13b765a2ad6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04.Sandman\Ninja">
+      <UniqueIdentifier>{88b1ed97-cfd3-4396-ae6b-1b9ef4bc7fd1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -279,9 +285,6 @@
     <ClInclude Include="..\public\Title_Custom.h">
       <Filter>02.GameObjects\00.GUI\01.CreateCharacter\01.Title</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Sandman.h">
-      <Filter>02.GameObjects\04.Sandman</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\MapCollider.h">
       <Filter>02.GameObjects\02.Terrain\Collider</Filter>
     </ClInclude>
@@ -356,6 +359,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Meteor.h">
       <Filter>02.GameObjects\03.Player\Projectile\Meteor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Sandman.h">
+      <Filter>02.GameObjects\04.Sandman\Sandman</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\SandNinja.h">
+      <Filter>02.GameObjects\04.Sandman\Ninja</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -450,9 +459,6 @@
     <ClCompile Include="..\private\Title_Custom.cpp">
       <Filter>02.GameObjects\00.GUI\01.CreateCharacter\01.Title</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Sandman.cpp">
-      <Filter>02.GameObjects\04.Sandman</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\MapCollider.cpp">
       <Filter>02.GameObjects\02.Terrain\Collider</Filter>
     </ClCompile>
@@ -524,6 +530,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Meteor.cpp">
       <Filter>02.GameObjects\03.Player\Projectile\Meteor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Sandman.cpp">
+      <Filter>02.GameObjects\04.Sandman\Sandman</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SandNinja.cpp">
+      <Filter>02.GameObjects\04.Sandman\Ninja</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

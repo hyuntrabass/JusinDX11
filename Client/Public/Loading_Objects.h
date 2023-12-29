@@ -38,3 +38,4 @@
 #include "Effect_Impact.h"
 #include "Effect_Smoke.h"
 #include "Meteor.h"
+#include "SandNinja.h"

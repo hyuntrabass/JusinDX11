@@ -1022,7 +1022,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			m_pTransformCom->Set_Speed(m_fRunSpeed * 6.f);
 			m_pTransformCom->Go_To_Dir(m_pTransformCom->Get_State(State::Look), fTimeDelta);
 			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(true);
-			m_pGameInstance->Attack_Monster(m_pCollider_Att, 30.f, DAM_ELECTRIC);
+			m_pGameInstance->Attack_Monster(m_pCollider_Att, 60.f, DAM_ELECTRIC);
 		}
 		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Chidori_Run_Lv3_Loop and m_fTimer > 0.5f)
 		{

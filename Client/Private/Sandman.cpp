@@ -24,7 +24,7 @@ HRESULT CSandman::Init(void* pArg)
 	}
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
-	
+
 	m_eCurrState = State_Appear;
 
 	if (pArg)
@@ -205,6 +205,10 @@ void CSandman::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		m_eCurrState = State_Beaten_Electiric;
 	}
+	else if (iDamageType == DAM_FIRE)
+	{
+		m_eCurrState = State_Beaten_Fire;
+	}
 	else
 	{
 		m_eCurrState = State_Beaten;
@@ -358,6 +362,11 @@ void CSandman::Init_State()
 			m_fTimer = {};
 			break;
 		}
+		case Client::CSandman::State_Beaten_Fire:
+			Anim.iAnimIndex = Anim_Beaten_Burn_Type01;
+			Anim.bSkipInterpolation = true;
+			Anim.bRestartAnimation = true;
+			break;
 		case Client::CSandman::State_Attack:
 			Anim.iAnimIndex = Anim_Attack_SideDoubleSlashing;
 			m_fTimer = {};
@@ -454,6 +463,18 @@ void CSandman::Tick_State(_float fTimeDelta)
 			Anim.iAnimIndex = Anim_Walk_End;
 			m_pModelCom->Set_Animation(Anim);
 		}
+		_vector vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+		_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
+		m_vOriginPos.y = vMyPos.m128_f32[1];
+		_vector vDirToPlayer = vPlayerPos - vMyPos;
+		_float fPlayerDist = XMVectorGetX(XMVector3Length(vDirToPlayer));
+		_uint iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
+
+		if (fPlayerDist < m_fSearchRange)
+		{
+			m_eCurrState = State_Chase;
+		}
+
 		if (m_pModelCom->IsAnimationFinished(Anim_Walk_End))
 		{
 			m_eCurrState = State_Idle;
@@ -484,6 +505,12 @@ void CSandman::Tick_State(_float fTimeDelta)
 			}
 		}
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_ElectricShock_End))
+		{
+			m_eCurrState = State_Idle;
+		}
+		break;
+	case Client::CSandman::State_Beaten_Fire:
+		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Burn_Type01))
 		{
 			m_eCurrState = State_Idle;
 		}

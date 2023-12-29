@@ -138,20 +138,31 @@ void CPain::Set_Damage(_int iDamage, _uint iDamageType)
 	}
 	m_iHP -= iDamage;
 
-	if (iDamageType == DAM_ELECTRIC)
+	if (iDamage > m_iSuperArmor)
 	{
-		m_eState = State_Beaten_Electric;
+		if (iDamageType == DAM_ELECTRIC)
+		{
+			m_eState = State_Beaten_Electric;
+		}
+		else if (iDamageType == DAM_FIRE)
+		{
+			m_eState = State_Beaten_Fire;
+		}
+		else
+		{
+			m_eState = State_Beaten;
+		}
+
+		if (m_ePrevState == State_Push)
+		{
+			m_pGameInstance->Set_TimeRatio(1.f);
+		}
+		m_ePrevState = State_None;
 	}
 	else
 	{
-		m_eState = State_Beaten;
+		CUI_Manager::Get_Instance()->Create_Hit();
 	}
-
-	if (m_ePrevState == State_Push)
-	{
-		m_pGameInstance->Set_TimeRatio(1.f);
-	}
-	m_ePrevState = State_None;
 }
 
 HRESULT CPain::Add_Components()
@@ -240,6 +251,8 @@ void CPain::Init_State()
 		case Client::CPain::State_Idle:
 			m_AnimationDesc.iAnimIndex = Anim_Idle_Loop001;
 			m_AnimationDesc.isLoop = true;
+
+			m_iSuperArmor = 0;
 			break;
 		case Client::CPain::State_LookAt:
 			break;
@@ -250,6 +263,8 @@ void CPain::Init_State()
 			m_pTransformCom->LookAt_Dir(XMVectorSetY(m_pPlayerTransform->Get_State(State::Pos) - m_pTransformCom->Get_State(State::Pos), 0.f));
 			m_fTimer = {};
 			m_pGameInstance->Set_TimeRatio(0.3f);
+
+			m_iSuperArmor = 50;
 			break;
 		case Client::CPain::State_Pull:
 			break;
@@ -269,6 +284,12 @@ void CPain::Init_State()
 			CUI_Manager::Get_Instance()->Create_Hit();
 
 			m_fTimer = {};
+			break;
+		case Client::CPain::State_Beaten_Fire:
+			m_AnimationDesc.iAnimIndex = Anim_Beaten_Burn_Type01;
+			m_AnimationDesc.bSkipInterpolation = true;
+			m_AnimationDesc.bRestartAnimation = true;
+			CUI_Manager::Get_Instance()->Create_Hit();
 			break;
 		case Client::CPain::State_Die:
 			break;
@@ -349,6 +370,12 @@ void CPain::Tick_State(_float fTimeDelta)
 		}
 
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_ElectricShock_End))
+		{
+			m_eState = State_Idle;
+		}
+		break;
+	case Client::CPain::State_Beaten_Fire:
+		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Burn_Type01))
 		{
 			m_eState = State_Idle;
 		}

@@ -271,7 +271,7 @@ void CTrigger_Manager::Trigger_Village(_float fTimeDelta)
 		{
 			for (auto& ObjInfo : m_MonsterTriggers[LEVEL_VILLAGE][i])
 			{
-				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Sandman"), &ObjInfo)))
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_SandNinja"), &ObjInfo)))
 				{
 					MSG_BOX("Failed to Add Layer : Sandman");
 				}

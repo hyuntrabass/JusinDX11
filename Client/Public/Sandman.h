@@ -154,6 +154,7 @@ private:
 		State_GoHome,
 		State_Beaten,
 		State_Beaten_Electiric,
+		State_Beaten_Fire,
 		State_Attack,
 		State_Die,
 	};

@@ -49,6 +49,9 @@ private:
 	_float3 m_vTargetPos{};
 	_bool m_hasTarget{};
 
+	static _uint m_iLightIndex;
+	_uint m_iMyLightIndex{};
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

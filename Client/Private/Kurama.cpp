@@ -175,8 +175,19 @@ HRESULT CKurama::Render()
 	return S_OK;
 }
 
-void CKurama::Set_Damage(_int iDamage, _uint iDamageType = 0)
+void CKurama::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	if (iDamageType == DAM_ELECTRIC)
+	{
+		if (m_hasTakenChidori)
+		{
+			return;
+		}
+		else
+		{
+			m_hasTakenChidori = true;
+		}
+	}
 	m_iHP -= iDamage;
 
 	if (iDamage > static_cast<_int>(m_iSuperArmor))
@@ -188,7 +199,7 @@ void CKurama::Set_Damage(_int iDamage, _uint iDamageType = 0)
 		m_AnimationDesc.bRestartAnimation = true;
 		m_pModelCom->Set_Animation(m_AnimationDesc);
 		m_AnimationDesc.bRestartAnimation = false;
-		
+
 		m_iSuperArmor = {};
 	}
 	CUI_Manager::Get_Instance()->Create_Hit();
@@ -352,7 +363,7 @@ void CKurama::Init_State()
 			m_AnimationDesc.fDurationRatio = 0.5f;
 			_vector vPlayerPosForLookAt = XMVectorSetY(m_pPlayerTransform->Get_State(State::Pos), m_pTransformCom->Get_State(State::Pos).m128_f32[1]);
 			m_pTransformCom->LookAt(vPlayerPosForLookAt);
-			
+
 			m_iSuperArmor = 50;
 			for (size_t i = 0; i < 10; i++)
 			{
@@ -365,7 +376,7 @@ void CKurama::Init_State()
 
 			m_AnimationDesc = {};
 			m_AnimationDesc.iAnimIndex = Anim_Ninjutsu_ConsecutiveTailedBeastBomb;
-			
+
 			m_iSuperArmor = 12;
 			break;
 		case Client::CKurama::State_Roar:
@@ -511,7 +522,7 @@ void CKurama::Tick_State(_float fTimeDelta)
 				XMStoreFloat4(&Info.vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("LipMouthDownCenter")).r[3], m_pTransformCom->Get_World_Matrix()));
 				XMStoreFloat4(&Info.vLook, m_pPlayerTransform->Get_CenterPos());
 				m_pGameInstance->Add_Layer(LEVEL_CLOUD, TEXT("Layer_MiniBomb"), TEXT("Prototype_GameObject_MiniBomb"), &Info);
-				
+
 				EffectInfo EffectInfo{};
 				EffectInfo.vColor = _float4(0.175f, 0.175f, 0.35f, 1.f);
 				EffectInfo.fScale = 15.f;
@@ -581,6 +592,7 @@ void CKurama::Tick_State(_float fTimeDelta)
 			{
 				m_eState = State_Warp;
 			}
+			m_hasTakenChidori = false;
 		}
 
 		break;
