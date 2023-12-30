@@ -197,6 +197,7 @@ private:
 	_bool m_isRunning{};
 	_float m_fSliding{ 1.f };
 	_float m_fDissolveRatio{};
+	_bool m_bAttacked{};
 
 private:
 	HRESULT Add_Components();

@@ -205,59 +205,58 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     
     vector vDepthDesc = g_DepthTexture.Sample(LinearSampler, Input.vTexcoord);
     float fViewZ = vDepthDesc.y * g_vCamNF.y;
-    //float fViewRealZ = g_vCamNF.x * g_vCamNF.y / ((g_vCamNF.y - g_vCamNF.x) * vDepthDesc.x - g_vCamNF.y);
     
     vector vFogColor = vector(0.9f, 0.9f, 0.9f, 1.f);
     float fFogFactor = saturate((g_vFogNF.y - fViewZ) / (g_vFogNF.y - g_vFogNF.x));
     
-    float fNearViewZ1 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord1).y * g_vCamNF.y;
-    float fNearViewZ2 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord2).y * g_vCamNF.y;
-    float fNearViewZ3 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord3).y * g_vCamNF.y;
-    float fNearViewZ4 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord4).y * g_vCamNF.y;
-    float fNearViewZ5 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord5).y * g_vCamNF.y;
-    float fNearViewZ6 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord6).y * g_vCamNF.y;
-    float fNearViewZ7 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord7).y * g_vCamNF.y;
-    float fNearViewZ8 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord8).y * g_vCamNF.y;
+    //float fNearViewZ1 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord1).y * g_vCamNF.y;
+    //float fNearViewZ2 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord2).y * g_vCamNF.y;
+    //float fNearViewZ3 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord3).y * g_vCamNF.y;
+    //float fNearViewZ4 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord4).y * g_vCamNF.y;
+    //float fNearViewZ5 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord5).y * g_vCamNF.y;
+    //float fNearViewZ6 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord6).y * g_vCamNF.y;
+    //float fNearViewZ7 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord7).y * g_vCamNF.y;
+    //float fNearViewZ8 = g_DepthTexture.Sample(LinearSampler, Input.vNearTexcoord8).y * g_vCamNF.y;
     
-    if (abs(fViewZ - fNearViewZ1) > 0.03f * fViewZ ||
-        abs(fViewZ - fNearViewZ2) > 0.03f * fViewZ ||
-        abs(fViewZ - fNearViewZ3) > 0.03f * fViewZ ||
-        abs(fViewZ - fNearViewZ4) > 0.03f * fViewZ ||
-        abs(fViewZ - fNearViewZ5) > 0.03f * fViewZ ||
-        abs(fViewZ - fNearViewZ6) > 0.03f * fViewZ ||
-        abs(fViewZ - fNearViewZ7) > 0.03f * fViewZ ||
-        abs(fViewZ - fNearViewZ8) > 0.03f * fViewZ)
-    {
-        Output.vColor = fFogFactor * (vector) 0 + (1.f - fFogFactor) * vFogColor;
-        return Output;
-    }
+    //if (abs(fViewZ - fNearViewZ1) > 0.03f * fViewZ ||
+    //    abs(fViewZ - fNearViewZ2) > 0.03f * fViewZ ||
+    //    abs(fViewZ - fNearViewZ3) > 0.03f * fViewZ ||
+    //    abs(fViewZ - fNearViewZ4) > 0.03f * fViewZ ||
+    //    abs(fViewZ - fNearViewZ5) > 0.03f * fViewZ ||
+    //    abs(fViewZ - fNearViewZ6) > 0.03f * fViewZ ||
+    //    abs(fViewZ - fNearViewZ7) > 0.03f * fViewZ ||
+    //    abs(fViewZ - fNearViewZ8) > 0.03f * fViewZ)
+    //{
+    //    Output.vColor = fFogFactor * (vector) 0 + (1.f - fFogFactor) * vFogColor;
+    //    return Output;
+    //}
+        
+    float3 vCenter = g_NormalTexture.Sample(LinearSampler, Input.vTexcoord).xyz;
+    vCenter = vCenter.xyz * 2.f - 1.f;
+    float3 vT = g_NormalTexture.Sample(LinearSampler, Input.vNearTexcoord1).xyz;
+    vT = vT.xyz * 2.f - 1.f;
+    float3 vTR = g_NormalTexture.Sample(LinearSampler, Input.vNearTexcoord2).xyz;
+    vTR = vTR.xyz * 2.f - 1.f;
+    float3 vR = g_NormalTexture.Sample(LinearSampler, Input.vNearTexcoord3).xyz;
+    vR = vR.xyz * 2.f - 1.f;
     
-    //float depthDiff1 = fNearViewZ8 - fNearViewZ4;
-    //float depthDiff2 = fNearViewZ6 - fNearViewZ2;
+    float fDotT = saturate(dot(vCenter, vT));
+    float fDotTR = saturate(dot(vCenter, vTR));
+    float fDotR = saturate(dot(vCenter, vR));
     
-    //float edgeStrength = 1.f - 64.f * (depthDiff1 * depthDiff1 + depthDiff2 * depthDiff2);
+    float fOutline;
+    fOutline = min(fDotT, fDotTR);
+    fOutline = min(fDotR, fOutline);
     
-    //float3 vCenter = g_NormalTexture.Sample(LinearSampler, Input.vTexcoord).xyz;
-    //float3 vT = g_NormalTexture.Sample(LinearSampler, Input.vNearTexcoord1).xyz;
-    //float3 vTR = g_NormalTexture.Sample(LinearSampler, Input.vNearTexcoord2).xyz;
-    //float3 vR = g_NormalTexture.Sample(LinearSampler, Input.vNearTexcoord3).xyz;
+    Output.vColor *= saturate((saturate(saturate(fOutline - 0.5f) + 0.8f) - 0.8f) * 5.f);
     
-    //vT = abs(vCenter - vT);
-    //vTR = abs(vCenter - vTR);
-    //vR = abs(vCenter - vR);
-    
-    //float n = 0;
-    //n = max(n, vT.x);
-    //n = max(n, vT.y);
-    //n = max(n, vT.z);
-    //n = max(n, vR.x);
-    //n = max(n, vR.y);
-    //n = max(n, vR.z);
-    //n = max(n, vTR.x);
-    //n = max(n, vTR.y);
-    //n = max(n, vTR.z);
-    
-    //n = 1.f - clamp(clamp((n * 2.f) - 0.8f, 0.f, 1.f) * 1.5f, 0.f, 1.f);
+    //if (fDotT < 0.5f ||
+    //    fDotTR < 0.5f ||
+    //    fDotR < 0.5f)
+    //{
+    //    Output.vColor = fFogFactor * (vector) 0 + (1.f - fFogFactor) * vFogColor;
+    //    return Output;
+    //}
     
     float4 vWorldPos;
     
@@ -286,7 +285,7 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
         Output.vColor.xyz = Output.vColor.xyz * 0.5f;
     }
 
-    Output.vColor = fFogFactor * Output.vColor + (1.f - fFogFactor) * vFogColor /** edgeStrength*/ /** (0.1f + 0.9 * n)*/;
+    Output.vColor = fFogFactor * Output.vColor + (1.f - fFogFactor) * vFogColor;
     
     return Output;
 }

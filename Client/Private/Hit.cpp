@@ -114,7 +114,7 @@ HRESULT CHit::Render()
 		}
 
 		// 10자리 수.
-		if (m_iCombo >= 10)
+		if (m_iCombo > 9)
 		{
 			m_fX = (g_iWinSizeX >> 2) * 3.f - (m_vNumSize.x * 0.5f) - m_vNumSize.x * 0.75f;
 			m_fY = g_iWinSizeY >> 1;
@@ -125,7 +125,7 @@ HRESULT CHit::Render()
 				return E_FAIL;
 			}
 
-			if (FAILED(m_pNumTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iCombo / 10)))
+			if (FAILED(m_pNumTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", (m_iCombo % 100) / 10)))
 			{
 				return E_FAIL;
 			}
@@ -138,6 +138,34 @@ HRESULT CHit::Render()
 			if (FAILED(m_pVIBufferCom->Render()))
 			{
 				return E_FAIL;
+			}
+			
+			// 100자리 수.
+			if (m_iCombo > 99)
+			{
+				m_fX = (g_iWinSizeX >> 2) * 3.f - (m_vNumSize.x * 0.5f) - m_vNumSize.x * 1.5f;
+				m_fY = g_iWinSizeY >> 1;
+				__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
+
+				if (FAILED(Bind_ShaderResources()))
+				{
+					return E_FAIL;
+				}
+
+				if (FAILED(m_pNumTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture", m_iCombo / 100)))
+				{
+					return E_FAIL;
+				}
+
+				if (FAILED(m_pShaderCom->Begin(VTPass_Hit)))
+				{
+					return E_FAIL;
+				}
+
+				if (FAILED(m_pVIBufferCom->Render()))
+				{
+					return E_FAIL;
+				}
 			}
 		}
 

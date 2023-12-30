@@ -51,6 +51,8 @@ HRESULT CFireball::Init(void* pArg)
 			m_vTargetPos = _float3(reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()));
 			m_hasTarget = false;
 		}
+
+		m_pGameInstance->Set_ShakeCam(true);
 	}
 	else
 	{
@@ -72,8 +74,6 @@ HRESULT CFireball::Init(void* pArg)
 		}
 
 	}
-
-	m_pGameInstance->Set_ShakeCam(true);
 
 	LIGHT_DESC LightDesc{};
 

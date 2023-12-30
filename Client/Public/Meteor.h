@@ -41,8 +41,10 @@ private:
 private:
 	_float3* m_pPos{};
 	_float3 m_vUVTransform{ 1.f, 0.f, -1.f };
+	LIGHT_DESC m_OriginMainLight{};
 
 	MeteorState m_eState{};
+	_float m_fLightTimer{};
 	_float m_fTimer{};
 	_float3 m_vTargetPos{};
 	_bool m_hasTarget{};
@@ -50,6 +52,8 @@ private:
 	_float3 m_vAngle[8]{};
 	_bool m_bRotate[4]{};
 	_uint m_iSummonCount{};
+
+	list<CGameObject*> m_Meteors{};
 
 private:
 	HRESULT Add_Components();

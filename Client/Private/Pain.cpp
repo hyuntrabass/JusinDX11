@@ -32,7 +32,8 @@ HRESULT CPain::Init(void* pArg)
 	m_AnimationDesc.isLoop = true;
 	m_eState = State_Idle;
 
-	m_iHP = 300;
+	m_iMaxHP = 300;
+	m_iHP = m_iMaxHP;
 
 	return S_OK;
 }
@@ -132,6 +133,10 @@ HRESULT CPain::Render()
 
 void CPain::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	if (m_eState == State_Die)
+	{
+		return;
+	}
 	if (m_eState == State_Beaten_Electric and iDamageType == DAM_ELECTRIC)
 	{
 		return;
@@ -292,6 +297,8 @@ void CPain::Init_State()
 			CUI_Manager::Get_Instance()->Create_Hit();
 			break;
 		case Client::CPain::State_Die:
+			m_AnimationDesc.iAnimIndex = Anim_Dying_Type01;
+			m_AnimationDesc.bSkipInterpolation = true;
 			break;
 		default:
 			break;
@@ -316,7 +323,8 @@ void CPain::Tick_State(_float fTimeDelta)
 		_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
 		_float fDistToPlayer = XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos));
 
-		if (fDistToPlayer < 10.f)
+		if (fDistToPlayer < 10.f and
+			m_iHP > m_iMaxHP * 0.7f)
 		{
 			m_eState = State_Push;
 		}
@@ -360,6 +368,11 @@ void CPain::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Right))
 		{
 			m_eState = State_Idle;
+
+			if (m_iHP <= 0)
+			{
+				m_eState = State_Die;
+			}
 		}
 		break;
 	case Client::CPain::State_Beaten_Electric:
@@ -372,15 +385,28 @@ void CPain::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_ElectricShock_End))
 		{
 			m_eState = State_Idle;
+		
+			if (m_iHP <= 0)
+			{
+				m_eState = State_Die;
+			}
 		}
 		break;
 	case Client::CPain::State_Beaten_Fire:
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Burn_Type01))
 		{
 			m_eState = State_Idle;
+		
+			if (m_iHP <= 0)
+			{
+				m_eState = State_Die;
+			}
 		}
 		break;
 	case Client::CPain::State_Die:
+		if (m_pModelCom->IsAnimationFinished(Anim_Dying_Type01))
+		{
+		}
 		break;
 	default:
 		break;

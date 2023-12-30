@@ -193,6 +193,9 @@
     <Filter Include="02.GameObjects\04.Sandman\Ninja">
       <UniqueIdentifier>{88b1ed97-cfd3-4396-ae6b-1b9ef4bc7fd1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\04.Sandman\Ninja\Projectile">
+      <UniqueIdentifier>{4063f7b9-5c24-4418-930c-258fc21d7218}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -366,6 +369,9 @@
     <ClInclude Include="..\Public\SandNinja.h">
       <Filter>02.GameObjects\04.Sandman\Ninja</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\SandKunai.h">
+      <Filter>02.GameObjects\04.Sandman\Ninja\Projectile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -536,6 +542,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\SandNinja.cpp">
       <Filter>02.GameObjects\04.Sandman\Ninja</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SandKunai.cpp">
+      <Filter>02.GameObjects\04.Sandman\Ninja\Projectile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

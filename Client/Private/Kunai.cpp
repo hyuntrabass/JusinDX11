@@ -130,7 +130,7 @@ HRESULT CKunai::Render()
 			return E_FAIL;
 		}
 
-		m_pShaderCom->Begin(StaticPass_Default);
+		m_pShaderCom->Begin(StaticPass_NonLight);
 
 		m_pModelCom->Render(i);
 	}

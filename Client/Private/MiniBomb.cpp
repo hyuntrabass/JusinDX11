@@ -107,7 +107,7 @@ void CMiniBomb::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Go_Straight(fTimeDelta);
 
-	m_pGameInstance->Attack_Player(m_pColliderCom, 10);
+	m_pGameInstance->Attack_Player(m_pColliderCom, 15);
 	if (m_pGameInstance->CheckCollision_Player(m_pColliderCom))
 	{
 		m_isDead = true;

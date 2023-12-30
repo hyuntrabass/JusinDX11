@@ -55,7 +55,8 @@ HRESULT CKurama::Init(void* pArg)
 		m_pFingerLights[i]->Off();
 	}
 
-	m_iHP = 500;
+	m_iMaxHP = 500;
+	m_iHP = m_iMaxHP;
 
 	return S_OK;
 }
@@ -177,6 +178,10 @@ HRESULT CKurama::Render()
 
 void CKurama::Set_Damage(_int iDamage, _uint iDamageType)
 {
+	if (m_eState == State_Die)
+	{
+		return;
+	}
 	if (iDamageType == DAM_ELECTRIC)
 	{
 		if (m_hasTakenChidori)
@@ -271,7 +276,8 @@ HRESULT CKurama::Bind_ShaderResources()
 void CKurama::Artificial_Intelligence(_float fTimeDelta)
 {
 	if (m_eState == State_Beaten or
-		m_eState == State_Warp)
+		m_eState == State_Warp or
+		m_eState == State_Die)
 	{
 		return;
 	}
@@ -302,7 +308,14 @@ void CKurama::Artificial_Intelligence(_float fTimeDelta)
 	{
 		if (fDistToPlayer < 13.f)
 		{
-			m_eState = State_ComboAttack2;
+			if (rand() % 2)
+			{
+				m_eState = State_ComboAttack;
+			}
+			else
+			{
+				m_eState = State_ComboAttack2;
+			}
 		}
 		else
 		{
@@ -400,6 +413,8 @@ void CKurama::Init_State()
 			}
 			break;
 		case Client::CKurama::State_Die:
+			m_AnimationDesc.iAnimIndex = Anim_Dying_Type01;
+			m_AnimationDesc.bSkipInterpolation = true;
 			break;
 		case Client::CKurama::State_Bomb:
 			break;
@@ -593,10 +608,21 @@ void CKurama::Tick_State(_float fTimeDelta)
 				m_eState = State_Warp;
 			}
 			m_hasTakenChidori = false;
+
+			if (m_iHP <= 0)
+			{
+				m_eState = State_Die;
+			}
 		}
 
 		break;
 	case Client::CKurama::State_Die:
+		if (m_pModelCom->IsAnimationFinished(Anim_Dying_Type01))
+		{
+			m_AnimationDesc.iAnimIndex = Anim_Dying_Type01_Loop;
+			m_AnimationDesc.bSkipInterpolation = true;
+			m_AnimationDesc.isLoop = true;
+		}
 		break;
 	case Client::CKurama::State_Bomb:
 		break;

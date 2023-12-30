@@ -208,6 +208,7 @@
     <ClInclude Include="..\public\Parts_Window.h" />
     <ClInclude Include="..\public\Player.h" />
     <ClInclude Include="..\public\RasenShuriken.h" />
+    <ClInclude Include="..\public\SandKunai.h" />
     <ClInclude Include="..\public\Sandman.h" />
     <ClInclude Include="..\Public\SandNinja.h" />
     <ClInclude Include="..\Public\Sky.h" />
@@ -265,6 +266,7 @@
     <ClCompile Include="..\private\Parts_Window.cpp" />
     <ClCompile Include="..\private\Player.cpp" />
     <ClCompile Include="..\private\RasenShuriken.cpp" />
+    <ClCompile Include="..\private\SandKunai.cpp" />
     <ClCompile Include="..\private\Sandman.cpp" />
     <ClCompile Include="..\Private\SandNinja.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />

@@ -39,8 +39,8 @@ HRESULT CSandNinja::Init(void* pArg)
 
 	m_fWalkSpeed = 2.f;
 	m_fRunSpeed = 5.f;
-	m_fAttackRange = 2.f;
-	m_fSearchRange = 20.f;
+	m_fAttackRange = 40.f;
+	m_fSearchRange = 50.f;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit);
 	m_iHP = 50;
@@ -92,24 +92,21 @@ void CSandNinja::Tick(_float fTimeDelta)
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
-	_matrix ColliderOffset = XMMatrixTranslation(0.f, 0.8f, 0.f);
-	m_pCollider_Att->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
 	m_pCollider_Hit->Update(m_pTransformCom->Get_World_Matrix());
 }
 
 void CSandNinja::Late_Tick(_float fTimeDelta)
 {
 	m_pCollider_Hit->Intersect(reinterpret_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Collider_Attack"))));
+	m_pModelCom->Play_Animation(fTimeDelta);
 
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
 	{
 
-		m_pModelCom->Play_Animation(fTimeDelta);
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
 	#ifdef _DEBUG
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
-		m_pRendererCom->Add_DebugComponent(m_pCollider_Att);
 	#endif // _DEBUG
 	}
 	else
@@ -194,7 +191,7 @@ HRESULT CSandNinja::Render()
 
 void CSandNinja::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	if (m_eCurrState == State_Beaten_Electiric and iDamageType == DAM_ELECTRIC)
+	if (m_iHP <= 0 or m_eCurrState == State_Die or m_eCurrState == State_Beaten_Electiric and iDamageType == DAM_ELECTRIC)
 	{
 		return;
 	}
@@ -204,6 +201,10 @@ void CSandNinja::Set_Damage(_int iDamage, _uint iDamageType)
 	if (iDamageType == DAM_ELECTRIC)
 	{
 		m_eCurrState = State_Beaten_Electiric;
+	}
+	else if (m_iHP <= 0)
+	{
+		m_eCurrState = State_Die;
 	}
 	else if (iDamageType == DAM_FIRE)
 	{
@@ -240,23 +241,10 @@ HRESULT CSandNinja::Add_Components()
 	}
 
 	Collider_Desc ColDesc{};
-	ColDesc.eType = ColliderType::OBB;
-	ColDesc.vExtents = _float3(0.7f, 0.7f, 0.35f);
+	ColDesc.eType = ColliderType::AABB;
+	ColDesc.vExtents = _float3(0.35f, 0.75f, 0.35f);
 	ColDesc.vCenter = _float3(0.f, ColDesc.vExtents.y, 0.f);
-
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Take"), reinterpret_cast<CComponent**>(&m_pCollider_Hit), &ColDesc)))
-	{
-		return E_FAIL;
-	}
-
-	ColDesc = {};
-	ColDesc.eType = ColliderType::Frustum;
-	_vector vPos = m_pTransformCom->Get_State(State::Pos);
-	_matrix matView = XMMatrixLookAtLH(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 0.f, 1.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	_matrix matProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.f), 2.f, 0.01f, 2.f);
-	XMStoreFloat4x4(&ColDesc.matFrustum, matView * matProj);
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Collider_Attack"), reinterpret_cast<CComponent**>(&m_pCollider_Att), &ColDesc)))
 	{
 		return E_FAIL;
 	}
@@ -337,6 +325,11 @@ void CSandNinja::Init_State()
 			Anim.iAnimIndex = Anim_Run_Loop;
 			Anim.isLoop = true;
 			break;
+		case Client::CSandNinja::State_Runaway:
+			m_pTransformCom->Set_Speed(m_fRunSpeed);
+			Anim.iAnimIndex = Anim_Run_Loop;
+			Anim.isLoop = true;
+			break;
 		case Client::CSandNinja::State_GoHome:
 			m_pTransformCom->Set_Speed(m_fWalkSpeed);
 			Anim.iAnimIndex = Anim_Walk_Loop;
@@ -368,8 +361,9 @@ void CSandNinja::Init_State()
 			Anim.bRestartAnimation = true;
 			break;
 		case Client::CSandNinja::State_Attack:
-			//Anim.iAnimIndex = Anim_Attack_SideDoubleSlashing;
+			Anim.iAnimIndex = Anim_Throw_Kunai;
 			m_fTimer = {};
+			m_bAttacked = false;
 			break;
 		case Client::CSandNinja::State_Die:
 			Anim.iAnimIndex = Anim_Dying_Type01;
@@ -407,9 +401,23 @@ void CSandNinja::Tick_State(_float fTimeDelta)
 		_float fPlayerDist = XMVectorGetX(XMVector3Length(vDirToPlayer));
 		_uint iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
 
-		if (fPlayerDist < m_fSearchRange)
+		if (fPlayerDist < m_fAttackRange)
+		{
+			if (m_fTimer > 4.f)
+			{
+				XMStoreFloat4(&m_vTargetDir, vDirToPlayer);
+				m_vTargetDir.y = 0.f;
+
+				m_eCurrState = State_Attack;
+			}
+		}
+		else if (fPlayerDist < m_fSearchRange)
 		{
 			m_eCurrState = State_Chase;
+		}
+		if (fPlayerDist < 7.f)
+		{
+			m_eCurrState = State_Runaway;
 		}
 		break;
 	}
@@ -431,12 +439,15 @@ void CSandNinja::Tick_State(_float fTimeDelta)
 			m_pModelCom->Set_Animation(Anim);
 
 		}
-		else if (fTargetDist < m_fAttackRange and m_fTimer > 2.f)
+		else if (fTargetDist < m_fAttackRange)
 		{
-			XMStoreFloat4(&m_vTargetDir, vDirToPlayer);
-			m_vTargetDir.y = 0.f;
+			if (m_fTimer > 4.f)
+			{
+				XMStoreFloat4(&m_vTargetDir, vDirToPlayer);
+				m_vTargetDir.y = 0.f;
 
-			m_eCurrState = State_Attack;
+				m_eCurrState = State_Attack;
+			}
 		}
 		else
 		{
@@ -447,6 +458,36 @@ void CSandNinja::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(Anim_Run_End))
 		{
 			m_eCurrState = State_GoHome;
+		}
+		break;
+	}
+	case Client::CSandNinja::State_Runaway:
+	{
+		_vector vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+		_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
+		m_vOriginPos.y = vMyPos.m128_f32[1];
+		_vector vDirToPlayer = vPlayerPos - vMyPos;
+		_float fTargetDist = XMVectorGetX(XMVector3Length(vDirToPlayer));
+
+		XMStoreFloat4(&m_vTargetDir, vDirToPlayer * -1.f);
+		m_vTargetDir.y = 0.f;
+
+		if (fTargetDist > 10.f)
+		{
+			ANIM_DESC Anim{};
+			Anim.iAnimIndex = Anim_Run_End;
+			m_pModelCom->Set_Animation(Anim);
+
+		}
+		else
+		{
+			m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vTargetDir));
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
+
+		if (m_pModelCom->IsAnimationFinished(Anim_Run_End))
+		{
+			m_eCurrState = State_Idle;
 		}
 		break;
 	}
@@ -473,21 +514,23 @@ void CSandNinja::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Left))
 		{
 			m_eCurrState = State_Idle;
-		}
 
-		if (m_iHP < 0)
-		{
-			m_eCurrState = State_Die;
+			if (m_iHP <= 0)
+			{
+				m_eCurrState = State_Die;
+			}
 		}
 		break;
 	case Client::CSandNinja::State_Beaten_Electiric:
 		if (m_fTimer > 1.f)
 		{
-			ANIM_DESC Anim{};
-			Anim.iAnimIndex = Anim_Beaten_ElectricShock_End;
-			m_pModelCom->Set_Animation(Anim);
-
-			if (m_iHP < 0)
+			if (m_iHP > 0)
+			{
+				ANIM_DESC Anim{};
+				Anim.iAnimIndex = Anim_Beaten_ElectricShock_End;
+				m_pModelCom->Set_Animation(Anim);
+			}
+			else
 			{
 				m_eCurrState = State_Die;
 			}
@@ -495,18 +538,37 @@ void CSandNinja::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_ElectricShock_End))
 		{
 			m_eCurrState = State_Idle;
+
+			if (m_iHP <= 0)
+			{
+				m_eCurrState = State_Die;
+			}
 		}
 		break;
 	case Client::CSandNinja::State_Beaten_Fire:
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Burn_Type01))
 		{
 			m_eCurrState = State_Idle;
+
+			if (m_iHP <= 0)
+			{
+				m_eCurrState = State_Die;
+			}
 		}
 		break;
 	case Client::CSandNinja::State_Attack:
 		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vTargetDir));
 
-		//if (m_pModelCom->IsAnimationFinished(Anim_Attack_SideDoubleSlashing))
+		if (not m_bAttacked and m_fTimer > 0.9f)
+		{
+			_float4 vPos{};
+			XMStoreFloat4(&vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
+			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Kunai"), TEXT("Prototype_GameObject_SandKunai"), &vPos);
+			m_bAttacked = true;
+			m_fTimer = {};
+		}
+
+		if (m_pModelCom->IsAnimationFinished(Anim_Throw_Kunai))
 		{
 			m_eCurrState = State_Idle;
 		}
@@ -564,5 +626,4 @@ void CSandNinja::Free()
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pCollider_Hit);
-	Safe_Release(m_pCollider_Att);
 }

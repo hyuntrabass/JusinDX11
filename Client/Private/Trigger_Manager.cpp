@@ -218,7 +218,7 @@ HRESULT CTrigger_Manager::Add_Triggers()
 			{
 				wstring strTag = L"Cutscene_";
 				strTag += entry.path().stem().wstring();
-				filesystem::path FullFilePath = strInputFilePath/entry.path().filename();
+				filesystem::path FullFilePath = strInputFilePath / entry.path().filename();
 
 				CUTSCENE Scene{};
 				ifstream File(FullFilePath, ios::binary);
@@ -254,7 +254,7 @@ void CTrigger_Manager::Trigger_Tutorial(_float fTimeDelta)
 	if (not m_Triggers[LEVEL_FOREST][0].second and m_Triggers[LEVEL_FOREST][0].first->Intersect(m_pPlayerCollider))
 	{
 		m_PlayScene = true;
-		m_pCurrentCutScene = &m_CutScenes.find(TEXT("Cutscene_test"))->second;
+		m_pCurrentCutScene = &m_CutScenes.find(TEXT("Cutscene_tuto1"))->second;
 		m_Triggers[LEVEL_FOREST][0].second = true;
 	}
 }
@@ -269,14 +269,29 @@ void CTrigger_Manager::Trigger_Village(_float fTimeDelta)
 
 		if (not Trigger.second and Trigger.first->Intersect(m_pPlayerCollider))
 		{
-			for (auto& ObjInfo : m_MonsterTriggers[LEVEL_VILLAGE][i])
+			Trigger.second = true;
+		}
+
+		if (Trigger.second and not m_MonsterTriggers[LEVEL_VILLAGE][i].empty())
+		{
+			auto& ObjInfo = m_MonsterTriggers[LEVEL_VILLAGE][i].back();
+			
+			if (ObjInfo.strPrototypeTag == TEXT("Prototype_Model_Sandman"))
 			{
-				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_SandNinja"), &ObjInfo)))
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Sandman"), &ObjInfo)))
 				{
 					MSG_BOX("Failed to Add Layer : Sandman");
 				}
 			}
-			Trigger.second = true;
+			else
+			{
+				if (FAILED(m_pGameInstance->Add_Layer(LEVEL_VILLAGE, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_SandNinja"), &ObjInfo)))
+				{
+					MSG_BOX("Failed to Add Layer : SandNinja");
+				}
+			}
+			
+			m_MonsterTriggers[LEVEL_VILLAGE][i].pop_back();
 		}
 	}
 

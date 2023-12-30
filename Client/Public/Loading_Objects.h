@@ -39,3 +39,4 @@
 #include "Effect_Smoke.h"
 #include "Meteor.h"
 #include "SandNinja.h"
+#include "SandKunai.h"

@@ -36,11 +36,20 @@ HRESULT CMeteor::Init(void* pArg)
 
 	m_fCoreScale = 0.01f;
 
+	m_iHP = 1;
+
+	LIGHT_DESC* pMainLight_Desc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
+	m_OriginMainLight = *pMainLight_Desc;
+
 	return S_OK;
 }
 
 void CMeteor::Tick(_float fTimeDelta)
 {
+	LIGHT_DESC* LightDesc{};
+	LightDesc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
+	XMStoreFloat4(&LightDesc->vDiffuse, XMVectorLerp(XMLoadFloat4(&m_OriginMainLight.vDiffuse), XMVectorSet(0.1f, 0.1f, 0.1f, 1.f), clamp(m_fLightTimer * 2.f, 0.f, 1.f)));
+
 	switch (m_eState)
 	{
 	case Client::CMeteor::State_Charge:
@@ -83,27 +92,45 @@ void CMeteor::Tick(_float fTimeDelta)
 		_float4 vCurrPos{};
 		XMStoreFloat4(&vCurrPos, m_pTransformCom->Get_State(State::Pos));
 
-		if (m_fTimer > 0.25f)
+		if (m_iSummonCount <= 40 and m_fTimer > 0.25f)
 		{
 			ObjectInfo Info{};
 			Info.vPos = _float4(vCurrPos.x + RandomX(RandomNumber), vCurrPos.y, vCurrPos.z + RandomZ(RandomNumber), 1.f);
 			Info.vLook = _float4(RandomLookX(RandomNumber), -3.f, RandomLookZ(RandomNumber), 0.f);
 			Info.strPrototypeTag = TEXT("Meteor");
-			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Meteor"), TEXT("Prototype_GameObject_Fireball"), &Info);
+			CGameObject* pMeteor = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Fireball"), &Info);
 			
+			m_Meteors.push_back(pMeteor);
+
 			m_fTimer = {};
 			m_iSummonCount++;
 		}
-
-		if (m_iSummonCount > 40)
+		if (m_Meteors.empty())
 		{
-			m_isDead = true;
+			m_iHP = -1;
 		}
+
 		break;
 	}
 
 	m_fTimer += fTimeDelta;
+	if (m_iHP > 0)
+	{
+		m_fLightTimer += fTimeDelta;
+	}
+	else
+	{
+		m_fLightTimer -= fTimeDelta;
+	}
 
+	if (m_fLightTimer > 1.f)
+	{
+		m_fLightTimer = 1.f;
+	}
+	else if (m_fLightTimer < 0.f)
+	{
+		m_isDead = true;
+	}
 
 	m_vUVTransform.x -= fTimeDelta * 4.f;
 	m_vUVTransform.y -= fTimeDelta * 4.f;
@@ -125,6 +152,21 @@ void CMeteor::Tick(_float fTimeDelta)
 		m_bRotate[2] = true;
 	}
 
+	for (auto iter = m_Meteors.begin(); iter != m_Meteors.end();)
+	{
+		(*iter)->Tick(fTimeDelta);
+
+		if ((*iter)->isDead())
+		{
+			Safe_Release((*iter));
+			iter = m_Meteors.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+
 	m_pColliderCom->Update(XMMatrixScaling(m_fCoreScale, m_fCoreScale, m_fCoreScale) * m_pTransformCom->Get_World_Matrix());
 }
 
@@ -134,6 +176,11 @@ void CMeteor::Late_Tick(_float fTimeDelta)
 
 	m_pRendererCom->Add_RenderGroup(RG_Blend, this);
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_BlendBlur, this);
+
+	for (auto& pMeteor : m_Meteors)
+	{
+		pMeteor->Late_Tick(fTimeDelta);
+	}
 #ifdef _DEBUG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif // _DEBUG
@@ -419,7 +466,16 @@ CGameObject* CMeteor::Clone(void* pArg)
 
 void CMeteor::Free()
 {
+	LIGHT_DESC* pDesc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
+	*pDesc = m_OriginMainLight;
+	pDesc = nullptr;
+
 	__super::Free();
+
+	for (auto& pMeteor : m_Meteors)
+	{
+		Safe_Release(pMeteor);
+	}
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

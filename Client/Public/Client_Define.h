@@ -93,6 +93,7 @@ namespace Client
 	enum StaticMeshPass
 	{
 		StaticPass_Default,
+		StaticPass_NonLight,
 		StaticPass_OutLine,
 		StaticPass_AlphaTestMeshes,
 		StaticPass_Sky,

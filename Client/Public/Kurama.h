@@ -111,6 +111,8 @@ private:
 private:
 	_float3 m_vAppearPoints[5]{};
 
+	_uint m_iMaxHP{};
+
 	class CCommonTrail* m_pEyeLights[2]{};
 	class CCommonTrail* m_pFingerLights[10]{};
 

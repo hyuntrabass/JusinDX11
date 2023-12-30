@@ -148,6 +148,17 @@ PS_OUT_DEFERRED PS_Main(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_NonLight(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    vector vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, Input.vTex) + 0.3f * g_bSelected;
+    
+    Output.vColor = vector(vMtrlDiffuse.xyz, 1.f);
+    
+    return Output;
+}
+
 PS_OUT_DEFERRED PS_Main_AlphaTest(PS_IN Input)
 {
     PS_OUT_DEFERRED Output = (PS_OUT_DEFERRED) 0;
@@ -193,7 +204,7 @@ PS_OUT_DEFERRED PS_OutLine(PS_IN Input)
         discard;
     }
     
-    Output.vDiffuse = vector(float(g_bSelected), 0.f, 0.f, 1.f);
+    Output.vDiffuse = g_vColor;
     Output.vDepth = vector(Input.vProjPos.z / Input.vProjPos.w, Input.vProjPos.w / g_fCamFar, 0.f, 0.f);
 
     return Output;
@@ -204,7 +215,7 @@ PS_OUT PS_Main_Sky(PS_IN Input)
     PS_OUT Output = (PS_OUT) 0;
     
     Output.vColor = g_DiffuseTexture.Sample(LinearSampler, Input.vTex);
-    Output.vColor = 0.7f * Output.vColor + (1.f - 0.7f) * vector(0.9f, 0.9f, 0.9f, 1.f);
+    Output.vColor = 0.7f * Output.vColor + (1.f - 0.7f) * g_vLightDiffuse;
 
     return Output;
 }
@@ -345,6 +356,19 @@ technique11 DefaultTechniqueShader_VtxNorTex
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main();
+    }
+
+    pass NonLight
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_NonLight();
     }
 
     pass OutLine

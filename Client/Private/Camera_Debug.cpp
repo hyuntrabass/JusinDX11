@@ -40,6 +40,7 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 		return;
 	}
 	m_pGameInstance->Set_CameraNF(_float2(m_fNear, m_fFar));
+	fTimeDelta /= m_pGameInstance->Get_TimeRatio();
 
 #ifdef _DEBUG
 	_vector Pos = m_pTransformCom->Get_State(State::Pos);
@@ -58,6 +59,30 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_P))
 	{
 		m_pGameInstance->Set_CameraModeIndex(CM_MAIN);
+		if (m_bTimeStop)
+		{
+			m_bTimeStop = false;
+			m_pGameInstance->Set_TimeRatio(m_fOriginTimeRatio);
+		}
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_I))
+	{
+		if (m_bTimeStop)
+		{
+			m_bTimeStop = false;
+			m_pGameInstance->Set_TimeRatio(m_fOriginTimeRatio);
+		}
+		else
+		{
+			m_bTimeStop = true;
+			m_fOriginTimeRatio = m_pGameInstance->Get_TimeRatio();
+		}
+	}
+
+	if (m_bTimeStop)
+	{
+		m_pGameInstance->Set_TimeRatio(0.001f);
 	}
 
 	if (m_pGameInstance->Mouse_Pressing(DIM_MBUTTON))
@@ -66,12 +91,12 @@ void CCamera_Debug::Tick(_float fTimeDelta)
 
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::x))
 		{
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * dwMouseMove * m_fMouseSensor);
 		}
 
 		if (dwMouseMove = m_pGameInstance->Get_MouseMove(MouseState::y))
 		{
-			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta / m_pGameInstance->Get_TimeRatio() * dwMouseMove * m_fMouseSensor);
+			m_pTransformCom->Turn(m_pTransformCom->Get_State(State::Right), fTimeDelta * dwMouseMove * m_fMouseSensor);
 		}
 
 	}

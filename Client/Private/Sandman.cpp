@@ -100,11 +100,11 @@ void CSandman::Tick(_float fTimeDelta)
 void CSandman::Late_Tick(_float fTimeDelta)
 {
 	m_pCollider_Hit->Intersect(reinterpret_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Collider_Attack"))));
+	m_pModelCom->Play_Animation(fTimeDelta);
 
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
 	{
 
-		m_pModelCom->Play_Animation(fTimeDelta);
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
 	#ifdef _DEBUG
@@ -194,7 +194,7 @@ HRESULT CSandman::Render()
 
 void CSandman::Set_Damage(_int iDamage, _uint iDamageType)
 {
-	if (m_eCurrState == State_Beaten_Electiric and iDamageType == DAM_ELECTRIC)
+	if (m_iHP <= 0 or m_eCurrState == State_Die or m_eCurrState == State_Beaten_Electiric and iDamageType == DAM_ELECTRIC)
 	{
 		return;
 	}
@@ -485,11 +485,11 @@ void CSandman::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Left))
 		{
 			m_eCurrState = State_Idle;
-		}
 
-		if (m_iHP < 0)
-		{
-			m_eCurrState = State_Die;
+			if (m_iHP < 0)
+			{
+				m_eCurrState = State_Die;
+			}
 		}
 		break;
 	case Client::CSandman::State_Beaten_Electiric:
@@ -499,20 +499,26 @@ void CSandman::Tick_State(_float fTimeDelta)
 			Anim.iAnimIndex = Anim_Beaten_ElectricShock_End;
 			m_pModelCom->Set_Animation(Anim);
 
-			if (m_iHP < 0)
-			{
-				m_eCurrState = State_Die;
-			}
 		}
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_ElectricShock_End))
 		{
 			m_eCurrState = State_Idle;
+
+			if (m_iHP < 0)
+			{
+				m_eCurrState = State_Die;
+			}
 		}
 		break;
 	case Client::CSandman::State_Beaten_Fire:
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Burn_Type01))
 		{
 			m_eCurrState = State_Idle;
+
+			if (m_iHP < 0)
+			{
+				m_eCurrState = State_Die;
+			}
 		}
 		break;
 	case Client::CSandman::State_Attack:

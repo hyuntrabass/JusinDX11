@@ -162,6 +162,7 @@ private:
 		State_Appear,
 		State_Idle,
 		State_Chase,
+		State_Runaway,
 		State_GoHome,
 		State_Beaten,
 		State_Beaten_Electiric,
@@ -187,7 +188,6 @@ private:
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
 	CCollider* m_pCollider_Hit{ nullptr };
-	CCollider* m_pCollider_Att{ nullptr };
 	CTexture* m_pDissolveTextureCom{ nullptr };
 
 private:
@@ -203,6 +203,7 @@ private:
 	_float m_fAttackRange{};
 	_float m_fSearchRange{};
 	_float m_fTimer{};
+	_bool m_bAttacked{};
 
 	_uint m_iPrevAnimIndex{};
 	_bool m_isRunning{};
