@@ -62,6 +62,11 @@ const _uint& CModel::Get_CurrentAnimationIndex() const
 	return m_AnimDesc.iAnimIndex;
 }
 
+const _float& CModel::Get_CurrentAnimPos() const
+{
+	return m_Animations[m_AnimDesc.iAnimIndex]->Get_CurrentAnimPos();
+}
+
 const _float44* CModel::Get_BoneMatrix(const _char* pBoneName) const
 {
 	auto iter = find_if(m_Bones.begin(), m_Bones.end(), [&pBoneName](CBone* pBone) 

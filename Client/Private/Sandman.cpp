@@ -205,6 +205,10 @@ void CSandman::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		m_eCurrState = State_Beaten_Electiric;
 	}
+	else if (m_iHP <= 0)
+	{
+		m_eCurrState = State_Die;
+	}
 	else if (iDamageType == DAM_FIRE)
 	{
 		m_eCurrState = State_Beaten_Fire;
@@ -370,6 +374,7 @@ void CSandman::Init_State()
 		case Client::CSandman::State_Attack:
 			Anim.iAnimIndex = Anim_Attack_SideDoubleSlashing;
 			m_fTimer = {};
+			m_bAttacked = false;
 			break;
 		case Client::CSandman::State_Die:
 			Anim.iAnimIndex = Anim_Dying_Type01;
@@ -410,6 +415,10 @@ void CSandman::Tick_State(_float fTimeDelta)
 		if (fPlayerDist < m_fSearchRange)
 		{
 			m_eCurrState = State_Chase;
+		}
+		if (m_iHP <= 0)
+		{
+			m_eCurrState = State_Die;
 		}
 		break;
 	}
@@ -486,7 +495,7 @@ void CSandman::Tick_State(_float fTimeDelta)
 		{
 			m_eCurrState = State_Idle;
 
-			if (m_iHP < 0)
+			if (m_iHP <= 0)
 			{
 				m_eCurrState = State_Die;
 			}
@@ -504,7 +513,7 @@ void CSandman::Tick_State(_float fTimeDelta)
 		{
 			m_eCurrState = State_Idle;
 
-			if (m_iHP < 0)
+			if (m_iHP <= 0)
 			{
 				m_eCurrState = State_Die;
 			}
@@ -515,21 +524,52 @@ void CSandman::Tick_State(_float fTimeDelta)
 		{
 			m_eCurrState = State_Idle;
 
-			if (m_iHP < 0)
+			if (m_iHP <= 0)
 			{
 				m_eCurrState = State_Die;
 			}
 		}
 		break;
 	case Client::CSandman::State_Attack:
+	{
 		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vTargetDir));
+
+		_float fAnimPos{ m_pModelCom->Get_CurrentAnimPos() };
+
+		if (fAnimPos > 30.f)
+		{
+			if (not m_bAttacked)
+			{
+				if (m_pGameInstance->Attack_Player(m_pCollider_Att, 5))
+				{
+					_float3 vPos{};
+					XMStoreFloat3(&vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("L_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
+					m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Hit"), &vPos);
+				}
+				m_bAttacked = true;
+			}
+		}
+		else if (fAnimPos > 15.f)
+		{
+			m_bAttacked = false;
+		}
+		else if (not m_bAttacked and fAnimPos > 12.f)
+		{
+			if (m_pGameInstance->Attack_Player(m_pCollider_Att, 5))
+			{
+				_float3 vPos{};
+				XMStoreFloat3(&vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
+				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Hit"), &vPos);
+			}
+			m_bAttacked = true;
+		}
 
 		if (m_pModelCom->IsAnimationFinished(Anim_Attack_SideDoubleSlashing))
 		{
 			m_eCurrState = State_Idle;
 		}
-
 		break;
+	}
 	case Client::CSandman::State_Die:
 		if (m_fTimer > 10.f)
 		{

@@ -33,6 +33,7 @@ public:
 	const _uint& Get_NumMeshes() const;
 	const _bool& IsAnimationFinished(_uint iAnimIndex) const;
 	const _uint& Get_CurrentAnimationIndex() const;
+	const _float& Get_CurrentAnimPos() const;
 	const _float44* Get_BoneMatrix(const _char* pBoneName) const;
 	_matrix Get_PivotMatrix();
 

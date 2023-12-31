@@ -104,7 +104,7 @@ public: // Collision
 	void Delete_CollisionObject(class CGameObject* pObject, _bool IsPlayer = false);
 	void Attack_Monster(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Monster(class CCollider* pCollider);
-	void Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
+	_bool Attack_Player(class CCollider* pCollider, _uint iDamage, _uint iDamageType = 0);
 	_bool CheckCollision_Player(class CCollider* pCollider);
 
 public: // PhysX

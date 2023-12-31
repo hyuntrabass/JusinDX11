@@ -31,6 +31,11 @@ const _bool& CAnimation::IsFinished() const
 	return m_isFinished;
 }
 
+const _float CAnimation::Get_CurrentAnimPos() const
+{
+	return m_fCurrentAnimPos;
+}
+
 void CAnimation::ResetFinished()
 {
 	m_isFinished = false;

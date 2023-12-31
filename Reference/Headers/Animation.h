@@ -12,6 +12,7 @@ private:
 	
 public:
 	const _bool& IsFinished() const;
+	const _float Get_CurrentAnimPos() const;
 
 	void ResetFinished();
 

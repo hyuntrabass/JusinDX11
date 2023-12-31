@@ -107,6 +107,40 @@ HRESULT CTrigger_Manager::Add_Triggers()
 			return E_FAIL;
 		}
 	}
+	//{
+	//	filesystem::path strFilePath = TEXT("../Bin/Resources/MapData/Monster_0.hyuntramonster");
+
+	//	ifstream File(strFilePath.c_str(), ios::binary);
+
+	//	if (File.is_open())
+	//	{
+	//		size_t NumMonter{};
+	//		File.read(reinterpret_cast<_char*>(&NumMonter), sizeof size_t);
+	//		for (size_t i = 0; i < NumMonter; i++)
+	//		{
+	//			ObjectInfo Info{};
+	//			size_t NameSize{};
+	//			_uint iTriggerNum{};
+
+	//			File.read(reinterpret_cast<_char*>(&NameSize), sizeof size_t);
+	//			wchar_t* pBuffer = new wchar_t[NameSize / sizeof(wchar_t)];
+	//			File.read(reinterpret_cast<_char*>(pBuffer), NameSize);
+	//			Info.strPrototypeTag = pBuffer;
+	//			Safe_Delete_Array(pBuffer);
+
+	//			File.read(reinterpret_cast<_char*>(&iTriggerNum), sizeof _uint);
+	//			File.read(reinterpret_cast<_char*>(&Info.vPos), sizeof _float4);
+	//			Info.vPos.y += 1.f;
+	//			File.read(reinterpret_cast<_char*>(&Info.vLook), sizeof _float4);
+
+	//			m_MonsterTriggers[LEVEL_FOREST][iTriggerNum].push_back(Info);
+	//		}
+	//	}
+	//	else
+	//	{
+	//		return E_FAIL;
+	//	}
+	//}
 
 	// Village
 	{
@@ -257,6 +291,38 @@ void CTrigger_Manager::Trigger_Tutorial(_float fTimeDelta)
 		m_pCurrentCutScene = &m_CutScenes.find(TEXT("Cutscene_tuto1"))->second;
 		m_Triggers[LEVEL_FOREST][0].second = true;
 	}
+
+	//for (size_t i = 0; i < m_Triggers[LEVEL_FOREST].size(); i++)
+	//{
+	//	auto& Trigger = m_Triggers[LEVEL_FOREST][i];
+
+	//	if (not Trigger.second and Trigger.first->Intersect(m_pPlayerCollider))
+	//	{
+	//		Trigger.second = true;
+	//	}
+
+	//	if (Trigger.second and not m_MonsterTriggers[LEVEL_FOREST][i].empty())
+	//	{
+	//		auto& ObjInfo = m_MonsterTriggers[LEVEL_FOREST][i].back();
+
+	//		if (ObjInfo.strPrototypeTag == TEXT("Prototype_Model_Sandman"))
+	//		{
+	//			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_FOREST, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_Sandman"), &ObjInfo)))
+	//			{
+	//				MSG_BOX("Failed to Add Layer : Sandman");
+	//			}
+	//		}
+	//		else
+	//		{
+	//			if (FAILED(m_pGameInstance->Add_Layer(LEVEL_FOREST, TEXT("Layer_Monster"), TEXT("Prototype_GameObject_SandNinja"), &ObjInfo)))
+	//			{
+	//				MSG_BOX("Failed to Add Layer : SandNinja");
+	//			}
+	//		}
+
+	//		m_MonsterTriggers[LEVEL_FOREST][i].pop_back();
+	//	}
+	//}
 }
 
 void CTrigger_Manager::Trigger_Village(_float fTimeDelta)

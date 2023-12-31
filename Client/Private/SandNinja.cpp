@@ -504,6 +504,33 @@ void CSandNinja::Tick_State(_float fTimeDelta)
 			Anim.iAnimIndex = Anim_Walk_End;
 			m_pModelCom->Set_Animation(Anim);
 		}
+
+		_vector vPlayerPos = m_pPlayerTransform->Get_State(State::Pos);
+		_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
+		m_vOriginPos.y = vMyPos.m128_f32[1];
+		_vector vDirToPlayer = vPlayerPos - vMyPos;
+		_float fPlayerDist = XMVectorGetX(XMVector3Length(vDirToPlayer));
+		_uint iCurrentAnimIndex = m_pModelCom->Get_CurrentAnimationIndex();
+
+		if (fPlayerDist < m_fAttackRange)
+		{
+			if (m_fTimer > 4.f)
+			{
+				XMStoreFloat4(&m_vTargetDir, vDirToPlayer);
+				m_vTargetDir.y = 0.f;
+
+				m_eCurrState = State_Attack;
+			}
+		}
+		else if (fPlayerDist < m_fSearchRange)
+		{
+			m_eCurrState = State_Chase;
+		}
+		if (fPlayerDist < 7.f)
+		{
+			m_eCurrState = State_Runaway;
+		}
+
 		if (m_pModelCom->IsAnimationFinished(Anim_Walk_End))
 		{
 			m_eCurrState = State_Idle;
