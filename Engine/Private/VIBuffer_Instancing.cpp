@@ -44,7 +44,7 @@ void CVIBuffer_Instancing::Update(_float fTimeDelta, _int iNumUse)
 
 		if (i >= iNumUse)
 		{
-			pVertex->vPos = _float4(-100.f, -100.f, -100.f, 1.f);
+			pVertex->vPos = _float4(-1000.f, -1000.f, -1000.f, 1.f);
 			continue;
 		}
 

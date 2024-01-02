@@ -96,13 +96,12 @@ void CFireball::Tick(_float fTimeDelta)
 	switch (m_eState)
 	{
 	case Client::CFireball::State_Shoot:
+	{
 		//m_pTransformCom->Set_RotationPerSec(360.f);
 		//m_pTransformCom->Turn(XMVector3Normalize(m_pTransformCom->Get_State(State::Look)) * -1.f, fTimeDelta);
-	{
 		LIGHT_DESC* LightDesc{};
 		LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Fireball") + to_wstring(m_iMyLightIndex));
 		XMStoreFloat4(&LightDesc->vPosition, m_pTransformCom->Get_State(State::Pos));
-	}
 
 		if (m_hasTarget)
 		{
@@ -135,12 +134,33 @@ void CFireball::Tick(_float fTimeDelta)
 			m_pTransformCom->LookAt_Dir(XMVector3Normalize(XMLoadFloat3(&m_vTargetPos)));
 		}
 
+		if (m_strType == TEXT("Meteor"))
+		{
+			if (m_iEffectCount == 0)
+			{
+				_float3 vPos{};
+				XMStoreFloat3(&vPos, m_pTransformCom->Get_State(State::Pos));
+				m_pGameInstance->Add_Layer(LEVEL_STATIC, TEXT("Effect"), TEXT("Prototype_GameObject_Effect_Fire"), &vPos);
+				m_iEffectCount++;
+			}
+
+			if (m_iEffectCount >= 7)
+			{
+				m_iEffectCount = 0;
+			}
+			else
+			{
+				m_iEffectCount++;
+			}
+		}
+
 		if (m_pGameInstance->CheckCollision_Monster(m_pColliderCom))
 		{
 			m_pTransformCom->Set_State(State::Pos, m_pTransformCom->Get_State(State::Pos) + XMVector3Normalize(m_pTransformCom->Get_State(State::Look)) * 2.f);
 			m_eState = State_Explode;
 		}
 		break;
+	}
 	case Client::CFireball::State_Explode:
 	{
 		m_pGameInstance->Set_ShakeCam(true);
@@ -185,7 +205,7 @@ void CFireball::Tick(_float fTimeDelta)
 	_float fColliderScale{ 1.f };
 	if (m_eState == State_Explode)
 	{
-		fColliderScale = 1.5f;
+		fColliderScale = 2.f;
 	}
 	m_pColliderCom->Update(XMMatrixScaling(fColliderScale, fColliderScale, fColliderScale) * m_pTransformCom->Get_World_Matrix());
 }

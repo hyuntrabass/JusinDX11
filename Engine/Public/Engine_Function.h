@@ -127,4 +127,12 @@ namespace Engine
 	\return  PxExtendedVec3로 변환된 값이 나옴.
 	*/
 	const PxExtendedVec3 ENGINE_DLL PxVec3ToPxExVec3(PxVec3 Src);
+
+	/**
+	\brief PxVec3를 float3로 변환합니다.
+
+	\param[in]  Src: 변환하고 싶은 값을 넣으세요.
+	\return  float3로 변환된 값이 나옴.
+	*/
+	const _float3 ENGINE_DLL PxVec3ToFloat3(PxVec3 Src);
 }

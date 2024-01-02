@@ -537,6 +537,10 @@ HRESULT CRenderer::Render_Deferred()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pShader->Bind_RawValue("g_fHellStart", &m_pGameInstance->Get_HellHeight(), sizeof _float)))
+	{
+		return E_FAIL;
+	}
 
 	if (FAILED(m_pShader->Bind_RawValue("g_vCamNF", &m_pGameInstance->Get_CameraNF(), sizeof _float2)))
 	{

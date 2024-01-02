@@ -970,6 +970,11 @@ const _bool& CGameInstance::Get_ShakeCam() const
 	return m_bShakeCamera;
 }
 
+const _float& CGameInstance::Get_HellHeight() const
+{
+	return m_fHellHeight;
+}
+
 void CGameInstance::Set_CameraModeIndex(const _uint& iIndex)
 {
 	m_iCameraModeIndex = iIndex;
@@ -998,6 +1003,11 @@ void CGameInstance::Set_FogNF(const _float2& vFogNF)
 void CGameInstance::Set_ShakeCam(const _bool& bShake)
 {
 	m_bShakeCamera = bShake;
+}
+
+void CGameInstance::Set_HellHeight(const _float& fHeight)
+{
+	m_fHellHeight = fHeight;
 }
 
 void CGameInstance::Clear_Managers()

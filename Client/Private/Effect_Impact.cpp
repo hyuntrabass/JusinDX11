@@ -118,6 +118,13 @@ HRESULT CEffect_Impact::Add_Components()
 			return E_FAIL;
 		}
 	}
+	else if (m_iType == 2)
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Effect_T_EFF_Radiation_01_M"), TEXT("Com_MaskTexture"), reinterpret_cast<CComponent**>(&m_pMaskTextureCom))))
+		{
+			return E_FAIL;
+		}
+	}
 
 	return S_OK;
 }

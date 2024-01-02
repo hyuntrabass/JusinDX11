@@ -48,6 +48,10 @@ namespace Client
 		DAM_NORMAL,
 		DAM_ELECTRIC,
 		DAM_FIRE,
+		DAM_PUSH,
+		DAM_COMBO_BEGIN,
+		DAM_COMBO_MIDDLE,
+		DAM_COMBO_END,
 		DAM_END
 	};
 	
@@ -126,6 +130,7 @@ namespace Client
 		VTPass_HP,
 		VTPass_Hit,
 		VTPass_Sprite,
+		VTPass_Hell,
 	};
 
 	enum InstancingPass

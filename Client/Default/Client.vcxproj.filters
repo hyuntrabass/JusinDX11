@@ -196,6 +196,12 @@
     <Filter Include="02.GameObjects\04.Sandman\Ninja\Projectile">
       <UniqueIdentifier>{4063f7b9-5c24-4418-930c-258fc21d7218}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\98.Sky\Hell">
+      <UniqueIdentifier>{c68f2bbb-45af-4160-b6cc-cf254eeac45b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\03.Player\FakeWood">
+      <UniqueIdentifier>{7d21b61a-884a-4953-ad0a-ce4a28c51951}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -372,6 +378,12 @@
     <ClInclude Include="..\public\SandKunai.h">
       <Filter>02.GameObjects\04.Sandman\Ninja\Projectile</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Hell.h">
+      <Filter>02.GameObjects\98.Sky\Hell</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\FakeWood.h">
+      <Filter>02.GameObjects\03.Player\FakeWood</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -545,6 +557,12 @@
     </ClCompile>
     <ClCompile Include="..\private\SandKunai.cpp">
       <Filter>02.GameObjects\04.Sandman\Ninja\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Hell.cpp">
+      <Filter>02.GameObjects\98.Sky\Hell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\FakeWood.cpp">
+      <Filter>02.GameObjects\03.Player\FakeWood</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

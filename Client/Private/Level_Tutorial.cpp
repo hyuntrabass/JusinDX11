@@ -43,6 +43,8 @@ HRESULT CLevel_Tutorial::Init()
 	m_pGameInstance->StopAll();
 	m_pGameInstance->PlayBGM(TEXT("Forest_Ambience"), 0.5f);
 
+	m_pGameInstance->Set_HellHeight(20.f);
+
 	return S_OK;
 }
 
@@ -155,6 +157,11 @@ HRESULT CLevel_Tutorial::Ready_Map()
 	}
 	
 	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_STATIC, L"Layer_Sky", L"Prototype_GameObject_Sky")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_FOREST, L"Layer_Hell", L"Prototype_GameObject_Hell")))
 	{
 		return E_FAIL;
 	}

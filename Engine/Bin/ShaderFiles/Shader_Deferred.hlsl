@@ -16,6 +16,7 @@ float2 g_vCamNF;
 float g_fLightFar;
 float g_fScreenWidth;
 float g_fScreenHeight;
+float g_fHellStart;
 
 float2 g_vFogNF;
 
@@ -268,6 +269,13 @@ PS_OUT PS_Main_Deferred(PS_IN Input)
     vWorldPos = vWorldPos * fViewZ;
     vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
     vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    
+    if (vWorldPos.y < g_fHellStart)
+    {
+        float fHell = (vWorldPos.y + 15.f) / 35.f;
+        Output.vColor *= vector(fHell, fHell, fHell, 1.f);
+        vFogColor *= fHell;
+    }
     
     vWorldPos = mul(vWorldPos, g_LightViewMatrix);
     vWorldPos = mul(vWorldPos, g_LightProjMatrix);

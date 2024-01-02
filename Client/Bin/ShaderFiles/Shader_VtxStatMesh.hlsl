@@ -14,8 +14,6 @@ float g_fCamFar;
 float g_fLightFar;
 float g_fDissolveRatio;
 
-float2 g_vFogNF;
-
 bool g_HasNorTex;
 bool g_bSelected = false;
 

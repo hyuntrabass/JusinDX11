@@ -40,3 +40,5 @@
 #include "Meteor.h"
 #include "SandNinja.h"
 #include "SandKunai.h"
+#include "Hell.h"
+#include "FakeWood.h"

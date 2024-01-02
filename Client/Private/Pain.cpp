@@ -299,6 +299,8 @@ void CPain::Init_State()
 		case Client::CPain::State_Die:
 			m_AnimationDesc.iAnimIndex = Anim_Dying_Type01;
 			m_AnimationDesc.bSkipInterpolation = true;
+
+			m_pGameInstance->Delete_CollisionObject(this);
 			break;
 		default:
 			break;

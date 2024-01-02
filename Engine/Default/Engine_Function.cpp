@@ -24,3 +24,8 @@ const PxExtendedVec3 Engine::PxVec3ToPxExVec3(PxVec3 Src)
 {
 	return PxExtendedVec3(static_cast<double>(Src.x), static_cast<double>(Src.y), static_cast<double>(Src.z));
 }
+
+const _float3 Engine::PxVec3ToFloat3(PxVec3 Src)
+{
+	return _float3(Src.x, Src.y, Src.z);
+}

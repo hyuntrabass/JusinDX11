@@ -152,6 +152,7 @@ public: // Get_Set
 	const _float& Get_TimeRatio() const;
 	const _float2& Get_FogNF() const;
 	const _bool& Get_ShakeCam() const;
+	const _float& Get_HellHeight() const;
 
 	void Set_CameraModeIndex(const _uint& iIndex);
 	void Set_CameraNF(const _float2& vCamNF);
@@ -159,6 +160,7 @@ public: // Get_Set
 	void Set_TimeRatio(const _float fRatio);
 	void Set_FogNF(const _float2& vFogNF);
 	void Set_ShakeCam(const _bool& bShake);
+	void Set_HellHeight(const _float& fHeight);
 
 private:
 	class CGraphic_Device* m_pGraphic_Device{ nullptr };
@@ -187,6 +189,7 @@ private:
 	_float2 m_vCameraNF{};
 	_float2 m_vFogNF{ 2000.f, 2000.f };
 	_bool m_bShakeCamera{};
+	_float m_fHellHeight{};
 
 public:
 	static void Release_Engine();

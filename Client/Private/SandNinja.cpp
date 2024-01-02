@@ -336,7 +336,14 @@ void CSandNinja::Init_State()
 			Anim.isLoop = true;
 			break;
 		case Client::CSandNinja::State_Beaten:
-			Anim.iAnimIndex = Anim_Beaten_Left;
+			if (rand() % 2)
+			{
+				Anim.iAnimIndex = Anim_Beaten_Left;
+			}
+			else
+			{
+				Anim.iAnimIndex = Anim_Beaten_Right;
+			}
 			Anim.bSkipInterpolation = true;
 			Anim.bRestartAnimation = true;
 

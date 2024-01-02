@@ -180,8 +180,10 @@
     <ClInclude Include="..\public\Effect_Impact.h" />
     <ClInclude Include="..\Public\Effect_Smoke.h" />
     <ClInclude Include="..\public\Effect_Warp.h" />
+    <ClInclude Include="..\public\FakeWood.h" />
     <ClInclude Include="..\Public\Fireball.h" />
     <ClInclude Include="..\public\FootEffect.h" />
+    <ClInclude Include="..\Public\Hell.h" />
     <ClInclude Include="..\public\Hit.h" />
     <ClInclude Include="..\public\HpBar_Player.h" />
     <ClInclude Include="..\Public\HpBar_Player_Base.h" />
@@ -239,8 +241,10 @@
     <ClCompile Include="..\private\Effect_Impact.cpp" />
     <ClCompile Include="..\Private\Effect_Smoke.cpp" />
     <ClCompile Include="..\private\Effect_Warp.cpp" />
+    <ClCompile Include="..\private\FakeWood.cpp" />
     <ClCompile Include="..\Private\Fireball.cpp" />
     <ClCompile Include="..\private\FootEffect.cpp" />
+    <ClCompile Include="..\Private\Hell.cpp" />
     <ClCompile Include="..\private\Hit.cpp" />
     <ClCompile Include="..\private\HpBar_Player.cpp" />
     <ClCompile Include="..\Private\HpBar_Player_Base.cpp" />

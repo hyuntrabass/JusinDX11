@@ -347,7 +347,14 @@ void CSandman::Init_State()
 			Anim.isLoop = true;
 			break;
 		case Client::CSandman::State_Beaten:
-			Anim.iAnimIndex = Anim_Beaten_Left;
+			if (rand() % 2)
+			{
+				Anim.iAnimIndex = Anim_Beaten_Left;
+			}
+			else
+			{
+				Anim.iAnimIndex = Anim_Beaten_Right;
+			}
 			Anim.bSkipInterpolation = true;
 			Anim.bRestartAnimation = true;
 
@@ -381,9 +388,6 @@ void CSandman::Init_State()
 			Anim.bSkipInterpolation = true;
 
 			m_pGameInstance->Delete_CollisionObject(this);
-			_float4 vPos{};
-			XMStoreFloat4(&vPos, m_pTransformCom->Get_CenterPos());
-
 			m_fTimer = {};
 			break;
 		}

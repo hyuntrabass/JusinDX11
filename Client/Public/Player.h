@@ -36,6 +36,7 @@ struct Kunai_Info : public ObjectInfo
 
 enum class Player_State
 {
+	None,
 	Idle,
 	Walk,
 	Walk_End,
@@ -50,6 +51,10 @@ enum class Player_State
 	Dash,
 	Wire,
 	Beaten,
+	Beaten_Push,
+	Beaten_ComboBegin,
+	Beaten_ComboMiddle,
+	Beaten_ComboEnd,
 	Attack,
 	Meteor,
 	RasenShuriken,
@@ -254,9 +259,12 @@ private:
 
 	_float m_fAttTimer{};
 	_bool m_bAttacked{};
+	_uint m_iSuperArmor{};
+	_uint m_iLastDamage{};
 
 	_bool m_hasJumped{};
 	_bool m_isOnWall{};
+	_bool m_isMoveable{ true };
 
 	_float3 m_vWireTargetPos{};
 	class CKunai* m_pKunai { nullptr };

@@ -59,7 +59,7 @@ void CSandKunai::Tick(_float fTimeDelta)
 		EffectInfo EffectInfo{};
 		EffectInfo.vColor = _float4(1.f, 0.f, 0.f, 1.f);
 		EffectInfo.fScale = 1.f;
-		EffectInfo.iType = 1;
+		EffectInfo.iType = 2;
 		XMStoreFloat4(&EffectInfo.vPos, m_pTransformCom->Get_State(State::Pos));
 		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
 	}

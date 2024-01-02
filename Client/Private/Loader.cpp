@@ -405,6 +405,10 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Ring_14"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_Ring_14.mo.hyuntrastatmesh"))))
+	{
+		return E_FAIL;
+	}
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Circle"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_Circle_01.mo.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
@@ -423,6 +427,11 @@ HRESULT CLoader::Load_Logo()
 		return E_FAIL;
 	}
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Kunai"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_WEP_Kunai.mo.hyuntrastatmesh", false, Pivot))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_FakeWood"), CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/StaticMesh/Effect/Mesh/SM_EFF_Tree_01.mo.hyuntrastatmesh"))))
 	{
 		return E_FAIL;
 	}
@@ -870,6 +879,11 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Hell"), CHell::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_UI_HpBar"), CHpBar_Player::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -886,6 +900,11 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_UI_HpBar_SlotBase_Tool"), CSlotBase_Tool::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_FakeWood"), CFakeWood::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

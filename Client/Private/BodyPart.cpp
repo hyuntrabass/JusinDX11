@@ -197,6 +197,11 @@ _uint CBodyPart::Get_CurrentAnimationIndex()
 	return m_Models[m_iSelectedModelIndex]->Get_CurrentAnimationIndex();
 }
 
+_float CBodyPart::Get_CurrentAnimPos()
+{
+	return m_Models[m_iSelectedModelIndex]->Get_CurrentAnimPos();
+}
+
 const _float44* CBodyPart::Get_BoneMatrix(const _char* pBoneName)
 {
 	return m_Models[m_iSelectedModelIndex]->Get_BoneMatrix(pBoneName);

@@ -213,6 +213,30 @@ HRESULT CPlayer::Render()
 void CPlayer::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
+	m_iLastDamage += iDamage;
+
+	if (iDamage > m_iSuperArmor)
+	{
+		switch (iDamageType)
+		{
+		case Client::DAM_NORMAL:
+			m_eState = Player_State::Beaten;
+			break;
+		case Client::DAM_PUSH:
+			m_eState = Player_State::Beaten_Push;
+			break;
+		case Client::DAM_COMBO_BEGIN:
+			m_eState = Player_State::Beaten_ComboBegin;
+			break;
+		case Client::DAM_COMBO_MIDDLE:
+			m_eState = Player_State::Beaten_ComboMiddle;
+			break;
+		case Client::DAM_COMBO_END:
+			m_eState = Player_State::Beaten_ComboEnd;
+			break;
+		}
+		m_ePrevState = Player_State::None;
+	}
 
 	if (m_iHP < 0)
 	{
@@ -222,13 +246,19 @@ void CPlayer::Set_Damage(_int iDamage, _uint iDamageType)
 	{
 		m_iHP = m_iMaxHP;
 	}
-
-	m_pGameInstance->Set_ShakeCam(true);
-}	
+}
 
 
 void CPlayer::Move(_float fTimeDelta)
 {
+	if (m_eState == Player_State::Beaten or
+		m_eState == Player_State::Beaten_Push or
+		m_eState == Player_State::Beaten_ComboBegin or
+		m_eState == Player_State::Beaten_ComboMiddle or
+		m_eState == Player_State::Beaten_ComboEnd)
+	{
+		return;
+	}
 	_bool hasMoved{};
 	_vector vForwardDir = XMLoadFloat4(&m_pGameInstance->Get_CameraLook());
 	vForwardDir.m128_f32[1] = 0.f;
@@ -407,14 +437,6 @@ void CPlayer::Move(_float fTimeDelta)
 		}
 	}
 
-	if (m_pGameInstance->Key_Down(DIK_4))
-	{
-		//if (CUI_Manager::Get_Instance()->Use_Skill(4))
-		{
-			m_eState = Player_State::Meteor;
-		}
-	}
-
 	if (m_pGameInstance->Key_Down(DIK_2))
 	{
 		if (CUI_Manager::Get_Instance()->Use_Skill(1))
@@ -443,6 +465,21 @@ void CPlayer::Move(_float fTimeDelta)
 				m_eState = Player_State::Fireball;
 			}
 		}
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_4))
+	{
+		//if (CUI_Manager::Get_Instance()->Use_Skill(4))
+		{
+			m_eState = Player_State::Meteor;
+		}
+	}
+
+	if (m_pGameInstance->Key_Down(DIK_5))
+	{
+		_float4 vCenterPos{};
+		XMStoreFloat4(&vCenterPos, m_pTransformCom->Get_CenterPos());
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_FakeWood"), TEXT("Prototype_GameObject_FakeWood"), &vCenterPos);
 	}
 
 	if (not (m_eState == Player_State::Wire and m_pKunai) and
@@ -551,6 +588,7 @@ void CPlayer::Init_State()
 		switch (m_eState)
 		{
 		case Client::Player_State::Idle:
+			m_iSuperArmor = {};
 			break;
 		case Client::Player_State::Walk:
 			m_Animation.iAnimIndex = Walk_Loop;
@@ -617,6 +655,39 @@ void CPlayer::Init_State()
 			m_pGameInstance->Set_TimeRatio(0.1f);
 			break;
 		case Client::Player_State::Beaten:
+			if (rand() % 2)
+			{
+				m_Animation.iAnimIndex = Beaten_Left;
+			}
+			else
+			{
+				m_Animation.iAnimIndex = Beaten_Right;
+			}
+			m_Animation.bSkipInterpolation = true;
+			m_Animation.bRestartAnimation = true;
+
+			m_fTimer = {};
+			break;
+		case Client::Player_State::Beaten_Push:
+			m_Animation.iAnimIndex = Beaten_Aerial_UniversalPull_Start;
+			m_Animation.bSkipInterpolation = true;
+			m_Animation.bRestartAnimation = true;
+			break;
+		case Client::Player_State::Beaten_ComboBegin:
+			m_Animation.iAnimIndex = Beaten_Aerial_UniversalPull_Start;
+			m_Animation.bSkipInterpolation = true;
+			m_Animation.bRestartAnimation = true;
+			break;
+		case Client::Player_State::Beaten_ComboMiddle:
+			m_Animation.iAnimIndex = Beaten_Aerial_UniversalPull_Loop;
+			m_Animation.isLoop = true;
+			m_Animation.bSkipInterpolation = true;
+			m_Animation.bRestartAnimation = true;
+			break;
+		case Client::Player_State::Beaten_ComboEnd:
+			m_Animation.iAnimIndex = Beaten_Aerial_UniversalPull_Behind_End;
+			m_Animation.bSkipInterpolation = true;
+			m_Animation.bRestartAnimation = true;
 			break;
 		case Client::Player_State::Attack:
 			break;
@@ -879,6 +950,97 @@ void CPlayer::Tick_State(_float fTimeDelta)
 
 		break;
 	case Client::Player_State::Beaten:
+		if (m_fTimer < 0.5f)
+		{
+			if (m_pGameInstance->Key_Down(DIK_SPACE))
+			{
+				m_Animation = {};
+				m_Animation.iAnimIndex = DashStep_Behind;
+				m_Animation.bSkipInterpolation = true;
+
+				_float4 vCenterPos{};
+				XMStoreFloat4(&vCenterPos, m_pTransformCom->Get_CenterPos());
+				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_FakeWood"), TEXT("Prototype_GameObject_FakeWood"), &vCenterPos);
+
+				_float3 vNewPos{};
+				PxRaycastBuffer Buffer{};
+				_float fMoveAmount{ 8.f };
+				_vector vMoveDir{ XMVector3Normalize(-m_pTransformCom->Get_State(State::Look)) };
+
+				if (m_pGameInstance->Key_Pressing(DIK_W))
+				{
+					vMoveDir = XMVector3Normalize(m_pTransformCom->Get_State(State::Look));
+				}
+				if (m_pGameInstance->Key_Pressing(DIK_A))
+				{
+					if (m_pGameInstance->Key_Pressing(DIK_S) or m_pGameInstance->Key_Pressing(DIK_W))
+					{
+						vMoveDir = XMVector3Normalize(vMoveDir + XMVector3Normalize(-m_pTransformCom->Get_State(State::Right)));
+					}
+					else
+					{
+						vMoveDir = XMVector3Normalize(-m_pTransformCom->Get_State(State::Right));
+					}
+				}
+				if (m_pGameInstance->Key_Pressing(DIK_D))
+				{
+					if (m_pGameInstance->Key_Pressing(DIK_S) or m_pGameInstance->Key_Pressing(DIK_W))
+					{
+						vMoveDir = XMVector3Normalize(vMoveDir + XMVector3Normalize(m_pTransformCom->Get_State(State::Right)));
+					}
+					else
+					{
+						vMoveDir = XMVector3Normalize(m_pTransformCom->Get_State(State::Right));
+					}
+				}
+
+				if (m_pGameInstance->Raycast(XMLoadFloat4(&vCenterPos), vMoveDir, fMoveAmount, Buffer))
+				{
+					vNewPos = PxVec3ToFloat3(Buffer.block.position);
+				}
+				else
+				{
+					XMStoreFloat3(&vNewPos, XMLoadFloat4(&vCenterPos) + vMoveDir * fMoveAmount);
+				}
+
+				m_pTransformCom->Set_Position(vNewPos);
+
+				EffectInfo FxInfo{};
+				FxInfo.vColor = _float4(1.f, 1.f, 1.f, 1.f);
+				FxInfo.fScale = 1.f;
+				FxInfo.vPos = _float4(vNewPos.x, vNewPos.y, vNewPos.z, 1.f);
+				FxInfo.iType = 70;
+				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Smoke"), &FxInfo);
+
+				m_isMoveable = true;
+				m_iHP += m_iLastDamage;
+			}
+		}
+		else
+		{
+			m_iLastDamage = 0;
+		}
+
+		m_fTimer += fTimeDelta;
+
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(m_Animation.iAnimIndex))
+		{
+			m_eState = Player_State::Idle;
+		}
+		break;
+	case Client::Player_State::Beaten_Push:
+		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Beaten_Aerial_UniversalPull_Start))
+		{
+			m_Animation = {};
+			m_Animation.iAnimIndex = Beaten_Aerial_UniversalPull_Loop;
+			m_Animation.isLoop = true;
+		}
+		break;
+	case Client::Player_State::Beaten_ComboBegin:
+		break;
+	case Client::Player_State::Beaten_ComboMiddle:
+		break;
+	case Client::Player_State::Beaten_ComboEnd:
 		break;
 	case Client::Player_State::Attack:
 		if (not m_bAttacked)
@@ -916,6 +1078,13 @@ void CPlayer::Tick_State(_float fTimeDelta)
 				if (m_pGameInstance->CheckCollision_Monster(m_pCollider_Att))
 				{
 					m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Hit"), &m_vRightHandPos);
+					EffectInfo EffectInfo{};
+					EffectInfo.vColor = _float4(1.f, 0.2f, 0.f, 1.f);
+					EffectInfo.fScale = 5.f;
+					EffectInfo.vPos = _float4(m_vRightHandPos.x, m_vRightHandPos.y, m_vRightHandPos.z, 1.f);
+					EffectInfo.iType = 2;
+					m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
+					m_pGameInstance->Set_ShakeCam(true);
 				}
 			}
 			else
