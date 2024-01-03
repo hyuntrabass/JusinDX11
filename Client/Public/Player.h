@@ -265,6 +265,7 @@ private:
 	_bool m_hasJumped{};
 	_bool m_isOnWall{};
 	_bool m_isMoveable{ true };
+	_bool m_bApplyGravity{};
 
 	_float3 m_vWireTargetPos{};
 	class CKunai* m_pKunai { nullptr };
@@ -276,7 +277,7 @@ private:
 
 	CCollider* m_pCollider_Att{ nullptr };
 	CCollider* m_pCollider_Hit{ nullptr };
-#ifdef _DEBUG
+#ifdef _DEBUGG
 	CRenderer* m_pRendererCom{ nullptr };
 #endif // _DEBUG
 

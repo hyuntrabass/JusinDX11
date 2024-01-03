@@ -107,6 +107,7 @@ private:
 	CTransform* m_pPlayerTransform{ nullptr };
 
 	CGameObject* m_pEffect{ nullptr };
+	class CIndicator* m_pIndicator{ nullptr };
 
 private:
 	_float3 m_vAppearPoints[5]{};

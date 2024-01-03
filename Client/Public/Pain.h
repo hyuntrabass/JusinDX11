@@ -229,7 +229,9 @@ private:
 	CTransform* m_pPlayerTransform{ nullptr };
 
 private:
-	ANIM_DESC m_AnimationDesc{};
+	class CIndicator* m_pIndicator{ nullptr };
+
+	ANIM_DESC m_AnimationDesc{};	
 	_uint m_iMaxHP{};
 
 	_float3 m_vOriginalLook{};

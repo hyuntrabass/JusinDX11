@@ -17,12 +17,13 @@ private:
 
 public:
 	const _bool& Hasto_PlayScene() const;
+	const _bool& Is_TriggerPulled(LEVEL_ID eLevel, _uint iTriggerIndex) const;
 	void End_Scene();
 	CUTSCENE* Get_CurrentScene();
 
 	void Register_PlayerCollider(CCollider* pCollider);
 	void Tick(_float fTimeDelta);
-#ifdef _DEBUG
+#ifdef _DEBUGG
 	HRESULT Render();
 #endif // _DEBUG
 
@@ -37,6 +38,8 @@ private:
 	map<const wstring, CUTSCENE> m_CutScenes{};
 	CUTSCENE* m_pCurrentCutScene{ nullptr };
 	_bool m_PlayScene{};
+
+	_float m_fTimer{};
 
 private:
 	HRESULT Add_Triggers();

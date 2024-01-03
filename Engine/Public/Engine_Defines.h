@@ -29,14 +29,20 @@ using namespace physx;
 // 외부 라이브러리 lib
 #pragma comment(lib, "xinput.lib")
 #pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "DirectXTK.lib")
+#ifdef _DEBUG
+#pragma comment(lib, "DirectXTK.lib")  
+#pragma comment(lib, "PhysXExtensions_static_64.lib")
+#pragma comment(lib, "PhysXCharacterKinematic_static_64.lib")
+#else
+#pragma comment(lib, "DirectXTK_Release.lib")
+#pragma comment(lib, "PhysXExtensions_static_64_Release.lib")
+#pragma comment(lib, "PhysXCharacterKinematic_static_64_Release.lib")
+#endif // _DEBUG
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "PhysXCommon_64.lib")
 #pragma comment(lib, "PhysX_64.lib")
 #pragma comment(lib, "PhysXFoundation_64.lib")
 #pragma comment(lib, "PhysXCooking_64.lib")
-#pragma comment(lib, "PhysXExtensions_static_64.lib")
-#pragma comment(lib, "PhysXCharacterKinematic_static_64.lib")
 
 
 #ifdef _DEBUG

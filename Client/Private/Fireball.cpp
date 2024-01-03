@@ -216,7 +216,7 @@ void CFireball::Late_Tick(_float fTimeDelta)
 
 	m_pRendererCom->Add_RenderGroup(RG_NonLight, this);
 	m_pRendererCom->Add_RenderGroup(RG_BlendBlur, this);
-#ifdef _DEBUG
+#ifdef _DEBUGG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif // _DEBUG
 }

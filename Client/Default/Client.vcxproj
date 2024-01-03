@@ -90,6 +90,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <OmitFramePointers>false</OmitFramePointers>
+      <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -185,8 +186,11 @@
     <ClInclude Include="..\public\FootEffect.h" />
     <ClInclude Include="..\Public\Hell.h" />
     <ClInclude Include="..\public\Hit.h" />
+    <ClInclude Include="..\Public\HpBar_Boss.h" />
+    <ClInclude Include="..\Public\HpBar_Boss_Base.h" />
     <ClInclude Include="..\public\HpBar_Player.h" />
     <ClInclude Include="..\Public\HpBar_Player_Base.h" />
+    <ClInclude Include="..\Public\Indicator.h" />
     <ClInclude Include="..\public\Kakashi.h" />
     <ClInclude Include="..\Public\Kunai.h" />
     <ClInclude Include="..\public\Kurama.h" />
@@ -222,6 +226,7 @@
     <ClInclude Include="..\public\Title_Custom.h" />
     <ClInclude Include="..\public\Trigger_Manager.h" />
     <ClInclude Include="..\Public\UI_Manager.h" />
+    <ClInclude Include="..\Public\Win.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -246,8 +251,11 @@
     <ClCompile Include="..\private\FootEffect.cpp" />
     <ClCompile Include="..\Private\Hell.cpp" />
     <ClCompile Include="..\private\Hit.cpp" />
+    <ClCompile Include="..\Private\HpBar_Boss.cpp" />
+    <ClCompile Include="..\Private\HpBar_Boss_Base.cpp" />
     <ClCompile Include="..\private\HpBar_Player.cpp" />
     <ClCompile Include="..\Private\HpBar_Player_Base.cpp" />
+    <ClCompile Include="..\Private\Indicator.cpp" />
     <ClCompile Include="..\private\Kakashi.cpp" />
     <ClCompile Include="..\Private\Kunai.cpp" />
     <ClCompile Include="..\private\Kurama.cpp" />
@@ -282,6 +290,7 @@
     <ClCompile Include="..\private\Title_Custom.cpp" />
     <ClCompile Include="..\private\Trigger_Manager.cpp" />
     <ClCompile Include="..\Private\UI_Manager.cpp" />
+    <ClCompile Include="..\Private\Win.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
   <ItemGroup>

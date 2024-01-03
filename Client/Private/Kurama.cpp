@@ -1,6 +1,7 @@
 #include "Kurama.h"
 #include "CommonTrail.h"
 #include "UI_Manager.h"
+#include "Indicator.h"
 
 CKurama::CKurama(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -58,6 +59,13 @@ HRESULT CKurama::Init(void* pArg)
 	m_iMaxHP = 500;
 	m_iHP = m_iMaxHP;
 
+	_bool isBoss = true;
+	m_pIndicator = dynamic_cast<CIndicator*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Indicator"), &isBoss));
+	if (not m_pIndicator)
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -100,9 +108,29 @@ void CKurama::Tick(_float fTimeDelta)
 		m_pEffect->Tick(fTimeDelta);
 	}
 
-	_matrix ColliderOffset = XMMatrixTranslation(0.f, 4.f, 0.f);
-	m_pCollider_Hit->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
-	m_fTimer += fTimeDelta;
+		_matrix ColliderOffset = XMMatrixTranslation(0.f, 4.f, 0.f);
+		m_pCollider_Hit->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
+		m_fTimer += fTimeDelta;
+
+	if (m_pIndicator)
+	{
+		_float fCamDist = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()) - m_pTransformCom->Get_State(State::Pos)));
+
+		_float3 v2DPos{};
+		XMStoreFloat3(&v2DPos, XMVector3Project(m_pTransformCom->Get_State(State::Pos), 0, 0, g_iWinSizeX, g_iWinSizeY, 0, 1, m_pGameInstance->Get_Transform(TransformType::Proj), m_pGameInstance->Get_Transform(TransformType::View), XMMatrixTranslation(0.f, Lerp(15.f, 16.0f, fCamDist / 30.f), 0.f)));
+
+		if (v2DPos.z > 1.f)
+		{
+			v2DPos = _float3();
+		}
+
+		m_pIndicator->Tick(_float2(v2DPos.x, v2DPos.y));
+	}
+
+	if (m_eState != State_Die)
+	{
+		CUI_Manager::Get_Instance()->Set_HP(TEXT("Kurama"), m_iMaxHP, m_iHP);
+	}
 }
 
 void CKurama::Late_Tick(_float fTimeDelta)
@@ -110,6 +138,11 @@ void CKurama::Late_Tick(_float fTimeDelta)
 	m_pCollider_Hit->Intersect(reinterpret_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Collider_Attack"))));
 
 	m_pModelCom->Play_Animation(fTimeDelta);
+
+	if (m_pIndicator)
+	{
+		m_pIndicator->Late_Tick(fTimeDelta);
+	}
 
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f) and m_eState != State_None)
 	{
@@ -128,7 +161,7 @@ void CKurama::Late_Tick(_float fTimeDelta)
 			m_pEffect->Late_Tick(fTimeDelta);
 		}
 
-	#ifdef _DEBUG
+	#ifdef _DEBUGG
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
 	#endif // _DEBUG
 	}
@@ -194,6 +227,10 @@ void CKurama::Set_Damage(_int iDamage, _uint iDamageType)
 		}
 	}
 	m_iHP -= iDamage;
+	if (m_iHP < 0)
+	{
+		m_iHP = 0;
+	}
 
 	if (iDamage > static_cast<_int>(m_iSuperArmor))
 	{
@@ -297,6 +334,9 @@ void CKurama::Artificial_Intelligence(_float fTimeDelta)
 		{
 			return;
 		}
+
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI_HpBar"), TEXT("Prototype_GameObject_UI_BossHpBar"));
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_BossHpBar_Base"));
 	}
 
 	if (m_iPosIndex < 4 and m_fTimer > 5.f)
@@ -415,6 +455,9 @@ void CKurama::Init_State()
 		case Client::CKurama::State_Die:
 			m_AnimationDesc.iAnimIndex = Anim_Dying_Type01;
 			m_AnimationDesc.bSkipInterpolation = true;
+			
+			Safe_Release(m_pIndicator);
+			m_pGameInstance->Delete_CollisionObject(this);
 			break;
 		case Client::CKurama::State_Bomb:
 			break;
@@ -441,6 +484,16 @@ void CKurama::Tick_State(_float fTimeDelta)
 			m_AnimationDesc = {};
 			m_AnimationDesc.iAnimIndex = Anim_Ninjutsu_Roar;
 			//m_pModelCom->Set_Animation(m_AnimationDesc);
+		}
+
+		if (m_pModelCom->Get_CurrentAnimationIndex() == Anim_Ninjutsu_Roar and m_pModelCom->Get_CurrentAnimPos() > 34.f)
+		{
+			EffectInfo EffectInfo{};
+			EffectInfo.vColor = _float4(0.175f, 0.175f, 0.35f, 1.f);
+			EffectInfo.fScale = 15.f;
+			XMStoreFloat4(&EffectInfo.vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("LipMouthDownCenter")).r[3], m_pTransformCom->Get_World_Matrix()));
+			EffectInfo.iType = 1;
+			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
 		}
 
 		if (m_pModelCom->IsAnimationFinished(Anim_Ninjutsu_Roar))
@@ -541,7 +594,7 @@ void CKurama::Tick_State(_float fTimeDelta)
 				EffectInfo EffectInfo{};
 				EffectInfo.vColor = _float4(0.175f, 0.175f, 0.35f, 1.f);
 				EffectInfo.fScale = 15.f;
-				EffectInfo.vPos = _float4(Info.vPos.x, Info.vPos.y, Info.vPos.z, 1.f);
+				EffectInfo.vPos = Info.vPos;
 				EffectInfo.iType = 1;
 				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
 				m_hasShot = true;
@@ -622,6 +675,8 @@ void CKurama::Tick_State(_float fTimeDelta)
 			m_AnimationDesc.iAnimIndex = Anim_Dying_Type01_Loop;
 			m_AnimationDesc.bSkipInterpolation = true;
 			m_AnimationDesc.isLoop = true;
+			CUI_Manager::Get_Instance()->Delete_HPBar(TEXT("Kurama"));
+			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI"), TEXT("Prototype_GameObject_Win"));
 		}
 		break;
 	case Client::CKurama::State_Bomb:
@@ -665,7 +720,8 @@ void CKurama::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pEyeLights[0]);
+	Safe_Release(m_pIndicator);
+	Safe_Release(m_pEyeLights[0]);	
 	Safe_Release(m_pEyeLights[1]);
 	for (size_t i = 0; i < 10; i++)
 	{

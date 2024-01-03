@@ -121,6 +121,7 @@ namespace Client
 	enum VTPass
 	{
 		VTPass_UI,
+		VTPass_UI_Alpha,
 		VTPass_Button,
 		VTPass_Background,
 		VTPass_Mask_Texture,

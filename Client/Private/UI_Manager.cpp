@@ -49,6 +49,15 @@ void CUI_Manager::Delete_Aim()
 	}
 }
 
+void CUI_Manager::Delete_HPBar(const wstring& strHPTag)
+{
+	auto iter = m_HPs.find(strHPTag);
+	if (iter != m_HPs.end())
+	{
+		m_HPs.erase(iter);
+	}
+}
+
 void CUI_Manager::Create_Hit()
 {
 	if (m_pHit)
@@ -65,7 +74,7 @@ _bool CUI_Manager::Use_Skill(_uint iSkillNumber)
 {
 	_bool UseSkill{ m_isSkillUsable[iSkillNumber] };
 	m_isSkillUsable[iSkillNumber] = false;
-	
+
 	return UseSkill;
 }
 
@@ -104,7 +113,6 @@ const _float& CUI_Manager::Get_HPRatio(const wstring& strHPTag)
 	auto iter = m_HPs.find(strHPTag);
 	if (iter == m_HPs.end())
 	{
-		MSG_BOX("No such HP!");
 		return -1.f;
 	}
 

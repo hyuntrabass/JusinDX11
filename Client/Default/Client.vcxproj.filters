@@ -73,12 +73,6 @@
     <Filter Include="02.GameObjects\00.GUI\02.Hud">
       <UniqueIdentifier>{96a83024-ad79-4bd9-a8f3-3fd584767fc1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\00.GUI\02.Hud\HPBar_Player">
-      <UniqueIdentifier>{1692f2c1-096e-4592-ae8b-318df7604533}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\00.GUI\02.Hud\HPBar_Player\Base">
-      <UniqueIdentifier>{cc23cb6b-6c8a-445c-a8a0-cd0f01b60c7f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\00.GUI\02.Hud\Slots">
       <UniqueIdentifier>{33153331-edbf-4894-b38e-ba61b801cfdf}</UniqueIdentifier>
     </Filter>
@@ -202,6 +196,24 @@
     <Filter Include="02.GameObjects\03.Player\FakeWood">
       <UniqueIdentifier>{7d21b61a-884a-4953-ad0a-ce4a28c51951}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\Enemy_Indicator">
+      <UniqueIdentifier>{c8020bd1-1350-48a4-8fdf-8835c7fe23f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\HPBar">
+      <UniqueIdentifier>{2cd52f5e-b4a4-4205-8f75-dc58f3cf6806}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\HPBar\Player">
+      <UniqueIdentifier>{1692f2c1-096e-4592-ae8b-318df7604533}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\HPBar\Player\Base">
+      <UniqueIdentifier>{cc23cb6b-6c8a-445c-a8a0-cd0f01b60c7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\02.Hud\HPBar\Boss">
+      <UniqueIdentifier>{baa46c1c-4264-4166-9acc-ef2bc196496f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\00.GUI\Win">
+      <UniqueIdentifier>{ce720943-9536-4366-8b94-d50e3acfd7c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -280,7 +292,7 @@
       <Filter>01.Levels\99.Loading\Loader</Filter>
     </ClInclude>
     <ClInclude Include="..\public\HpBar_Player.h">
-      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player</Filter>
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar\Player</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\SlotBase_Tool.h">
       <Filter>02.GameObjects\00.GUI\02.Hud\Slots\Tool\Base</Filter>
@@ -349,7 +361,7 @@
       <Filter>02.GameObjects\00.GUI\02.Hud\Aim</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\HpBar_Player_Base.h">
-      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player\Base</Filter>
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar\Player\Base</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Hit.h">
       <Filter>02.GameObjects\00.GUI\02.Hud\Hit</Filter>
@@ -383,6 +395,18 @@
     </ClInclude>
     <ClInclude Include="..\public\FakeWood.h">
       <Filter>02.GameObjects\03.Player\FakeWood</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Indicator.h">
+      <Filter>02.GameObjects\00.GUI\02.Hud\Enemy_Indicator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HpBar_Boss.h">
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HpBar_Boss_Base.h">
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Win.h">
+      <Filter>02.GameObjects\00.GUI\Win</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -460,10 +484,10 @@
       <Filter>02.GameObjects\00.GUI\01.CreateCharacter\02.Parts_Window</Filter>
     </ClCompile>
     <ClCompile Include="..\private\HpBar_Player.cpp">
-      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player</Filter>
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar\Player</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\HpBar_Player_Base.cpp">
-      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar_Player\Base</Filter>
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar\Player\Base</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\SlotBase_Tool.cpp">
       <Filter>02.GameObjects\00.GUI\02.Hud\Slots\Tool\Base</Filter>
@@ -563,6 +587,18 @@
     </ClCompile>
     <ClCompile Include="..\private\FakeWood.cpp">
       <Filter>02.GameObjects\03.Player\FakeWood</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Indicator.cpp">
+      <Filter>02.GameObjects\00.GUI\02.Hud\Enemy_Indicator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HpBar_Boss.cpp">
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HpBar_Boss_Base.cpp">
+      <Filter>02.GameObjects\00.GUI\02.Hud\HPBar\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Win.cpp">
+      <Filter>02.GameObjects\00.GUI\Win</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

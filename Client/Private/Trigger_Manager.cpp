@@ -20,6 +20,11 @@ const _bool& CTrigger_Manager::Hasto_PlayScene() const
 	return m_PlayScene;
 }
 
+const _bool& CTrigger_Manager::Is_TriggerPulled(LEVEL_ID eLevel, _uint iTriggerIndex) const
+{
+	return m_Triggers[eLevel][iTriggerIndex].second;
+}
+
 void CTrigger_Manager::End_Scene()
 {
 	m_PlayScene = false;
@@ -53,7 +58,7 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 	}
 }
 
-#ifdef _DEBUG
+#ifdef _DEBUGG
 HRESULT CTrigger_Manager::Render()
 {
 	for (auto& Trigger : m_Triggers[m_pGameInstance->Get_CurrentLevelIndex()])
@@ -335,6 +340,10 @@ void CTrigger_Manager::Trigger_Village(_float fTimeDelta)
 
 		if (not Trigger.second and Trigger.first->Intersect(m_pPlayerCollider))
 		{
+			if (i == 3)
+			{
+				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, L"Layer_Boss", L"Prototype_GameObject_Pain");
+			}
 			Trigger.second = true;
 		}
 

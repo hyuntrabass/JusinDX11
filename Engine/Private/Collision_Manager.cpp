@@ -87,7 +87,7 @@ _bool CCollision_Manager::CheckCollision_Monster(CCollider* pCollider)
 
 _bool CCollision_Manager::Attack_Player(CCollider* pCollider, _uint iDamage, _uint iDamageType)
 {
-	if (pCollider->Intersect(m_pPlayerHitCollider))
+	if (not pCollider or pCollider->Intersect(m_pPlayerHitCollider))
 	{
 		m_pPlayer->Set_Damage(iDamage, iDamageType);
 		return true;

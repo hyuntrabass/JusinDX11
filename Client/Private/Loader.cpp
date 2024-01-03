@@ -230,6 +230,16 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Indicator_Boss"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Mini_Map/T_UI_Boss_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Indicator"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Mini_Map/T_UI_Boss_red_BC.png")))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 #pragma region Effect
@@ -537,6 +547,11 @@ HRESULT CLoader::Load_Logo()
 	{
 		return E_FAIL;
 	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Indicator"), CIndicator::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
 #pragma endregion
 
 	m_strLoadingText = L"Logo : Loading Complete!";
@@ -720,6 +735,26 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Face_Kurama"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Boss_Icon/T_UI_Boss_Kurama_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Face_Pain"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Dialog_Character/T_UI_Dialog_Character_Pain_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Face_Kakashi"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Dialog_Character/T_UI_Dialog_Character_D31_BC.png")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_HpBar_Boss_Frame"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/Boss/T_UI_Boss_Gauge1.png")))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_HpBar_Base"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/T_UI_SP_Gauge_Base_BC.png")))))
 	{
 		return E_FAIL;
@@ -751,6 +786,11 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Aim"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Hud/T_UI_TargetCursol_Lock_Effect.dds")))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Win"), CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Win/Win.png")))))
 	{
 		return E_FAIL;
 	}
@@ -884,6 +924,16 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_UI_BossHpBar"), CHpBar_Boss::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_UI_BossHpBar_Base"), CHpBar_Boss_Base::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_UI_HpBar"), CHpBar_Player::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
@@ -995,6 +1045,11 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_UI_Hit"), CHit::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Win"), CWin::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

@@ -1,5 +1,6 @@
 #include "Sandman.h"
 #include "UI_Manager.h"
+#include "Indicator.h"
 
 CSandman::CSandman(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -52,6 +53,12 @@ HRESULT CSandman::Init(void* pArg)
 	FxInfo.iType = 70;
 	m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Smoke"), &FxInfo);
 
+	_bool isBoss = false;
+	m_pIndicator = dynamic_cast<CIndicator*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Indicator"), &isBoss));
+	if (not m_pIndicator)
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -63,7 +70,7 @@ void CSandman::Tick(_float fTimeDelta)
 	//	return;
 	//}
 
-#ifdef _DEBUG
+#ifdef _DEBUGG
 	if (m_pGameInstance->Key_Down(DIK_U))
 	{
 		_float3 vNewPos{};
@@ -95,19 +102,40 @@ void CSandman::Tick(_float fTimeDelta)
 	_matrix ColliderOffset = XMMatrixTranslation(0.f, 0.8f, 0.f);
 	m_pCollider_Att->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
 	m_pCollider_Hit->Update(m_pTransformCom->Get_World_Matrix());
+
+	if (m_pIndicator)
+	{
+		_float fCamDist = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()) - m_pTransformCom->Get_State(State::Pos)));
+
+		_float3 v2DPos{};
+		XMStoreFloat3(&v2DPos, XMVector3Project(m_pTransformCom->Get_State(State::Pos), 0, 0, g_iWinSizeX, g_iWinSizeY, 0, 1, m_pGameInstance->Get_Transform(TransformType::Proj), m_pGameInstance->Get_Transform(TransformType::View), XMMatrixTranslation(0.f, Lerp(1.3f, 2.5f, fCamDist / 50.f), 0.f)));
+
+		if (v2DPos.z > 1.f)
+		{
+			v2DPos = _float3();
+		}
+
+
+		m_pIndicator->Tick(_float2(v2DPos.x, v2DPos.y));
+	}
 }
 
 void CSandman::Late_Tick(_float fTimeDelta)
 {
 	m_pCollider_Hit->Intersect(reinterpret_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Collider_Attack"))));
 	m_pModelCom->Play_Animation(fTimeDelta);
+	
+	if (m_pIndicator)
+	{
+		m_pIndicator->Late_Tick(fTimeDelta);
+	}
 
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
 	{
 
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
-	#ifdef _DEBUG
+	#ifdef _DEBUGG
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Att);
 	#endif // _DEBUG
@@ -387,6 +415,7 @@ void CSandman::Init_State()
 			Anim.iAnimIndex = Anim_Dying_Type01;
 			Anim.bSkipInterpolation = true;
 
+			Safe_Release(m_pIndicator);
 			m_pGameInstance->Delete_CollisionObject(this);
 			m_fTimer = {};
 			break;
@@ -495,7 +524,7 @@ void CSandman::Tick_State(_float fTimeDelta)
 		break;
 	}
 	case Client::CSandman::State_Beaten:
-		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Left))
+		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Left) or m_pModelCom->IsAnimationFinished(Anim_Beaten_Right))
 		{
 			m_eCurrState = State_Idle;
 
@@ -549,6 +578,12 @@ void CSandman::Tick_State(_float fTimeDelta)
 					_float3 vPos{};
 					XMStoreFloat3(&vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("L_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
 					m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Hit"), &vPos);
+					EffectInfo EffectInfo{};
+					EffectInfo.vColor = _float4(1.f, 0.f, 0.f, 1.f);
+					EffectInfo.fScale = 1.f;
+					EffectInfo.vPos = _float4(vPos.x, vPos.y, vPos.z, 1.f);
+					EffectInfo.iType = 1;
+					m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
 				}
 				m_bAttacked = true;
 			}
@@ -564,6 +599,13 @@ void CSandman::Tick_State(_float fTimeDelta)
 				_float3 vPos{};
 				XMStoreFloat3(&vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("R_Hand_Weapon_cnt_tr")).r[3], m_pTransformCom->Get_World_Matrix()));
 				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Hit"), &vPos);
+				EffectInfo EffectInfo{};
+				EffectInfo.vColor = _float4(1.f, 0.f, 0.f, 1.f);
+				EffectInfo.fScale = 1.f;
+				EffectInfo.vPos = _float4(vPos.x, vPos.y, vPos.z, 1.f);
+				EffectInfo.iType = 1;
+				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
+
 			}
 			m_bAttacked = true;
 		}
@@ -620,6 +662,7 @@ void CSandman::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pIndicator);
 	Safe_Release(m_pDissolveTextureCom);
 	Safe_Release(m_pPlayerTransform);
 	Safe_Release(m_pModelCom);

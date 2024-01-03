@@ -248,6 +248,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 	return S_OK;
 }
 
+#ifdef _DEBUG
 HRESULT CRenderer::Add_DebugComponent(CComponent* pDebugComponent)
 {
 	m_DebugComponents.push_back(pDebugComponent);
@@ -255,6 +256,8 @@ HRESULT CRenderer::Add_DebugComponent(CComponent* pDebugComponent)
 
 	return S_OK;
 }
+#endif // _DEBUG
+
 
 HRESULT CRenderer::Ready_ShadowDSV()
 {
@@ -894,10 +897,13 @@ void CRenderer::Free()
 		ObjectList.clear();
 	}
 
+#ifdef _DEBUG
 	for (auto& pComponent : m_DebugComponents)
 	{
 		Safe_Release(pComponent);
 	}
 	m_DebugComponents.clear();
+#endif // _DEBUG
+
 
 }

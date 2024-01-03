@@ -1,5 +1,6 @@
 #include "SandNinja.h"
 #include "UI_Manager.h"
+#include "Indicator.h"
 
 CSandNinja::CSandNinja(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -52,6 +53,12 @@ HRESULT CSandNinja::Init(void* pArg)
 	FxInfo.iType = 70;
 	m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Smoke"), &FxInfo);
 
+	_bool isBoss = false;
+	m_pIndicator = dynamic_cast<CIndicator*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Indicator"), &isBoss));
+	if (not m_pIndicator)
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -63,7 +70,7 @@ void CSandNinja::Tick(_float fTimeDelta)
 	//	return;
 	//}
 
-#ifdef _DEBUG
+#ifdef _DEBUGG
 	if (m_pGameInstance->Key_Down(DIK_U))
 	{
 		_float3 vNewPos{};
@@ -93,6 +100,22 @@ void CSandNinja::Tick(_float fTimeDelta)
 	m_pTransformCom->Gravity(fTimeDelta);
 
 	m_pCollider_Hit->Update(m_pTransformCom->Get_World_Matrix());
+
+	if (m_pIndicator)
+	{
+		_float fCamDist = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()) - m_pTransformCom->Get_State(State::Pos)));
+
+		_float3 v2DPos{};
+		XMStoreFloat3(&v2DPos, XMVector3Project(m_pTransformCom->Get_State(State::Pos), 0, 0, g_iWinSizeX, g_iWinSizeY, 0, 1, m_pGameInstance->Get_Transform(TransformType::Proj), m_pGameInstance->Get_Transform(TransformType::View), XMMatrixTranslation(0.f, Lerp(1.5f, 2.3f, fCamDist / 50.f), 0.f)));
+
+		if (v2DPos.z > 1.f)
+		{
+			v2DPos = _float3();
+		}
+
+
+		m_pIndicator->Tick(_float2(v2DPos.x, v2DPos.y));
+	}
 }
 
 void CSandNinja::Late_Tick(_float fTimeDelta)
@@ -100,12 +123,17 @@ void CSandNinja::Late_Tick(_float fTimeDelta)
 	m_pCollider_Hit->Intersect(reinterpret_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Collider_Attack"))));
 	m_pModelCom->Play_Animation(fTimeDelta);
 
+	if (m_pIndicator)
+	{
+		m_pIndicator->Late_Tick(fTimeDelta);
+	}
+
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 2.f))
 	{
 
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
-	#ifdef _DEBUG
+	#ifdef _DEBUGG
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
 	#endif // _DEBUG
 	}
@@ -376,6 +404,7 @@ void CSandNinja::Init_State()
 			Anim.iAnimIndex = Anim_Dying_Type01;
 			Anim.bSkipInterpolation = true;
 
+			Safe_Release(m_pIndicator);
 			m_pGameInstance->Delete_CollisionObject(this);
 			_float4 vPos{};
 			XMStoreFloat4(&vPos, m_pTransformCom->Get_CenterPos());
@@ -654,6 +683,7 @@ void CSandNinja::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pIndicator);
 	Safe_Release(m_pDissolveTextureCom);
 	Safe_Release(m_pPlayerTransform);
 	Safe_Release(m_pModelCom);

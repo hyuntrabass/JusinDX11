@@ -181,7 +181,7 @@ void CMeteor::Late_Tick(_float fTimeDelta)
 	{
 		pMeteor->Late_Tick(fTimeDelta);
 	}
-#ifdef _DEBUG
+#ifdef _DEBUGG
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif // _DEBUG
 }

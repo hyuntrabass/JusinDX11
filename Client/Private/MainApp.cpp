@@ -20,7 +20,7 @@ HRESULT CMainApp::Init()
 	}
 
 	srand(static_cast<_uint>(time(nullptr)));
-#ifdef _DEBUG
+#ifdef _DEBUGG
 #ifdef UNICODE
 #pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 #else
@@ -110,10 +110,13 @@ HRESULT CMainApp::Render()
 	{
 		return E_FAIL;
 	}
+#ifdef _DEBUGG
 	if (FAILED(CTrigger_Manager::Get_Instance()->Render()))
 	{
 		return E_FAIL;
 	}
+#endif // _DEBUG
+
 
 	if (FAILED(m_pGameInstance->Render()))
 	{
@@ -182,8 +185,18 @@ HRESULT CMainApp::Ready_Prototype_Component_For_Static()
 	{
 		return E_FAIL;
 	}
-
+	//MakeSpriteFont "HY헤드라인M" /FontSize:30 /FastPack /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 138ex.spritefont
 	if (FAILED(m_pGameInstance->Add_Font(L"Font_Malang", L"../../Client/Bin/Resources/Font/Naruto.spritefont")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Font(L"Font_Normal", L"../../Client/Bin/Resources/Font/NarutoNormal.spritefont")))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Font(L"Font_Dialogue", L"../../Client/Bin/Resources/Font/NarutoDialogue.spritefont")))
 	{
 		return E_FAIL;
 	}

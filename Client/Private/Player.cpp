@@ -157,7 +157,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
-#ifdef _DEBUG
+#ifdef _DEBUGG
 	if (m_pGameInstance->Get_CameraModeIndex() == CM_MAIN)
 	{
 		GET_CURSOR_POINT(pt);
@@ -215,7 +215,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint iDamageType)
 	m_iHP -= iDamage;
 	m_iLastDamage += iDamage;
 
-	if (iDamage > m_iSuperArmor)
+	if (iDamage > m_iSuperArmor or iDamageType == DAM_PUSH)
 	{
 		switch (iDamageType)
 		{
@@ -251,11 +251,7 @@ void CPlayer::Set_Damage(_int iDamage, _uint iDamageType)
 
 void CPlayer::Move(_float fTimeDelta)
 {
-	if (m_eState == Player_State::Beaten or
-		m_eState == Player_State::Beaten_Push or
-		m_eState == Player_State::Beaten_ComboBegin or
-		m_eState == Player_State::Beaten_ComboMiddle or
-		m_eState == Player_State::Beaten_ComboEnd)
+	if (not m_isMoveable)
 	{
 		return;
 	}
@@ -480,12 +476,10 @@ void CPlayer::Move(_float fTimeDelta)
 		_float4 vCenterPos{};
 		XMStoreFloat4(&vCenterPos, m_pTransformCom->Get_CenterPos());
 		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_FakeWood"), TEXT("Prototype_GameObject_FakeWood"), &vCenterPos);
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI"), TEXT("Prototype_GameObject_Win"));
 	}
 
-	if (not (m_eState == Player_State::Wire and m_pKunai) and
-		m_eState != Player_State::RasenShuriken and
-		m_eState != Player_State::Fireball and
-		m_eState != Player_State::Aerial_Chidori)
+	if (m_bApplyGravity)
 	{
 		m_pTransformCom->Gravity(fTimeDelta);
 	}
@@ -589,27 +583,36 @@ void CPlayer::Init_State()
 		{
 		case Client::Player_State::Idle:
 			m_iSuperArmor = {};
+			m_bApplyGravity = true;
 			break;
 		case Client::Player_State::Walk:
 			m_Animation.iAnimIndex = Walk_Loop;
 			m_Animation.isLoop = true;
 
 			m_hasJumped = false;
+			m_iSuperArmor = {};
+			m_bApplyGravity = true;
 			break;
 		case Client::Player_State::Walk_End:
 			m_Animation.iAnimIndex = Walk_End;
 			m_Animation.isLoop = false;
+			m_iSuperArmor = {};
+			m_bApplyGravity = true;
 			break;
 		case Client::Player_State::Run:
 			m_Animation.iAnimIndex = Run_Loop;
 			m_Animation.isLoop = true;
 
 			m_hasJumped = false;
+			m_iSuperArmor = {};
+			m_bApplyGravity = true;
 			break;
 		case Client::Player_State::Run_End:
 			m_Animation.iAnimIndex = Run_End;
 			m_Animation.isLoop = false;
 			m_Animation.bSkipInterpolation = true;
+			m_iSuperArmor = {};
+			m_bApplyGravity = true;
 			break;
 		case Client::Player_State::Jump:
 			m_Animation.iAnimIndex = Jump_Vertical;
@@ -617,6 +620,8 @@ void CPlayer::Init_State()
 			m_Animation.fAnimSpeedRatio = 1.8f;
 
 			m_hasJumped = true;
+			m_iSuperArmor = {};
+			m_bApplyGravity = true;
 			break;
 		case Client::Player_State::Jump_Front:
 			m_Animation.iAnimIndex = Jump_Front;
@@ -624,20 +629,28 @@ void CPlayer::Init_State()
 			m_Animation.fAnimSpeedRatio = 1.8f;
 
 			m_hasJumped = true;
+			m_iSuperArmor = {};
+			m_bApplyGravity = true;
 			break;
 		case Client::Player_State::DoubleJump:
 			m_Animation.iAnimIndex = DoubleJump;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.8f;
 			m_Animation.bSkipInterpolation = true;
+			m_iSuperArmor = {};
+			m_bApplyGravity = true;
 			break;
 		case Client::Player_State::Fall:
 			m_Animation.iAnimIndex = Fall_Vertical_Loop;
 			m_Animation.isLoop = true;
+			m_iSuperArmor = {};
+			m_bApplyGravity = true;
 			break;
 		case Client::Player_State::Fall_Front:
 			m_Animation.iAnimIndex = Fall_Front_Loop;
 			m_Animation.isLoop = true;
+			m_iSuperArmor = {};
+			m_bApplyGravity = true;
 			break;
 		case Client::Player_State::Land:
 			m_Animation.iAnimIndex = Land;
@@ -645,6 +658,8 @@ void CPlayer::Init_State()
 			m_Animation.bSkipInterpolation = true;
 
 			m_hasJumped = false;
+			m_iSuperArmor = {};
+			m_bApplyGravity = true;
 			break;
 		case Client::Player_State::Dash:
 			break;
@@ -667,11 +682,15 @@ void CPlayer::Init_State()
 			m_Animation.bRestartAnimation = true;
 
 			m_fTimer = {};
+			m_isMoveable = false;
 			break;
 		case Client::Player_State::Beaten_Push:
 			m_Animation.iAnimIndex = Beaten_Aerial_UniversalPull_Start;
 			m_Animation.bSkipInterpolation = true;
 			m_Animation.bRestartAnimation = true;
+
+			m_fTimer = {};
+			m_isMoveable = false;
 			break;
 		case Client::Player_State::Beaten_ComboBegin:
 			m_Animation.iAnimIndex = Beaten_Aerial_UniversalPull_Start;
@@ -708,6 +727,8 @@ void CPlayer::Init_State()
 			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Meteor"), &m_vRightHandPos);
 
 			CUI_Manager::Get_Instance()->Create_Aim();
+			m_bApplyGravity = false;
+			m_iSuperArmor = 20;
 			break;
 		case Client::Player_State::RasenShuriken:
 			if (m_pTransformCom->Is_OnGround())
@@ -726,6 +747,8 @@ void CPlayer::Init_State()
 			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Rasenshuriken"), &m_vRightHandPos);
 
 			CUI_Manager::Get_Instance()->Create_Aim();
+			m_bApplyGravity = false;
+			m_iSuperArmor = 10;
 			break;
 		case Client::Player_State::Chidori:
 			m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Lv2toLv3;
@@ -735,6 +758,7 @@ void CPlayer::Init_State()
 			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Chidori"), &m_LeftHandMatrix);
 			//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"));
 			CUI_Manager::Get_Instance()->Create_Aim();
+			m_iSuperArmor = 10;
 			break;
 		case Client::Player_State::Aerial_Chidori:
 			m_Animation.iAnimIndex = Ninjutsu_Aerial_Chidori_Charge_Lv2toLv3;
@@ -744,6 +768,8 @@ void CPlayer::Init_State()
 			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Chidori"), &m_LeftHandMatrix);
 			//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"));
 			CUI_Manager::Get_Instance()->Create_Aim();
+			m_bApplyGravity = false;
+			m_iSuperArmor = 10;
 			break;
 		case Client::Player_State::Fireball:
 			if (m_pTransformCom->Is_OnGround())
@@ -758,6 +784,8 @@ void CPlayer::Init_State()
 			m_fTimer = {};
 			m_bAttacked = false;
 			CUI_Manager::Get_Instance()->Create_Aim();
+			m_bApplyGravity = false;
+			m_iSuperArmor = 10;
 			break;
 		}
 
@@ -901,6 +929,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 					Safe_Release(m_pKunai);
 				}
 				m_pKunai = dynamic_cast<CKunai*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Kunai"), &Info));
+				m_bApplyGravity = false;
 
 				m_Animation.fDurationRatio = 1.f;
 				m_Animation.fAnimSpeedRatio = 1.5f;
@@ -935,6 +964,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 						Safe_Release(m_pKunai);
 						m_eState = Player_State::Fall_Front;
 					}
+					m_iSuperArmor = 100;
 				}
 				else if (m_pKunai->isDead())
 				{
@@ -1026,6 +1056,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(m_Animation.iAnimIndex))
 		{
 			m_eState = Player_State::Idle;
+			m_isMoveable = true;
 		}
 		break;
 	case Client::Player_State::Beaten_Push:
@@ -1034,6 +1065,15 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			m_Animation = {};
 			m_Animation.iAnimIndex = Beaten_Aerial_UniversalPull_Loop;
 			m_Animation.isLoop = true;
+		}
+
+		m_fTimer += fTimeDelta;
+		m_pTransformCom->Gravity(fTimeDelta);
+
+		if (m_fTimer > 2.f)
+		{
+			m_eState = Player_State::Fall;
+			m_isMoveable = true;
 		}
 		break;
 	case Client::Player_State::Beaten_ComboBegin:
@@ -1342,7 +1382,7 @@ HRESULT CPlayer::Ready_Parts()
 
 HRESULT CPlayer::Add_Components()
 {
-#ifdef _DEBUG
+#ifdef _DEBUGG
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
 		return E_FAIL;
@@ -1408,7 +1448,7 @@ void CPlayer::Free()
 	{
 		Safe_Release(m_pBodyParts[i]);
 	}
-#ifdef _DEBUG
+#ifdef _DEBUGG
 	Safe_Release(m_pRendererCom);
 #endif // _DEBUG
 

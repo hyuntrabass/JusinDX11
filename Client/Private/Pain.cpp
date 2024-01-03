@@ -1,5 +1,6 @@
 #include "Pain.h"
 #include "UI_Manager.h"
+#include "Indicator.h"
 
 CPain::CPain(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -35,6 +36,17 @@ HRESULT CPain::Init(void* pArg)
 	m_iMaxHP = 300;
 	m_iHP = m_iMaxHP;
 
+	_bool isBoss = true;
+	m_pIndicator = dynamic_cast<CIndicator*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Indicator"), &isBoss));
+	if (not m_pIndicator)
+	{
+		return E_FAIL;
+	}
+
+	_uint iHPBarType{ 1 };
+	m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI_HpBar"), TEXT("Prototype_GameObject_UI_BossHpBar"), &iHPBarType);
+	m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_BossHpBar_Base"), &iHPBarType);
+
 	return S_OK;
 }
 
@@ -58,7 +70,26 @@ void CPain::Tick(_float fTimeDelta)
 
 	_matrix ColliderOffset = XMMatrixTranslation(0.f, 0.8f, 0.f);
 	m_pCollider_Hit->Update(/*ColliderOffset * */m_pTransformCom->Get_World_Matrix());
-	m_fTimer += fTimeDelta;
+
+	if (m_pIndicator)
+	{
+		_float fCamDist = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()) - m_pTransformCom->Get_State(State::Pos)));
+
+		_float3 v2DPos{};
+		XMStoreFloat3(&v2DPos, XMVector3Project(m_pTransformCom->Get_State(State::Pos), 0, 0, g_iWinSizeX, g_iWinSizeY, 0, 1, m_pGameInstance->Get_Transform(TransformType::Proj), m_pGameInstance->Get_Transform(TransformType::View), XMMatrixTranslation(0.f, Lerp(1.8f, 4.0f, fCamDist / 50.f), 0.f)));
+
+		if (v2DPos.z > 1.f)
+		{
+			v2DPos = _float3();
+		}
+
+		m_pIndicator->Tick(_float2(v2DPos.x, v2DPos.y));
+	}
+
+	if (m_eState != State_Die)
+	{
+		CUI_Manager::Get_Instance()->Set_HP(TEXT("Pain"), m_iMaxHP, m_iHP);
+	}
 }
 
 void CPain::Late_Tick(_float fTimeDelta)
@@ -67,11 +98,16 @@ void CPain::Late_Tick(_float fTimeDelta)
 
 	m_pModelCom->Play_Animation(fTimeDelta);
 
+	if (m_pIndicator)
+	{
+		m_pIndicator->Late_Tick(fTimeDelta);
+	}
+
 	if (m_pGameInstance->IsIn_Fov_World(m_pTransformCom->Get_State(State::Pos), 20.f) and m_eState != State_None)
 	{
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
-	#ifdef _DEBUG
+	#ifdef _DEBUGG
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
 	#endif // _DEBUG
 	}
@@ -142,6 +178,10 @@ void CPain::Set_Damage(_int iDamage, _uint iDamageType)
 		return;
 	}
 	m_iHP -= iDamage;
+	if (m_iHP < 0)
+	{
+		m_iHP = 0;
+	}
 
 	if (iDamage > m_iSuperArmor)
 	{
@@ -300,7 +340,9 @@ void CPain::Init_State()
 			m_AnimationDesc.iAnimIndex = Anim_Dying_Type01;
 			m_AnimationDesc.bSkipInterpolation = true;
 
+			Safe_Release(m_pIndicator);
 			m_pGameInstance->Delete_CollisionObject(this);
+			m_fTimer = {};
 			break;
 		default:
 			break;
@@ -344,6 +386,7 @@ void CPain::Tick_State(_float fTimeDelta)
 			{
 				m_pPlayerTransform->Jump(20.f);
 				m_pGameInstance->Set_TimeRatio(1.f);
+				m_pGameInstance->Attack_Player(nullptr, 0, DAM_PUSH);
 				m_hasPushed = true;
 			}
 			m_pPlayerTransform->Set_Speed(30.f);
@@ -354,13 +397,15 @@ void CPain::Tick_State(_float fTimeDelta)
 			_float fXZDistToPlayer = XMVectorGetX(XMVector3Length(vPlayer2DPos - vMy2DPos));
 
 			if (m_pModelCom->IsAnimationFinished(Anim_Ninjutsu_AlmightyPush_Start))
-			//if (fXZDistToPlayer > 30.f)
+				//if (fXZDistToPlayer > 30.f)
 			{
 				m_hasPushed = false;
-				m_fTimer = {};
 				m_eState = State_Idle;
 			}
 		}
+
+		m_fTimer += fTimeDelta;
+		
 		break;
 	case Client::CPain::State_Pull:
 		break;
@@ -383,11 +428,13 @@ void CPain::Tick_State(_float fTimeDelta)
 			m_AnimationDesc = {};
 			m_AnimationDesc.iAnimIndex = Anim_Beaten_ElectricShock_End;
 		}
+		
+		m_fTimer += fTimeDelta;
 
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_ElectricShock_End))
 		{
 			m_eState = State_Idle;
-		
+
 			if (m_iHP <= 0)
 			{
 				m_eState = State_Die;
@@ -398,7 +445,7 @@ void CPain::Tick_State(_float fTimeDelta)
 		if (m_pModelCom->IsAnimationFinished(Anim_Beaten_Burn_Type01))
 		{
 			m_eState = State_Idle;
-		
+
 			if (m_iHP <= 0)
 			{
 				m_eState = State_Die;
@@ -408,6 +455,17 @@ void CPain::Tick_State(_float fTimeDelta)
 	case Client::CPain::State_Die:
 		if (m_pModelCom->IsAnimationFinished(Anim_Dying_Type01))
 		{
+			CUI_Manager::Get_Instance()->Delete_HPBar(TEXT("Pain"));
+		}
+
+		if (m_fTimer > 7.f and m_fTimer < 10.f)
+		{
+			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI"), TEXT("Prototype_GameObject_Win"));
+			m_fTimer = 20.f;
+		}
+		else
+		{
+			m_fTimer += fTimeDelta;
 		}
 		break;
 	default:
@@ -445,6 +503,7 @@ void CPain::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pIndicator);
 	Safe_Release(m_pCollider_Hit);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

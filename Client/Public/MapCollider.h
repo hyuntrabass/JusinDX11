@@ -16,7 +16,7 @@ public:
 	virtual HRESULT Init(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void Late_Tick(_float fTimeDelta) override;
-#ifdef _DEBUG
+#ifdef _DEBUGG
 	virtual HRESULT Render() override;
 #endif // _DEBUG
 
@@ -26,7 +26,7 @@ private:
 	
 private:
 	CModel* m_pModelCom{ nullptr };
-#ifdef _DEBUG
+#ifdef _DEBUGG
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 

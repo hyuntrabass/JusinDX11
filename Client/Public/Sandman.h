@@ -183,6 +183,7 @@ private:
 	State_Char m_eCurrState{};
 	State_Char m_ePrevState{};
 	CTransform* m_pPlayerTransform{ nullptr };
+	class CIndicator* m_pIndicator{ nullptr };
 
 	_float4 m_vOriginPos{};
 	_float4 m_vTargetDir{};

@@ -42,3 +42,7 @@
 #include "SandKunai.h"
 #include "Hell.h"
 #include "FakeWood.h"
+#include "Indicator.h"
+#include "HpBar_Boss.h"
+#include "HpBar_Boss_Base.h"
+#include "Win.h"

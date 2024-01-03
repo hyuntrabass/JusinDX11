@@ -140,7 +140,7 @@ HRESULT CKunai::Render()
 		return E_FAIL;
 	}
 
-#ifdef _DEBUG
+#ifdef _DEBUGG
 	//m_pColliderCom->Render();
 #endif // _DEBUG
 

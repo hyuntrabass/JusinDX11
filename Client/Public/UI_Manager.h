@@ -20,6 +20,7 @@ public:
 	void Set_HP(const wstring& strHPTag, _uint iMaxHP, _uint iCurrHP);
 	void Create_Aim();
 	void Delete_Aim();
+	void Delete_HPBar(const wstring& strHPTag);
 	void Create_Hit();
 	_bool Use_Skill(_uint iSkillNumber);
 	void Skill_Ready(_uint iSkillNumber);
