@@ -210,6 +210,7 @@
     <ClInclude Include="..\public\MapCollider.h" />
     <ClInclude Include="..\Public\Meteor.h" />
     <ClInclude Include="..\public\MiniBomb.h" />
+    <ClInclude Include="..\Public\MovieMode.h" />
     <ClInclude Include="..\public\Pain.h" />
     <ClInclude Include="..\public\Parts_Window.h" />
     <ClInclude Include="..\public\Player.h" />
@@ -274,6 +275,7 @@
     <ClCompile Include="..\private\MapCollider.cpp" />
     <ClCompile Include="..\Private\Meteor.cpp" />
     <ClCompile Include="..\private\MiniBomb.cpp" />
+    <ClCompile Include="..\Private\MovieMode.cpp" />
     <ClCompile Include="..\private\Pain.cpp" />
     <ClCompile Include="..\private\Parts_Window.cpp" />
     <ClCompile Include="..\private\Player.cpp" />

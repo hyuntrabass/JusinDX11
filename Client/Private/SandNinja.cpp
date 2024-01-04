@@ -1,6 +1,7 @@
 #include "SandNinja.h"
 #include "UI_Manager.h"
 #include "Indicator.h"
+#include "Trigger_Manager.h"
 
 CSandNinja::CSandNinja(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -44,7 +45,7 @@ HRESULT CSandNinja::Init(void* pArg)
 	m_fSearchRange = 50.f;
 
 	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit);
-	m_iHP = 50;
+	m_iHP = 20;
 
 	EffectInfo FxInfo{};
 	FxInfo.vColor = _float4(1.f, 1.f, 1.f, 1.f);
@@ -95,7 +96,10 @@ void CSandNinja::Tick(_float fTimeDelta)
 	//}
 
 
-	Artificial_Intelligence(fTimeDelta);
+	if (not CTrigger_Manager::Get_Instance()->Hasto_PlayScene())
+	{
+		Artificial_Intelligence(fTimeDelta);
+	}
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
@@ -110,7 +114,7 @@ void CSandNinja::Tick(_float fTimeDelta)
 
 		if (v2DPos.z > 1.f)
 		{
-			v2DPos = _float3();
+			v2DPos = _float3(-1.f, -1.f, -1.f);
 		}
 
 
@@ -405,6 +409,7 @@ void CSandNinja::Init_State()
 			Anim.bSkipInterpolation = true;
 
 			Safe_Release(m_pIndicator);
+			m_pGameInstance->Attack_Player(nullptr, -5);
 			m_pGameInstance->Delete_CollisionObject(this);
 			_float4 vPos{};
 			XMStoreFloat4(&vPos, m_pTransformCom->Get_CenterPos());

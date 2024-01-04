@@ -127,7 +127,7 @@ HRESULT CPhysX_Manager::Init()
 
 	//PxRigidStatic* pGround = PxCreatePlane(*m_pPhysics, PxPlane(0.f, 1.f, 0.f, 0.f), *m_pMaterial);
 	//m_pScene->addActor(*pGround);
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 #ifndef _MapEditor
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 1.0);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 1.0);
@@ -149,7 +149,7 @@ void CPhysX_Manager::Tick(_float fTimeDelta)
 	m_pScene->fetchResults(true);
 }
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 #ifndef _MapEditor
 HRESULT CPhysX_Manager::Render()
 {
@@ -260,7 +260,7 @@ void CPhysX_Manager::Init_PhysX_MoveableObject(CTransform* pTransform)
 
 	m_DynamicActors.emplace(pTransform, pActor);
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 	//if (m_pVIBufferCom)
 	//{
 	//	const PxRenderBuffer& rb = m_pScene->getRenderBuffer();
@@ -329,7 +329,7 @@ PxRigidStatic* CPhysX_Manager::Cook_StaticMesh(_uint iNumVertices, void* pVertic
 	PxRigidStatic* pActor = PxCreateStatic(*m_pPhysics, PxTransform(PxIdentity), *pShape);
 	m_pScene->addActor(*pActor);
 	pShape->release();
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 	//if (m_pVIBufferCom)
 	//{
 	//	const PxRenderBuffer& rb = m_pScene->getRenderBuffer();
@@ -398,7 +398,7 @@ void CPhysX_Manager::Free()
 	PX_RELEASE(m_pPhysics);
 	PX_RELEASE(m_pFoundation);
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 #ifndef _MapEditor
 	Safe_Release(m_pDebugShader);
 	Safe_Release(m_pVIBufferCom);

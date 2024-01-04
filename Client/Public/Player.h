@@ -245,8 +245,8 @@ private:
 
 	class CFootEffect* m_pFootEffect[Foot_End]{};
 
-	const _float m_fRunSpeed{15.f};
-	const _float m_fWalkSpeed{5.f};
+	_float m_fRunSpeed{ 15.f };
+	_float m_fWalkSpeed{ 5.f };
 
 	_float m_fInterpolationRatio{};
 	_bool m_isInterpolating{};
@@ -268,7 +268,7 @@ private:
 	_bool m_bApplyGravity{};
 
 	_float3 m_vWireTargetPos{};
-	class CKunai* m_pKunai { nullptr };
+	class CKunai* m_pKunai{ nullptr };
 	_float3 m_vRightHandPos{};
 	_float44 m_LeftHandMatrix{};
 	CGameObject* m_pSkillEffect{ nullptr };
@@ -281,6 +281,9 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 #endif // _DEBUG
 
+	_bool m_bStepSound_L{};
+	_bool m_bStepSound_R{};
+	_uint m_iChidoriSCHAdd{};
 
 private:
 	void Move(_float fTimeDelta);

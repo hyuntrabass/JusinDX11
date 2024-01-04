@@ -240,6 +240,7 @@ private:
 
 	_bool m_hasInitiated{};
 	_bool m_hasPushed{};
+	_uint m_iLineNumber{};
 
 	State_Char m_eState{};
 	State_Char m_ePrevState{};

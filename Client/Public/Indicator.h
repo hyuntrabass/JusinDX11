@@ -29,6 +29,7 @@ private:
 	_float m_fAngle{};
 	_float m_fScale{};
 	_float m_fAppearance{};
+	_bool m_isOut{};
 
 private:
 	HRESULT Add_Components();

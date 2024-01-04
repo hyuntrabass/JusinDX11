@@ -30,7 +30,7 @@ HRESULT CLevel_Stage1::Init()
 	}
 
 	m_pGameInstance->StopAll();
-	m_pGameInstance->PlayBGM(TEXT("Pain"), 0.5f);
+	m_pGameInstance->PlayBGM(TEXT("y2mate.com - Naruto Shippuden OST 2  1  Rising Dragon"), 0.5f);
 	
 	m_pGameInstance->Set_HellHeight(-100.f);
 

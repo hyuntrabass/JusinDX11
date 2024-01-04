@@ -39,6 +39,9 @@ HRESULT CRasenShuriken::Init(void* pArg)
 
 	m_fCoreScale = 1.f;
 
+	m_pGameInstance->StopSound(SCH_EFFECT_SKILL);
+	m_pGameInstance->Play_Sound(TEXT("Rasen_Shuriken"), SCH_EFFECT_SKILL, 0.35f);
+
 	return S_OK;
 }
 
@@ -79,8 +82,10 @@ void CRasenShuriken::Tick(_float fTimeDelta)
 		}
 		break;
 	case Client::CRasenShuriken::State_Explode:
-		//if (m_iAttCount == 0)
+		if (m_iAttCount == 0)
 		{
+			m_pGameInstance->StopSound(SCH_EFFECT_SKILL1);
+			m_pGameInstance->Play_Sound(TEXT("Rasenshuriken_Boom1"), SCH_EFFECT_SKILL1);
 		}
 		m_pTransformCom->LookAt_Dir(XMVectorSet(0.f, 0.f, 1.f, 0.f));
 		m_fCoreScale = Lerp(0.5f, 10.5f, m_fScaleRatio);
@@ -93,6 +98,15 @@ void CRasenShuriken::Tick(_float fTimeDelta)
 			m_pGameInstance->Attack_Monster(m_pColliderCom, 13);
 			m_fTimer = {};
 			m_iAttCount++;
+			m_pGameInstance->StopSound(SCH_EFFECT_SKILL2);
+			if (rand() % 2)
+			{
+				m_pGameInstance->Play_Sound(TEXT("Sword_Default_0"), SCH_EFFECT_SKILL2);
+			}
+			else
+			{
+				m_pGameInstance->Play_Sound(TEXT("Sword_Default_1"), SCH_EFFECT_SKILL2);
+			}
 		}
 
 		if (m_iAttCount >= 8)
@@ -325,7 +339,7 @@ void CRasenShuriken::Shoot()
 	m_fTimer = {};
 
 	PxRaycastBuffer Buffer{};
-	if (m_pGameInstance->Raycast(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()), XMLoadFloat4(&m_pGameInstance->Get_CameraLook()), 50.f, Buffer))
+	if (m_pGameInstance->Raycast(XMLoadFloat4(&m_pGameInstance->Get_CameraPos()), XMVector3Normalize(XMLoadFloat4(&m_pGameInstance->Get_CameraLook())), 50.f, Buffer))
 	{
 		m_vTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
 		m_hasTarget = true;

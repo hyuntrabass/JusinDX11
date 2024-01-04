@@ -67,14 +67,15 @@ private: // for Input
 	_float4 m_vLook{ 0.f, 0.f, 1.f, 0.f };
 	const _char** m_pItemList_Props{ nullptr };
 	_int m_iNumProps{};
-	const _char* const m_pItemList_Monster[2]
+	const _char* const m_pItemList_Monster[4]
 	{
 		"Sandman",
 		"SandNinja",
-	};
-	const _char* const m_pItemList_NPC[3]
-	{
+		"Kurama",
 		"Kakashi",
+	};
+	const _char* const m_pItemList_NPC[2]
+	{
 		"Naruto",
 		"Sakura",
 	};

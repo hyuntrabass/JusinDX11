@@ -74,6 +74,9 @@ void CPlayer::Tick(_float fTimeDelta)
 		return;
 	}
 
+	m_fWalkSpeed = 1.5f;
+	m_fRunSpeed = 10.f;
+
 	LIGHT_DESC* LightDesc{};
 	LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Player"));
 	XMStoreFloat4(&LightDesc->vPosition, m_pTransformCom->Get_State(State::Pos));
@@ -213,9 +216,12 @@ HRESULT CPlayer::Render()
 void CPlayer::Set_Damage(_int iDamage, _uint iDamageType)
 {
 	m_iHP -= iDamage;
-	m_iLastDamage += iDamage;
+	if (iDamage > 0)
+	{
+		m_iLastDamage += iDamage;
+	}
 
-	if (iDamage > m_iSuperArmor or iDamageType == DAM_PUSH)
+	if (iDamage > static_cast<_int>(m_iSuperArmor) or iDamageType == DAM_PUSH)
 	{
 		switch (iDamageType)
 		{
@@ -476,7 +482,8 @@ void CPlayer::Move(_float fTimeDelta)
 		_float4 vCenterPos{};
 		XMStoreFloat4(&vCenterPos, m_pTransformCom->Get_CenterPos());
 		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_FakeWood"), TEXT("Prototype_GameObject_FakeWood"), &vCenterPos);
-		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI"), TEXT("Prototype_GameObject_Win"));
+		//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI"), TEXT("Prototype_GameObject_Win"));
+		//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI"), TEXT("Prototype_GameObject_MovieMode"));
 	}
 
 	if (m_bApplyGravity)
@@ -592,6 +599,8 @@ void CPlayer::Init_State()
 			m_hasJumped = false;
 			m_iSuperArmor = {};
 			m_bApplyGravity = true;
+			m_bStepSound_L = false;
+			m_bStepSound_R = false;
 			break;
 		case Client::Player_State::Walk_End:
 			m_Animation.iAnimIndex = Walk_End;
@@ -606,6 +615,8 @@ void CPlayer::Init_State()
 			m_hasJumped = false;
 			m_iSuperArmor = {};
 			m_bApplyGravity = true;
+			m_bStepSound_L = false;
+			m_bStepSound_R = false;
 			break;
 		case Client::Player_State::Run_End:
 			m_Animation.iAnimIndex = Run_End;
@@ -619,6 +630,9 @@ void CPlayer::Init_State()
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.8f;
 
+			m_pGameInstance->StopSound(SCH_JUMP);
+			m_pGameInstance->Play_Sound(TEXT("Jump"), SCH_JUMP, 0.4f);
+
 			m_hasJumped = true;
 			m_iSuperArmor = {};
 			m_bApplyGravity = true;
@@ -627,6 +641,9 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Jump_Front;
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.8f;
+
+			m_pGameInstance->StopSound(SCH_JUMP);
+			m_pGameInstance->Play_Sound(TEXT("Jump"), SCH_JUMP, 0.4f);
 
 			m_hasJumped = true;
 			m_iSuperArmor = {};
@@ -637,6 +654,10 @@ void CPlayer::Init_State()
 			m_Animation.isLoop = false;
 			m_Animation.fAnimSpeedRatio = 1.8f;
 			m_Animation.bSkipInterpolation = true;
+
+			m_pGameInstance->StopSound(SCH_JUMP);
+			m_pGameInstance->Play_Sound(TEXT("Jump_Double"), SCH_JUMP, 0.4f);
+
 			m_iSuperArmor = {};
 			m_bApplyGravity = true;
 			break;
@@ -656,6 +677,9 @@ void CPlayer::Init_State()
 			m_Animation.iAnimIndex = Land;
 			m_Animation.isLoop = false;
 			m_Animation.bSkipInterpolation = true;
+
+			m_pGameInstance->StopSound(SCH_JUMP);
+			m_pGameInstance->Play_Sound(TEXT("Land"), SCH_JUMP, 0.4f);
 
 			m_hasJumped = false;
 			m_iSuperArmor = {};
@@ -683,6 +707,7 @@ void CPlayer::Init_State()
 
 			m_fTimer = {};
 			m_isMoveable = false;
+			m_bApplyGravity = true;
 			break;
 		case Client::Player_State::Beaten_Push:
 			m_Animation.iAnimIndex = Beaten_Aerial_UniversalPull_Start;
@@ -691,6 +716,9 @@ void CPlayer::Init_State()
 
 			m_fTimer = {};
 			m_isMoveable = false;
+
+			m_pGameInstance->StopSound(SCH_EFFECT_SKILL);
+			m_pGameInstance->Play_Sound(TEXT("Push"), SCH_EFFECT_SKILL, 0.8f);
 			break;
 		case Client::Player_State::Beaten_ComboBegin:
 			m_Animation.iAnimIndex = Beaten_Aerial_UniversalPull_Start;
@@ -709,6 +737,7 @@ void CPlayer::Init_State()
 			m_Animation.bRestartAnimation = true;
 			break;
 		case Client::Player_State::Attack:
+			m_bAttacked = false;
 			break;
 		case Client::Player_State::Meteor:
 			if (m_pTransformCom->Is_OnGround())
@@ -729,6 +758,8 @@ void CPlayer::Init_State()
 			CUI_Manager::Get_Instance()->Create_Aim();
 			m_bApplyGravity = false;
 			m_iSuperArmor = 20;
+			m_pGameInstance->StopSound(SCH_EFFECT_PLAYER);
+			m_pGameInstance->Play_Sound(TEXT("Enemy_FlameBombs_Voice"), SCH_EFFECT_PLAYER);
 			break;
 		case Client::Player_State::RasenShuriken:
 			if (m_pTransformCom->Is_OnGround())
@@ -748,7 +779,10 @@ void CPlayer::Init_State()
 
 			CUI_Manager::Get_Instance()->Create_Aim();
 			m_bApplyGravity = false;
-			m_iSuperArmor = 10;
+			m_iSuperArmor = 20;
+
+			m_pGameInstance->StopSound(SCH_EFFECT_PLAYER);
+			m_pGameInstance->Play_Sound(TEXT("Rasenshuriken_Voice"), SCH_EFFECT_PLAYER, 0.7f);
 			break;
 		case Client::Player_State::Chidori:
 			m_Animation.iAnimIndex = Ninjutsu_Chidori_Charge_Lv2toLv3;
@@ -758,7 +792,12 @@ void CPlayer::Init_State()
 			m_pSkillEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Chidori"), &m_LeftHandMatrix);
 			//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"));
 			CUI_Manager::Get_Instance()->Create_Aim();
-			m_iSuperArmor = 10;
+			m_iSuperArmor = 20;
+
+			m_pGameInstance->StopSound(SCH_EFFECT_SKILL);
+			m_pGameInstance->Play_Sound(TEXT("Chidori"), SCH_EFFECT_SKILL);
+
+			m_iChidoriSCHAdd = {};
 			break;
 		case Client::Player_State::Aerial_Chidori:
 			m_Animation.iAnimIndex = Ninjutsu_Aerial_Chidori_Charge_Lv2toLv3;
@@ -769,7 +808,12 @@ void CPlayer::Init_State()
 			//m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect"));
 			CUI_Manager::Get_Instance()->Create_Aim();
 			m_bApplyGravity = false;
-			m_iSuperArmor = 10;
+			m_iSuperArmor = 20;
+
+			m_pGameInstance->StopSound(SCH_EFFECT_SKILL);
+			m_pGameInstance->Play_Sound(TEXT("Chidori"), SCH_EFFECT_SKILL);
+
+			m_iChidoriSCHAdd = {};
 			break;
 		case Client::Player_State::Fireball:
 			if (m_pTransformCom->Is_OnGround())
@@ -785,7 +829,10 @@ void CPlayer::Init_State()
 			m_bAttacked = false;
 			CUI_Manager::Get_Instance()->Create_Aim();
 			m_bApplyGravity = false;
-			m_iSuperArmor = 10;
+			m_iSuperArmor = 20;
+
+			m_pGameInstance->StopSound(SCH_EFFECT_PLAYER);
+			m_pGameInstance->Play_Sound(TEXT("PlayerFireBall"), SCH_EFFECT_PLAYER);
 			break;
 		}
 
@@ -820,13 +867,48 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		//}
 		break;
 	case Client::Player_State::Walk:
+	{
 		m_eState = Player_State::Walk_End;
+
+		_float fAnimPos = { m_pBodyParts[PT_HEAD]->Get_CurrentAnimPos() };
+		if (fAnimPos == 0.f)
+		{
+			m_bStepSound_R = false;
+		}
+		if (fAnimPos > 16.f and not m_bStepSound_R)
+		{
+			m_pGameInstance->StopSound(SCH_STEP_R);
+			if (rand() % 2)
+			{
+				m_pGameInstance->Play_Sound(TEXT("FootStep1"), SCH_STEP_R, 0.2f);
+			}
+			else
+			{
+				m_pGameInstance->Play_Sound(TEXT("FootStep2"), SCH_STEP_R, 0.2f);
+			}
+			m_bStepSound_R = true;
+			m_bStepSound_L = false;
+		}
+		if (fAnimPos > 35.f and not m_bStepSound_L)
+		{
+			m_pGameInstance->StopSound(SCH_STEP_L);
+			if (rand() % 2)
+			{
+				m_pGameInstance->Play_Sound(TEXT("FootStep1"), SCH_STEP_L, 0.2f);
+			}
+			else
+			{
+				m_pGameInstance->Play_Sound(TEXT("FootStep2"), SCH_STEP_L, 0.2f);
+			}
+			m_bStepSound_L = true;
+		}
 
 		//if (not m_pTransformCom->Is_OnGround())
 		//{
 		//	m_eState = Player_State::Fall;
 		//}
 		break;
+	}
 	case Client::Player_State::Walk_End:
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Walk_End)/* or
 			not m_pTransformCom->Is_OnGround()*/)
@@ -836,13 +918,57 @@ void CPlayer::Tick_State(_float fTimeDelta)
 		}
 		break;
 	case Client::Player_State::Run:
+	{
 		m_eState = Player_State::Run_End;
+
+		_float fAnimPos = { m_pBodyParts[PT_HEAD]->Get_CurrentAnimPos() };
+		if (fAnimPos == 0.f)
+		{
+			m_bStepSound_R = false;
+			m_pGameInstance->StopSound(SCH_STEP_L);
+			if (rand() % 2)
+			{
+				m_pGameInstance->Play_Sound(TEXT("FootStep1"), SCH_STEP_L, 0.3f);
+			}
+			else
+			{
+				m_pGameInstance->Play_Sound(TEXT("FootStep2"), SCH_STEP_L, 0.3f);
+			}
+		}
+		if (fAnimPos > 1.f and not m_bStepSound_R)
+		{
+			m_pGameInstance->StopSound(SCH_STEP_R);
+			if (rand() % 2)
+			{
+				m_pGameInstance->Play_Sound(TEXT("FootStep1"), SCH_STEP_R, 0.3f);
+			}
+			else
+			{
+				m_pGameInstance->Play_Sound(TEXT("FootStep2"), SCH_STEP_R, 0.3f);
+			}
+			m_bStepSound_R = true;
+			m_bStepSound_L = false;
+		}
+		if (fAnimPos > 6.f and not m_bStepSound_L)
+		{
+			m_pGameInstance->StopSound(SCH_STEP_L);
+			if (rand() % 2)
+			{
+				m_pGameInstance->Play_Sound(TEXT("FootStep1"), SCH_STEP_L, 0.3f);
+			}
+			else
+			{
+				m_pGameInstance->Play_Sound(TEXT("FootStep2"), SCH_STEP_L, 0.3f);
+			}
+			m_bStepSound_L = true;
+		}
 
 		//if (not m_pTransformCom->Is_OnGround())
 		//{
 		//	m_eState = Player_State::Fall;
 		//}
 		break;
+	}
 	case Client::Player_State::Run_End:
 		if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Run_End)/* or
 			not m_pTransformCom->Is_OnGround()*/)
@@ -899,7 +1025,7 @@ void CPlayer::Tick_State(_float fTimeDelta)
 
 		{
 			Kunai_Info Info{};
-			_float4 vDir{ reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()) };
+			_float4 vDir{ reinterpret_cast<_float*>(&XMVector3Normalize(XMLoadFloat4(&m_pGameInstance->Get_CameraLook()))) };
 			Info.pRHandPos = &m_vRightHandPos;
 
 			if (m_pGameInstance->Key_Up(DIK_LCONTROL, InputChannel::GamePlay))
@@ -930,6 +1056,8 @@ void CPlayer::Tick_State(_float fTimeDelta)
 				}
 				m_pKunai = dynamic_cast<CKunai*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Kunai"), &Info));
 				m_bApplyGravity = false;
+				m_pGameInstance->StopSound(SCH_EFFECT_PLAYER);
+				m_pGameInstance->Play_Sound(TEXT("KunaiShoot"), SCH_EFFECT_PLAYER, 0.7f);
 
 				m_Animation.fDurationRatio = 1.f;
 				m_Animation.fAnimSpeedRatio = 1.5f;
@@ -946,6 +1074,8 @@ void CPlayer::Tick_State(_float fTimeDelta)
 						m_Animation = {};
 						m_Animation.iAnimIndex = Aerial_Dash_Start;
 						m_Animation.fAnimSpeedRatio = 1.8f;
+						m_pGameInstance->StopSound(SCH_EFFECT_PLAYER);
+						m_pGameInstance->Play_Sound(TEXT("Dash2"), SCH_EFFECT_PLAYER, 0.4f);
 					}
 
 					if (m_pBodyParts[PT_HEAD]->IsAnimationFinished(Aerial_Dash_Start))
@@ -1114,9 +1244,35 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			if (m_fAttTimer > 0.5f)
 			{
 				m_pGameInstance->Attack_Monster(m_pCollider_Att, 10);
+				m_pGameInstance->StopSound(SCH_SHOOK);
+				switch (rand() % 3)
+				{
+				case 0:
+					m_pGameInstance->Play_Sound(TEXT("shook1"), SCH_SHOOK);
+					break;
+				case 1:
+					m_pGameInstance->Play_Sound(TEXT("shook2"), SCH_SHOOK);
+					break;
+				case 2:
+					m_pGameInstance->Play_Sound(TEXT("shook3"), SCH_SHOOK);
+					break;
+				}
 				m_bAttacked = true;
 				if (m_pGameInstance->CheckCollision_Monster(m_pCollider_Att))
 				{
+					m_pGameInstance->StopSound(SCH_PAK);
+					switch (rand() % 3)
+					{
+					case 0:
+						m_pGameInstance->Play_Sound(TEXT("pak1"), SCH_PAK);
+						break;
+					case 1:
+						m_pGameInstance->Play_Sound(TEXT("pak2"), SCH_PAK);
+						break;
+					case 2:
+						m_pGameInstance->Play_Sound(TEXT("pak3"), SCH_PAK);
+						break;
+					}
 					m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Hit"), &m_vRightHandPos);
 					EffectInfo EffectInfo{};
 					EffectInfo.vColor = _float4(1.f, 0.2f, 0.f, 1.f);
@@ -1231,7 +1387,16 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			m_pTransformCom->Set_Speed(m_fRunSpeed * 6.f);
 			m_pTransformCom->Go_To_Dir(m_pTransformCom->Get_State(State::Look), fTimeDelta);
 			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(true);
-			m_pGameInstance->Attack_Monster(m_pCollider_Att, 60.f, DAM_ELECTRIC);
+			m_pGameInstance->Attack_Monster(m_pCollider_Att, 60, DAM_ELECTRIC);
+			if (m_pGameInstance->CheckCollision_Monster(m_pCollider_Att))
+			{
+				m_pGameInstance->StopSound(SCH_EFFECT_SKILL3 + m_iChidoriSCHAdd);
+				m_pGameInstance->Play_Sound(TEXT("Hitted_Chidori_0"), SCH_EFFECT_SKILL3 + m_iChidoriSCHAdd++);
+				if (m_iChidoriSCHAdd > SCH_EFFECT_SKILL11)
+				{
+					m_iChidoriSCHAdd = SCH_EFFECT_SKILL3;
+				}
+			}
 		}
 		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Chidori_Run_Lv3_Loop and m_fTimer > 0.5f)
 		{
@@ -1284,6 +1449,15 @@ void CPlayer::Tick_State(_float fTimeDelta)
 			m_pTransformCom->Go_To_Dir(m_pTransformCom->Get_State(State::Look), fTimeDelta);
 			dynamic_cast<CChidori*>(m_pSkillEffect)->Set_RushingState(true);
 			m_pGameInstance->Attack_Monster(m_pCollider_Att, 60, DAM_ELECTRIC);
+			if (m_pGameInstance->CheckCollision_Monster(m_pCollider_Att))
+			{
+				m_pGameInstance->StopSound(SCH_EFFECT_SKILL3 + m_iChidoriSCHAdd);
+				m_pGameInstance->Play_Sound(TEXT("Hitted_Chidori_0"), SCH_EFFECT_SKILL3 + m_iChidoriSCHAdd++);
+				if (m_iChidoriSCHAdd > SCH_EFFECT_SKILL11)
+				{
+					m_iChidoriSCHAdd = SCH_EFFECT_SKILL3;
+				}
+			}
 		}
 		if (m_pBodyParts[PT_HEAD]->Get_CurrentAnimationIndex() == Ninjutsu_Aerial_Chidori_Run_Loop and m_fTimer > 0.5f)
 		{

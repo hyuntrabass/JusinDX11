@@ -214,6 +214,9 @@
     <Filter Include="02.GameObjects\00.GUI\Win">
       <UniqueIdentifier>{ce720943-9536-4366-8b94-d50e3acfd7c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\00.GUI\MovieMode">
+      <UniqueIdentifier>{2beea471-b05b-4165-8b7d-5b577311ec18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -408,6 +411,9 @@
     <ClInclude Include="..\Public\Win.h">
       <Filter>02.GameObjects\00.GUI\Win</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MovieMode.h">
+      <Filter>02.GameObjects\00.GUI\MovieMode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -599,6 +605,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Win.cpp">
       <Filter>02.GameObjects\00.GUI\Win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MovieMode.cpp">
+      <Filter>02.GameObjects\00.GUI\MovieMode</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

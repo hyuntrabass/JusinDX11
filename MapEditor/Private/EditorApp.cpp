@@ -433,6 +433,11 @@ HRESULT CEditorApp::Ready_Prototype_GameObject()
 		return E_FAIL;
 	}
 
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Kakashi"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/NPC/Kakashi/Mesh/Kakashi.hyuntraanimmesh"))))
+	{
+		return E_FAIL;
+	}
+
 	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Model_Sandman"), CModel::Create(m_pDevice, m_pContext, "../../Client/Bin/Resources/AnimMesh/Monster/Loser02/Mesh/Loser02.hyuntraanimmesh"))))
 	{
 		return E_FAIL;

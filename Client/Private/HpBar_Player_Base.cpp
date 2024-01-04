@@ -1,4 +1,5 @@
 #include "HpBar_Player_Base.h"
+#include "Trigger_Manager.h"
 
 CHpBar_Player_Base::CHpBar_Player_Base(_dev pDevice, _context pContext)
 	: COrthographicObject(pDevice, pContext)
@@ -41,6 +42,10 @@ void CHpBar_Player_Base::Tick(_float fTimeDelta)
 
 void CHpBar_Player_Base::Late_Tick(_float fTimeDelta)
 {
+	if (CTrigger_Manager::Get_Instance()->Hasto_PlayScene())
+	{
+		return;
+	}
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 

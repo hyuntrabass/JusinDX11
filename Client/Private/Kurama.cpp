@@ -34,6 +34,7 @@ HRESULT CKurama::Init(void* pArg)
 	_vector WarpPos = XMLoadFloat3(&m_vAppearPoints[m_iPosIndex]);
 	WarpPos.m128_f32[3] = 1.f;
 
+	m_pTransformCom->LookAt_Dir(XMVectorSet(-1.f, 0.f, 0.f, 0.f));
 	m_pTransformCom->Set_State(State::Pos, WarpPos);
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
@@ -58,13 +59,6 @@ HRESULT CKurama::Init(void* pArg)
 
 	m_iMaxHP = 500;
 	m_iHP = m_iMaxHP;
-
-	_bool isBoss = true;
-	m_pIndicator = dynamic_cast<CIndicator*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Indicator"), &isBoss));
-	if (not m_pIndicator)
-	{
-		return E_FAIL;
-	}
 
 	return S_OK;
 }
@@ -108,9 +102,9 @@ void CKurama::Tick(_float fTimeDelta)
 		m_pEffect->Tick(fTimeDelta);
 	}
 
-		_matrix ColliderOffset = XMMatrixTranslation(0.f, 4.f, 0.f);
-		m_pCollider_Hit->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
-		m_fTimer += fTimeDelta;
+	_matrix ColliderOffset = XMMatrixTranslation(0.f, 4.f, 0.f);
+	m_pCollider_Hit->Update(ColliderOffset * m_pTransformCom->Get_World_Matrix());
+	m_fTimer += fTimeDelta;
 
 	if (m_pIndicator)
 	{
@@ -121,7 +115,7 @@ void CKurama::Tick(_float fTimeDelta)
 
 		if (v2DPos.z > 1.f)
 		{
-			v2DPos = _float3();
+			v2DPos = _float3(-1.f, -1.f, -1.f);
 		}
 
 		m_pIndicator->Tick(_float2(v2DPos.x, v2DPos.y));
@@ -443,6 +437,9 @@ void CKurama::Init_State()
 			m_pEffect = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Effect_Warp"), &vPos);
 
 			m_iSuperArmor = 100;
+
+			m_pGameInstance->StopSound(SCH_EFFECT_MONSTER0);
+			m_pGameInstance->Play_Sound(TEXT("SharinganSFx_BossAir"), SCH_EFFECT_MONSTER0);
 			break;
 		case Client::CKurama::State_Beaten:
 			m_AnimationDesc.iAnimIndex = Anim_Beaten_Type01;
@@ -455,9 +452,13 @@ void CKurama::Init_State()
 		case Client::CKurama::State_Die:
 			m_AnimationDesc.iAnimIndex = Anim_Dying_Type01;
 			m_AnimationDesc.bSkipInterpolation = true;
-			
+
 			Safe_Release(m_pIndicator);
+			m_pGameInstance->Attack_Player(nullptr, -100);
 			m_pGameInstance->Delete_CollisionObject(this);
+
+			m_pGameInstance->StopSound(SCH_EFFECT_MONSTER0);
+			m_pGameInstance->Play_Sound(TEXT("Kurama_Die2"), SCH_EFFECT_MONSTER0, 0.6f);
 			break;
 		case Client::CKurama::State_Bomb:
 			break;
@@ -479,21 +480,38 @@ void CKurama::Tick_State(_float fTimeDelta)
 	switch (m_eState)
 	{
 	case Client::CKurama::State_Initiation:
+		if (m_pModelCom->Get_CurrentAnimationIndex() == Anim_etc_Appearance and m_pModelCom->Get_CurrentAnimPos() > 4.f and not m_hasPlayedSound)
+		{
+			m_pGameInstance->StopSound(SCH_EFFECT_MONSTER0);
+			m_pGameInstance->Play_Sound(TEXT("Boom_FireBall"), SCH_EFFECT_MONSTER0);
+			m_hasPlayedSound = true;
+		}
 		if (m_pModelCom->IsAnimationFinished(Anim_etc_Appearance))
 		{
 			m_AnimationDesc = {};
 			m_AnimationDesc.iAnimIndex = Anim_Ninjutsu_Roar;
 			//m_pModelCom->Set_Animation(m_AnimationDesc);
+			m_hasPlayedSound = false;
 		}
 
 		if (m_pModelCom->Get_CurrentAnimationIndex() == Anim_Ninjutsu_Roar and m_pModelCom->Get_CurrentAnimPos() > 34.f)
 		{
-			EffectInfo EffectInfo{};
-			EffectInfo.vColor = _float4(0.175f, 0.175f, 0.35f, 1.f);
-			EffectInfo.fScale = 15.f;
-			XMStoreFloat4(&EffectInfo.vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("LipMouthDownCenter")).r[3], m_pTransformCom->Get_World_Matrix()));
-			EffectInfo.iType = 1;
-			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
+			if (m_fTimer > 0.5f)
+			{
+				EffectInfo EffectInfo{};
+				EffectInfo.vColor = _float4(0.175f, 0.175f, 0.35f, 1.f);
+				EffectInfo.fScale = 15.f;
+				XMStoreFloat4(&EffectInfo.vPos, XMVector4Transform(XMLoadFloat4x4(m_pModelCom->Get_BoneMatrix("LipMouthDownCenter")).r[3], m_pTransformCom->Get_World_Matrix()));
+				EffectInfo.iType = 1;
+				m_fTimer = {};
+				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
+			}
+			if (not m_hasPlayedSound)
+			{
+				m_pGameInstance->StopSound(SCH_EFFECT_MONSTER0);
+				m_pGameInstance->Play_Sound(TEXT("Roar"), SCH_EFFECT_MONSTER0);
+				m_hasPlayedSound = true;
+			}
 		}
 
 		if (m_pModelCom->IsAnimationFinished(Anim_Ninjutsu_Roar))
@@ -501,6 +519,10 @@ void CKurama::Tick_State(_float fTimeDelta)
 			m_hasInitiated = true;
 			m_eState = State_Idle;
 			m_fTimer = {};
+
+			m_pGameInstance->PlayBGM(TEXT("Madara"), 0.5f);
+			_bool isBoss = true;
+			m_pIndicator = dynamic_cast<CIndicator*>(m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Indicator"), &isBoss));
 		}
 		break;
 	case Client::CKurama::State_Idle:
@@ -598,6 +620,9 @@ void CKurama::Tick_State(_float fTimeDelta)
 				EffectInfo.iType = 1;
 				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
 				m_hasShot = true;
+
+				m_pGameInstance->StopSound(SCH_EFFECT_MONSTER0);
+				m_pGameInstance->Play_Sound(TEXT("Hitted_ChidoriEnd"), SCH_EFFECT_MONSTER0);
 			}
 		}
 		else
@@ -639,6 +664,9 @@ void CKurama::Tick_State(_float fTimeDelta)
 			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Smoke"), &FxInfo);
 
 			m_pTransformCom->Set_Position(m_vAppearPoints[++m_iPosIndex]);
+
+			m_pGameInstance->StopSound(SCH_EFFECT_MONSTER0);
+			m_pGameInstance->Play_Sound(TEXT("Hitted_Chidori_0"), SCH_EFFECT_MONSTER0);
 
 			m_AnimationDesc = {};
 			m_AnimationDesc.iAnimIndex = Anim_HandSeal_RecoveryChakra_End;
@@ -721,7 +749,7 @@ void CKurama::Free()
 	__super::Free();
 
 	Safe_Release(m_pIndicator);
-	Safe_Release(m_pEyeLights[0]);	
+	Safe_Release(m_pEyeLights[0]);
 	Safe_Release(m_pEyeLights[1]);
 	for (size_t i = 0; i < 10; i++)
 	{

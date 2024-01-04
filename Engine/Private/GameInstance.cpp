@@ -794,7 +794,7 @@ void CGameInstance::PhysXTick(_float fTimeDelta)
 	m_pPhysX_Manager->Tick(fTimeDelta);
 }
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 #ifndef _MapEditor
 HRESULT CGameInstance::Render_PhysX()
 {
@@ -856,7 +856,7 @@ HRESULT CGameInstance::Bind_ShaderResourceView(CShader* pShader, const _char* pV
 	return m_pRenderTarget_Manager->Bind_ShaderResourceView(pShader, pVariableName, strTargetTag);
 }
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 HRESULT CGameInstance::Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize)
 {
 	if (!m_pRenderTarget_Manager)
@@ -878,9 +878,9 @@ HRESULT CGameInstance::Render_Debug_RT(const wstring& strMRTTag, CShader* pShade
 }
 #endif // _DEBUG
 
-HRESULT CGameInstance::Init_SoundManager()
+HRESULT CGameInstance::Init_SoundManager(_uint iNumChannels)
 {
-	m_pSound_Manager = CSound_Manager::Create();
+	m_pSound_Manager = CSound_Manager::Create(iNumChannels);
 	if (!m_pSound_Manager)
 	{
 		return E_FAIL;
@@ -894,14 +894,14 @@ _bool CGameInstance::Is_SoundManager_Ready()
 	return static_cast<_bool>(m_pSound_Manager);
 }
 
-void CGameInstance::Play_Sound(const wstring& strSoundTag, SoundChannel eChannel, _float fVolume)
+void CGameInstance::Play_Sound(const wstring& strSoundTag, _uint iChannel, _float fVolume, _bool isLoop)
 {
 	if (!m_pSound_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
-	return m_pSound_Manager->Play_Sound(strSoundTag, eChannel, fVolume);
+	return m_pSound_Manager->Play_Sound(strSoundTag, iChannel, fVolume, isLoop);
 }
 void CGameInstance::PlayBGM(const wstring& strSoundTag, float fVolume)
 {
@@ -912,14 +912,14 @@ void CGameInstance::PlayBGM(const wstring& strSoundTag, float fVolume)
 
 	return m_pSound_Manager->PlayBGM(strSoundTag, fVolume);
 }
-void CGameInstance::StopSound(SoundChannel eChannel)
+void CGameInstance::StopSound(_uint iChannel)
 {
 	if (!m_pSound_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
-	return m_pSound_Manager->StopSound(eChannel);
+	return m_pSound_Manager->StopSound(iChannel);
 }
 void CGameInstance::StopAll()
 {
@@ -930,14 +930,14 @@ void CGameInstance::StopAll()
 
 	return m_pSound_Manager->StopAll();
 }
-void CGameInstance::SetChannelVolume(SoundChannel eChannel, _float fVolume)
+void CGameInstance::SetChannelVolume(_uint iChannel, _float fVolume)
 {
 	if (!m_pSound_Manager)
 	{
 		MSG_BOX("FATAL ERROR : m_pSound_Manager is NULL");
 	}
 
-	return m_pSound_Manager->SetChannelVolume(eChannel, fVolume);
+	return m_pSound_Manager->SetChannelVolume(iChannel, fVolume);
 }
 
 const _uint& CGameInstance::Get_CameraModeIndex() const

@@ -32,7 +32,7 @@ public:
 	HRESULT Add_RenderGroup(RenderGroup eRenderGroup, class CGameObject* pRenderObject);
 	HRESULT Draw_RenderGroup();
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 	HRESULT Add_DebugComponent(class CComponent* pDebugComponent);
 #endif // _DEBUG
 
@@ -40,7 +40,7 @@ public:
 private:
 	list<class CGameObject*> m_RenderObjects[RG_End]{};
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 	list<class CComponent*> m_DebugComponents{};
 #endif // _DEBUG
 
@@ -67,7 +67,7 @@ private:
 	HRESULT Render_Blend();
 	HRESULT Render_BlendBlur();
 	HRESULT Render_UI();
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 private:
 	HRESULT Render_Debug();
 #endif // _DEBUG

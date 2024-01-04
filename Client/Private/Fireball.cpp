@@ -61,7 +61,7 @@ HRESULT CFireball::Init(void* pArg)
 		m_pTransformCom->Set_Speed(20.f);
 
 		PxRaycastBuffer Buffer{};
-		if (m_pGameInstance->Raycast(vPos, XMVector3Normalize(XMLoadFloat4(&Info.vLook)), 100.f, Buffer))
+		if (m_pGameInstance->Raycast(vPos, XMVector3Normalize(XMLoadFloat4(&Info.vLook)), 70.f, Buffer))
 		{
 			m_vTargetPos = _float3(Buffer.block.position.x, Buffer.block.position.y, Buffer.block.position.z);
 			m_hasTarget = true;
@@ -88,6 +88,25 @@ HRESULT CFireball::Init(void* pArg)
 		return E_FAIL;
 	}
 
+	if (m_strType == TEXT("Fireball"))
+	{
+		m_pGameInstance->StopSound(SCH_EFFECT_SKILL);
+		m_pGameInstance->Play_Sound(TEXT("Smoke"), SCH_EFFECT_SKILL);
+	}
+	else
+	{
+		_uint iSCH = SCH_EFFECT_SKILL + (rand() % 12);
+		m_pGameInstance->StopSound(iSCH);
+		if (rand() % 2)
+		{
+			m_pGameInstance->Play_Sound(TEXT("burn1"), iSCH);
+		}
+		else
+		{
+			m_pGameInstance->Play_Sound(TEXT("burn2"), iSCH);
+		}
+	}
+
 	return S_OK;
 }
 
@@ -97,8 +116,9 @@ void CFireball::Tick(_float fTimeDelta)
 	{
 	case Client::CFireball::State_Shoot:
 	{
-		//m_pTransformCom->Set_RotationPerSec(360.f);
-		//m_pTransformCom->Turn(XMVector3Normalize(m_pTransformCom->Get_State(State::Look)) * -1.f, fTimeDelta);
+		//m_pGameInstance->StopSound(SCH_EFFECT_SKILL1);
+		//m_pGameInstance->Play_Sound(TEXT("Fire1"), SCH_EFFECT_SKILL1, 0.4f);
+
 		LIGHT_DESC* LightDesc{};
 		LightDesc = m_pGameInstance->Get_LightDesc(LEVEL_STATIC, TEXT("Light_Fireball") + to_wstring(m_iMyLightIndex));
 		XMStoreFloat4(&LightDesc->vPosition, m_pTransformCom->Get_State(State::Pos));
@@ -126,7 +146,7 @@ void CFireball::Tick(_float fTimeDelta)
 			}
 			else
 			{
-				if (m_fTimer > 10.f)
+				if (m_fTimer > 3.5f)
 				{
 					m_eState = State_Explode;
 				}
@@ -163,6 +183,21 @@ void CFireball::Tick(_float fTimeDelta)
 	}
 	case Client::CFireball::State_Explode:
 	{
+		if (not m_bSoundPlayed)
+		{
+			_uint iSCH = SCH_EFFECT_SKILL + (rand() % 12);
+			m_pGameInstance->StopSound(iSCH);
+			if (m_strType == TEXT("Meteor"))
+			{
+				m_pGameInstance->Play_Sound(TEXT("Explosion3"), iSCH);
+			}
+			else
+			{
+				m_pGameInstance->Play_Sound(TEXT("Boom_FireBall"), iSCH);
+			}
+			m_bSoundPlayed = true;
+		}
+
 		m_pGameInstance->Set_ShakeCam(true);
 		m_pGameInstance->Attack_Monster(m_pColliderCom, 30, DAM_FIRE);
 		m_fTimer = {};

@@ -42,6 +42,8 @@ HRESULT CFakeWood::Init(void* pArg)
 	FxInfo.vPos = m_vPos;
 	FxInfo.iType = 70;
 	m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Smoke"), &FxInfo);
+	m_pGameInstance->StopSound(SCH_EFFECT_PLAYER);
+	m_pGameInstance->Play_Sound(TEXT("Poof"), SCH_EFFECT_PLAYER);
 
 	return S_OK;
 }

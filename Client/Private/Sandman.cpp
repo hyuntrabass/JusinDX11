@@ -1,6 +1,7 @@
 #include "Sandman.h"
 #include "UI_Manager.h"
 #include "Indicator.h"
+#include "Trigger_Manager.h"
 
 CSandman::CSandman(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -95,7 +96,10 @@ void CSandman::Tick(_float fTimeDelta)
 	//}
 
 
-	Artificial_Intelligence(fTimeDelta);
+	if (not CTrigger_Manager::Get_Instance()->Hasto_PlayScene())
+	{
+		Artificial_Intelligence(fTimeDelta);
+	}
 
 	m_pTransformCom->Gravity(fTimeDelta);
 
@@ -112,7 +116,7 @@ void CSandman::Tick(_float fTimeDelta)
 
 		if (v2DPos.z > 1.f)
 		{
-			v2DPos = _float3();
+			v2DPos = _float3(-1.f, -1.f, -1.f);
 		}
 
 
@@ -416,6 +420,7 @@ void CSandman::Init_State()
 			Anim.bSkipInterpolation = true;
 
 			Safe_Release(m_pIndicator);
+			m_pGameInstance->Attack_Player(nullptr, -5);
 			m_pGameInstance->Delete_CollisionObject(this);
 			m_fTimer = {};
 			break;
@@ -565,6 +570,8 @@ void CSandman::Tick_State(_float fTimeDelta)
 		break;
 	case Client::CSandman::State_Attack:
 	{
+		_uint iSCH = SCH_EFFECT_MONSTER0 + (rand() % 20);
+
 		m_pTransformCom->LookAt_Dir(XMLoadFloat4(&m_vTargetDir));
 
 		_float fAnimPos{ m_pModelCom->Get_CurrentAnimPos() };
@@ -584,6 +591,9 @@ void CSandman::Tick_State(_float fTimeDelta)
 					EffectInfo.vPos = _float4(vPos.x, vPos.y, vPos.z, 1.f);
 					EffectInfo.iType = 1;
 					m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
+
+					m_pGameInstance->StopSound(iSCH);
+					m_pGameInstance->Play_Sound(TEXT("Default_Attack_SFx0"), iSCH);
 				}
 				m_bAttacked = true;
 			}
@@ -606,6 +616,8 @@ void CSandman::Tick_State(_float fTimeDelta)
 				EffectInfo.iType = 1;
 				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
 
+				m_pGameInstance->StopSound(iSCH);
+				m_pGameInstance->Play_Sound(TEXT("Default_Attack_SFx1"), iSCH);
 			}
 			m_bAttacked = true;
 		}

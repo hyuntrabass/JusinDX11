@@ -51,7 +51,7 @@ void CSandKunai::Tick(_float fTimeDelta)
 	m_pTrail->Tick(vPos);
 
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
-	m_pGameInstance->Attack_Player(m_pColliderCom, 7);
+	m_pGameInstance->Attack_Player(m_pColliderCom, 3);
 	if (m_pGameInstance->CheckCollision_Player(m_pColliderCom))
 	{
 		m_isDead = true;
@@ -62,6 +62,10 @@ void CSandKunai::Tick(_float fTimeDelta)
 		EffectInfo.iType = 2;
 		XMStoreFloat4(&EffectInfo.vPos, m_pTransformCom->Get_State(State::Pos));
 		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
+
+		_uint iSCHAdd = rand() % 2;
+		m_pGameInstance->StopSound(SCH_EFFECT_SKILL + iSCHAdd);
+		m_pGameInstance->Play_Sound(TEXT("Hitted_Strong_Sword"), SCH_EFFECT_SKILL + iSCHAdd);
 	}
 
 	if (m_fTimer > 2.f)

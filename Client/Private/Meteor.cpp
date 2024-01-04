@@ -41,6 +41,9 @@ HRESULT CMeteor::Init(void* pArg)
 	LIGHT_DESC* pMainLight_Desc = m_pGameInstance->Get_LightDesc(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Light_Main"));
 	m_OriginMainLight = *pMainLight_Desc;
 
+	m_pGameInstance->StopSound(SCH_EFFECT_SKILL);
+	m_pGameInstance->Play_Sound(TEXT("Charge_Chidori_2"), SCH_EFFECT_SKILL);
+
 	return S_OK;
 }
 
@@ -99,7 +102,7 @@ void CMeteor::Tick(_float fTimeDelta)
 			Info.vLook = _float4(RandomLookX(RandomNumber), -3.f, RandomLookZ(RandomNumber), 0.f);
 			Info.strPrototypeTag = TEXT("Meteor");
 			CGameObject* pMeteor = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_Fireball"), &Info);
-			
+
 			m_Meteors.push_back(pMeteor);
 
 			m_fTimer = {};
@@ -140,6 +143,8 @@ void CMeteor::Tick(_float fTimeDelta)
 		m_vUVTransform.x = 1.f;
 		m_bRotate[0] = true;
 		m_bRotate[3] = true;
+		//m_pGameInstance->StopSound(SCH_EFFECT_SKILL1);
+		//m_pGameInstance->Play_Sound(TEXT("Hitted_Chidori_2"), SCH_EFFECT_SKILL1);
 	}
 	if (m_vUVTransform.y < -2.f)
 	{
@@ -150,6 +155,8 @@ void CMeteor::Tick(_float fTimeDelta)
 	{
 		m_vUVTransform.z = 1.f;
 		m_bRotate[2] = true;
+		//m_pGameInstance->StopSound(SCH_EFFECT_SKILL2);
+		//m_pGameInstance->Play_Sound(TEXT("Charge_Chidori_0"), SCH_EFFECT_SKILL2);
 	}
 
 	for (auto iter = m_Meteors.begin(); iter != m_Meteors.end();)
@@ -359,6 +366,9 @@ void CMeteor::Shoot()
 		m_vTargetPos = _float3(reinterpret_cast<_float*>(&m_pGameInstance->Get_CameraLook()));
 		m_hasTarget = false;
 	}
+
+	m_pGameInstance->StopSound(SCH_EFFECT_SKILL1);
+	m_pGameInstance->Play_Sound(TEXT("Hitted_Chidori_2"), SCH_EFFECT_SKILL1);
 
 }
 

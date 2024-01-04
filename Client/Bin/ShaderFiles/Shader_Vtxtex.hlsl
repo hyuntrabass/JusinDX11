@@ -69,6 +69,16 @@ PS_OUT PS_Main_Alpha(PS_IN Input)
     return Output;
 }
 
+PS_OUT PS_Main_Color_Alpha(PS_IN Input)
+{
+    PS_OUT Output = (PS_OUT) 0;
+    
+    Output.vColor.xyz = g_vColor;
+    Output.vColor.a = g_fAlpha;
+
+    return Output;
+}
+
 PS_OUT PS_Main_Button(PS_IN Input)
 {
     PS_OUT Output = (PS_OUT) 0;
@@ -218,6 +228,19 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_Main_Alpha();
+    }
+
+    pass UI_Color_Alpha
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_Main();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_Main_Color_Alpha();
     }
 
     pass Button

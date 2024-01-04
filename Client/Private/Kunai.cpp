@@ -42,7 +42,7 @@ HRESULT CKunai::Init(void* pArg)
 	m_pTransformCom->LookAt(XMLoadFloat4(&Info.vLook));
 	m_vTargetPos = Info.vLook;
 
-	m_pTransformCom->Set_Speed(50.f);
+	m_pTransformCom->Set_Speed(70.f);
 
 	LIGHT_DESC LightDesc{};
 
@@ -84,9 +84,11 @@ void CKunai::Tick(_float fTimeDelta)
 	}
 	else if (not m_hasStopped)
 	{
-		if (m_pTransformCom->Go_To(XMLoadFloat4(&m_vTargetPos), fTimeDelta, 0.5f))
+		if (m_pTransformCom->Go_To(XMLoadFloat4(&m_vTargetPos), fTimeDelta, 0.7f))
 		{
 			m_hasStopped = true;
+			m_pGameInstance->StopSound(SCH_EFFECT_SKILL);
+			m_pGameInstance->Play_Sound(TEXT("KunaiHit"), SCH_EFFECT_SKILL, 0.7f);
 		}
 	}
 

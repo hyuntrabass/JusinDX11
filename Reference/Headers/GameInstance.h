@@ -117,7 +117,7 @@ public: // PhysX
 	_bool Raycast(_float4 vOrigin, _float4 vDir, _float fDist, PxRaycastBuffer& Buffer);
 	_bool Raycast(_fvector vOrigin, _fvector vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 #ifndef _MapEditor
 	HRESULT Render_PhysX();
 #endif // _MapEditor
@@ -129,21 +129,21 @@ public: // RenderTarget
 	HRESULT Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView = nullptr);
 	HRESULT End_MRT();
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 public:
 	HRESULT Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize);
 	HRESULT Render_Debug_RT(const wstring& strMRTTag, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 #endif // _DEBUG
 
 public: // Sound Manager
-	HRESULT Init_SoundManager();
+	HRESULT Init_SoundManager(_uint iNumChannels);
 	_bool Is_SoundManager_Ready();
-	void Play_Sound(const wstring& strSoundTag, SoundChannel eChannel, _float fVolume);
+	void Play_Sound(const wstring& strSoundTag, _uint iChannel, _float fVolume = 0.5f, _bool isLoop = false);
 	void PlayBGM(const wstring& strSoundTag, float fVolume);
-	void StopSound(SoundChannel eChannel);
+	void StopSound(_uint iChannel);
 	void StopAll();
 
-	void SetChannelVolume(SoundChannel eChannel, _float fVolume);
+	void SetChannelVolume(_uint iChannel, _float fVolume);
 
 public: // Get_Set
 	const _uint& Get_CameraModeIndex() const;

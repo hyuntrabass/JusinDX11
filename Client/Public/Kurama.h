@@ -133,6 +133,8 @@ private:
 
 	_bool m_hasTakenChidori{};
 
+	_bool m_hasPlayedSound{};
+
 private:
 	HRESULT Add_Components();
 	HRESULT Bind_ShaderResources();

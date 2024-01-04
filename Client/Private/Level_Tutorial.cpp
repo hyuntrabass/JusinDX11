@@ -198,10 +198,10 @@ HRESULT CLevel_Tutorial::Ready_UIs()
 
 HRESULT CLevel_Tutorial::Ready_People()
 {
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_FOREST, L"Layer_Kakashi", L"Prototype_GameObject_Kakashi")))
-	{
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance->Add_Layer(LEVEL_FOREST, L"Layer_Kakashi", L"Prototype_GameObject_Kakashi")))
+	//{
+	//	return E_FAIL;
+	//}
 
 	return S_OK;
 }

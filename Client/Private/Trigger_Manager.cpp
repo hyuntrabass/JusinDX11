@@ -292,9 +292,21 @@ void CTrigger_Manager::Trigger_Tutorial(_float fTimeDelta)
 {
 	if (not m_Triggers[LEVEL_FOREST][0].second and m_Triggers[LEVEL_FOREST][0].first->Intersect(m_pPlayerCollider))
 	{
+		m_pMovieMode = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_MovieMode"));
 		m_PlayScene = true;
-		m_pCurrentCutScene = &m_CutScenes.find(TEXT("Cutscene_tuto1"))->second;
+		m_pCurrentCutScene = &m_CutScenes.find(TEXT("Cutscene_kaka0"))->second;
 		m_Triggers[LEVEL_FOREST][0].second = true;
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI"), TEXT("Prototype_GameObject_MovieMode"));
+		m_pGameInstance->Add_Layer(LEVEL_FOREST, L"Layer_Kakashi", L"Prototype_GameObject_Kakashi");
+	}
+
+	if (not m_Triggers[LEVEL_FOREST][1].second and m_Triggers[LEVEL_FOREST][1].first->Intersect(m_pPlayerCollider))
+	{
+		m_pMovieMode = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_MovieMode"));
+		m_PlayScene = true;
+		m_pCurrentCutScene = &m_CutScenes.find(TEXT("Cutscene_kaka1"))->second;
+		m_Triggers[LEVEL_FOREST][1].second = true;
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI"), TEXT("Prototype_GameObject_MovieMode"));
 	}
 
 	//for (size_t i = 0; i < m_Triggers[LEVEL_FOREST].size(); i++)
@@ -343,8 +355,15 @@ void CTrigger_Manager::Trigger_Village(_float fTimeDelta)
 			if (i == 3)
 			{
 				m_pGameInstance->Add_Layer(LEVEL_VILLAGE, L"Layer_Boss", L"Prototype_GameObject_Pain");
+				m_pMovieMode = m_pGameInstance->Clone_Object(TEXT("Prototype_GameObject_MovieMode"));
+				m_PlayScene = true;
+				m_pCurrentCutScene = &m_CutScenes.find(TEXT("Cutscene_Pain_Init"))->second;
+				m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI"), TEXT("Prototype_GameObject_MovieMode"));
+
 			}
 			Trigger.second = true;
+			m_pGameInstance->StopSound(SCH_EFFECT_MONSTER0);
+			m_pGameInstance->Play_Sound(TEXT("Kakashi_PlaneTaryBoom"), SCH_EFFECT_MONSTER0);
 		}
 
 		if (Trigger.second and not m_MonsterTriggers[LEVEL_VILLAGE][i].empty())
@@ -396,6 +415,15 @@ void CTrigger_Manager::Trigger_Village(_float fTimeDelta)
 
 void CTrigger_Manager::Trigger_Cloud(_float fTimeDelta)
 {
+	if (not m_Triggers[LEVEL_CLOUD][0].second and m_Triggers[LEVEL_CLOUD][0].first->Intersect(m_pPlayerCollider))
+	{
+		m_PlayScene = true;
+		m_pCurrentCutScene = &m_CutScenes.find(TEXT("Cutscene_kurama_init"))->second;
+		m_pGameInstance->Add_Layer(LEVEL_CLOUD, L"Layer_Boss", L"Prototype_GameObject_Kurama");
+		
+		m_Triggers[LEVEL_CLOUD][0].second = true;
+		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI"), TEXT("Prototype_GameObject_MovieMode"));
+	}
 }
 
 void CTrigger_Manager::Free()

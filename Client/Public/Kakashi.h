@@ -32,6 +32,12 @@ private:
 	CRenderer* m_pRendererCom{ nullptr };
 	CShader* m_pShaderCom{ nullptr };
 	CModel* m_pModelCom{ nullptr };
+	class CUI_Manager* m_pUIManager{ nullptr };
+	class CTrigger_Manager* m_pTriggerManager{ nullptr };
+
+private:
+	_float m_fTimer{};
+	_uint m_iSceneNumber{};
 
 private:
 	HRESULT Add_Components();

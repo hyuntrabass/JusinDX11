@@ -32,8 +32,8 @@ HRESULT CWin::Init(void* pArg)
 
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 
-	m_pGameInstance->StopSound(SC_EFFECT);
-	m_pGameInstance->Play_Sound(TEXT("Shinobi_Execution"), SC_EFFECT, 0.5f);
+	m_pGameInstance->StopSound(SCH_EFFECT);
+	m_pGameInstance->Play_Sound(TEXT("Shinobi_Execution"), SCH_EFFECT, 0.5f);
 
 	return S_OK;
 }
@@ -88,8 +88,6 @@ HRESULT CWin::Render()
 	{
 		return E_FAIL;
 	}
-
-	m_pGameInstance->Render_Text(TEXT("Font_Dialogue"), TEXT("테스트좀 해보자.!"), _float2(640.f, 600.f), 0.6f);
 
 	return S_OK;
 }

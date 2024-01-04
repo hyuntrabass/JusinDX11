@@ -2,10 +2,9 @@
 
 CSound_Manager::CSound_Manager()
 {
-	Init();
 }
 
-HRESULT CSound_Manager::Init()
+HRESULT CSound_Manager::Init(_uint iNumChannels)
 {
 	FMOD::System_Create(&m_pSystem);
 
@@ -16,10 +15,13 @@ HRESULT CSound_Manager::Init()
 		return E_FAIL;
 	}
 
+	m_iNumChannels = iNumChannels;
+	m_pChannelArr = new FMOD::Channel*[m_iNumChannels]{};
+
 	return S_OK;
 }
 
-void CSound_Manager::Play_Sound(const wstring& strSoundTag, SoundChannel eChannel, _float fVolume)
+void CSound_Manager::Play_Sound(const wstring& strSoundTag, _uint iChannel, _float fVolume, _bool isLoop)
 {
 	FMOD::Sound* pSound = Find_Sound(strSoundTag);
 
@@ -30,12 +32,21 @@ void CSound_Manager::Play_Sound(const wstring& strSoundTag, SoundChannel eChanne
 
 	_bool bPlay = FALSE;
 
-	if (m_pChannelArr[eChannel]->isPlaying(&bPlay))
+	if (m_pChannelArr[iChannel]->isPlaying(&bPlay))
 	{
-		m_pSystem->playSound(pSound, 0, false, &m_pChannelArr[eChannel]);
+		m_pSystem->playSound(pSound, 0, false, &m_pChannelArr[iChannel]);
 	}
 
-	m_pChannelArr[eChannel]->setVolume(fVolume);
+	if (isLoop)
+	{
+		m_pChannelArr[iChannel]->setMode(FMOD_LOOP_NORMAL);
+	}
+	else
+	{
+		m_pChannelArr[iChannel]->setMode(FMOD_LOOP_OFF);
+	}
+
+	m_pChannelArr[iChannel]->setVolume(fVolume);
 
 	m_pSystem->update();
 }
@@ -48,31 +59,31 @@ void CSound_Manager::PlayBGM(const wstring& strSoundTag, float fVolume)
 		return;
 	}
 
-	m_pSystem->playSound(pSound, 0, false, &m_pChannelArr[SC_BGM]);
+	m_pSystem->playSound(pSound, 0, false, &m_pChannelArr[0]);
 
-	m_pChannelArr[SC_BGM]->setMode(FMOD_LOOP_NORMAL);
+	m_pChannelArr[0]->setMode(FMOD_LOOP_NORMAL);
 
-	m_pChannelArr[SC_BGM]->setVolume(fVolume);
+	m_pChannelArr[0]->setVolume(fVolume);
 
 	m_pSystem->update();
 }
 
-void CSound_Manager::StopSound(SoundChannel eChannel)
+void CSound_Manager::StopSound(_uint iChannel)
 {
-	m_pChannelArr[eChannel]->stop();
+	m_pChannelArr[iChannel]->stop();
 }
 
 void CSound_Manager::StopAll()
 {
-	for (int i = 0; i < SC_MAX; ++i)
+	for (int i = 0; i < m_iNumChannels; ++i)
 	{
 		m_pChannelArr[i]->stop();
 	}
 }
 
-void CSound_Manager::SetChannelVolume(SoundChannel eChannel, _float fVolume)
+void CSound_Manager::SetChannelVolume(_uint iChannel, _float fVolume)
 {
-	m_pChannelArr[SC_BGM]->setVolume(fVolume);
+	m_pChannelArr[iChannel]->setVolume(fVolume);
 
 	m_pSystem->update();
 }
@@ -111,11 +122,11 @@ FMOD::Sound* CSound_Manager::Find_Sound(const wstring& strSoundTag)
 	return it->second;
 }
 
-CSound_Manager* CSound_Manager::Create()
+CSound_Manager* CSound_Manager::Create(_uint iNumChannels)
 {
 	CSound_Manager* pInstance = new CSound_Manager();
 
-	if (FAILED(pInstance->Init()))
+	if (FAILED(pInstance->Init(iNumChannels)))
 	{
 		MSG_BOX("Failed to Create : CSound_Manager");
 		Safe_Release(pInstance);

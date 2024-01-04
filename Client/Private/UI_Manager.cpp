@@ -83,6 +83,11 @@ void CUI_Manager::Skill_Ready(_uint iSkillNumber)
 	m_isSkillUsable[iSkillNumber] = true;
 }
 
+void CUI_Manager::Set_SubTitle(const wstring& strText)
+{
+	m_strSubTitle = strText;
+}
+
 const _bool CUI_Manager::Is_ButtonPushed(_uint iIndex) const
 {
 	return m_Buttons[iIndex]->Is_Pushed();
@@ -122,6 +127,11 @@ const _float& CUI_Manager::Get_HPRatio(const wstring& strHPTag)
 const _bool& CUI_Manager::Is_SkillUsable(const _uint iSkillNumber)
 {
 	return m_isSkillUsable[iSkillNumber];
+}
+
+const wstring& CUI_Manager::Get_SubTitle()
+{
+	return m_strSubTitle;
 }
 
 HRESULT CUI_Manager::Init()
@@ -174,6 +184,8 @@ void CUI_Manager::Tick(_float fTimeDelta)
 				m_iButtonIndex = 0;
 			}
 		}
+		m_pGameInstance->StopSound(SCH_BUTTON);
+		m_pGameInstance->Play_Sound(TEXT("UI_ButtonChange"), SCH_BUTTON);
 	}
 
 	if (m_pGameInstance->Key_Down(DIK_UP))
@@ -210,6 +222,8 @@ void CUI_Manager::Tick(_float fTimeDelta)
 				m_iButtonIndex--;
 			}
 		}
+		m_pGameInstance->StopSound(SCH_BUTTON);
+		m_pGameInstance->Play_Sound(TEXT("UI_ButtonChange"), SCH_BUTTON);
 	}
 
 	m_Buttons[m_iButtonIndex]->Activate_Button(true);
@@ -217,6 +231,15 @@ void CUI_Manager::Tick(_float fTimeDelta)
 	if (m_pGameInstance->Key_Down(DIK_RETURN))
 	{
 		m_Buttons[m_iButtonIndex]->Push(true);
+		//switch (m_iButtonIndex)
+		//{
+		//case 0:
+		//	m_pGameInstance->StopSound(SCH_BUTTON);
+		//	m_pGameInstance->Play_Sound(TEXT("UI_Check"), SCH_BUTTON);
+		//	break;
+		//case 1:
+		//	break;
+		//}
 	}
 
 	if (m_pGameInstance->Get_CurrentLevelIndex() == LEVEL_CREATECHARACTER)
@@ -448,6 +471,12 @@ HRESULT CUI_Manager::Ready_UI_Tuto()
 
 void CUI_Manager::Customization()
 {
+	if (m_iPageIndex != m_iPrevPageIndex)
+	{
+		m_pGameInstance->StopSound(SCH_BUTTON);
+		m_pGameInstance->Play_Sound(TEXT("UI_NextPage"), SCH_BUTTON);
+		m_iPrevPageIndex = m_iPageIndex;
+	}
 	switch (m_iPageIndex)
 	{
 	case 0: // 부위 고르기

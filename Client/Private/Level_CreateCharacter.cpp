@@ -43,6 +43,9 @@ void CLevel_CreateCharacter::Tick(_float fTimeDelta)
 	_uint LastBtnIndex = CUI_Manager::Get_Instance()->Get_sizeofButtons() - 1;
 	if (CUI_Manager::Get_Instance()->Is_ButtonPushed(LastBtnIndex))
 	{
+		m_pGameInstance->StopSound(SCH_BUTTON);
+		m_pGameInstance->Play_Sound(TEXT("UI_Check"), SCH_BUTTON);
+
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_FOREST))))
 		{
 			MSG_BOX("Failed to Open Level");

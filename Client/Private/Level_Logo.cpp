@@ -29,6 +29,9 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 
 	if (CUI_Manager::Get_Instance()->Is_ButtonPushed(0))
 	{
+		m_pGameInstance->StopSound(SCH_BUTTON);
+		m_pGameInstance->Play_Sound(TEXT("UI_Check"), SCH_BUTTON);
+
 		if (FAILED(m_pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_CREATECHARACTER))))
 		{
 			MSG_BOX("Failed to Open Level");

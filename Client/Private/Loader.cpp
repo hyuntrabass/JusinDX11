@@ -118,7 +118,7 @@ HRESULT CLoader::Loading_LevelResources()
 HRESULT CLoader::Load_Logo()
 {
 	m_strLoadingText = L"CreateCharacter : Loading Sounds";
-	if (FAILED(m_pGameInstance->Init_SoundManager()))
+	if (FAILED(m_pGameInstance->Init_SoundManager(SCH_MAX)))
 	{
 		return E_FAIL;
 	}
@@ -875,7 +875,7 @@ HRESULT CLoader::Load_Tutorial()
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_Straight"), CVIBuffer_Trail::Create(m_pDevice, m_pContext, 2, _float2(0.03f, 0.03f)))))
+	if (FAILED(m_pGameInstance->Add_Prototype_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail_Straight"), CVIBuffer_Trail::Create(m_pDevice, m_pContext, 2, _float2(0.01f, 0.01f)))))
 
 	{
 		return E_FAIL;
@@ -1050,6 +1050,11 @@ HRESULT CLoader::Load_Tutorial()
 	}
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Win"), CWin::Create(m_pDevice, m_pContext))))
+	{
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_MovieMode"), CMovieMode::Create(m_pDevice, m_pContext))))
 	{
 		return E_FAIL;
 	}

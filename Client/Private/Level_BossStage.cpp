@@ -1,4 +1,5 @@
 #include "Level_BossStage.h"
+#include "Trigger_Manager.h"
 
 CLevel_Stage2::CLevel_Stage2(_dev pDevice, _context pContext)
 	: CLevel(pDevice, pContext)
@@ -14,8 +15,8 @@ HRESULT CLevel_Stage2::Init()
 	CTransform* pMainCamTransform = dynamic_cast<CTransform*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Camera"), TEXT("Com_Transform")));
 
 	pPlayerTransform->Set_Position(_float3(-45.3f, 72.6f, 106.3f));
-	pPlayerTransform->LookAt_Dir(XMVectorSet(-1.f, 0.f, 0.f, 0.f));
-	pMainCamTransform->LookAt_Dir(XMVectorSet(-1.f, 0.f, 0.f, 0.f));
+	pPlayerTransform->LookAt_Dir(XMVectorSet(0.7f, 0.f, -0.7f, 0.f));
+	pMainCamTransform->LookAt_Dir(XMVectorSet(0.7f, 0.f, -0.7f, 0.f));
 
 	if (FAILED(Ready_Map()))
 	{
@@ -28,13 +29,14 @@ HRESULT CLevel_Stage2::Init()
 	}
 
 	m_pGameInstance->StopAll();
-	m_pGameInstance->PlayBGM(TEXT("Madara"), 0.5f);
+	m_pGameInstance->PlayBGM(TEXT("FirstMap_Wind"), 1.f);
 
 	return S_OK;
 }
 
 void CLevel_Stage2::Tick(_float fTimeDelta)
 {
+	CTrigger_Manager::Get_Instance()->Tick(fTimeDelta);
 }
 
 HRESULT CLevel_Stage2::Render()
@@ -80,11 +82,6 @@ HRESULT CLevel_Stage2::Ready_Map()
 			}
 
 		}
-	}
-
-	if (FAILED(m_pGameInstance->Add_Layer(LEVEL_CLOUD, L"Layer_Boss", L"Prototype_GameObject_Kurama")))
-	{
-		return E_FAIL;
 	}
 
 	return S_OK;

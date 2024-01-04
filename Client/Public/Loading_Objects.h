@@ -46,3 +46,4 @@
 #include "HpBar_Boss.h"
 #include "HpBar_Boss_Base.h"
 #include "Win.h"
+#include "MovieMode.h"

@@ -75,10 +75,16 @@ void CChidori::Tick(_float fTimeDelta)
 	{
 		//m_pGameInstance->Set_ShakeCam(true);
 		m_vUVTransform.x = 1.f;
+		
+		m_pGameInstance->StopSound(SCH_EFFECT_SKILL1);
+		m_pGameInstance->Play_Sound(TEXT("Hitted_Chidori_2"), SCH_EFFECT_SKILL1);
+
 	}
 	if (m_vUVTransform.y < -2.f)
 	{
 		m_vUVTransform.y = 1.f;
+		m_pGameInstance->StopSound(SCH_EFFECT_SKILL2);
+		m_pGameInstance->Play_Sound(TEXT("Charge_Chidori_0"), SCH_EFFECT_SKILL2);
 	}
 	if (m_vUVTransform.z < -2.f)
 	{

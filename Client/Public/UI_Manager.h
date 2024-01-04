@@ -24,6 +24,7 @@ public:
 	void Create_Hit();
 	_bool Use_Skill(_uint iSkillNumber);
 	void Skill_Ready(_uint iSkillNumber);
+	void Set_SubTitle(const wstring& strText);
 
 	const _bool Is_ButtonPushed(_uint iIndex) const;
 	const _bool is_Activated(_uint iIndex) const;
@@ -32,6 +33,7 @@ public:
 	const _uint Get_sizeofButtons() const;
 	const _float& Get_HPRatio(const wstring& strHPTag);
 	const _bool& Is_SkillUsable(const _uint iSkillNumber);
+	const wstring& Get_SubTitle();
 
 public:
 	HRESULT Init();
@@ -54,8 +56,10 @@ private:
 	vector<class CButton_Common*> m_Buttons{};
 	_uint m_iButtonIndex{};
 	_uint m_iPageIndex{};
+	_uint m_iPrevPageIndex{};
 	_uint m_iScroll{};
 	_uint m_iNumButtons{};
+	wstring m_strSubTitle{};
 
 	_uint m_iPartIndex[PT_END]{};
 

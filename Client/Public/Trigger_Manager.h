@@ -4,6 +4,7 @@
 BEGIN(Engine)
 class CGameInstance;
 class CCollider;
+class CGameObject;
 END
 
 BEGIN(Client)
@@ -38,6 +39,7 @@ private:
 	map<const wstring, CUTSCENE> m_CutScenes{};
 	CUTSCENE* m_pCurrentCutScene{ nullptr };
 	_bool m_PlayScene{};
+	CGameObject* m_pMovieMode{ nullptr };
 
 	_float m_fTimer{};
 

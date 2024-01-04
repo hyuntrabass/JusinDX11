@@ -117,6 +117,9 @@ void CMiniBomb::Tick(_float fTimeDelta)
 		EffectInfo.fScale = 10.f;
 		XMStoreFloat4(&EffectInfo.vPos, m_pTransformCom->Get_State(State::Pos));
 		m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_Effect"), TEXT("Prototype_GameObject_Effect_Impact"), &EffectInfo);
+
+		m_pGameInstance->StopSound(SCH_EFFECT_MONSTER0);
+		m_pGameInstance->Play_Sound(TEXT("ShinsuSenju_Boom0"), SCH_EFFECT_MONSTER0);
 	}
 	m_pColliderCom->Update(m_pTransformCom->Get_World_Matrix());
 }

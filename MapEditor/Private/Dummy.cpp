@@ -73,9 +73,14 @@ HRESULT CDummy::Init(void* pArg)
 {
 	m_Info = *(DummyInfo*)pArg;
 
-	if (m_Info.Prototype == L"Prototype_Model_SandNinja" || m_Info.Prototype == L"Prototype_Model_Sandman")
+	if (m_Info.Prototype == L"Prototype_Model_SandNinja" || 
+		m_Info.Prototype == L"Prototype_Model_Sandman" || 
+		m_Info.Prototype == L"Prototype_Model_Kurama" ||
+		m_Info.Prototype == L"Prototype_Model_Kakashi" ||
+		m_Info.Prototype == L"Prototype_Model_Pain")
 	{
 		m_isAnim = true;
+		m_Animation.isLoop = true;
 	}
 
 	if (FAILED(Add_Components()))
@@ -99,12 +104,6 @@ HRESULT CDummy::Init(void* pArg)
 	if (m_Info.eType == ItemType::Trigger)
 	{
 		m_iShaderPass = StaticPass_COLMesh;
-	}
-
-	if (m_Info.Prototype == L"Prototype_Model_Pain")
-	{
-		m_Animation.iAnimIndex = (rand() % 2) + 1;
-		m_Animation.isLoop = true;
 	}
 
 	m_pTransformCom->Set_State(State::Pos, XMLoadFloat4(&m_Info.vPos));
@@ -142,14 +141,32 @@ void CDummy::Tick(_float fTimeDelta)
 
 	if (m_isAnim)
 	{
-		if (m_pGameInstance->Key_Pressing(DIK_UP))
+		if (m_pGameInstance->Key_Down(DIK_PRIOR))
 		{
-			//m_pTransformCom->Go_Straight(fTimeDelta);
+			if (m_Animation.iAnimIndex < 51)
+			{
+				m_Animation.iAnimIndex += 1;
+			}
+		}
+
+		if (m_pGameInstance->Key_Down(DIK_NEXT))
+		{
+			if (m_Animation.iAnimIndex > 0)
+			{
+				m_Animation.iAnimIndex -= 1;
+			}
+		}
+
+		if (m_pGameInstance->Key_Pressing(DIK_HOME))
+		{
+			m_Animation.bRestartAnimation = true;
+			m_Animation.bSkipInterpolation = true;
 			m_pModelCom->Set_Animation(m_Animation);
-			//m_pModelCom->Set_Animation(1);
 		}
 		else
 		{
+			m_Animation.bRestartAnimation = false;
+			m_Animation.bSkipInterpolation = false;
 			m_pModelCom->Set_Animation(m_Animation);
 		}
 

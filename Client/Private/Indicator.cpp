@@ -47,11 +47,24 @@ void CIndicator::Tick(_float2 vPos)
 	m_fX = vPos.x;
 	m_fY = vPos.y;
 
+	if (vPos.x < 0.f)
+	{
+		m_isOut = true;
+	}
+	else
+	{
+		m_isOut = false;
+	}
+
 	__super::Apply_Orthographic(g_iWinSizeX, g_iWinSizeY);
 }
 
 void CIndicator::Late_Tick(_float fTimeDelta)
 {
+	if (m_isOut)
+	{
+		return;
+	}
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_UI, this);
 }
 

@@ -1,6 +1,7 @@
 #include "Pain.h"
 #include "UI_Manager.h"
 #include "Indicator.h"
+#include "Trigger_Manager.h"
 
 CPain::CPain(_dev pDevice, _context pContext)
 	: CGameObject(pDevice, pContext)
@@ -25,13 +26,12 @@ HRESULT CPain::Init(void* pArg)
 	}
 
 	m_pTransformCom->Set_State(State::Pos, XMVectorSet(100.f, 45.f, -75.f, 1.f));
+	m_pTransformCom->LookAt_Dir(XMVectorSet(-1.f, 0.f, 1.f, 0.f));
 
 	m_pGameInstance->Init_PhysX_Character(m_pTransformCom, COLGROUP_MONSTER);
 	m_pGameInstance->Register_CollisionObject(this, m_pCollider_Hit);
 
-	m_AnimationDesc.iAnimIndex = Anim_Idle_Loop001;
-	m_AnimationDesc.isLoop = true;
-	m_eState = State_Idle;
+	m_eState = State_Initiation;
 
 	m_iMaxHP = 300;
 	m_iHP = m_iMaxHP;
@@ -46,6 +46,9 @@ HRESULT CPain::Init(void* pArg)
 	_uint iHPBarType{ 1 };
 	m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI_HpBar"), TEXT("Prototype_GameObject_UI_BossHpBar"), &iHPBarType);
 	m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI_HpBar_Base"), TEXT("Prototype_GameObject_UI_BossHpBar_Base"), &iHPBarType);
+
+	m_pGameInstance->StopAll();
+	m_pGameInstance->PlayBGM(TEXT("Pain"), 0.5f);
 
 	return S_OK;
 }
@@ -80,7 +83,7 @@ void CPain::Tick(_float fTimeDelta)
 
 		if (v2DPos.z > 1.f)
 		{
-			v2DPos = _float3();
+			v2DPos = _float3(-1.f, -1.f, -1.f);
 		}
 
 		m_pIndicator->Tick(_float2(v2DPos.x, v2DPos.y));
@@ -94,6 +97,10 @@ void CPain::Tick(_float fTimeDelta)
 
 void CPain::Late_Tick(_float fTimeDelta)
 {
+	if (not m_hasInitiated)
+	{
+		return;
+	}
 	m_pCollider_Hit->Intersect(reinterpret_cast<CCollider*>(m_pGameInstance->Get_Component(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Collider_Attack"))));
 
 	m_pModelCom->Play_Animation(fTimeDelta);
@@ -181,6 +188,13 @@ void CPain::Set_Damage(_int iDamage, _uint iDamageType)
 	if (m_iHP < 0)
 	{
 		m_iHP = 0;
+		m_eState = State_Die;
+		CUI_Manager::Get_Instance()->Create_Hit();
+		if (m_ePrevState == State_Push)
+		{
+			m_pGameInstance->Set_TimeRatio(1.f);
+		}
+		return;
 	}
 
 	if (iDamage > m_iSuperArmor)
@@ -292,6 +306,7 @@ void CPain::Init_State()
 		case Client::CPain::State_None:
 			break;
 		case Client::CPain::State_Initiation:
+			m_fTimer = {};
 			break;
 		case Client::CPain::State_Idle:
 			m_AnimationDesc.iAnimIndex = Anim_Idle_Loop001;
@@ -341,6 +356,7 @@ void CPain::Init_State()
 			m_AnimationDesc.bSkipInterpolation = true;
 
 			Safe_Release(m_pIndicator);
+			m_pGameInstance->Attack_Player(nullptr, -100);
 			m_pGameInstance->Delete_CollisionObject(this);
 			m_fTimer = {};
 			break;
@@ -351,7 +367,13 @@ void CPain::Init_State()
 		m_ePrevState = m_eState;
 	}
 }
-
+// 고통을 받아들여라.... 고통을 알아라...
+// 고통을 모르는자는 진정한 평화를 알수없어!
+// 4.803628
+// 6.824368
+// 13.124854
+// 15.376422
+// 18.760143
 void CPain::Tick_State(_float fTimeDelta)
 {
 	//m_AnimationDesc = {};
@@ -360,6 +382,59 @@ void CPain::Tick_State(_float fTimeDelta)
 	case Client::CPain::State_None:
 		break;
 	case Client::CPain::State_Initiation:
+		if (not m_hasInitiated and m_fTimer > 1.f)
+		{
+			m_AnimationDesc = {};
+			m_AnimationDesc.iAnimIndex = Anim_etc_Appearance;
+			m_hasInitiated = true;
+		}
+		if (m_pModelCom->IsAnimationFinished(Anim_etc_Appearance))
+		{
+			m_AnimationDesc = {};
+			m_AnimationDesc.iAnimIndex = Anim_Idle_Loop001;
+			m_AnimationDesc.isLoop = true;
+
+			m_pGameInstance->StopSound(SCH_NPC2);
+			m_pGameInstance->Play_Sound(TEXT("Pain_Voice"), SCH_NPC2);
+		}
+		if (m_iLineNumber == 0 and m_fTimer > 4.f)
+		{
+			CUI_Manager::Get_Instance()->Set_SubTitle(TEXT("고통을 느껴라...."));
+			m_iLineNumber++;
+		}
+		if (m_iLineNumber == 1 and m_fTimer > 6.f)
+		{
+			CUI_Manager::Get_Instance()->Set_SubTitle(TEXT("고통을 생각해라...."));
+			m_iLineNumber++;
+		}
+		if (m_iLineNumber == 2 and m_fTimer > 8.f)
+		{
+			CUI_Manager::Get_Instance()->Set_SubTitle(TEXT(""));
+			m_iLineNumber++;
+		}
+		if (m_iLineNumber == 3 and m_fTimer > 12.6f)
+		{
+			CUI_Manager::Get_Instance()->Set_SubTitle(TEXT("고통을 받아들여라...."));
+			m_iLineNumber++;
+		}
+		if (m_iLineNumber == 4 and m_fTimer > 14.7f)
+		{
+			CUI_Manager::Get_Instance()->Set_SubTitle(TEXT("고통을 알아라..."));
+			m_iLineNumber++;
+		}
+		if (m_iLineNumber == 5 and m_fTimer > 18.f)
+		{
+			CUI_Manager::Get_Instance()->Set_SubTitle(TEXT("고통을 모르는자는 진정한 평화를 알수없어!!!"));
+			m_iLineNumber++;
+		}
+
+		m_fTimer += fTimeDelta;
+
+		if (not CTrigger_Manager::Get_Instance()->Hasto_PlayScene())
+		{
+			CUI_Manager::Get_Instance()->Set_SubTitle(TEXT(""));
+			m_eState = State_Idle;
+		}
 		break;
 	case Client::CPain::State_Idle:
 	{
@@ -367,8 +442,7 @@ void CPain::Tick_State(_float fTimeDelta)
 		_vector vMyPos = m_pTransformCom->Get_State(State::Pos);
 		_float fDistToPlayer = XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos));
 
-		if (fDistToPlayer < 10.f and
-			m_iHP > m_iMaxHP * 0.7f)
+		if (fDistToPlayer < 10.f)
 		{
 			m_eState = State_Push;
 		}
@@ -458,7 +532,7 @@ void CPain::Tick_State(_float fTimeDelta)
 			CUI_Manager::Get_Instance()->Delete_HPBar(TEXT("Pain"));
 		}
 
-		if (m_fTimer > 7.f and m_fTimer < 10.f)
+		if (m_fTimer > 5.f and m_fTimer < 10.f)
 		{
 			m_pGameInstance->Add_Layer(m_pGameInstance->Get_CurrentLevelIndex(), TEXT("Layer_UI"), TEXT("Prototype_GameObject_Win"));
 			m_fTimer = 20.f;

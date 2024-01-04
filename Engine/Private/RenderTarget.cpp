@@ -67,7 +67,7 @@ HRESULT CRenderTarget::Bind_ShaderResourceView(CShader* pShader, const _char* pV
     return S_OK;
 }
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 HRESULT CRenderTarget::Ready_Debug(_float2 vPos, _float2 vSize)
 {
     XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());

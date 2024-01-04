@@ -52,6 +52,7 @@ private:
 	static _uint m_iLightIndex;
 	_uint m_iMyLightIndex{};
 	_uint m_iEffectCount{};
+	_bool m_bSoundPlayed{};
 
 private:
 	HRESULT Add_Components();

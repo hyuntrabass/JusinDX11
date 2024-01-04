@@ -124,7 +124,7 @@ HRESULT CRenderer::Init_Prototype()
 		return E_FAIL;
 	}
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 	if (FAILED(m_pGameInstance->Ready_Debug_RT(TEXT("Target_Diffuse"), _float2(50.f, 50.f), _float2(100.f, 100.f))))
 	{
 		return E_FAIL;
@@ -236,7 +236,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 		return E_FAIL;
 	}
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 	if (FAILED(Render_Debug()))
 	{
 		MSG_BOX("Failed to Render Debug");
@@ -248,7 +248,7 @@ HRESULT CRenderer::Draw_RenderGroup()
 	return S_OK;
 }
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 HRESULT CRenderer::Add_DebugComponent(CComponent* pDebugComponent)
 {
 	m_DebugComponents.push_back(pDebugComponent);
@@ -810,7 +810,7 @@ HRESULT CRenderer::Render_UI()
 	return S_OK;
 }
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 HRESULT CRenderer::Render_Debug()
 {
 	for (auto& pComponent : m_DebugComponents)
@@ -897,7 +897,7 @@ void CRenderer::Free()
 		ObjectList.clear();
 	}
 
-#ifdef _DEBUG
+#ifdef _DEBUG£Ç
 	for (auto& pComponent : m_DebugComponents)
 	{
 		Safe_Release(pComponent);
