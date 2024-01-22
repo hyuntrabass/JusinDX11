@@ -71,7 +71,7 @@ void CSandNinja::Tick(_float fTimeDelta)
 	//	return;
 	//}
 
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 	if (m_pGameInstance->Key_Down(DIK_U))
 	{
 		_float3 vNewPos{};
@@ -137,7 +137,7 @@ void CSandNinja::Late_Tick(_float fTimeDelta)
 
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
-	#ifdef _DEBUGG
+	#ifdef _DEBUGTEST
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
 	#endif // _DEBUG
 	}

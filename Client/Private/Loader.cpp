@@ -921,6 +921,8 @@ HRESULT CLoader::Load_Tutorial()
 
 	if (FAILED(m_pGameInstance->Add_Prototype_GameObejct(TEXT("Prototype_GameObject_Hell"), CHell::Create(m_pDevice, m_pContext))))
 	{
+
+
 		return E_FAIL;
 	}
 

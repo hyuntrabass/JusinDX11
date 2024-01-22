@@ -41,12 +41,12 @@ void CMapCollider::Tick(_float fTimeDelta)
 
 void CMapCollider::Late_Tick(_float fTimeDelta)
 {
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 	m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonLight, this);
 #endif // _DEBUG
 }
 
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 HRESULT CMapCollider::Render()
 {
 	if ((m_pGameInstance->Get_CameraModeIndex() != CM_DEBUG && !m_pGameInstance->Key_Pressing(DIK_O)) ||
@@ -79,7 +79,7 @@ HRESULT CMapCollider::Render()
 #endif // _DEBUG
 
 
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 HRESULT CMapCollider::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPos", &m_pGameInstance->Get_CameraPos(), sizeof(_float4))))
@@ -141,7 +141,7 @@ HRESULT CMapCollider::Bind_ShaderResources()
 
 HRESULT CMapCollider::Add_Components()
 {
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
 		return E_FAIL;
@@ -191,7 +191,7 @@ void CMapCollider::Free()
 {
 	__super::Free();
 
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 #endif // _DEBUG

@@ -125,7 +125,7 @@ HRESULT CRenderTarget_Manager::Bind_ShaderResourceView(CShader* pShader, const _
 	return pTarget->Bind_ShaderResourceView(pShader, pVariableName);
 }
 
-#ifdef _DEBUG£Ç
+#ifdef _DEBUGTEST
 HRESULT CRenderTarget_Manager::Ready_Debug(const wstring& strTargetTag, _float2 vPos, _float2 vSize)
 {
 	CRenderTarget* pRenderTarget = Find_RenderTarget(strTargetTag);

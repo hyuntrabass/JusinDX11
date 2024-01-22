@@ -794,7 +794,7 @@ void CGameInstance::PhysXTick(_float fTimeDelta)
 	m_pPhysX_Manager->Tick(fTimeDelta);
 }
 
-#ifdef _DEBUG£Ç
+#ifdef _DEBUGTEST
 #ifndef _MapEditor
 HRESULT CGameInstance::Render_PhysX()
 {
@@ -856,7 +856,7 @@ HRESULT CGameInstance::Bind_ShaderResourceView(CShader* pShader, const _char* pV
 	return m_pRenderTarget_Manager->Bind_ShaderResourceView(pShader, pVariableName, strTargetTag);
 }
 
-#ifdef _DEBUG£Ç
+#ifdef _DEBUGTEST
 HRESULT CGameInstance::Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize)
 {
 	if (!m_pRenderTarget_Manager)

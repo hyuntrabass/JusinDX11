@@ -160,7 +160,7 @@ void CPlayer::Tick(_float fTimeDelta)
 
 void CPlayer::Late_Tick(_float fTimeDelta)
 {
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 	if (m_pGameInstance->Get_CameraModeIndex() == CM_MAIN)
 	{
 		GET_CURSOR_POINT(pt);
@@ -1556,7 +1556,7 @@ HRESULT CPlayer::Ready_Parts()
 
 HRESULT CPlayer::Add_Components()
 {
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 	{
 		return E_FAIL;
@@ -1622,7 +1622,7 @@ void CPlayer::Free()
 	{
 		Safe_Release(m_pBodyParts[i]);
 	}
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 	Safe_Release(m_pRendererCom);
 #endif // _DEBUG
 

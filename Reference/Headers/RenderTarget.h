@@ -17,7 +17,7 @@ public:
 	void Clear();
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName);
 
-#ifdef _DEBUG£Ç
+#ifdef _DEBUGTEST
 	HRESULT Ready_Debug(_float2 vPos, _float2 vSize);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 #endif // _DEBUG
@@ -33,7 +33,7 @@ private:
 
 	_float4 m_vClearColor{};
 
-#ifdef _DEBUG£Ç
+#ifdef _DEBUGTEST
 	_float44 m_WorldMatrix{};
 #endif // _DEBUG
 

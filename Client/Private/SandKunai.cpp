@@ -81,7 +81,7 @@ void CSandKunai::Late_Tick(_float fTimeDelta)
 	m_pTrail->Late_Tick(fTimeDelta);
 
 	m_pRendererCom->Add_RenderGroup(RG_NonBlend, this);
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 	m_pRendererCom->Add_DebugComponent(m_pColliderCom);
 #endif // _DEBUG
 }

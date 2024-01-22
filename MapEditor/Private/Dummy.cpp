@@ -143,7 +143,7 @@ void CDummy::Tick(_float fTimeDelta)
 	{
 		if (m_pGameInstance->Key_Down(DIK_PRIOR))
 		{
-			if (m_Animation.iAnimIndex < 51)
+			if (m_Animation.iAnimIndex < 50)
 			{
 				m_Animation.iAnimIndex += 1;
 			}
@@ -156,7 +156,7 @@ void CDummy::Tick(_float fTimeDelta)
 				m_Animation.iAnimIndex -= 1;
 			}
 		}
-
+		m_Animation.fInterpolationTime = 5.f;
 		if (m_pGameInstance->Key_Pressing(DIK_HOME))
 		{
 			m_Animation.bRestartAnimation = true;

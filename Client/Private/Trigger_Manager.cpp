@@ -58,7 +58,7 @@ void CTrigger_Manager::Tick(_float fTimeDelta)
 	}
 }
 
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 HRESULT CTrigger_Manager::Render()
 {
 	for (auto& Trigger : m_Triggers[m_pGameInstance->Get_CurrentLevelIndex()])

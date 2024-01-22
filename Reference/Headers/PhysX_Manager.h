@@ -28,7 +28,7 @@ private:
 public:
 	HRESULT Init();
 	void Tick(_float fTimeDelta);
-#ifdef _DEBUG£Ç
+#ifdef _DEBUGTEST
 #ifndef _MapEditor
 	HRESULT Render();
 #endif // _MapEditor
@@ -61,7 +61,7 @@ private:
 
 	map<class CTransform*, PxRigidDynamic*> m_DynamicActors{};
 
-#ifdef _DEBUG£Ç
+#ifdef _DEBUGTEST
 #ifndef _MapEditor
 	class CVIBuffer_PhysX* m_pVIBufferCom{ nullptr };
 	class CShader* m_pDebugShader{ nullptr };

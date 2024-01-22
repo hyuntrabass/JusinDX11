@@ -71,7 +71,7 @@ void CSandman::Tick(_float fTimeDelta)
 	//	return;
 	//}
 
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 	if (m_pGameInstance->Key_Down(DIK_U))
 	{
 		_float3 vNewPos{};
@@ -139,7 +139,7 @@ void CSandman::Late_Tick(_float fTimeDelta)
 
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
-	#ifdef _DEBUGG
+	#ifdef _DEBUGTEST
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Att);
 	#endif // _DEBUG

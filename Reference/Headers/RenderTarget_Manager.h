@@ -19,7 +19,7 @@ public:
 
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
 
-#ifdef _DEBUG£Ç
+#ifdef _DEBUGTEST
 public:
 	HRESULT Ready_Debug(const wstring& strTargetTag, _float2 vPos, _float2 vSize);
 	HRESULT Render_Debug(const wstring& strMRTTag, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);

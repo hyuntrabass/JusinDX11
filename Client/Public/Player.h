@@ -24,8 +24,9 @@ struct BODYPART_DESC
 {
 	PART_TYPE eType{};
 	_uint iNumVariations{};
-	ANIM_DESC* Animation{};
 
+
+	ANIM_DESC* Animation{};
 	CTransform* pParentTransform{ nullptr };
 };
 
@@ -277,7 +278,7 @@ private:
 
 	CCollider* m_pCollider_Att{ nullptr };
 	CCollider* m_pCollider_Hit{ nullptr };
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 	CRenderer* m_pRendererCom{ nullptr };
 #endif // _DEBUG
 

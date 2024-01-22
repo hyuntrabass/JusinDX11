@@ -38,7 +38,7 @@ public:
 public:
 	_bool Intersect(const class CCollider* pTargetCollider);
 
-#ifdef _DEBUG£Ç
+#ifdef _DEBUGTEST
 public:
 	virtual HRESULT Render() override;
 #endif // _DEBUG
@@ -49,7 +49,7 @@ private:
 	void* m_pBounder_Origin{ nullptr };
 	_bool m_isCollided{};
 
-#ifdef _DEBUG£Ç
+#ifdef _DEBUGTEST
 private:
 	PrimitiveBatch<VertexPositionColor>* m_pBatch{ nullptr };
 	BasicEffect* m_pEffect{ nullptr };

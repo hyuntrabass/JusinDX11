@@ -24,7 +24,7 @@ public:
 
 	void Register_PlayerCollider(CCollider* pCollider);
 	void Tick(_float fTimeDelta);
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 	HRESULT Render();
 #endif // _DEBUG
 

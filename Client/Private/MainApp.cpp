@@ -20,7 +20,7 @@ HRESULT CMainApp::Init()
 	}
 
 	srand(static_cast<_uint>(time(nullptr)));
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 #ifdef UNICODE
 #pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 #else
@@ -110,7 +110,7 @@ HRESULT CMainApp::Render()
 	{
 		return E_FAIL;
 	}
-#ifdef _DEBUGG
+#ifdef _DEBUGTEST
 	if (FAILED(CTrigger_Manager::Get_Instance()->Render()))
 	{
 		return E_FAIL;

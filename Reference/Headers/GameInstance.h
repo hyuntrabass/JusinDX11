@@ -117,7 +117,7 @@ public: // PhysX
 	_bool Raycast(_float4 vOrigin, _float4 vDir, _float fDist, PxRaycastBuffer& Buffer);
 	_bool Raycast(_fvector vOrigin, _fvector vDir, _float fDist, PxRaycastBuffer& Buffer);
 	void PhysXTick(_float fTimeDelta);
-#ifdef _DEBUG£Ç
+#ifdef _DEBUGTEST
 #ifndef _MapEditor
 	HRESULT Render_PhysX();
 #endif // _MapEditor
@@ -129,7 +129,7 @@ public: // RenderTarget
 	HRESULT Begin_MRT(const wstring& strMRTTag, ID3D11DepthStencilView* pDepthStencillView = nullptr);
 	HRESULT End_MRT();
 	HRESULT Bind_ShaderResourceView(class CShader* pShader, const _char* pVariableName, const wstring& strTargetTag);
-#ifdef _DEBUG£Ç
+#ifdef _DEBUGTEST
 public:
 	HRESULT Ready_Debug_RT(const wstring& strTargetTag, _float2 vPos, _float2 vSize);
 	HRESULT Render_Debug_RT(const wstring& strMRTTag, class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);

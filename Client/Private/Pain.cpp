@@ -114,7 +114,7 @@ void CPain::Late_Tick(_float fTimeDelta)
 	{
 		m_pRendererCom->Add_RenderGroup(RenderGroup::RG_NonBlend, this);
 
-	#ifdef _DEBUGG
+	#ifdef _DEBUGTEST
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
 	#endif // _DEBUG
 	}

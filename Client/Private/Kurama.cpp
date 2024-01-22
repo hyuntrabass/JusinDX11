@@ -155,7 +155,7 @@ void CKurama::Late_Tick(_float fTimeDelta)
 			m_pEffect->Late_Tick(fTimeDelta);
 		}
 
-	#ifdef _DEBUGG
+	#ifdef _DEBUGTEST
 		m_pRendererCom->Add_DebugComponent(m_pCollider_Hit);
 	#endif // _DEBUG
 	}
